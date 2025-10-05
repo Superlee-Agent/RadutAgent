@@ -56,10 +56,8 @@ const ANSWER_DETAILS: Record<
   },
   3: {
     jenis: "AI Generated",
-    keterangan:
-      "Mengandung wajah manusia biasa (tidak terkenal)",
-    statusRegistrasi:
-      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -86,8 +84,7 @@ const ANSWER_DETAILS: Record<
     jenis: "Human Generated",
     keterangan:
       "Mengandung wajah manusia biasa (bukan selebriti atau karakter terkenal)",
-    statusRegistrasi:
-      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "✅ Diizinkan (manual setting)",
@@ -112,10 +109,8 @@ const ANSWER_DETAILS: Record<
   },
   9: {
     jenis: "AI Generated (Animasi)",
-    keterangan:
-      "Mengandung wajah manusia biasa (tidak terkenal)",
-    statusRegistrasi:
-      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -142,7 +137,8 @@ export default function Index() {
   const [selectedAssistant, setSelectedAssistant] =
     useState<string>("IP Assistant");
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
-  const detailData = activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
+  const detailData =
+    activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
     { id: "ip", label: "IP Assistant" },
@@ -771,7 +767,9 @@ export default function Index() {
                               <span
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => setActiveDetail(verificationObject.code)}
+                                onClick={() =>
+                                  setActiveDetail(verificationObject.code)
+                                }
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
@@ -944,37 +942,49 @@ export default function Index() {
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Jenis Gambar
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.jenis}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.jenis}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Keterangan Tambahan
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.keterangan}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.keterangan}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Status Registrasi
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.statusRegistrasi}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.statusRegistrasi}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Aksi / Opsi User
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.aksi}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.aksi}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           Smart Licensing (Rekomendasi)
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.smartLicensing}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.smartLicensing}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                           AI Training
                         </dt>
-                        <dd className="mt-1 text-slate-800">{detailData.aiTraining}</dd>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.aiTraining}
+                        </dd>
                       </div>
                     </dl>
                   ) : (

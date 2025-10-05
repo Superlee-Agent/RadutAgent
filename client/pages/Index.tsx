@@ -577,9 +577,9 @@ export default function Index() {
                       <motion.div
                         key={`u-${i}`}
                         className="flex justify-end mb-3 px-3 md:px-8"
-                        initial={{ opacity: 0, x: 24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 24 }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
                         transition={{
                           type: "spring",
                           stiffness: 340,
@@ -598,9 +598,9 @@ export default function Index() {
                       <motion.div
                         key={`b-${i}`}
                         className="flex items-start mb-2 gap-2 px-3 md:px-8"
-                        initial={{ opacity: 0, x: -24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -24 }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
                         transition={{
                           type: "spring",
                           stiffness: 340,
@@ -623,9 +623,9 @@ export default function Index() {
                     <motion.div
                       key={`img-${i}`}
                       className="flex justify-end mb-3 px-3 md:px-8"
-                      initial={{ opacity: 0, scale: 0.96, x: 12 }}
-                      animate={{ opacity: 1, scale: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.96, x: 12 }}
+                      initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, y: 12 }}
                       transition={{
                         type: "spring",
                         stiffness: 320,
@@ -653,9 +653,9 @@ export default function Index() {
                     className="flex items-start mb-2 gap-2 px-3 md:px-8"
                     aria-live="polite"
                     aria-label="Bot is typing"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
                   >
                     <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
                       <span className="dot" />

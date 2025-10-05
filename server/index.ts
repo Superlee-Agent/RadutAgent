@@ -19,7 +19,6 @@ export function createServer() {
     res.json({ message: ping });
   });
 
-
   // Deterministic router API (POST /api)
   app.post("/api", handleDeterministicRoute);
 

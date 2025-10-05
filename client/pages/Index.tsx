@@ -332,7 +332,7 @@ export default function Index() {
           <div className="flex items-center w-full mt-0">
             <button
               onClick={handleNewChat}
-              className="w-full py-3 px-4 bg-indigo-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm"
+              className="w-full py-3 px-4 bg-rose-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm"
             >
               + New chat
             </button>
@@ -358,7 +358,7 @@ export default function Index() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => loadSession(s.id)}
-                      className="text-xs text-indigo-600"
+                      className="text-xs text-rose-600"
                     >
                       Open
                     </button>
@@ -391,7 +391,7 @@ export default function Index() {
                 </button>
                 <button
                   onClick={handleNewChat}
-                  className="py-2 px-3 bg-indigo-600 text-white rounded-md font-semibold text-sm"
+                  className="py-2 px-3 bg-rose-600 text-white rounded-md font-semibold text-sm"
                 >
                   + New chat
                 </button>
@@ -425,7 +425,7 @@ export default function Index() {
                             loadSession(s.id);
                             setSidebarOpen(false);
                           }}
-                          className="text-xs text-indigo-600"
+                          className="text-xs text-rose-600"
                         >
                           Open
                         </button>
@@ -482,9 +482,9 @@ export default function Index() {
               {messages.map((msg, i) =>
                 msg.from === "user" ? (
                   <div key={i} className="flex justify-end mb-3">
-                    <div className="bg-indigo-600 text-white px-5 py-3 rounded-xl max-w-[70%] break-words shadow-md">
+                    <div className="bg-rose-600 text-white px-5 py-3 rounded-xl max-w-[70%] break-words shadow-md">
                       {msg.text}
-                      <div className="text-xs text-indigo-100 mt-1 text-right">
+                      <div className="text-xs text-rose-100 mt-1 text-right">
                         {msg.ts}
                       </div>
                     </div>
@@ -570,13 +570,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-indigo-600 text-white disabled:opacity-50 shadow-md"
+                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

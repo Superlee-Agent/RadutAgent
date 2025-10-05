@@ -5,7 +5,7 @@ type BotMessage = {
   from: "bot";
   text: string;
   ts?: string;
-  verification?: string | null;
+  verification?: { label: string; code: number } | null;
 };
 
 type Message =

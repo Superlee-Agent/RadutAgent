@@ -182,6 +182,15 @@ export default function Index() {
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
+  useEffect(() => {
+    if (activeDetail === null) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setActiveDetail(null);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [activeDetail]);
+
   function scrollToBottom() {
     setTimeout(() => {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });

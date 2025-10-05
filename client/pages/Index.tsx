@@ -5,13 +5,117 @@ type BotMessage = {
   from: "bot";
   text: string;
   ts?: string;
-  verification?: string | null;
+  verification?: { label: string; code: number } | string | null;
 };
 
 type Message =
   | { from: "user"; text: string; ts?: string }
   | BotMessage
   | { from: "user-image"; url: string; ts?: string };
+
+const ANSWER_LABELS: Record<number, string> = {
+  1: "Kelompok 1",
+  2: "Kelompok 2",
+  3: "Kelompok 3",
+  4: "Kelompok 4",
+  5: "Kelompok 5",
+  6: "Kelompok 6",
+  7: "Kelompok 7",
+  8: "Kelompok 8",
+  9: "Kelompok 9",
+};
+
+const ANSWER_DETAILS: Record<
+  number,
+  {
+    jenis: string;
+    keterangan: string;
+    statusRegistrasi: string;
+    aksi: string;
+    smartLicensing: string;
+    aiTraining: string;
+  }
+> = {
+  1: {
+    jenis: "AI Generated",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  2: {
+    jenis: "AI Generated",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  3: {
+    jenis: "AI Generated",
+    keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  4: {
+    jenis: "Human Generated",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  5: {
+    jenis: "Human Generated",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  6: {
+    jenis: "Human Generated",
+    keterangan:
+      "Mengandung wajah manusia biasa (bukan selebriti atau karakter terkenal)",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  7: {
+    jenis: "AI Generated (Animasi)",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  8: {
+    jenis: "AI Generated (Animasi)",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  9: {
+    jenis: "AI Generated (Animasi)",
+    keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+};
 
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
@@ -32,6 +136,9 @@ export default function Index() {
   const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
   const [selectedAssistant, setSelectedAssistant] =
     useState<string>("IP Assistant");
+  const [activeDetail, setActiveDetail] = useState<number | null>(null);
+  const detailData =
+    activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
     { id: "ip", label: "IP Assistant" },
@@ -71,6 +178,15 @@ export default function Index() {
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
+
+  useEffect(() => {
+    if (activeDetail === null) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setActiveDetail(null);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [activeDetail]);
 
   function scrollToBottom() {
     setTimeout(() => {
@@ -251,7 +367,7 @@ export default function Index() {
 
       const parsed = data?.parsed;
       let display = "(No analysis result)";
-      let verification: string | undefined;
+      let verification: { label: string; code: number } | string | undefined;
 
       if (parsed && typeof parsed === "object") {
         const reason =
@@ -264,7 +380,8 @@ export default function Index() {
             ? parsed.selected_answer
             : null;
         if (finalAnswer != null) {
-          verification = `Verifikasi akhir: Jawaban ${finalAnswer}`;
+          const label = ANSWER_LABELS[finalAnswer] ?? `Kelompok ${finalAnswer}`;
+          verification = { label, code: finalAnswer };
         }
       } else {
         const rawText = data?.raw ? String(data.raw).trim() : "";
@@ -543,7 +660,7 @@ export default function Index() {
                 <button
                   type="button"
                   onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 focus:outline-none"
+                  className="btn-ghost text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 px-2 py-1 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
                   aria-expanded={assistantMenuOpen}
                 >
                   {selectedAssistant}
@@ -614,6 +731,15 @@ export default function Index() {
                     );
                   }
                   if (msg.from === "bot") {
+                    const verificationObject =
+                      msg.verification && typeof msg.verification === "object"
+                        ? msg.verification
+                        : null;
+                    const verificationText =
+                      msg.verification && typeof msg.verification === "string"
+                        ? msg.verification
+                        : null;
+
                     return (
                       <motion.div
                         key={`b-${i}`}
@@ -635,9 +761,29 @@ export default function Index() {
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           <div>{msg.text}</div>
-                          {msg.verification ? (
+                          {verificationObject ? (
                             <div className="mt-2 text-xs text-slate-400">
-                              {msg.verification}
+                              Verifikasi akhir:{" "}
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                onClick={() =>
+                                  setActiveDetail(verificationObject.code)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    setActiveDetail(verificationObject.code);
+                                  }
+                                }}
+                                className="cursor-pointer text-blue-600 underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+                              >
+                                {verificationObject.label}
+                              </span>
+                            </div>
+                          ) : verificationText ? (
+                            <div className="mt-2 text-xs text-slate-400">
+                              {verificationText}
                             </div>
                           ) : null}
                         </div>
@@ -762,6 +908,93 @@ export default function Index() {
               className="hidden"
               onChange={handleImage}
             />
+
+            {activeDetail !== null ? (
+              <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+                <div
+                  className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                  onClick={() => setActiveDetail(null)}
+                  aria-hidden="true"
+                />
+                <div className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Kelompok {activeDetail}
+                      </p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                        {detailData?.jenis ?? "Detail kelompok"}
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveDetail(null)}
+                      className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                      aria-label="Tutup detail kelompok"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {detailData ? (
+                    <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Jenis Gambar
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.jenis}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Keterangan Tambahan
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.keterangan}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Status Registrasi
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.statusRegistrasi}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Aksi / Opsi User
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.aksi}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Smart Licensing (Rekomendasi)
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.smartLicensing}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          AI Training
+                        </dt>
+                        <dd className="mt-1 text-slate-800">
+                          {detailData.aiTraining}
+                        </dd>
+                      </div>
+                    </dl>
+                  ) : (
+                    <p className="mt-4 text-sm text-slate-500">
+                      Data detail tidak ditemukan.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
         </main>
       </div>

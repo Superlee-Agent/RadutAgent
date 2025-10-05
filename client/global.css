@@ -263,9 +263,25 @@ button {
   border: none;
   padding: 6px 14px;
 }
+
 button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+button.btn-ghost {
+  background: transparent !important;
+  color: inherit !important;
+  border: none;
+  padding: 0;
+}
+
+button.btn-ghost:hover {
+  background: rgba(244, 114, 182, 0.18) !important;
+}
+
+button.btn-ghost:focus-visible {
+  background: rgba(244, 114, 182, 0.24) !important;
 }
 .dot {
   display: inline-block;

@@ -188,7 +188,7 @@ input, textarea {
 button {
   font-weight: 600;
   border-radius: 10px;
-  background: #4f46e5 !important;
+  background: #be185d !important; /* rose-600 */
   color: white;
   border: none;
   padding: 6px 14px;
@@ -201,7 +201,7 @@ button[disabled] {
   display: inline-block;
   width: 8px;
   height: 8px;
-  background: #c7d2fe;
+  background: #fbcfe8; /* rose-200 */
   border-radius: 50%;
   animation: dotty 0.9s infinite alternate;
 }
@@ -209,11 +209,11 @@ button[disabled] {
   margin-left: 4px;
 }
 @keyframes dotty {
-  0% { background: #c7d2fe; }
-  100% { background: #6366f1; }
+  0% { background: #fbcfe8; } /* rose-200 */
+  100% { background: #be185d; } /* rose-600 */
 }
 :::selection {
-  background: rgba(99,102,241,0.12);
+  background: rgba(190,24,93,0.12);
 }
 @media (max-width: 500px) {
   .chat-wrap {
@@ -233,7 +233,7 @@ button[disabled] {
 /* color overrides removed for minimalist theme */
 /* removed duplicate keyframes to keep single animation */
 ::selection {
-  background: rgba(99,102,241,0.12);
+  background: rgba(190,24,93,0.12);
 }
 /* buttons use solid accent color from earlier rule */
 

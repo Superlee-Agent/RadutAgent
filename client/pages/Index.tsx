@@ -141,6 +141,7 @@ export default function Index() {
   const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
   const [selectedAssistant, setSelectedAssistant] =
     useState<string>("IP Assistant");
+  const [activeDetail, setActiveDetail] = useState<number | null>(null);
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
     { id: "ip", label: "IP Assistant" },

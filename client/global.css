@@ -234,14 +234,15 @@ textarea:focus {
   --tw-ring-color: transparent !important;
 }
 
-/* remove pink highlight on focus/click; keep subtle bubble-style focus */
+/* show thin pink ring on focus */
 .chat-input textarea:focus,
 .chat-input input[type="text"]:focus,
 .chat-input textarea:focus-visible,
 .chat-input input[type="text"]:focus-visible {
-  border-color: rgba(15, 23, 42, 0.08) !important; /* match bubble border */
+  border-color: rgba(190,24,93,0.28) !important; /* subtle pink border */
   outline: none !important;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  /* base subtle shadow + thin pink ring */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important, 0 0 0 3px rgba(190,24,93,0.08) !important;
 }
 
 /* active state matches focus (no pink) */

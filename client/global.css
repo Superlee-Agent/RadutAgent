@@ -267,7 +267,8 @@ button {
 }
 @media (max-width: 767px) {
   /* ensure app fills viewport on mobile */
-  html, body {
+  html,
+  body {
     height: 100%;
     overscroll-behavior: none; /* prevent scroll chaining */
     -webkit-overflow-scrolling: touch;
@@ -278,7 +279,9 @@ button {
     touch-action: pan-y;
   }
   .chat-wrap {
-    height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    height: calc(
+      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
     min-height: 100dvh;
     overflow: hidden;
     display: flex;

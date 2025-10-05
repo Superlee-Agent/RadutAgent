@@ -493,7 +493,9 @@ export default function Index() {
                   <div key={i} className="flex items-start mb-2 gap-2">
                     <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
                       {msg.text}
-                      <div className="text-xs text-slate-400 mt-1">{msg.ts}</div>
+                      <div className="text-xs text-slate-400 mt-1">
+                        {msg.ts}
+                      </div>
                     </div>
                   </div>
                 ) : (

@@ -377,10 +377,18 @@ export default function Index() {
 
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 md:hidden flex">
-            <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+            <div
+              className="fixed inset-0 bg-black/40"
+              onClick={() => setSidebarOpen(false)}
+            />
             <aside className="relative w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full overflow-y-auto border-r border-pink-100">
               <div className="flex items-center w-full mt-0 justify-between">
-                <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-md text-pink-700">✕</button>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 rounded-md text-pink-700"
+                >
+                  ✕
+                </button>
                 <button
                   onClick={handleNewChat}
                   className="py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm"
@@ -388,10 +396,14 @@ export default function Index() {
                   + New chat
                 </button>
               </div>
-              <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
+              <h2 className="mt-4 text-sm font-semibold text-pink-700">
+                History
+              </h2>
               <div className="mt-2 flex-1 space-y-2 w-full">
                 {sessions.length === 0 ? (
-                  <div className="text-sm text-pink-600">Belum ada riwayat chat</div>
+                  <div className="text-sm text-pink-600">
+                    Belum ada riwayat chat
+                  </div>
                 ) : (
                   sessions.map((s) => (
                     <div
@@ -400,13 +412,19 @@ export default function Index() {
                     >
                       <button
                         className="text-left text-sm text-pink-700 truncate w-full"
-                        onClick={() => { loadSession(s.id); setSidebarOpen(false); }}
+                        onClick={() => {
+                          loadSession(s.id);
+                          setSidebarOpen(false);
+                        }}
                       >
                         {s.title}
                       </button>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => { loadSession(s.id); setSidebarOpen(false); }}
+                          onClick={() => {
+                            loadSession(s.id);
+                            setSidebarOpen(false);
+                          }}
                           className="text-xs text-pink-600"
                         >
                           Open
@@ -436,8 +454,19 @@ export default function Index() {
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-pink-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
               <img

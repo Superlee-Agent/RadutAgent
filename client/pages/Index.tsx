@@ -14,15 +14,15 @@ type Message =
   | { from: "user-image"; url: string; ts?: string };
 
 const ANSWER_LABELS: Record<number, string> = {
-  1: "Kelompok 1 • AI tanpa wajah/brand terkenal",
-  2: "Kelompok 2 • AI dengan brand/figur terkenal",
-  3: "Kelompok 3 • AI dengan wajah manusia biasa",
-  4: "Kelompok 4 • Manusia tanpa wajah/brand terkenal",
-  5: "Kelompok 5 • Manusia dengan brand/figur terkenal",
-  6: "Kelompok 6 • Manusia dengan wajah manusia biasa",
-  7: "Kelompok 7 • AI animasi tanpa wajah/brand",
-  8: "Kelompok 8 • AI animasi dengan brand/figur terkenal",
-  9: "Kelompok 9 • AI animasi dengan wajah manusia biasa",
+  1: "Kelompok 1",
+  2: "Kelompok 2",
+  3: "Kelompok 3",
+  4: "Kelompok 4",
+  5: "Kelompok 5",
+  6: "Kelompok 6",
+  7: "Kelompok 7",
+  8: "Kelompok 8",
+  9: "Kelompok 9",
 };
 
 export default function Index() {

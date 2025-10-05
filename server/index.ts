@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
 import { handleAnalyze } from "./routes/analyze";
 import { handleDeterministicRoute } from "./routes/router";
 
@@ -20,7 +19,6 @@ export function createServer() {
     res.json({ message: ping });
   });
 
-  app.get("/api/demo", handleDemo);
 
   // Deterministic router API (POST /api)
   app.post("/api", handleDeterministicRoute);

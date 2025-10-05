@@ -381,11 +381,11 @@ export default function Index() {
               className="fixed inset-0 bg-black/40"
               onClick={() => setSidebarOpen(false)}
             />
-            <aside className="relative w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full overflow-y-auto border-r border-pink-100">
+            <aside className="relative w-64 bg-white text-slate-700 pt-4 pb-6 px-4 h-full overflow-y-auto border-r border-slate-100">
               <div className="flex items-center w-full mt-0 justify-between">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-md text-pink-700"
+                  className="p-2 rounded-md text-slate-700"
                 >
                   ✕
                 </button>
@@ -517,7 +517,7 @@ export default function Index() {
                   aria-live="polite"
                   aria-label="Bot is typing"
                 >
-                  <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg">
+                  <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
                     <span className="dot" />
                     <span className="dot" />
                     <span className="dot" />

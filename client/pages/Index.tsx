@@ -556,7 +556,7 @@ export default function Index() {
                           src={msg.url}
                           alt="Upload"
                           className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
-/>
+                        />
                       </div>
                     </motion.div>
                   );

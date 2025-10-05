@@ -735,6 +735,15 @@ export default function Index() {
                     );
                   }
                   if (msg.from === "bot") {
+                    const verificationObject =
+                      msg.verification && typeof msg.verification === "object"
+                        ? msg.verification
+                        : null;
+                    const verificationText =
+                      msg.verification && typeof msg.verification === "string"
+                        ? msg.verification
+                        : null;
+
                     return (
                       <motion.div
                         key={`b-${i}`}
@@ -756,16 +765,20 @@ export default function Index() {
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           <div>{msg.text}</div>
-                          {msg.verification ? (
+                          {verificationObject ? (
                             <div className="mt-2 text-xs text-slate-400">
                               Verifikasi akhir:{" "}
                               <button
                                 type="button"
-                                onClick={() => setActiveDetail(msg.verification!.code)}
+                                onClick={() => setActiveDetail(verificationObject.code)}
                                 className="text-blue-600 underline font-semibold hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
                               >
-                                {msg.verification.label}
+                                {verificationObject.label}
                               </button>
+                            </div>
+                          ) : verificationText ? (
+                            <div className="mt-2 text-xs text-slate-400">
+                              {verificationText}
                             </div>
                           ) : null}
                         </div>

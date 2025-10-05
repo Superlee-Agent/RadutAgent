@@ -36,6 +36,7 @@ export default function Index() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const isMobileRef = useRef(false);
+  const autoScrollNextRef = useRef(true);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -57,7 +58,10 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    if (autoScrollNextRef.current) {
+      scrollToBottom();
+    }
+    autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
@@ -185,6 +189,7 @@ export default function Index() {
           minute: "2-digit",
         }),
       });
+      autoScrollNextRef.current = true;
       setWaiting(true);
 
       let blob: Blob;
@@ -207,6 +212,7 @@ export default function Index() {
       });
       if (analyz.status === 413) {
         const json = await analyz.json().catch(() => ({}));
+        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: "Gambar terlalu besar, coba kompres/resize sebelum unggah.",
@@ -216,12 +222,12 @@ export default function Index() {
           }),
         });
         setWaiting(false);
-        scrollToBottom();
         return;
       }
       if (!analyz.ok) {
         const txt = await analyz.text().catch(() => "");
         console.error("/api/analyze failed:", analyz.status, txt);
+        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: "Gagal analisa gambar.",
@@ -231,7 +237,6 @@ export default function Index() {
           }),
         });
         setWaiting(false);
-        scrollToBottom();
         return;
       }
 
@@ -246,6 +251,7 @@ export default function Index() {
         const rawText = data?.raw ? String(data.raw).trim() : "";
         display = rawText || "(No analysis result)";
       }
+      autoScrollNextRef.current = false;
       pushMessage({
         from: "bot",
         text: display,
@@ -269,6 +275,7 @@ export default function Index() {
       const msg = err?.message
         ? `Gagal analisa gambar: ${err.message}`
         : "Gagal analisa gambar.";
+      autoScrollNextRef.current = false;
       pushMessage({
         from: "bot",
         text: msg,
@@ -279,7 +286,6 @@ export default function Index() {
       });
     } finally {
       setWaiting(false);
-      scrollToBottom();
     }
   }
 
@@ -571,9 +577,9 @@ export default function Index() {
                       <motion.div
                         key={`u-${i}`}
                         className="flex justify-end mb-3 px-3 md:px-8"
-                        initial={{ opacity: 0, x: 24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 24 }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
                         transition={{
                           type: "spring",
                           stiffness: 340,
@@ -592,13 +598,18 @@ export default function Index() {
                       <motion.div
                         key={`b-${i}`}
                         className="flex items-start mb-2 gap-2 px-3 md:px-8"
-                        initial={{ opacity: 0, x: -24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -24 }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
                         transition={{
                           type: "spring",
                           stiffness: 340,
                           damping: 26,
+                        }}
+                        onAnimationComplete={() => {
+                          if (i === messages.length - 1) {
+                            scrollToBottom();
+                          }
                         }}
                         layout
                       >
@@ -612,9 +623,9 @@ export default function Index() {
                     <motion.div
                       key={`img-${i}`}
                       className="flex justify-end mb-3 px-3 md:px-8"
-                      initial={{ opacity: 0, scale: 0.96, x: 12 }}
-                      animate={{ opacity: 1, scale: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.96, x: 12 }}
+                      initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, y: 12 }}
                       transition={{
                         type: "spring",
                         stiffness: 320,
@@ -627,6 +638,8 @@ export default function Index() {
                           src={msg.url}
                           alt="Upload"
                           className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
+                          onLoad={() => scrollToBottom()}
+                          onError={() => scrollToBottom()}
                         />
                       </div>
                     </motion.div>
@@ -640,9 +653,9 @@ export default function Index() {
                     className="flex items-start mb-2 gap-2 px-3 md:px-8"
                     aria-live="polite"
                     aria-label="Bot is typing"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
                   >
                     <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
                       <span className="dot" />

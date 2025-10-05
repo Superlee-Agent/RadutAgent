@@ -120,7 +120,7 @@
 .bot { background: #e7e7ff; align-self: flex-start; float: left; }
 .user-img img { max-width:100px; max-height:120px; border-radius: 12px; display:block; }
 .user-img { background:none; box-shadow:none; margin-bottom:8px; float:right; }
-.chat-input { display: flex; gap: 8px; padding: 16px; border-top: 1px solid #ddd; background:#fff; }
+.chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #ddd; background:#fff; flex: none; }
 input[type="text"], input[type="search"], input { flex:1; font-size: 1em; padding: 10px 14px; border-radius: 18px; border: 1px solid #ddd; background:#f8f8fa; }
 button { font-weight: bold; border-radius: 40px; background: #4eb5a2; color: white; border: none; padding: 0 20px; }
 button[disabled] { opacity:.5; cursor: not-allowed; }

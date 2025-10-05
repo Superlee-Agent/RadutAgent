@@ -447,7 +447,7 @@ export default function Index() {
         {/* Main chat area */}
         <main className="flex-1 flex">
           <div className="chat-wrap w-full h-full flex flex-col bg-transparent">
-            <header className="flex items-center gap-3 px-4 py-2 border-b border-slate-100 bg-white">
+            <header className="flex items-center gap-3 px-4 py-3 border-b border-transparent bg-transparent">
               <button
                 type="button"
                 className="md:hidden p-2 rounded-md"
@@ -528,7 +528,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-3 px-6 py-3 border-t bg-white flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t bg-transparent flex-none sticky bottom-0 z-10"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();

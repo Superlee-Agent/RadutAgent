@@ -59,7 +59,7 @@ const ANSWER_DETAILS: Record<
     keterangan:
       "Mengandung wajah manusia biasa (tidak terkenal)",
     statusRegistrasi:
-      "❌ Langsung tidak diizinkan ��� ✅ Jika selfie sukses",
+      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -664,7 +664,7 @@ export default function Index() {
                 <button
                   type="button"
                   onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 focus:outline-none"
+                  className="btn-ghost text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 px-2 py-1 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
                   aria-expanded={assistantMenuOpen}
                 >
                   {selectedAssistant}

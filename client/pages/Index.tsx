@@ -59,7 +59,7 @@ const ANSWER_DETAILS: Record<
     keterangan:
       "Mengandung wajah manusia biasa (tidak terkenal)",
     statusRegistrasi:
-      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+      "❌ Langsung tidak diizinkan ��� ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -768,19 +768,20 @@ export default function Index() {
                           {verificationObject ? (
                             <div className="mt-2 text-xs text-slate-400">
                               Verifikasi akhir:{" "}
-                              <button
-                                type="button"
+                              <span
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => setActiveDetail(verificationObject.code)}
-                                className="underline font-semibold hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                                style={{
-                                  backgroundColor: "transparent",
-                                  color: "#2563eb",
-                                  padding: 0,
-                                  border: "none",
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    setActiveDetail(verificationObject.code);
+                                  }
                                 }}
+                                className="cursor-pointer text-blue-600 underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
                               >
                                 {verificationObject.label}
-                              </button>
+                              </span>
                             </div>
                           ) : verificationText ? (
                             <div className="mt-2 text-xs text-slate-400">

@@ -379,6 +379,16 @@ export default function Index() {
         <main className="flex-1 flex justify-center">
           <div className="chat-wrap w-full h-full flex flex-col bg-white">
             <header className="flex items-center gap-3 px-4 py-2 border-b border-pink-200 bg-white">
+              <button
+                type="button"
+                className="md:hidden p-2 rounded-md"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open sidebar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800"
                 alt="Radut Agent"

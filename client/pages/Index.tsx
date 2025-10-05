@@ -890,6 +890,81 @@ export default function Index() {
               className="hidden"
               onChange={handleImage}
             />
+
+            {activeDetail !== null ? (
+              <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+                <div
+                  className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                  onClick={() => setActiveDetail(null)}
+                  aria-hidden="true"
+                />
+                <div className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Kelompok {activeDetail}
+                      </p>
+                      <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                        {detailData?.jenis ?? "Detail kelompok"}
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveDetail(null)}
+                      className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                      aria-label="Tutup detail kelompok"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {detailData ? (
+                    <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Jenis Gambar
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.jenis}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Keterangan Tambahan
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.keterangan}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Status Registrasi
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.statusRegistrasi}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Aksi / Opsi User
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.aksi}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Smart Licensing (Rekomendasi)
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.smartLicensing}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          AI Training
+                        </dt>
+                        <dd className="mt-1 text-slate-800">{detailData.aiTraining}</dd>
+                      </div>
+                    </dl>
+                  ) : (
+                    <p className="mt-4 text-sm text-slate-500">
+                      Data detail tidak ditemukan.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
         </main>
       </div>

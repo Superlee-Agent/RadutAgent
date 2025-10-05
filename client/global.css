@@ -197,10 +197,20 @@ textarea {
   font-size: 1rem;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.10);
   background: #fff;
-  transition: box-shadow 0.12s ease, border-color 0.12s ease;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
   outline: none;
+  /* subtle raised appearance by default */
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.03);
+}
+
+input[type="text"]:hover,
+input[type="search"]:hover,
+input:hover,
+textarea:hover {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  transform: translateY(-1px);
 }
 
 input[type="text"]:focus,
@@ -208,7 +218,8 @@ input[type="search"]:focus,
 input:focus,
 textarea:focus {
   border-color: rgba(15, 23, 42, 0.16);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
 }
 button {
   font-weight: 600;

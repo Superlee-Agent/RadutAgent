@@ -26,10 +26,15 @@ export function createServer() {
   app.post("/api", handleDeterministicRoute);
 
   // Analyze endpoint (POST /api/analyze) - multer middleware + handler
-  app.post("/api/analyze", ...(Array.isArray(handleAnalyze) ? handleAnalyze : [handleAnalyze]));
+  app.post(
+    "/api/analyze",
+    ...(Array.isArray(handleAnalyze) ? handleAnalyze : [handleAnalyze]),
+  );
 
   // Debug endpoint to check OpenAI env presence
-  app.get("/api/_debug_openai", (req, res) => res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }));
+  app.get("/api/_debug_openai", (req, res) =>
+    res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),
+  );
 
   return app;
 }

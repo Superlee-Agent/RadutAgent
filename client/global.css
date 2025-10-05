@@ -185,7 +185,7 @@ html {
   display: flex;
   gap: 12px;
   padding: 12px 16px;
-  border-top: 1px solid rgba(15, 23, 42, 0.03);
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
   background: transparent;
   flex: none;
 }
@@ -197,8 +197,63 @@ textarea {
   font-size: 1rem;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.22);
   background: #fff;
+  transition:
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
+  outline: none;
+  /* shadow reduced by ~60% earlier; now reduce darkness by 40% (lower alpha) */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.11);
+}
+
+input[type="text"]:hover,
+input[type="search"]:hover,
+input:hover,
+textarea:hover {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.13);
+  transform: translateY(-1px);
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input:focus,
+textarea:focus {
+  border-color: rgba(15, 23, 42, 0.28);
+  /* compact, slightly stronger on focus but reduced darkness */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.13);
+  transform: translateY(-1px);
+}
+
+/* Make chat input match agent message bubble */
+.chat-input textarea,
+.chat-input input[type="text"] {
+  background: #fff; /* same as agent bubble */
+  border: 1px solid rgba(15, 23, 42, 0.06); /* lighter border like message bubble */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important; /* compact, subtle shadow matching bubble */
+  transform: none !important; /* prevent lift */
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* show thin pink ring on focus */
+.chat-input textarea:focus,
+.chat-input input[type="text"]:focus,
+.chat-input textarea:focus-visible,
+.chat-input input[type="text"]:focus-visible {
+  border-color: rgba(190, 24, 93, 0.28) !important; /* subtle pink border */
+  outline: none !important;
+  /* base subtle shadow + thin pink ring */
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06) !important,
+    0 0 0 3px rgba(190, 24, 93, 0.08) !important;
+}
+
+/* active state matches focus (no pink) */
+.chat-input textarea:active,
+.chat-input input[type="text"]:active {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
 }
 button {
   font-weight: 600;

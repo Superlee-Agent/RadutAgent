@@ -1,7 +1,6 @@
 import multer from "multer";
 import { RequestHandler } from "express";
-
-const crypto = await import("crypto");
+import { createHash } from "crypto";
 
 const cache = new Map<string, any>();
 const upload = multer({
@@ -68,7 +67,7 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     if (!file) return res.status(400).json({ error: "No file received" });
 
     // caching by hash
-    const hash = crypto.createHash("sha256").update(file.buffer).digest("hex");
+    const hash = createHash("sha256").update(file.buffer).digest("hex");
     if (cache.has(hash)) return res.status(200).json(cache.get(hash));
 
     // size guard

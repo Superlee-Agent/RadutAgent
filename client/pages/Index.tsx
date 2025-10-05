@@ -241,7 +241,7 @@ export default function Index() {
       <div className="w-full h-full flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
         <aside className="hidden md:flex flex-col w-64 bg-[#0b1220] text-slate-200 pt-2 pb-4 px-4 h-full sticky top-0 overflow-y-auto items-start">
-          <div className="flex items-center w-full mt-4"><button onClick={handleNewChat} className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm text-left">+ New chat</button></div>
+          <div className="flex items-center w-full mt-0"><button onClick={handleNewChat} className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm text-left">+ New chat</button></div>
           <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
           <div className="mt-2 flex-1 space-y-2 w-full">
             {sessions.length === 0 ? (

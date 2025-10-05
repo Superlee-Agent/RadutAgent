@@ -270,16 +270,28 @@ button {
   html,
   body {
     height: 100%;
+    overscroll-behavior: none; /* prevent scroll chaining */
+    -webkit-overflow-scrolling: touch;
+  }
+  /* lock body scroll but allow chat-box to scroll */
+  body {
+    overflow: hidden;
+    touch-action: pan-y;
   }
   .chat-wrap {
     height: calc(
       100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
     );
     min-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   /* avoid chat messages being hidden behind the sticky input */
   .chat-box {
     padding-bottom: 96px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .chat-input {
     padding-left: 12px;

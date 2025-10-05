@@ -606,6 +606,11 @@ export default function Index() {
                           stiffness: 340,
                           damping: 26,
                         }}
+                        onAnimationComplete={() => {
+                          if (i === messages.length - 1) {
+                            scrollToBottom();
+                          }
+                        }}
                         layout
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">

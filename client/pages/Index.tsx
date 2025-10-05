@@ -269,7 +269,7 @@ export default function Index() {
               <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
               <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
             </header>
-            <div className="chat-box px-6 py-4 flex-1 overflow-y-auto bg-slate-50">
+            <div className="chat-box px-6 py-4 flex-1 overflow-y-auto bg-pink-50">
               {messages.map((msg, i) =>
                 msg.from === "user" ? (
                   <div key={i} className="flex justify-end mb-3">

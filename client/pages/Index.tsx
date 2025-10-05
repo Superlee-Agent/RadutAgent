@@ -18,6 +18,7 @@ export default function Index() {
   ]);
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);

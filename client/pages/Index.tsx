@@ -512,9 +512,6 @@ export default function Index() {
                       >
                         <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
-                          <div className="text-xs text-slate-500 mt-1 text-right">
-                            {msg.ts}
-                          </div>
                         </div>
                       </motion.div>
                     );
@@ -536,9 +533,6 @@ export default function Index() {
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
-                          <div className="text-xs text-slate-400 mt-1">
-                            {msg.ts}
-                          </div>
                         </div>
                       </motion.div>
                     );
@@ -562,10 +556,7 @@ export default function Index() {
                           src={msg.url}
                           alt="Upload"
                           className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
-                        />
-                        <div className="text-xs text-slate-400 mt-1 text-right">
-                          {msg.ts}
-                        </div>
+/>
                       </div>
                     </motion.div>
                   );

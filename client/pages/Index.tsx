@@ -195,26 +195,26 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8 px-4">
-      <div className="chat-wrap max-w-2xl mx-auto shadow-lg rounded-md overflow-hidden bg-white">
-        <header className="flex items-center gap-3 px-4 py-3 border-b">
-          <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover" />
-          <h1 className="text-lg font-semibold tracking-tight">Radut Agent</h1>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white py-8 px-4">
+      <div className="chat-wrap max-w-2xl mx-auto shadow-lg rounded-md overflow-hidden bg-white ring-1 ring-pink-50">
+        <header className="flex items-center gap-3 px-4 py-3 border-b border-pink-200 bg-white">
+          <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
+          <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
         </header>
         <div className="chat-box p-4 h-[60vh] overflow-y-auto bg-slate-50">
           {messages.map((msg, i) =>
             msg.from === "user" ? (
               <div key={i} className="flex justify-end mb-3">
-                <div className="bg-green-500 text-white px-3 py-2 rounded-lg max-w-[70%] break-words">
+                <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-lg max-w-[70%] break-words">
                   {msg.text}
-                  <div className="text-xs text-slate-200 mt-1 text-right">{msg.ts}</div>
+                  <div className="text-xs text-pink-100 mt-1 text-right">{msg.ts}</div>
                 </div>
               </div>
             ) : msg.from === "bot" ? (
               <div key={i} className="flex items-start mb-3 gap-3">
-                <div className="bg-white border px-3 py-2 rounded-lg max-w-[70%] break-words">
+                <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg max-w-[70%] break-words">
                   {msg.text}
-                  <div className="text-xs text-slate-400 mt-1">{msg.ts}</div>
+                  <div className="text-xs text-pink-400 mt-1">{msg.ts}</div>
                 </div>
               </div>
             ) : (
@@ -228,7 +228,7 @@ export default function Index() {
           )}
           {waiting && (
             <div className="flex items-start mb-3 gap-3" aria-live="polite" aria-label="Bot is typing">
-              <div className="bg-white border px-3 py-2 rounded-lg">
+              <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg">
                 <span className="dot" />
                 <span className="dot" />
                 <span className="dot" />
@@ -247,7 +247,7 @@ export default function Index() {
           autoComplete="off"
         >
           <button type="button" className="p-2 rounded-full hover:bg-slate-100" onClick={() => uploadRef.current?.click()} aria-label="Attach image">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828L21 9.828V7h-5.828z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h7" />
             </svg>
@@ -260,10 +260,10 @@ export default function Index() {
             onKeyDown={handleKeyDown}
             placeholder="Ketik pesan…"
             disabled={waiting}
-            className="flex-1 resize-none p-2 rounded-md border bg-white min-h-[40px] max-h-32 overflow-y-auto"
+            className="flex-1 resize-none p-2 rounded-md border border-pink-200 bg-white min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-pink-200"
           />
 
-          <button type="submit" disabled={waiting || !input.trim()} className="p-2 rounded-full bg-green-500 text-white disabled:opacity-50">
+          <button type="submit" disabled={waiting || !input.trim()} className="p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white disabled:opacity-50">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2.94 2.94a1.5 1.5 0 012.12 0L17 14.88V17a1 1 0 01-1 1h-2.12L2.94 5.06a1.5 1.5 0 010-2.12z" />
             </svg>

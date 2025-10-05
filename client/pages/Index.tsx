@@ -492,14 +492,14 @@ export default function Index() {
                 Radut Agent
               </h1>
             </motion.header>
-            <div className="chat-box px-6 py-6 flex-1 overflow-y-auto bg-transparent">
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => {
                   if (msg.from === "user") {
                     return (
                       <motion.div
                         key={`u-${i}`}
-                        className="flex justify-end mb-3"
+                        className="flex justify-end mb-3 px-3 md:px-8"
                         initial={{ opacity: 0, x: 24 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 24 }}
@@ -523,7 +523,7 @@ export default function Index() {
                     return (
                       <motion.div
                         key={`b-${i}`}
-                        className="flex items-start mb-2 gap-2"
+                        className="flex items-start mb-2 gap-2 px-3 md:px-8"
                         initial={{ opacity: 0, x: -24 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -24 }}
@@ -546,7 +546,7 @@ export default function Index() {
                   return (
                     <motion.div
                       key={`img-${i}`}
-                      className="flex justify-end mb-3"
+                      className="flex justify-end mb-3 px-3 md:px-8"
                       initial={{ opacity: 0, scale: 0.96, x: 12 }}
                       animate={{ opacity: 1, scale: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.96, x: 12 }}
@@ -575,7 +575,7 @@ export default function Index() {
               <AnimatePresence>
                 {waiting && (
                   <motion.div
-                    className="flex items-start mb-2 gap-2"
+                    className="flex items-start mb-2 gap-2 px-3 md:px-8"
                     aria-live="polite"
                     aria-label="Bot is typing"
                     initial={{ opacity: 0 }}

@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { deterministicRouter, InputStruct, RECOMMENDATIONS } from "../../shared/router";
+import { deterministicRouter, InputStruct, RECOMMENDATIONS } from "../../shared/router.js";
 
 export const handleDeterministicRoute: RequestHandler = async (req, res) => {
   try {

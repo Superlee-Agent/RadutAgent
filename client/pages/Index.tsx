@@ -22,11 +22,19 @@ export default function Index() {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const isMobileRef = useRef(false);
+
+  useEffect(() => {
+    // detect mobile once on mount
+    if (typeof window !== "undefined") {
+      isMobileRef.current = window.matchMedia("(max-width: 767px)").matches;
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-    // autofocus input when not waiting
-    if (!waiting) inputRef.current?.focus?.();
+    // avoid auto-focus on mobile to prevent viewport jump
+    if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
   function scrollToBottom() {

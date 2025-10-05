@@ -198,7 +198,7 @@ export default function Index() {
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-8 px-4">
       <div className="chat-wrap max-w-2xl mx-auto shadow-lg rounded-md overflow-hidden bg-white">
         <header className="flex items-center gap-3 px-4 py-3 border-b">
-          <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">G</div>
+          <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="GradutBot" className="w-10 h-10 rounded-full object-cover" />
           <h1 className="text-lg font-semibold tracking-tight">GradutBot</h1>
         </header>
         <div className="chat-box p-4 h-[60vh] overflow-y-auto bg-slate-50">

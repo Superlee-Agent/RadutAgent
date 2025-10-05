@@ -18,6 +18,7 @@ export default function Index() {
   ]);
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
@@ -374,10 +375,100 @@ export default function Index() {
           </div>
         </aside>
 
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-50 md:hidden flex">
+            <div
+              className="fixed inset-0 bg-black/40"
+              onClick={() => setSidebarOpen(false)}
+            />
+            <aside className="relative w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full overflow-y-auto border-r border-pink-100">
+              <div className="flex items-center w-full mt-0 justify-between">
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 rounded-md text-pink-700"
+                >
+                  ✕
+                </button>
+                <button
+                  onClick={handleNewChat}
+                  className="py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm"
+                >
+                  + New chat
+                </button>
+              </div>
+              <h2 className="mt-4 text-sm font-semibold text-pink-700">
+                History
+              </h2>
+              <div className="mt-2 flex-1 space-y-2 w-full">
+                {sessions.length === 0 ? (
+                  <div className="text-sm text-pink-600">
+                    Belum ada riwayat chat
+                  </div>
+                ) : (
+                  sessions.map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-center justify-between p-2 w-full rounded-md hover:bg-pink-100"
+                    >
+                      <button
+                        className="text-left text-sm text-pink-700 truncate w-full"
+                        onClick={() => {
+                          loadSession(s.id);
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        {s.title}
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            loadSession(s.id);
+                            setSidebarOpen(false);
+                          }}
+                          className="text-xs text-pink-600"
+                        >
+                          Open
+                        </button>
+                        <button
+                          onClick={() => deleteSession(s.id)}
+                          className="text-xs text-slate-400"
+                        >
+                          Del
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </aside>
+          </div>
+        )}
+
         {/* Main chat area */}
         <main className="flex-1 flex justify-center">
           <div className="chat-wrap w-full h-full flex flex-col bg-white">
             <header className="flex items-center gap-3 px-4 py-2 border-b border-pink-200 bg-white">
+              <button
+                type="button"
+                className="md:hidden p-2 rounded-md"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open sidebar"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-pink-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800"
                 alt="Radut Agent"

@@ -1,11 +1,16 @@
 import { RequestHandler } from "express";
-import { deterministicRouter, InputStruct, RECOMMENDATIONS } from "../../shared/router";
+import {
+  deterministicRouter,
+  InputStruct,
+  RECOMMENDATIONS,
+} from "../../shared/router.js";
 
 export const handleDeterministicRoute: RequestHandler = async (req, res) => {
   try {
     const data = req.body as InputStruct;
     const code = deterministicRouter(data);
-    const recommendation = RECOMMENDATIONS[code] ?? RECOMMENDATIONS["Jawaban 1"];
+    const recommendation =
+      RECOMMENDATIONS[code] ?? RECOMMENDATIONS["Jawaban 1"];
     // include source to indicate AI/Human detection and also the original confidences
     const { source, conf_source, conf_animation, conf_face, conf_brand } = data;
     res.status(200).json({

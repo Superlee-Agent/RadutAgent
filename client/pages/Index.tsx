@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
+type BotMessage = {
+  from: "bot";
+  text: string;
+  ts?: string;
+  verification?: string | null;
+};
+
 type Message =
   | { from: "user"; text: string; ts?: string }
-  | { from: "bot"; text: string; ts?: string }
+  | BotMessage
   | { from: "user-image"; url: string; ts?: string };
 
 export default function Index() {
@@ -244,9 +251,21 @@ export default function Index() {
 
       const parsed = data?.parsed;
       let display = "(No analysis result)";
+      let verification: string | undefined;
+
       if (parsed && typeof parsed === "object") {
-        const reason = parsed.reason ?? null;
+        const reason =
+          typeof parsed.reason === "string" ? parsed.reason.trim() : "";
         display = reason || "(No analysis result)";
+
+        const finalAnswer =
+          typeof parsed.selected_answer === "number" &&
+          Number.isInteger(parsed.selected_answer)
+            ? parsed.selected_answer
+            : null;
+        if (finalAnswer != null) {
+          verification = `Verifikasi akhir: Jawaban ${finalAnswer}`;
+        }
       } else {
         const rawText = data?.raw ? String(data.raw).trim() : "";
         display = rawText || "(No analysis result)";
@@ -255,6 +274,7 @@ export default function Index() {
       pushMessage({
         from: "bot",
         text: display,
+        verification,
         ts: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -614,7 +634,12 @@ export default function Index() {
                         layout
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
-                          {msg.text}
+                          <div>{msg.text}</div>
+                          {msg.verification ? (
+                            <div className="mt-2 text-xs text-slate-400">
+                              {msg.verification}
+                            </div>
+                          ) : null}
                         </div>
                       </motion.div>
                     );

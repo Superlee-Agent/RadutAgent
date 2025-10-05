@@ -228,14 +228,27 @@ textarea:focus {
 .chat-input input[type="text"] {
   background: #fff; /* same as agent bubble */
   border: 1px solid rgba(15, 23, 42, 0.06); /* lighter border like message bubble */
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); /* compact, subtle shadow matching bubble */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important; /* compact, subtle shadow matching bubble */
   transform: none !important; /* prevent lift */
+  outline: none !important;
+  --tw-ring-color: transparent !important;
 }
 
 .chat-input textarea:focus,
 .chat-input input[type="text"]:focus {
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* Also disable focus-visible ring utility if present */
+.chat-input textarea:focus-visible,
+.chat-input input[type="text"]:focus-visible {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  outline: none !important;
+  --tw-ring-color: transparent !important;
 }
 button {
   font-weight: 600;

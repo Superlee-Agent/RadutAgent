@@ -411,7 +411,7 @@ export default function Index() {
                       <img
                         src={msg.url}
                         alt="Upload"
-                        className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-pink-100"
+                        className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-pink-300"
                       />
                       <div className="text-xs text-slate-400 mt-1 text-right">
                         {msg.ts}

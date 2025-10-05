@@ -325,32 +325,32 @@ export default function Index() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white p-0 md:p-0 md:overflow-hidden">
+    <div className="h-screen bg-slate-50 p-0 md:p-0 md:overflow-hidden">
       <div className="w-full h-full flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
-        <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-pink-100">
+        <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
           <div className="flex items-center w-full mt-0">
             <button
               onClick={handleNewChat}
-              className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm text-left"
+              className="w-full py-3 px-4 bg-rose-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm"
             >
               + New chat
             </button>
           </div>
-          <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
+          <h2 className="mt-6 text-sm font-semibold text-slate-700">History</h2>
           <div className="mt-2 flex-1 space-y-2 w-full">
             {sessions.length === 0 ? (
-              <div className="text-sm text-pink-600">
+              <div className="text-sm text-slate-500">
                 Belum ada riwayat chat
               </div>
             ) : (
               sessions.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-pink-100"
+                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50"
                 >
                   <button
-                    className="text-left text-sm text-pink-700 truncate w-full"
+                    className="text-left text-sm text-slate-800 truncate w-full"
                     onClick={() => loadSession(s.id)}
                   >
                     {s.title}
@@ -358,7 +358,7 @@ export default function Index() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => loadSession(s.id)}
-                      className="text-xs text-pink-600"
+                      className="text-xs text-rose-600"
                     >
                       Open
                     </button>
@@ -381,37 +381,37 @@ export default function Index() {
               className="fixed inset-0 bg-black/40"
               onClick={() => setSidebarOpen(false)}
             />
-            <aside className="relative w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full overflow-y-auto border-r border-pink-100">
+            <aside className="relative w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full overflow-y-auto border-r border-slate-100">
               <div className="flex items-center w-full mt-0 justify-between">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-md text-pink-700"
+                  className="p-2 rounded-md text-slate-700"
                 >
                   ✕
                 </button>
                 <button
                   onClick={handleNewChat}
-                  className="py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm"
+                  className="py-2 px-3 bg-rose-600 text-white rounded-md font-semibold text-sm"
                 >
                   + New chat
                 </button>
               </div>
-              <h2 className="mt-4 text-sm font-semibold text-pink-700">
+              <h2 className="mt-6 text-sm font-semibold text-slate-700">
                 History
               </h2>
               <div className="mt-2 flex-1 space-y-2 w-full">
                 {sessions.length === 0 ? (
-                  <div className="text-sm text-pink-600">
+                  <div className="text-sm text-slate-500">
                     Belum ada riwayat chat
                   </div>
                 ) : (
                   sessions.map((s) => (
                     <div
                       key={s.id}
-                      className="flex items-center justify-between p-2 w-full rounded-md hover:bg-pink-100"
+                      className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50"
                     >
                       <button
-                        className="text-left text-sm text-pink-700 truncate w-full"
+                        className="text-left text-sm text-slate-800 truncate w-full"
                         onClick={() => {
                           loadSession(s.id);
                           setSidebarOpen(false);
@@ -425,7 +425,7 @@ export default function Index() {
                             loadSession(s.id);
                             setSidebarOpen(false);
                           }}
-                          className="text-xs text-pink-600"
+                          className="text-xs text-rose-600"
                         >
                           Open
                         </button>
@@ -445,9 +445,9 @@ export default function Index() {
         )}
 
         {/* Main chat area */}
-        <main className="flex-1 flex justify-center">
-          <div className="chat-wrap w-full h-full flex flex-col bg-white">
-            <header className="flex items-center gap-3 px-4 py-2 border-b border-pink-200 bg-white">
+        <main className="flex-1 flex">
+          <div className="chat-wrap w-full h-full flex flex-col bg-transparent">
+            <header className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent">
               <button
                 type="button"
                 className="md:hidden p-2 rounded-md"
@@ -456,7 +456,7 @@ export default function Index() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-pink-700"
+                  className="h-6 w-6 text-slate-700"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -472,28 +472,30 @@ export default function Index() {
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800"
                 alt="Radut Agent"
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200"
+                className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
               />
-              <h1 className="text-lg font-semibold tracking-tight text-pink-700">
+              <h1 className="text-lg font-semibold tracking-tight text-slate-900">
                 Radut Agent
               </h1>
             </header>
-            <div className="chat-box px-6 py-4 flex-1 overflow-y-auto bg-pink-50">
+            <div className="chat-box px-6 py-6 flex-1 overflow-y-auto bg-transparent">
               {messages.map((msg, i) =>
                 msg.from === "user" ? (
                   <div key={i} className="flex justify-end mb-3">
-                    <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg max-w-[70%] break-words">
+                    <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
                       {msg.text}
-                      <div className="text-xs text-pink-100 mt-1 text-right">
+                      <div className="text-xs text-slate-500 mt-1 text-right">
                         {msg.ts}
                       </div>
                     </div>
                   </div>
                 ) : msg.from === "bot" ? (
                   <div key={i} className="flex items-start mb-2 gap-2">
-                    <div className="bg-white border border-pink-200 px-4 py-2 rounded-lg max-w-[70%] break-words">
+                    <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
                       {msg.text}
-                      <div className="text-xs text-pink-400 mt-1">{msg.ts}</div>
+                      <div className="text-xs text-slate-400 mt-1">
+                        {msg.ts}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -502,7 +504,7 @@ export default function Index() {
                       <img
                         src={msg.url}
                         alt="Upload"
-                        className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-pink-300"
+                        className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
                       />
                       <div className="text-xs text-slate-400 mt-1 text-right">
                         {msg.ts}
@@ -517,7 +519,7 @@ export default function Index() {
                   aria-live="polite"
                   aria-label="Bot is typing"
                 >
-                  <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg">
+                  <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
                     <span className="dot" />
                     <span className="dot" />
                     <span className="dot" />
@@ -528,7 +530,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-2 px-4 py-3 border-t bg-white flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t bg-transparent flex-none sticky bottom-0 z-10"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
@@ -543,7 +545,7 @@ export default function Index() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-pink-600"
+                  className="h-6 w-6 text-slate-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -570,13 +572,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-2 rounded-md border border-pink-200 bg-white min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-pink-200"
+                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white disabled:opacity-50"
+                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

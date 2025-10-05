@@ -383,8 +383,8 @@ export default function Index() {
             ? parsed.selected_answer
             : null;
         if (finalAnswer != null) {
-          const label = ANSWER_LABELS[finalAnswer] ?? `Jawaban ${finalAnswer}`;
-          verification = `Verifikasi akhir: ${label}`;
+          const label = ANSWER_LABELS[finalAnswer] ?? `Kelompok ${finalAnswer}`;
+          verification = { label, code: finalAnswer };
         }
       } else {
         const rawText = data?.raw ? String(data.raw).trim() : "";

@@ -328,7 +328,7 @@ export default function Index() {
     <div className="h-screen bg-slate-50 p-0 md:p-0 md:overflow-hidden">
       <div className="w-full h-full flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
-        <aside className="hidden md:flex flex-col w-64 bg-white text-slate-700 pt-4 pb-6 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100 shadow-sm">
+        <aside className="hidden md:flex flex-col w-64 bg-white text-slate-700 pt-2 pb-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100 shadow-sm">
           <div className="flex items-center w-full mt-0">
             <button
               onClick={handleNewChat}
@@ -381,7 +381,7 @@ export default function Index() {
               className="fixed inset-0 bg-black/40"
               onClick={() => setSidebarOpen(false)}
             />
-            <aside className="relative w-64 bg-white text-slate-700 pt-4 pb-6 px-4 h-full overflow-y-auto border-r border-slate-100">
+            <aside className="relative w-64 bg-white text-slate-700 pt-2 pb-4 px-4 h-full overflow-y-auto border-r border-slate-100">
               <div className="flex items-center w-full mt-0 justify-between">
                 <button
                   onClick={() => setSidebarOpen(false)}

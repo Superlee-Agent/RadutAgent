@@ -37,7 +37,7 @@ const ANSWER_DETAILS: Record<
   }
 > = {
   1: {
-    jenis: "AI",
+    jenis: "AI Generated",
     keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
     statusRegistrasi: "✅ Diizinkan",
     aksi: "-",
@@ -46,7 +46,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
   2: {
-    jenis: "AI",
+    jenis: "AI Generated",
     keterangan:
       "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
     statusRegistrasi: "❌ Tidak diizinkan",
@@ -55,7 +55,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "-",
   },
   3: {
-    jenis: "AI",
+    jenis: "AI Generated",
     keterangan:
       "Mengandung wajah manusia biasa (tidak terkenal)",
     statusRegistrasi:
@@ -65,7 +65,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
   4: {
-    jenis: "Manusia",
+    jenis: "Human Generated",
     keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
     statusRegistrasi: "✅ Diizinkan",
     aksi: "-",
@@ -74,7 +74,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "✅ Diizinkan (manual setting)",
   },
   5: {
-    jenis: "Manusia",
+    jenis: "Human Generated",
     keterangan:
       "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
     statusRegistrasi: "❌ Tidak diizinkan",
@@ -83,7 +83,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "-",
   },
   6: {
-    jenis: "Manusia",
+    jenis: "Human Generated",
     keterangan:
       "Mengandung wajah manusia biasa (bukan selebriti atau karakter terkenal)",
     statusRegistrasi:
@@ -93,7 +93,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "✅ Diizinkan (manual setting)",
   },
   7: {
-    jenis: "AI (Animasi)",
+    jenis: "AI Generated (Animasi)",
     keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
     statusRegistrasi: "✅ Diizinkan",
     aksi: "-",
@@ -102,7 +102,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
   8: {
-    jenis: "AI (Animasi)",
+    jenis: "AI Generated (Animasi)",
     keterangan:
       "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
     statusRegistrasi: "❌ Tidak diizinkan",
@@ -111,7 +111,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: "-",
   },
   9: {
-    jenis: "AI (Animasi)",
+    jenis: "AI Generated (Animasi)",
     keterangan:
       "Mengandung wajah manusia biasa (tidak terkenal)",
     statusRegistrasi:

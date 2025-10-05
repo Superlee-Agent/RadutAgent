@@ -334,7 +334,9 @@ export default function Index() {
           <h2 className="mt-6 text-sm font-semibold text-slate-700">History</h2>
           <div className="mt-2 flex-1 space-y-2 w-full">
             {sessions.length === 0 ? (
-              <div className="text-sm text-slate-500">Belum ada riwayat chat</div>
+              <div className="text-sm text-slate-500">
+                Belum ada riwayat chat
+              </div>
             ) : (
               sessions.map((s) => (
                 <div
@@ -403,10 +405,14 @@ export default function Index() {
                     + New chat
                   </button>
                 </div>
-                <h2 className="mt-6 text-sm font-semibold text-slate-700">History</h2>
+                <h2 className="mt-6 text-sm font-semibold text-slate-700">
+                  History
+                </h2>
                 <div className="mt-2 flex-1 space-y-2 w-full">
                   {sessions.length === 0 ? (
-                    <div className="text-sm text-slate-500">Belum ada riwayat chat</div>
+                    <div className="text-sm text-slate-500">
+                      Belum ada riwayat chat
+                    </div>
                   ) : (
                     sessions.map((s) => (
                       <div
@@ -482,7 +488,9 @@ export default function Index() {
                 alt="Radut Agent"
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
               />
-              <h1 className="text-lg font-semibold tracking-tight text-slate-900">Radut Agent</h1>
+              <h1 className="text-lg font-semibold tracking-tight text-slate-900">
+                Radut Agent
+              </h1>
             </motion.header>
             <div className="chat-box px-6 py-6 flex-1 overflow-y-auto bg-transparent">
               <AnimatePresence initial={false}>
@@ -495,12 +503,18 @@ export default function Index() {
                         initial={{ opacity: 0, x: 24 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 24 }}
-                        transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 340,
+                          damping: 26,
+                        }}
                         layout
                       >
                         <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
-                          <div className="text-xs text-slate-500 mt-1 text-right">{msg.ts}</div>
+                          <div className="text-xs text-slate-500 mt-1 text-right">
+                            {msg.ts}
+                          </div>
                         </div>
                       </motion.div>
                     );
@@ -513,12 +527,18 @@ export default function Index() {
                         initial={{ opacity: 0, x: -24 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -24 }}
-                        transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 340,
+                          damping: 26,
+                        }}
                         layout
                       >
                         <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
-                          <div className="text-xs text-slate-400 mt-1">{msg.ts}</div>
+                          <div className="text-xs text-slate-400 mt-1">
+                            {msg.ts}
+                          </div>
                         </div>
                       </motion.div>
                     );
@@ -530,7 +550,11 @@ export default function Index() {
                       initial={{ opacity: 0, scale: 0.96, x: 12 }}
                       animate={{ opacity: 1, scale: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.96, x: 12 }}
-                      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 320,
+                        damping: 22,
+                      }}
                       layout
                     >
                       <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
@@ -539,7 +563,9 @@ export default function Index() {
                           alt="Upload"
                           className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
                         />
-                        <div className="text-xs text-slate-400 mt-1 text-right">{msg.ts}</div>
+                        <div className="text-xs text-slate-400 mt-1 text-right">
+                          {msg.ts}
+                        </div>
                       </div>
                     </motion.div>
                   );

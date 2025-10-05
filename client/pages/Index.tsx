@@ -757,7 +757,14 @@ export default function Index() {
                           <div>{msg.text}</div>
                           {msg.verification ? (
                             <div className="mt-2 text-xs text-slate-400">
-                              {msg.verification}
+                              Verifikasi akhir:{" "}
+                              <button
+                                type="button"
+                                onClick={() => setActiveDetail(msg.verification!.code)}
+                                className="text-blue-600 underline font-semibold hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+                              >
+                                {msg.verification.label}
+                              </button>
                             </div>
                           ) : null}
                         </div>

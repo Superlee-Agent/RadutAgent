@@ -23,7 +23,8 @@ export default function Index() {
 
   // Assistant selection / popover
   const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
-  const [selectedAssistant, setSelectedAssistant] = useState<string>("IP Assistant");
+  const [selectedAssistant, setSelectedAssistant] =
+    useState<string>("IP Assistant");
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
     { id: "ip", label: "IP Assistant" },
@@ -527,7 +528,12 @@ export default function Index() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 

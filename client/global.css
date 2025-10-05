@@ -199,7 +199,10 @@ textarea {
   border-radius: 12px;
   border: 1px solid rgba(15, 23, 42, 0.22);
   background: #fff;
-  transition: box-shadow 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  transition:
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
   outline: none;
   /* shadow reduced by ~60% earlier; now reduce darkness by 40% (lower alpha) */
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.11);
@@ -239,10 +242,12 @@ textarea:focus {
 .chat-input input[type="text"]:focus,
 .chat-input textarea:focus-visible,
 .chat-input input[type="text"]:focus-visible {
-  border-color: rgba(190,24,93,0.28) !important; /* subtle pink border */
+  border-color: rgba(190, 24, 93, 0.28) !important; /* subtle pink border */
   outline: none !important;
   /* base subtle shadow + thin pink ring */
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important, 0 0 0 3px rgba(190,24,93,0.08) !important;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06) !important,
+    0 0 0 3px rgba(190, 24, 93, 0.08) !important;
 }
 
 /* active state matches focus (no pink) */

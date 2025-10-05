@@ -237,10 +237,10 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white py-8 px-4 md:overflow-hidden">
-      <div className="max-w-6xl mx-auto flex gap-6">
+    <div className="min-h-screen md:h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white py-8 px-4 md:overflow-hidden">
+      <div className="max-w-6xl mx-auto flex gap-6 h-full">
         {/* Sidebar - visible on md+ */}
-        <aside className="hidden md:flex flex-col w-72 bg-white rounded-md shadow p-4 h-[80vh] overflow-y-auto">
+        <aside className="hidden md:flex flex-col w-72 bg-white rounded-md shadow p-4 h-screen sticky top-0 overflow-y-auto">
           <button onClick={handleNewChat} className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold">New Chat</button>
           <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
           <div className="mt-2 flex-1 space-y-2">
@@ -264,12 +264,12 @@ export default function Index() {
 
         {/* Main chat area */}
         <main className="flex-1">
-          <div className="chat-wrap max-w-full mx-auto shadow-lg rounded-md overflow-hidden bg-white ring-1 ring-pink-50">
+          <div className="chat-wrap max-w-full mx-auto shadow-lg rounded-md overflow-hidden bg-white ring-1 ring-pink-50 h-screen flex flex-col">
             <header className="flex items-center gap-3 px-4 py-3 border-b border-pink-200 bg-white">
               <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
               <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
             </header>
-            <div className="chat-box p-4 h-[60vh] overflow-y-auto bg-slate-50">
+            <div className="chat-box p-4 flex-1 overflow-y-auto bg-slate-50">
               {messages.map((msg, i) =>
                 msg.from === "user" ? (
                   <div key={i} className="flex justify-end mb-3">
@@ -307,7 +307,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-2 p-3 border-t"
+              className="chat-input flex items-center gap-2 p-3 border-t bg-white flex-none"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();

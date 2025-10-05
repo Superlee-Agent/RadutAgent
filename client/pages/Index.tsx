@@ -371,7 +371,7 @@ export default function Index() {
 
       const parsed = data?.parsed;
       let display = "(No analysis result)";
-      let verification: { label: string; code: number } | undefined;
+      let verification: { label: string; code: number } | string | undefined;
 
       if (parsed && typeof parsed === "object") {
         const reason =

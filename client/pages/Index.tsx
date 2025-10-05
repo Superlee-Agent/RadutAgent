@@ -22,11 +22,19 @@ export default function Index() {
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const isMobileRef = useRef(false);
+
+  useEffect(() => {
+    // detect mobile once on mount
+    if (typeof window !== "undefined") {
+      isMobileRef.current = window.matchMedia("(max-width: 767px)").matches;
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-    // autofocus input when not waiting
-    if (!waiting) inputRef.current?.focus?.();
+    // avoid auto-focus on mobile to prevent viewport jump
+    if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
   function scrollToBottom() {
@@ -325,8 +333,8 @@ export default function Index() {
   }
 
   return (
-    <div className="h-screen bg-slate-50 p-0 md:p-0 md:overflow-hidden">
-      <div className="w-full h-full flex gap-0 items-stretch">
+    <div className="min-h-[100dvh] bg-slate-50 p-0 md:p-0 md:overflow-hidden">
+      <div className="w-full h-full min-h-0 flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
         <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
           <div className="flex items-center w-full mt-0">
@@ -445,8 +453,8 @@ export default function Index() {
         )}
 
         {/* Main chat area */}
-        <main className="flex-1 flex">
-          <div className="chat-wrap w-full h-full flex flex-col bg-transparent">
+        <main className="flex-1 flex min-h-0">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-transparent">
             <header className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent">
               <button
                 type="button"

@@ -272,9 +272,7 @@ button[disabled] {
     touch-action: pan-y;
   }
   .chat-wrap {
-    height: calc(
-      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-    );
+    height: 100dvh;
     min-height: 100dvh;
     overflow: hidden;
     display: flex;
@@ -289,8 +287,9 @@ button[disabled] {
   .chat-input {
     padding-left: 12px;
     padding-right: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), #fff);
+    background: transparent;
   }
   textarea {
     min-height: 48px;

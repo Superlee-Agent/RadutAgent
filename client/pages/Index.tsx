@@ -23,10 +23,10 @@ export default function Index() {
 
   // Assistant selection / popover
   const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
-  const [selectedAssistant, setSelectedAssistant] = useState<string>("IP Assistant v");
+  const [selectedAssistant, setSelectedAssistant] = useState<string>("IP Assistant");
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
-    { id: "ip", label: "IP Assistant v" },
+    { id: "ip", label: "IP Assistant" },
     { id: "defi", label: "DeFi Assistant (Soon)", soon: true },
     { id: "nft", label: "NFT (Soon)", soon: true },
   ];

@@ -36,6 +36,7 @@ export default function Index() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const isMobileRef = useRef(false);
+  const autoScrollNextRef = useRef(true);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -57,7 +58,10 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    if (autoScrollNextRef.current) {
+      scrollToBottom();
+    }
+    autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
@@ -185,6 +189,7 @@ export default function Index() {
           minute: "2-digit",
         }),
       });
+      autoScrollNextRef.current = true;
       setWaiting(true);
 
       let blob: Blob;
@@ -207,6 +212,7 @@ export default function Index() {
       });
       if (analyz.status === 413) {
         const json = await analyz.json().catch(() => ({}));
+        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: "Gambar terlalu besar, coba kompres/resize sebelum unggah.",
@@ -216,12 +222,12 @@ export default function Index() {
           }),
         });
         setWaiting(false);
-        scrollToBottom();
         return;
       }
       if (!analyz.ok) {
         const txt = await analyz.text().catch(() => "");
         console.error("/api/analyze failed:", analyz.status, txt);
+        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: "Gagal analisa gambar.",
@@ -231,7 +237,6 @@ export default function Index() {
           }),
         });
         setWaiting(false);
-        scrollToBottom();
         return;
       }
 
@@ -246,6 +251,7 @@ export default function Index() {
         const rawText = data?.raw ? String(data.raw).trim() : "";
         display = rawText || "(No analysis result)";
       }
+      autoScrollNextRef.current = false;
       pushMessage({
         from: "bot",
         text: display,
@@ -269,6 +275,7 @@ export default function Index() {
       const msg = err?.message
         ? `Gagal analisa gambar: ${err.message}`
         : "Gagal analisa gambar.";
+      autoScrollNextRef.current = false;
       pushMessage({
         from: "bot",
         text: msg,
@@ -279,7 +286,6 @@ export default function Index() {
       });
     } finally {
       setWaiting(false);
-      scrollToBottom();
     }
   }
 

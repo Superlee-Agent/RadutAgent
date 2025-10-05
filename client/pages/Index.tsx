@@ -498,7 +498,7 @@ export default function Index() {
                         transition={{ type: "spring", stiffness: 340, damping: 26 }}
                         layout
                       >
-                        <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
+                        <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
                           <div className="text-xs text-slate-500 mt-1 text-right">{msg.ts}</div>
                         </div>
@@ -516,7 +516,7 @@ export default function Index() {
                         transition={{ type: "spring", stiffness: 340, damping: 26 }}
                         layout
                       >
-                        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
+                        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
                           <div className="text-xs text-slate-400 mt-1">{msg.ts}</div>
                         </div>
@@ -533,7 +533,7 @@ export default function Index() {
                       transition={{ type: "spring", stiffness: 320, damping: 22 }}
                       layout
                     >
-                      <div className="rounded-md overflow-hidden max-w-[70%]">
+                      <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
                         <img
                           src={msg.url}
                           alt="Upload"

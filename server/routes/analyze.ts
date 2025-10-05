@@ -191,39 +191,49 @@ function normalizeCount(value: any): number | null {
   return int;
 }
 
-function normalizeAnalysis(raw: any): { analysis: AnalysisNormalized; issues: string[] } {
+function normalizeAnalysis(raw: any): {
+  analysis: AnalysisNormalized;
+  issues: string[];
+} {
   const issues: string[] = [];
-  const sceneSummary = typeof raw?.scene_summary === "string" ? raw.scene_summary.trim() : "";
+  const sceneSummary =
+    typeof raw?.scene_summary === "string" ? raw.scene_summary.trim() : "";
   if (!sceneSummary) issues.push("analysis.scene_summary_missing");
 
   const sourceAssessment = raw?.source_assessment ?? {};
-  const primarySourceRaw = typeof sourceAssessment.primary_source === "string"
-    ? sourceAssessment.primary_source.trim()
-    : "";
+  const primarySourceRaw =
+    typeof sourceAssessment.primary_source === "string"
+      ? sourceAssessment.primary_source.trim()
+      : "";
   const primarySource = ALLOWED_SOURCE_LABELS.has(primarySourceRaw as any)
     ? (primarySourceRaw as AnalysisNormalized["source_primary"])
     : "Unknown";
-  if (primarySource === "Unknown") issues.push("analysis.primary_source_unknown");
+  if (primarySource === "Unknown")
+    issues.push("analysis.primary_source_unknown");
   const aiScore = normalizeScore(sourceAssessment.ai_score);
   const humanScore = normalizeScore(sourceAssessment.human_score);
   const animationScore = normalizeScore(sourceAssessment.animation_score);
 
   const faces = raw?.faces ?? {};
-  const presenceRaw = typeof faces.presence === "string" ? faces.presence.trim() : "";
+  const presenceRaw =
+    typeof faces.presence === "string" ? faces.presence.trim() : "";
   const facesPresence = ALLOWED_FACE_TYPES.has(presenceRaw as any)
     ? (presenceRaw as AnalysisNormalized["faces_presence"])
     : "Unknown";
-  if (facesPresence === "Unknown") issues.push("analysis.faces_presence_unknown");
+  if (facesPresence === "Unknown")
+    issues.push("analysis.faces_presence_unknown");
   const facesCount = normalizeCount(faces.count);
   const facesEvidence = normalizeTextArray(faces.evidence);
   const brand = raw?.brand ?? {};
-  const brandPresent = typeof brand.present === "boolean" ? brand.present : null;
+  const brandPresent =
+    typeof brand.present === "boolean" ? brand.present : null;
   if (brandPresent === null) issues.push("analysis.brand_present_missing");
   const brandNames = normalizeTextArray(brand.names);
   const brandEvidence = normalizeTextArray(brand.evidence);
 
   const animation = raw?.animation ?? {};
-  const animationIs = typeof animation.is_animation === "boolean" ? animation.is_animation : null;
+  const animationIs =
+    typeof animation.is_animation === "boolean" ? animation.is_animation : null;
   if (animationIs === null) issues.push("analysis.animation_missing");
   const animationEvidence = normalizeTextArray(animation.evidence);
 
@@ -233,7 +243,11 @@ function normalizeAnalysis(raw: any): { analysis: AnalysisNormalized; issues: st
 
   let recommendedAnswer: number | null = null;
   if (typeof raw?.recommended_answer === "number") {
-    if (Number.isInteger(raw.recommended_answer) && raw.recommended_answer >= 1 && raw.recommended_answer <= 9) {
+    if (
+      Number.isInteger(raw.recommended_answer) &&
+      raw.recommended_answer >= 1 &&
+      raw.recommended_answer <= 9
+    ) {
       recommendedAnswer = raw.recommended_answer;
     } else {
       issues.push("analysis.recommended_answer_out_of_range");
@@ -244,9 +258,10 @@ function normalizeAnalysis(raw: any): { analysis: AnalysisNormalized; issues: st
     issues.push("analysis.recommended_answer_invalid");
   }
 
-  const recommendedReason = typeof raw?.recommended_reason === "string"
-    ? raw.recommended_reason.trim() || null
-    : null;
+  const recommendedReason =
+    typeof raw?.recommended_reason === "string"
+      ? raw.recommended_reason.trim() || null
+      : null;
 
   const analysis: AnalysisNormalized = {
     scene_summary: sceneSummary,
@@ -277,25 +292,33 @@ function normalizeAnalysis(raw: any): { analysis: AnalysisNormalized; issues: st
 
 function extractVerdictExtras(raw: any): VerdictExtras {
   const decisionNotes = normalizeTextArray(raw?.decision_notes).slice(0, 6);
-  const consistencyWarnings = normalizeTextArray(raw?.consistency_warnings).slice(0, 6);
+  const consistencyWarnings = normalizeTextArray(
+    raw?.consistency_warnings,
+  ).slice(0, 6);
   const diagnostics = raw?.diagnostics ?? {};
 
-  const faceTypeRaw = typeof diagnostics.face_type === "string" ? diagnostics.face_type.trim() : null;
-  const faceType = faceTypeRaw && ALLOWED_FACE_TYPES.has(faceTypeRaw as any)
-    ? (faceTypeRaw as VerdictExtras["diagnostics"]["face_type"])
-    : null;
-  const hasBrand = typeof diagnostics.has_brand === "boolean"
-    ? diagnostics.has_brand
-    : null;
-  const isAnimation = typeof diagnostics.is_animation === "boolean"
-    ? diagnostics.is_animation
-    : null;
-  const sourceLabelRaw = typeof diagnostics.source_label === "string"
-    ? diagnostics.source_label.trim()
-    : null;
-  const sourceLabel = sourceLabelRaw && ALLOWED_SOURCE_LABELS.has(sourceLabelRaw as any)
-    ? (sourceLabelRaw as VerdictExtras["diagnostics"]["source_label"])
-    : null;
+  const faceTypeRaw =
+    typeof diagnostics.face_type === "string"
+      ? diagnostics.face_type.trim()
+      : null;
+  const faceType =
+    faceTypeRaw && ALLOWED_FACE_TYPES.has(faceTypeRaw as any)
+      ? (faceTypeRaw as VerdictExtras["diagnostics"]["face_type"])
+      : null;
+  const hasBrand =
+    typeof diagnostics.has_brand === "boolean" ? diagnostics.has_brand : null;
+  const isAnimation =
+    typeof diagnostics.is_animation === "boolean"
+      ? diagnostics.is_animation
+      : null;
+  const sourceLabelRaw =
+    typeof diagnostics.source_label === "string"
+      ? diagnostics.source_label.trim()
+      : null;
+  const sourceLabel =
+    sourceLabelRaw && ALLOWED_SOURCE_LABELS.has(sourceLabelRaw as any)
+      ? (sourceLabelRaw as VerdictExtras["diagnostics"]["source_label"])
+      : null;
   const confidence = normalizeScore(diagnostics.confidence);
 
   return {
@@ -329,7 +352,9 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     const MAX_ACCEPT = 8 * 1024 * 1024;
     if (file.size > MAX_ACCEPT)
-      return res.status(413).json({ error: "file_too_large", maxSize: MAX_ACCEPT });
+      return res
+        .status(413)
+        .json({ error: "file_too_large", maxSize: MAX_ACCEPT });
 
     const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 
@@ -338,7 +363,8 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     const extractText = (r: any) => {
       if (!r) return "";
-      if (typeof r.output_text === "string" && r.output_text.trim()) return r.output_text;
+      if (typeof r.output_text === "string" && r.output_text.trim())
+        return r.output_text;
       if (Array.isArray(r.output) && r.output.length > 0) {
         for (const o of r.output) {
           if (o?.content && Array.isArray(o.content)) {
@@ -405,13 +431,25 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       }
     };
 
-    const analysisCall = await callModel("analysis", ANALYSIS_PROMPT, PRIMARY_MODEL);
+    const analysisCall = await callModel(
+      "analysis",
+      ANALYSIS_PROMPT,
+      PRIMARY_MODEL,
+    );
     let analysisParsed = tryParseJson(analysisCall.text);
-    let { analysis, issues: analysisIssues } = normalizeAnalysis(analysisParsed);
+    let { analysis, issues: analysisIssues } =
+      normalizeAnalysis(analysisParsed);
 
     if (analysisIssues.length > 0 || !analysis.scene_summary) {
-      const repairPrompt = buildRepairPrompt(ANALYSIS_PROMPT, analysisCall.text);
-      const analysisRepair = await callModel("analysis-repair", repairPrompt, PRIMARY_MODEL);
+      const repairPrompt = buildRepairPrompt(
+        ANALYSIS_PROMPT,
+        analysisCall.text,
+      );
+      const analysisRepair = await callModel(
+        "analysis-repair",
+        repairPrompt,
+        PRIMARY_MODEL,
+      );
       const analysisParsedRepair = tryParseJson(analysisRepair.text);
       const repairResult = normalizeAnalysis(analysisParsedRepair);
       if (repairResult.analysis.scene_summary) {
@@ -422,13 +460,21 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         analysisParsed = analysisParsedRepair;
       } else {
         analysisIssues = Array.from(
-          new Set([...analysisIssues, ...repairResult.issues, "analysis.repair_failed"]),
+          new Set([
+            ...analysisIssues,
+            ...repairResult.issues,
+            "analysis.repair_failed",
+          ]),
         );
       }
     }
 
     const verdictPrompt = buildVerdictPrompt(analysis, analysisIssues);
-    const verdictCall = await callModel("verdict", verdictPrompt, VERIFIER_MODEL);
+    const verdictCall = await callModel(
+      "verdict",
+      verdictPrompt,
+      VERIFIER_MODEL,
+    );
     let verdictParsed = tryParseJson(verdictCall.text);
 
     const validateAndNormalize = (rawParsed: any, rawText: string) => {
@@ -522,13 +568,21 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     const needsRetry =
       validation.issues.length > 0 &&
-      (validation.out.selected_answer === null || validation.out.reason === null);
+      (validation.out.selected_answer === null ||
+        validation.out.reason === null);
 
     if (needsRetry) {
       const repairPrompt = buildRepairPrompt(verdictPrompt, verdictCall.text);
-      const verdictRepair = await callModel("verdict-repair", repairPrompt, VERIFIER_MODEL);
+      const verdictRepair = await callModel(
+        "verdict-repair",
+        repairPrompt,
+        VERIFIER_MODEL,
+      );
       const verdictParsedRepair = tryParseJson(verdictRepair.text);
-      const validationRepair = validateAndNormalize(verdictParsedRepair, verdictRepair.text);
+      const validationRepair = validateAndNormalize(
+        verdictParsedRepair,
+        verdictRepair.text,
+      );
       if (
         validationRepair.out.selected_answer !== null &&
         validationRepair.out.reason !== null
@@ -537,7 +591,11 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         validation = validationRepair;
       } else {
         validation.issues = Array.from(
-          new Set([...validation.issues, ...validationRepair.issues, "verdict.repair_failed"]),
+          new Set([
+            ...validation.issues,
+            ...validationRepair.issues,
+            "verdict.repair_failed",
+          ]),
         );
       }
     }
@@ -550,10 +608,13 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       analysis,
       analysis_issues: analysisIssues,
       verdict_details: validation.extras,
-      _analysis_raw_output: attempts.find((a) => a.stage === "analysis")?.text ?? null,
-      _verdict_raw_output: attempts.find((a) => a.stage === "verdict")?.text ?? null,
-      _raw_model_output:
-        attempts.length ? attempts[attempts.length - 1].text ?? "" : "",
+      _analysis_raw_output:
+        attempts.find((a) => a.stage === "analysis")?.text ?? null,
+      _verdict_raw_output:
+        attempts.find((a) => a.stage === "verdict")?.text ?? null,
+      _raw_model_output: attempts.length
+        ? (attempts[attempts.length - 1].text ?? "")
+        : "",
       _timestamp: new Date().toISOString(),
       _validation_issues: Array.from(
         new Set([...analysisIssues, ...validation.issues]),

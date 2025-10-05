@@ -445,8 +445,8 @@ export default function Index() {
         )}
 
         {/* Main chat area */}
-        <main className="flex-1 flex justify-center">
-          <div className="chat-wrap w-full h-full flex flex-col bg-white">
+        <main className="flex-1 flex">
+          <div className="chat-wrap w-full h-full flex flex-col bg-transparent">
             <header className="flex items-center gap-3 px-4 py-2 border-b border-slate-100 bg-white">
               <button
                 type="button"

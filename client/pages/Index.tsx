@@ -142,6 +142,7 @@ export default function Index() {
   const [selectedAssistant, setSelectedAssistant] =
     useState<string>("IP Assistant");
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
+  const detailData = activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
   const assistantMenuRef = useRef<HTMLDivElement | null>(null);
   const assistantOptions = [
     { id: "ip", label: "IP Assistant" },

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Message =
   | { from: "user"; text: string; ts?: string }
@@ -25,7 +26,6 @@ export default function Index() {
   const isMobileRef = useRef(false);
 
   useEffect(() => {
-    // detect mobile once on mount
     if (typeof window !== "undefined") {
       isMobileRef.current = window.matchMedia("(max-width: 767px)").matches;
     }
@@ -33,7 +33,6 @@ export default function Index() {
 
   useEffect(() => {
     scrollToBottom();
-    // avoid auto-focus on mobile to prevent viewport jump
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
 
@@ -71,7 +70,6 @@ export default function Index() {
     scrollToBottom();
   }
 
-  // allow Enter to send, Shift+Enter for newline
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -121,7 +119,6 @@ export default function Index() {
     });
   }
 
-  // Try compressing repeatedly until below targetSize (bytes) or minQuality and reduce dimensions
   async function compressAndEnsureSize(
     file: File,
     targetSize = 250 * 1024,
@@ -131,7 +128,6 @@ export default function Index() {
     let blob = await compressToBlob(file, maxWidth, quality);
     let tries = 0;
     while (blob.size > targetSize && tries < 6) {
-      // reduce quality first, then dimensions
       if (quality > 0.4) {
         quality = Math.max(0.35, quality - 0.15);
       } else {
@@ -140,7 +136,6 @@ export default function Index() {
       try {
         blob = await compressToBlob(file, maxWidth, quality);
       } catch (err) {
-        // if compression fails mid-loop, break to fallback
         console.error("compression loop error:", err);
         break;
       }
@@ -153,7 +148,6 @@ export default function Index() {
     try {
       const inputEl = e.currentTarget as HTMLInputElement;
       const file = inputEl.files?.[0];
-      // clear input safely
       if (inputEl) inputEl.value = "";
       if (!file) return;
 
@@ -168,10 +162,9 @@ export default function Index() {
       });
       setWaiting(true);
 
-      // compress on client and ensure under target size
       let blob: Blob;
       try {
-        blob = await compressAndEnsureSize(file, 250 * 1024); // 250KB target
+        blob = await compressAndEnsureSize(file, 250 * 1024);
       } catch (innerErr) {
         console.error(
           "Compression failed, will attempt sending original file",
@@ -219,12 +212,10 @@ export default function Index() {
 
       const data = await analyz.json();
 
-      // Prefer the structured parsed result from the server (minimized, no debug)
       const parsed = data?.parsed;
       let display = "(No analysis result)";
       if (parsed && typeof parsed === "object") {
         const reason = parsed.reason ?? null;
-        // Hide numeric selected_answer for all cases; display only the human-readable reason
         display = reason || "(No analysis result)";
       } else {
         const rawText = data?.raw ? String(data.raw).trim() : "";
@@ -239,7 +230,6 @@ export default function Index() {
         }),
       });
 
-      // Still call the deterministic router endpoint in the background for logging/side-effects
       (async () => {
         try {
           await fetch("/api", {
@@ -247,9 +237,7 @@ export default function Index() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           });
-        } catch (e) {
-          /* ignore background router errors */
-        }
+        } catch (e) {}
       })();
     } catch (err: any) {
       console.error("handleImage error:", err);
@@ -270,7 +258,6 @@ export default function Index() {
     }
   }
 
-  // session management: save/load chat sessions to localStorage
   const [sessions, setSessions] = useState<
     { id: string; title: string; messages: Message[]; ts: string }[]
   >([]);
@@ -279,21 +266,16 @@ export default function Index() {
     try {
       const raw = localStorage.getItem("radut_sessions");
       if (raw) setSessions(JSON.parse(raw));
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem("radut_sessions", JSON.stringify(sessions));
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }, [sessions]);
 
   function handleNewChat() {
-    // save current session if it has user content
     if (messages.length > 1) {
       const titleMsg = messages.find((m) => m.from === "user") as any;
       const title = titleMsg
@@ -309,7 +291,6 @@ export default function Index() {
       };
       setSessions((prev) => [s, ...prev].slice(0, 50));
     }
-    // reset to initial bot welcome
     setMessages([
       {
         from: "bot",
@@ -332,15 +313,20 @@ export default function Index() {
     setSessions((prev) => prev.filter((p) => p.id !== id));
   }
 
+  const fadeUp = {
+    initial: { opacity: 0, y: 6 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 6 },
+  };
+
   return (
     <div className="min-h-[100dvh] bg-slate-50 p-0 md:p-0 md:overflow-hidden">
       <div className="w-full h-full min-h-0 flex gap-0 items-stretch">
-        {/* Sidebar - visible on md+ */}
         <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
           <div className="flex items-center w-full mt-0">
             <button
               onClick={handleNewChat}
-              className="w-full py-3 px-4 bg-rose-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm"
+              className="w-full py-3 px-4 bg-rose-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm transition-colors duration-200 hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
             >
               + New chat
             </button>
@@ -355,7 +341,7 @@ export default function Index() {
               sessions.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50"
+                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
                 >
                   <button
                     className="text-left text-sm text-slate-800 truncate w-full"
@@ -366,13 +352,13 @@ export default function Index() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => loadSession(s.id)}
-                      className="text-xs text-rose-600"
+                      className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
                     >
                       Open
                     </button>
                     <button
                       onClick={() => deleteSession(s.id)}
-                      className="text-xs text-slate-400"
+                      className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
                     >
                       Del
                     </button>
@@ -383,82 +369,102 @@ export default function Index() {
           </div>
         </aside>
 
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-50 md:hidden flex">
-            <div
-              className="fixed inset-0 bg-black/40"
-              onClick={() => setSidebarOpen(false)}
-            />
-            <aside className="relative w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full overflow-y-auto border-r border-slate-100">
-              <div className="flex items-center w-full mt-0 justify-between">
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-md text-slate-700"
-                >
-                  ✕
-                </button>
-                <button
-                  onClick={handleNewChat}
-                  className="py-2 px-3 bg-rose-600 text-white rounded-md font-semibold text-sm"
-                >
-                  + New chat
-                </button>
-              </div>
-              <h2 className="mt-6 text-sm font-semibold text-slate-700">
-                History
-              </h2>
-              <div className="mt-2 flex-1 space-y-2 w-full">
-                {sessions.length === 0 ? (
-                  <div className="text-sm text-slate-500">
-                    Belum ada riwayat chat
-                  </div>
-                ) : (
-                  sessions.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50"
-                    >
-                      <button
-                        className="text-left text-sm text-slate-800 truncate w-full"
-                        onClick={() => {
-                          loadSession(s.id);
-                          setSidebarOpen(false);
-                        }}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              className="fixed inset-0 z-50 md:hidden flex"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="fixed inset-0 bg-black/40"
+                onClick={() => setSidebarOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+              <motion.aside
+                className="relative w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full overflow-y-auto border-r border-slate-100"
+                initial={{ x: -24, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -24, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 28 }}
+              >
+                <div className="flex items-center w-full mt-0 justify-between">
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="p-2 rounded-md text-slate-700 hover:bg-slate-200/60 transition-colors"
+                  >
+                    ✕
+                  </button>
+                  <button
+                    onClick={handleNewChat}
+                    className="py-2 px-3 bg-rose-600 text-white rounded-md font-semibold text-sm transition-colors hover:bg-rose-700"
+                  >
+                    + New chat
+                  </button>
+                </div>
+                <h2 className="mt-6 text-sm font-semibold text-slate-700">
+                  History
+                </h2>
+                <div className="mt-2 flex-1 space-y-2 w-full">
+                  {sessions.length === 0 ? (
+                    <div className="text-sm text-slate-500">
+                      Belum ada riwayat chat
+                    </div>
+                  ) : (
+                    sessions.map((s) => (
+                      <div
+                        key={s.id}
+                        className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
                       >
-                        {s.title}
-                      </button>
-                      <div className="flex items-center gap-2">
                         <button
+                          className="text-left text-sm text-slate-800 truncate w-full"
                           onClick={() => {
                             loadSession(s.id);
                             setSidebarOpen(false);
                           }}
-                          className="text-xs text-rose-600"
                         >
-                          Open
+                          {s.title}
                         </button>
-                        <button
-                          onClick={() => deleteSession(s.id)}
-                          className="text-xs text-slate-400"
-                        >
-                          Del
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              loadSession(s.id);
+                              setSidebarOpen(false);
+                            }}
+                            className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
+                          >
+                            Open
+                          </button>
+                          <button
+                            onClick={() => deleteSession(s.id)}
+                            className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                          >
+                            Del
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </aside>
-          </div>
-        )}
+                    ))
+                  )}
+                </div>
+              </motion.aside>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Main chat area */}
         <main className="flex-1 flex min-h-0">
           <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-transparent">
-            <header className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent">
+            <motion.header
+              className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent"
+              variants={fadeUp}
+              initial="initial"
+              animate="animate"
+            >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md"
+                className="md:hidden p-2 rounded-md hover:bg-slate-100 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
@@ -485,55 +491,105 @@ export default function Index() {
               <h1 className="text-lg font-semibold tracking-tight text-slate-900">
                 Radut Agent
               </h1>
-            </header>
-            <div className="chat-box px-6 py-6 flex-1 overflow-y-auto bg-transparent">
-              {messages.map((msg, i) =>
-                msg.from === "user" ? (
-                  <div key={i} className="flex justify-end mb-3">
-                    <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
-                      {msg.text}
-                      <div className="text-xs text-slate-500 mt-1 text-right">
-                        {msg.ts}
+            </motion.header>
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
+              <AnimatePresence initial={false}>
+                {messages.map((msg, i) => {
+                  if (msg.from === "user") {
+                    return (
+                      <motion.div
+                        key={`u-${i}`}
+                        className="flex justify-end mb-3 px-3 md:px-8"
+                        initial={{ opacity: 0, x: 24 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 24 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 340,
+                          damping: 26,
+                        }}
+                        layout
+                      >
+                        <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                          {msg.text}
+                          <div className="text-xs text-slate-500 mt-1 text-right">
+                            {msg.ts}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  }
+                  if (msg.from === "bot") {
+                    return (
+                      <motion.div
+                        key={`b-${i}`}
+                        className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                        initial={{ opacity: 0, x: -24 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -24 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 340,
+                          damping: 26,
+                        }}
+                        layout
+                      >
+                        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                          {msg.text}
+                          <div className="text-xs text-slate-400 mt-1">
+                            {msg.ts}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  }
+                  return (
+                    <motion.div
+                      key={`img-${i}`}
+                      className="flex justify-end mb-3 px-3 md:px-8"
+                      initial={{ opacity: 0, scale: 0.96, x: 12 }}
+                      animate={{ opacity: 1, scale: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, x: 12 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 320,
+                        damping: 22,
+                      }}
+                      layout
+                    >
+                      <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
+                        <img
+                          src={msg.url}
+                          alt="Upload"
+                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
+                        />
+                        <div className="text-xs text-slate-400 mt-1 text-right">
+                          {msg.ts}
+                        </div>
                       </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+
+              <AnimatePresence>
+                {waiting && (
+                  <motion.div
+                    className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                    aria-live="polite"
+                    aria-label="Bot is typing"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
+                      <span className="dot" />
+                      <span className="dot" />
+                      <span className="dot" />
                     </div>
-                  </div>
-                ) : msg.from === "bot" ? (
-                  <div key={i} className="flex items-start mb-2 gap-2">
-                    <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
-                      {msg.text}
-                      <div className="text-xs text-slate-400 mt-1">
-                        {msg.ts}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={i} className="flex justify-end mb-3">
-                    <div className="rounded-md overflow-hidden max-w-[70%]">
-                      <img
-                        src={msg.url}
-                        alt="Upload"
-                        className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
-                      />
-                      <div className="text-xs text-slate-400 mt-1 text-right">
-                        {msg.ts}
-                      </div>
-                    </div>
-                  </div>
-                ),
-              )}
-              {waiting && (
-                <div
-                  className="flex items-start mb-2 gap-2"
-                  aria-live="polite"
-                  aria-label="Bot is typing"
-                >
-                  <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
-                    <span className="dot" />
-                    <span className="dot" />
-                    <span className="dot" />
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div ref={chatEndRef} />
             </div>
 
@@ -547,7 +603,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full hover:bg-slate-100"
+                className="p-2 rounded-full hover:bg-slate-100 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >
@@ -580,13 +636,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100"
+                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100 transition-shadow duration-200"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md"
+                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md hover:bg-rose-700 active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

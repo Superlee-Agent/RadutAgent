@@ -194,89 +194,159 @@ export default function Index() {
     }
   }
 
+  // session management: save/load chat sessions to localStorage
+  const [sessions, setSessions] = useState<{ id: string; title: string; messages: Message[]; ts: string }[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("radut_sessions");
+      if (raw) setSessions(JSON.parse(raw));
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("radut_sessions", JSON.stringify(sessions));
+    } catch (e) {
+      // ignore
+    }
+  }, [sessions]);
+
+  function handleNewChat() {
+    // save current session if it has user content
+    if (messages.length > 1) {
+      const titleMsg = messages.find((m) => m.from === "user") as any;
+      const title = titleMsg ? (titleMsg.text.length > 30 ? titleMsg.text.slice(0, 30) + "..." : titleMsg.text) : `Session ${new Date().toLocaleString()}`;
+      const s = { id: String(Date.now()), title, messages, ts: new Date().toLocaleString() };
+      setSessions((prev) => [s, ...prev].slice(0, 50));
+    }
+    // reset to initial bot welcome
+    setMessages([{ from: "bot", text: "Halo, saya Radut Agent. Ketik 'gradut' untuk mulai analisa gambar.", ts: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+    setWaiting(false);
+  }
+
+  function loadSession(id: string) {
+    const s = sessions.find((x) => x.id === id);
+    if (s) setMessages(s.messages);
+  }
+
+  function deleteSession(id: string) {
+    setSessions((prev) => prev.filter((p) => p.id !== id));
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white py-8 px-4">
-      <div className="chat-wrap max-w-2xl mx-auto shadow-lg rounded-md overflow-hidden bg-white ring-1 ring-pink-50">
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-pink-200 bg-white">
-          <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
-          <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
-        </header>
-        <div className="chat-box p-4 h-[60vh] overflow-y-auto bg-slate-50">
-          {messages.map((msg, i) =>
-            msg.from === "user" ? (
-              <div key={i} className="flex justify-end mb-3">
-                <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-lg max-w-[70%] break-words">
-                  {msg.text}
-                  <div className="text-xs text-pink-100 mt-1 text-right">{msg.ts}</div>
-                </div>
-              </div>
-            ) : msg.from === "bot" ? (
-              <div key={i} className="flex items-start mb-3 gap-3">
-                <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg max-w-[70%] break-words">
-                  {msg.text}
-                  <div className="text-xs text-pink-400 mt-1">{msg.ts}</div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white py-8 px-4 md:overflow-hidden">
+      <div className="max-w-6xl mx-auto flex gap-6">
+        {/* Sidebar - visible on md+ */}
+        <aside className="hidden md:flex flex-col w-72 bg-white rounded-md shadow p-4 h-[80vh] overflow-y-auto">
+          <button onClick={handleNewChat} className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold">New Chat</button>
+          <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
+          <div className="mt-2 flex-1 space-y-2">
+            {sessions.length === 0 ? (
+              <div className="text-sm text-slate-400">Belum ada riwayat chat</div>
             ) : (
-              <div key={i} className="flex justify-end mb-3">
-                <div className="rounded-md overflow-hidden max-w-[70%]">
-                  <img src={msg.url} alt="Upload" className="w-full h-auto block" />
-                  <div className="text-xs text-slate-400 mt-1 text-right">{msg.ts}</div>
+              sessions.map((s) => (
+                <div key={s.id} className="flex items-center justify-between bg-pink-50 border border-pink-100 rounded-md p-2">
+                  <button className="text-left text-sm text-pink-700 truncate" onClick={() => loadSession(s.id)}>
+                    {s.title}
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => loadSession(s.id)} className="text-xs text-pink-600">Open</button>
+                    <button onClick={() => deleteSession(s.id)} className="text-xs text-slate-400">Del</button>
+                  </div>
                 </div>
-              </div>
-            )
-          )}
-          {waiting && (
-            <div className="flex items-start mb-3 gap-3" aria-live="polite" aria-label="Bot is typing">
-              <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg">
-                <span className="dot" />
-                <span className="dot" />
-                <span className="dot" />
-              </div>
+              ))
+            )}
+          </div>
+        </aside>
+
+        {/* Main chat area */}
+        <main className="flex-1">
+          <div className="chat-wrap max-w-full mx-auto shadow-lg rounded-md overflow-hidden bg-white ring-1 ring-pink-50">
+            <header className="flex items-center gap-3 px-4 py-3 border-b border-pink-200 bg-white">
+              <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
+              <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
+            </header>
+            <div className="chat-box p-4 h-[60vh] overflow-y-auto bg-slate-50">
+              {messages.map((msg, i) =>
+                msg.from === "user" ? (
+                  <div key={i} className="flex justify-end mb-3">
+                    <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-lg max-w-[70%] break-words">
+                      {msg.text}
+                      <div className="text-xs text-pink-100 mt-1 text-right">{msg.ts}</div>
+                    </div>
+                  </div>
+                ) : msg.from === "bot" ? (
+                  <div key={i} className="flex items-start mb-3 gap-3">
+                    <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg max-w-[70%] break-words">
+                      {msg.text}
+                      <div className="text-xs text-pink-400 mt-1">{msg.ts}</div>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={i} className="flex justify-end mb-3">
+                    <div className="rounded-md overflow-hidden max-w-[70%]">
+                      <img src={msg.url} alt="Upload" className="w-full h-auto block" />
+                      <div className="text-xs text-slate-400 mt-1 text-right">{msg.ts}</div>
+                    </div>
+                  </div>
+                )
+              )}
+              {waiting && (
+                <div className="flex items-start mb-3 gap-3" aria-live="polite" aria-label="Bot is typing">
+                  <div className="bg-white border border-pink-200 px-3 py-2 rounded-lg">
+                    <span className="dot" />
+                    <span className="dot" />
+                    <span className="dot" />
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
             </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
 
-        <form
-          className="chat-input flex items-center gap-2 p-3 border-t"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          autoComplete="off"
-        >
-          <button type="button" className="p-2 rounded-full hover:bg-slate-100" onClick={() => uploadRef.current?.click()} aria-label="Attach image">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828L21 9.828V7h-5.828z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h7" />
-            </svg>
-          </button>
+            <form
+              className="chat-input flex items-center gap-2 p-3 border-t"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend();
+              }}
+              autoComplete="off"
+            >
+              <button type="button" className="p-2 rounded-full hover:bg-slate-100" onClick={() => uploadRef.current?.click()} aria-label="Attach image">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828L21 9.828V7h-5.828z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h7" />
+                </svg>
+              </button>
 
-          <textarea
-            ref={inputRef as any}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ketik pesan…"
-            disabled={waiting}
-            className="flex-1 resize-none p-2 rounded-md border border-pink-200 bg-white min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-pink-200"
-          />
+              <textarea
+                ref={inputRef as any}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ketik pesan…"
+                disabled={waiting}
+                className="flex-1 resize-none p-2 rounded-md border border-pink-200 bg-white min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-pink-200"
+              />
 
-          <button type="submit" disabled={waiting || !input.trim()} className="p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white disabled:opacity-50">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M2.94 2.94a1.5 1.5 0 012.12 0L17 14.88V17a1 1 0 01-1 1h-2.12L2.94 5.06a1.5 1.5 0 010-2.12z" />
-            </svg>
-          </button>
-        </form>
+              <button type="submit" disabled={waiting || !input.trim()} className="p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white disabled:opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.94 2.94a1.5 1.5 0 012.12 0L17 14.88V17a1 1 0 01-1 1h-2.12L2.94 5.06a1.5 1.5 0 010-2.12z" />
+                </svg>
+              </button>
+            </form>
 
-        <input
-          ref={uploadRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImage}
-        />
+            <input
+              ref={uploadRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImage}
+            />
+          </div>
+        </main>
       </div>
     </div>
   );

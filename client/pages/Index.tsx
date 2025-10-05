@@ -482,9 +482,9 @@ export default function Index() {
               {messages.map((msg, i) =>
                 msg.from === "user" ? (
                   <div key={i} className="flex justify-end mb-3">
-                    <div className="bg-rose-600 text-white px-5 py-3 rounded-xl max-w-[70%] break-words shadow-md">
+                    <div className="bg-rose-200 text-rose-800 px-5 py-3 rounded-xl max-w-[70%] break-words shadow-sm">
                       {msg.text}
-                      <div className="text-xs text-rose-100 mt-1 text-right">
+                      <div className="text-xs text-rose-600 mt-1 text-right">
                         {msg.ts}
                       </div>
                     </div>

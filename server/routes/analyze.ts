@@ -54,7 +54,7 @@ const humanAnswers = new Set([4, 5, 6]);
 
 const analyzeHandler: RequestHandler = async (req, res) => {
   try {
-    const file = (req as any).file as Express.Multer.File | undefined;
+    const file = (req as any).file as { buffer: Buffer; size: number; mimetype: string; originalname?: string } | undefined;
     if (!file) return res.status(400).json({ error: "No file received" });
 
     // caching by hash
@@ -103,7 +103,7 @@ const analyzeHandler: RequestHandler = async (req, res) => {
             },
           ],
           max_output_tokens: 400,
-        });
+        } as any);
         const text = (extractText(resp) || "").trim();
         attempts.push({ model: "gpt-4o-mini", ok: !!text, text: text || null, raw: resp });
         return { resp, text };

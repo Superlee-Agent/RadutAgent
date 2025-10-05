@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleAnalyze } from "./routes/analyze";
-import { handleDeterministicRoute } from "./routes/router";
+import { handleAnalyze } from "./routes/analyze.js";
+import { handleDeterministicRoute } from "./routes/router.js";
 
 export function createServer() {
   const app = express();

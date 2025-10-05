@@ -771,7 +771,13 @@ export default function Index() {
                               <button
                                 type="button"
                                 onClick={() => setActiveDetail(verificationObject.code)}
-                                className="text-blue-600 underline font-semibold hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+                                className="underline font-semibold hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  color: "#2563eb",
+                                  padding: 0,
+                                  border: "none",
+                                }}
                               >
                                 {verificationObject.label}
                               </button>

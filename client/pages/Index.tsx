@@ -240,7 +240,7 @@ export default function Index() {
     <div className="min-h-screen md:h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white p-4 md:p-0 md:overflow-hidden">
       <div className="w-full h-full flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
-        <aside className="hidden md:flex flex-col w-64 bg-white p-4 h-full sticky top-0 overflow-y-auto items-start">
+        <aside className="hidden md:flex flex-col w-64 bg-[#0b1220] text-slate-200 p-4 h-full sticky top-0 overflow-y-auto items-start">
           <button onClick={handleNewChat} className="w-full py-2 px-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-md font-semibold text-sm text-left">+ New chat</button>
           <h2 className="mt-4 text-sm font-semibold text-pink-700">History</h2>
           <div className="mt-2 flex-1 space-y-2 w-full">
@@ -248,7 +248,7 @@ export default function Index() {
               <div className="text-sm text-slate-400">Belum ada riwayat chat</div>
             ) : (
               sessions.map((s) => (
-                <div key={s.id} className="flex items-center justify-between bg-pink-50 border border-pink-100 rounded-md p-2 w-full">
+                <div key={s.id} className="flex items-center justify-between p-2 w-full rounded-md hover:bg-pink-50">
                   <button className="text-left text-sm text-pink-700 truncate w-full" onClick={() => loadSession(s.id)}>
                     {s.title}
                   </button>
@@ -265,7 +265,7 @@ export default function Index() {
         {/* Main chat area */}
         <main className="flex-1 flex justify-center">
           <div className="chat-wrap w-full h-full flex flex-col bg-white">
-            <header className="flex items-center gap-3 px-6 py-3 border-b border-pink-200 bg-white">
+            <header className="flex items-center gap-3 px-4 py-2 border-b border-pink-200 bg-white">
               <img src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800" alt="Radut Agent" className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-200" />
               <h1 className="text-lg font-semibold tracking-tight text-pink-700">Radut Agent</h1>
             </header>

@@ -325,7 +325,7 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen md:h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white p-4 md:p-0 md:overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-red-50 via-pink-50 to-white p-0 md:p-0 md:overflow-hidden">
       <div className="w-full h-full flex gap-0 items-stretch">
         {/* Sidebar - visible on md+ */}
         <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-gray-200 to-pink-50 text-pink-700 pt-2 pb-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-pink-100">

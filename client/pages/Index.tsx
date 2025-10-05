@@ -25,6 +25,103 @@ const ANSWER_LABELS: Record<number, string> = {
   9: "Kelompok 9",
 };
 
+const ANSWER_DETAILS: Record<
+  number,
+  {
+    jenis: string;
+    keterangan: string;
+    statusRegistrasi: string;
+    aksi: string;
+    smartLicensing: string;
+    aiTraining: string;
+  }
+> = {
+  1: {
+    jenis: "AI",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  2: {
+    jenis: "AI",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  3: {
+    jenis: "AI",
+    keterangan:
+      "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi:
+      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  4: {
+    jenis: "Manusia",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  5: {
+    jenis: "Manusia",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  6: {
+    jenis: "Manusia",
+    keterangan:
+      "Mengandung wajah manusia biasa (bukan selebriti atau karakter terkenal)",
+    statusRegistrasi:
+      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  7: {
+    jenis: "AI (Animasi)",
+    keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    statusRegistrasi: "✅ Diizinkan",
+    aksi: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  8: {
+    jenis: "AI (Animasi)",
+    keterangan:
+      "Mengandung brand/karakter terkenal atau wajah manusia terkenal",
+    statusRegistrasi: "❌ Tidak diizinkan",
+    aksi: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  9: {
+    jenis: "AI (Animasi)",
+    keterangan:
+      "Mengandung wajah manusia biasa (tidak terkenal)",
+    statusRegistrasi:
+      "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    aksi: "Take Selfi Photo / Submit Review",
+    smartLicensing: "Commercial Remix License (jika selfie sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+};
+
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
     {

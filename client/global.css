@@ -258,3 +258,37 @@ button[disabled] {
 button {
   background: linear-gradient(90deg, #ef4444, #ff3b82) !important;
 }
+
+/* Mobile / fullscreen fixes */
+@supports (height: 100dvh) {
+  .chat-wrap {
+    height: 100dvh;
+  }
+}
+@media (max-width: 767px) {
+  /* ensure app fills viewport on mobile */
+  html, body {
+    height: 100%;
+  }
+  .chat-wrap {
+    height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: 100dvh;
+  }
+  /* avoid chat messages being hidden behind the sticky input */
+  .chat-box {
+    padding-bottom: 96px;
+  }
+  .chat-input {
+    padding-left: 12px;
+    padding-right: 12px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #fff);
+  }
+  textarea {
+    min-height: 48px;
+  }
+  /* make sure mobile aside overlay uses full height */
+  .fixed.inset-0.z-50.md\:hidden {
+    height: 100dvh;
+  }
+}

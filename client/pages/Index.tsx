@@ -721,7 +721,7 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
                 </svg>
               </button>
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F46077e6f073142ff88affb7cda7757fd%2F774634956f9848d4a3769e8b64c9ce31?format=webp&width=800"
+                src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
                 alt="Radut Agent"
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
               />

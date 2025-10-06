@@ -135,9 +135,9 @@ type HistoryTab = {
 
 const HISTORY_TABS: HistoryTab[] = [
   { id: "logo", label: "Logo", icon: Home },
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "dashboard", label: "IP Assistant", icon: LayoutDashboard },
   { id: "ipfi-assistant", label: "IPFi Assistant", icon: Bot },
-  { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+  { id: "marketplace", label: "NFT Marketplace", icon: ShoppingBag },
   { id: "portfolio", label: "My Portofolio", icon: Briefcase },
   { id: "settings", label: "Settings", icon: SettingsIcon },
   { id: "history-chat", label: "History chat", icon: History },

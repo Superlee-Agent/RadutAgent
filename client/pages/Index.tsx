@@ -644,7 +644,7 @@ export default function Index() {
   return (
     <div className="min-h-[100dvh] bg-slate-50">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-slate-100 text-slate-700 py-6 px-4 border-r border-slate-100 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-black text-slate-200 py-6 px-4 border-r border-slate-100/30 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
           <div className="flex w-full flex-col gap-6">
             {renderBrandHeader()}
             {renderHistorySection()}
@@ -667,7 +667,7 @@ export default function Index() {
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-slate-100 text-slate-700 py-6 px-4 h-full overflow-y-auto border-r border-slate-100"
+                className="relative w-64 bg-black text-slate-200 py-6 px-4 h-full overflow-y-auto border-r border-slate-100/30"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}

@@ -897,7 +897,7 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
+                    <div className="bg-black border border-[#BD4385]/50 px-3 py-2 rounded-lg">
                       <span className="dot" />
                       <span className="dot" />
                       <span className="dot" />

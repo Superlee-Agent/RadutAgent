@@ -957,7 +957,7 @@ export default function Index() {
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md hover:bg-rose-700 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF0088] text-[#FF0088] disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

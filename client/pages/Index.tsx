@@ -4,15 +4,11 @@ import type { LucideIcon } from "lucide-react";
 import {
   Bot,
   Briefcase,
-  ChevronDown,
-  Copy,
-  Globe,
   History,
   Home,
   LayoutDashboard,
   Settings as SettingsIcon,
   ShoppingBag,
-  Wallet,
 } from "lucide-react";
 
 type BotMessage = {

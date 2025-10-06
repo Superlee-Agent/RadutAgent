@@ -877,7 +877,7 @@ export default function Index() {
                         <img
                           src={msg.url}
                           alt="Upload"
-                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
+                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#BD4385]"
                           onLoad={() => scrollToBottom()}
                           onError={() => scrollToBottom()}
                         />

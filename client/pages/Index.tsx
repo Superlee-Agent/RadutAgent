@@ -909,7 +909,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-3 px-6 py-3 border-t bg-transparent flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-[#BD4385]/40 bg-black flex-none sticky bottom-0 z-10"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();

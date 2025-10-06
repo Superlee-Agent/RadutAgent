@@ -1,5 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+import {
+  Bot,
+  Briefcase,
+  ChevronDown,
+  Copy,
+  Globe,
+  History,
+  Home,
+  LayoutDashboard,
+  Settings as SettingsIcon,
+  ShoppingBag,
+  Wallet,
+} from "lucide-react";
 
 type BotMessage = {
   from: "bot";
@@ -116,6 +130,28 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
 };
+
+type HistoryTab = {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+const HISTORY_TABS: HistoryTab[] = [
+  { id: "logo", label: "Logo", icon: Home },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "ipfi-assistant", label: "IPFi Assistant", icon: Bot },
+  { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+  { id: "portfolio", label: "My Portofolio", icon: Briefcase },
+  { id: "settings", label: "Settings", icon: SettingsIcon },
+  { id: "history-chat", label: "History chat", icon: History },
+];
+
+const BRAND_NAME = "Radut Verse";
+const BRAND_IMAGE_URL =
+  "https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F52cfa9fa715049a49469c1473e1a313e";
+
+const ACTIVE_HISTORY_TAB = "history-chat";
 
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
@@ -481,6 +517,112 @@ export default function Index() {
     setSessions((prev) => prev.filter((p) => p.id !== id));
   }
 
+  const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
+    const { closeSidebar } = options;
+    const [, ...additionalItems] = HISTORY_TABS;
+
+    const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
+      const Icon = item.icon;
+      const itemClasses = [
+        "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+        isActive
+          ? "border-rose-200 bg-white text-rose-600 shadow-sm"
+          : "border-transparent text-slate-600 hover:bg-slate-200/70",
+      ].join(" ");
+      const iconClasses = [
+        "flex h-8 w-8 items-center justify-center rounded-md",
+        isActive ? "bg-rose-100 text-rose-600" : "bg-slate-200 text-slate-600",
+      ].join(" ");
+      return (
+        <div className={itemClasses}>
+          <span className={iconClasses}>
+            <Icon className="h-4 w-4" />
+          </span>
+          <span>{item.label}</span>
+        </div>
+      );
+    };
+
+    const handleNewChatClick = () => {
+      handleNewChat();
+      if (closeSidebar) setSidebarOpen(false);
+    };
+
+    return (
+      <nav className="mt-2 flex-1 w-full">
+        <ul className="flex flex-col gap-2">
+          {additionalItems.map((item) => {
+            const isActive = item.id === ACTIVE_HISTORY_TAB;
+            if (item.id === "history-chat") {
+              return (
+                <li key={item.id} className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleNewChatClick}
+                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-rose-600 text-left transition-colors duration-200 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                  >
+                    + New chat
+                  </button>
+                  <div className="pl-10">
+                    <div className="text-sm font-semibold text-slate-700">
+                      History
+                    </div>
+                    <div className="mt-2 space-y-2">
+                      {sessions.length === 0 ? (
+                        <div className="text-xs text-slate-500">
+                          Belum ada riwayat chat
+                        </div>
+                      ) : (
+                        sessions.map((s) => (
+                          <div
+                            key={s.id}
+                            className="flex items-center justify-between gap-2 text-xs text-slate-600"
+                          >
+                            <button
+                              type="button"
+                              className="flex-1 truncate text-left font-medium text-slate-700"
+                              onClick={() => {
+                                loadSession(s.id);
+                                if (closeSidebar) setSidebarOpen(false);
+                              }}
+                            >
+                              {s.title}
+                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  loadSession(s.id);
+                                  if (closeSidebar) setSidebarOpen(false);
+                                }}
+                                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                              >
+                                Open
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteSession(s.id)}
+                                className="text-[11px] text-slate-400 hover:text-slate-600"
+                              >
+                                Del
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            }
+
+            return <li key={item.id}>{renderSidebarRow(item, isActive)}</li>;
+          })}
+        </ul>
+      </nav>
+    );
+  };
+
   const fadeUp = {
     initial: { opacity: 0, y: 6 },
     animate: { opacity: 1, y: 0 },
@@ -488,53 +630,47 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 p-0 md:p-0 md:overflow-hidden">
-      <div className="w-full h-full min-h-0 flex gap-0 items-stretch">
-        <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
-          <div className="flex items-center w-full mt-0">
-            <button
-              onClick={handleNewChat}
-              className="w-full py-3 px-4 bg-rose-600 text-white rounded-lg font-semibold text-sm text-left shadow-sm transition-colors duration-200 hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
-            >
-              + New chat
-            </button>
-          </div>
-          <h2 className="mt-6 text-sm font-semibold text-slate-700">History</h2>
-          <div className="mt-2 flex-1 space-y-2 w-full">
-            {sessions.length === 0 ? (
-              <div className="text-sm text-slate-500">
-                Belum ada riwayat chat
+    <div className="min-h-[100dvh] bg-slate-50 md:overflow-hidden flex flex-col">
+      <header className="bg-slate-950 text-slate-100 px-4 py-3 md:px-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex w-full items-center gap-3 md:max-w-xl">
+            <div className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-500 transition-colors">
+              <span
+                aria-hidden
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-200"
+                style={{
+                  backgroundImage: `url(${BRAND_IMAGE_URL})`,
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                }}
+              />
+              <div className="text-base font-semibold text-white">
+                {BRAND_NAME}
               </div>
-            ) : (
-              sessions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
-                >
-                  <button
-                    className="text-left text-sm text-slate-800 truncate w-full"
-                    onClick={() => loadSession(s.id)}
-                  >
-                    {s.title}
-                  </button>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => loadSession(s.id)}
-                      className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
-                    >
-                      Open
-                    </button>
-                    <button
-                      onClick={() => deleteSession(s.id)}
-                      className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      Del
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+            </div>
           </div>
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 md:justify-end">
+            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-100">
+              <Wallet className="h-4 w-4 text-slate-400" />
+              <span>0x2f4...5678</span>
+              <Copy className="h-4 w-4 text-slate-500" />
+            </div>
+            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-100">
+              <Globe className="h-4 w-4 text-slate-400" />
+              <span>Ethereum</span>
+              <ChevronDown className="h-4 w-4 text-slate-500" />
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-600 text-sm font-semibold text-white">
+              JD
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex-1 w-full h-full min-h-0 flex gap-0 items-stretch">
+        <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
+          {renderHistorySection()}
         </aside>
 
         <AnimatePresence>
@@ -566,57 +702,8 @@ export default function Index() {
                   >
                     ✕
                   </button>
-                  <button
-                    onClick={handleNewChat}
-                    className="py-2 px-3 bg-rose-600 text-white rounded-md font-semibold text-sm transition-colors hover:bg-rose-700"
-                  >
-                    + New chat
-                  </button>
                 </div>
-                <h2 className="mt-6 text-sm font-semibold text-slate-700">
-                  History
-                </h2>
-                <div className="mt-2 flex-1 space-y-2 w-full">
-                  {sessions.length === 0 ? (
-                    <div className="text-sm text-slate-500">
-                      Belum ada riwayat chat
-                    </div>
-                  ) : (
-                    sessions.map((s) => (
-                      <div
-                        key={s.id}
-                        className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
-                      >
-                        <button
-                          className="text-left text-sm text-slate-800 truncate w-full"
-                          onClick={() => {
-                            loadSession(s.id);
-                            setSidebarOpen(false);
-                          }}
-                        >
-                          {s.title}
-                        </button>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => {
-                              loadSession(s.id);
-                              setSidebarOpen(false);
-                            }}
-                            className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
-                          >
-                            Open
-                          </button>
-                          <button
-                            onClick={() => deleteSession(s.id)}
-                            className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                          >
-                            Del
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                {renderHistorySection({ closeSidebar: true })}
               </motion.aside>
             </motion.div>
           )}
@@ -998,6 +1085,35 @@ export default function Index() {
           </div>
         </main>
       </div>
+
+      <footer className="bg-slate-950 text-slate-300 px-4 py-3 md:px-6 border-t border-slate-900">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-xs md:text-sm">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs">
+            <Globe className="h-3.5 w-3.5 text-slate-400" />
+            <span className="uppercase tracking-wide text-[11px] text-slate-500">
+              Network :
+            </span>
+            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-slate-100">
+              <span>Ethereum</span>
+              <ChevronDown className="h-4 w-4 text-slate-500" />
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              Connected
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-end gap-3 text-xs text-slate-300">
+            <a href="#" className="hover:text-white transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              Privacy Policy
+            </a>
+            <span className="text-slate-500">© 2025 RadutVerse</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

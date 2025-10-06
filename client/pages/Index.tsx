@@ -851,7 +851,7 @@ export default function Index() {
                               </span>
                             </div>
                           ) : verificationText ? (
-                            <div className="mt-2 text-xs text-slate-400">
+                            <div className="mt-2 text-xs text-slate-300">
                               {verificationText}
                             </div>
                           ) : null}

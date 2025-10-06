@@ -11,6 +11,32 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+const BuildingPanels = forwardRef<SVGSVGElement, LucideProps>(
+  ({ color = "currentColor", size = 24, strokeWidth = 2, ...props }, ref) => (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M12 8V4H8" />
+      <rect width={16} height={12} x={4} y={8} rx={2} />
+      <path d="M2 14h2" />
+      <path d="M20 14h2" />
+      <path d="M15 13v2" />
+      <path d="M9 13v2" />
+    </svg>
+  )
+);
+BuildingPanels.displayName = "BuildingPanels";
+
 type BotMessage = {
   from: "bot";
   text: string;
@@ -49,7 +75,7 @@ const ANSWER_DETAILS: Record<
   1: {
     jenis: "AI Generated",
     keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
-    statusRegistrasi: "✅ Diizinkan",
+    statusRegistrasi: "�� Diizinkan",
     aksi: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",

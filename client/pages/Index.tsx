@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+import {
+  Bot,
+  Briefcase,
+  History,
+  Home,
+  LayoutDashboard,
+  Settings as SettingsIcon,
+  ShoppingBag,
+} from "lucide-react";
+
 
 type BotMessage = {
   from: "bot";
@@ -116,6 +127,25 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
 };
+
+type HistoryTab = {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+const HISTORY_TABS: HistoryTab[] = [
+  { id: "logo", label: "Logo", icon: Home },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "ipfi-assistant", label: "IPFi Assistant", icon: Bot },
+  { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+  { id: "portfolio", label: "My Portofolio", icon: Briefcase },
+  { id: "settings", label: "Settings", icon: SettingsIcon },
+  { id: "history-chat", label: "History chat", icon: History },
+];
+
+const ACTIVE_HISTORY_TAB = "history-chat";
+
 
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
@@ -481,6 +511,88 @@ export default function Index() {
     setSessions((prev) => prev.filter((p) => p.id !== id));
   }
 
+  const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
+    const { closeSidebar } = options;
+    return (
+      <nav className="mt-2 flex-1 w-full">
+        <ul className="flex flex-col gap-2">
+          {HISTORY_TABS.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.id === ACTIVE_HISTORY_TAB;
+            const itemClasses = [
+              "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "border-rose-200 bg-white text-rose-600 shadow-sm"
+                : "border-transparent text-slate-600 hover:bg-slate-200/70",
+            ].join(" ");
+            const iconClasses = [
+              "flex h-8 w-8 items-center justify-center rounded-md",
+              isActive
+                ? "bg-rose-100 text-rose-600"
+                : "bg-slate-200 text-slate-600",
+            ].join(" ");
+            return (
+              <li key={item.id} className="space-y-2">
+                <div className={itemClasses}>
+                  <span className={iconClasses}>
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+                {item.id === "history-chat" && (
+                  <div className="space-y-2 pl-11">
+                    {sessions.length === 0 ? (
+                      <div className="text-xs text-slate-500">
+                        Belum ada riwayat chat
+                      </div>
+                    ) : (
+                      sessions.map((s) => (
+                        <div
+                          key={s.id}
+                          className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-sm"
+                        >
+                          <button
+                            type="button"
+                            className="flex-1 truncate text-left font-medium text-slate-700"
+                            onClick={() => {
+                              loadSession(s.id);
+                              if (closeSidebar) setSidebarOpen(false);
+                            }}
+                          >
+                            {s.title}
+                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                loadSession(s.id);
+                                if (closeSidebar) setSidebarOpen(false);
+                              }}
+                              className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                            >
+                              Open
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteSession(s.id)}
+                              className="text-[11px] text-slate-400 hover:text-slate-600"
+                            >
+                              Del
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    );
+  };
+
   const fadeUp = {
     initial: { opacity: 0, y: 6 },
     animate: { opacity: 1, y: 0 },
@@ -500,41 +612,7 @@ export default function Index() {
             </button>
           </div>
           <h2 className="mt-6 text-sm font-semibold text-slate-700">History</h2>
-          <div className="mt-2 flex-1 space-y-2 w-full">
-            {sessions.length === 0 ? (
-              <div className="text-sm text-slate-500">
-                Belum ada riwayat chat
-              </div>
-            ) : (
-              sessions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
-                >
-                  <button
-                    className="text-left text-sm text-slate-800 truncate w-full"
-                    onClick={() => loadSession(s.id)}
-                  >
-                    {s.title}
-                  </button>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => loadSession(s.id)}
-                      className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
-                    >
-                      Open
-                    </button>
-                    <button
-                      onClick={() => deleteSession(s.id)}
-                      className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      Del
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          {renderHistorySection()}
         </aside>
 
         <AnimatePresence>
@@ -576,47 +654,7 @@ export default function Index() {
                 <h2 className="mt-6 text-sm font-semibold text-slate-700">
                   History
                 </h2>
-                <div className="mt-2 flex-1 space-y-2 w-full">
-                  {sessions.length === 0 ? (
-                    <div className="text-sm text-slate-500">
-                      Belum ada riwayat chat
-                    </div>
-                  ) : (
-                    sessions.map((s) => (
-                      <div
-                        key={s.id}
-                        className="flex items-center justify-between p-2 w-full rounded-md hover:bg-slate-50 transition-colors"
-                      >
-                        <button
-                          className="text-left text-sm text-slate-800 truncate w-full"
-                          onClick={() => {
-                            loadSession(s.id);
-                            setSidebarOpen(false);
-                          }}
-                        >
-                          {s.title}
-                        </button>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => {
-                              loadSession(s.id);
-                              setSidebarOpen(false);
-                            }}
-                            className="text-xs text-rose-600 hover:text-rose-700 transition-colors"
-                          >
-                            Open
-                          </button>
-                          <button
-                            onClick={() => deleteSession(s.id)}
-                            className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                          >
-                            Del
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                {renderHistorySection({ closeSidebar: true })}
               </motion.aside>
             </motion.div>
           )}

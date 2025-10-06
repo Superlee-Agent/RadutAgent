@@ -67,7 +67,7 @@ const ANSWER_DETAILS: Record<
   3: {
     jenis: "AI Generated",
     keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
-    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    statusRegistrasi: "��� Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -692,7 +692,7 @@ export default function Index() {
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-transparent">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-black">
             <motion.header
               className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent"
               variants={fadeUp}

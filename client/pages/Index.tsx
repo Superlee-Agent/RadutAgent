@@ -1,15 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon, LucideProps } from "lucide-react";
 import {
   Bot,
   Briefcase,
   History,
   Home,
-  LayoutDashboard,
   Settings as SettingsIcon,
   ShoppingBag,
 } from "lucide-react";
+
+const BuildingPanels = forwardRef<SVGSVGElement, LucideProps>(
+  ({ color = "currentColor", size = 24, strokeWidth = 2, ...props }, ref) => (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M12 8V4H8" />
+      <rect width={16} height={12} x={4} y={8} rx={2} />
+      <path d="M2 14h2" />
+      <path d="M20 14h2" />
+      <path d="M15 13v2" />
+      <path d="M9 13v2" />
+    </svg>
+  ),
+);
+BuildingPanels.displayName = "BuildingPanels";
 
 type BotMessage = {
   from: "bot";
@@ -135,9 +160,9 @@ type HistoryTab = {
 
 const HISTORY_TABS: HistoryTab[] = [
   { id: "logo", label: "Logo", icon: Home },
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "dashboard", label: "IP Assistant", icon: BuildingPanels },
   { id: "ipfi-assistant", label: "IPFi Assistant", icon: Bot },
-  { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+  { id: "marketplace", label: "NFT Marketplace", icon: ShoppingBag },
   { id: "portfolio", label: "My Portofolio", icon: Briefcase },
   { id: "settings", label: "Settings", icon: SettingsIcon },
   { id: "history-chat", label: "History chat", icon: History },
@@ -514,10 +539,10 @@ export default function Index() {
   }
 
   const renderBrandHeader = () => (
-    <div className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-500">
+    <div className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-300">
       <span
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-200"
+        className="flex h-9 w-9 items-center justify-center rounded-md bg-black"
         style={{
           backgroundImage: `url(${BRAND_IMAGE_URL})`,
           backgroundPosition: "center",
@@ -525,7 +550,7 @@ export default function Index() {
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-semibold text-slate-700">{BRAND_NAME}</div>
+      <div className="text-base font-semibold text-[#FF0088]">{BRAND_NAME}</div>
     </div>
   );
 
@@ -536,21 +561,21 @@ export default function Index() {
     const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
       const Icon = item.icon;
       const itemClasses = [
-        "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+        "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150",
         isActive
-          ? "border-rose-200 bg-white text-rose-600 shadow-sm"
-          : "border-transparent text-slate-600 hover:bg-slate-200/70",
+          ? "border-[#BD4385] bg-black text-[#FF0088] shadow-[0_6px_18px_rgba(189,67,133,0.15)]"
+          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF0088]",
       ].join(" ");
       const iconClasses = [
-        "flex h-8 w-8 items-center justify-center rounded-md",
-        isActive ? "bg-rose-100 text-rose-600" : "bg-slate-200 text-slate-600",
+        "flex h-8 w-8 items-center justify-center rounded-md border border-[#BD4385] bg-black text-slate-400",
+        isActive ? "text-[#FF0088]" : "",
       ].join(" ");
       return (
         <div className={itemClasses}>
           <span className={iconClasses}>
             <Icon className="h-4 w-4" />
           </span>
-          <span>{item.label}</span>
+          <span className="text-[#FF0088]">{item.label}</span>
         </div>
       );
     };
@@ -561,7 +586,7 @@ export default function Index() {
     };
 
     return (
-      <nav className="mt-2 flex-1 w-full">
+      <nav className="mt-2 flex-1 w-full text-slate-300">
         <ul className="flex flex-col gap-2">
           {additionalItems.map((item) => {
             const isActive = item.id === ACTIVE_HISTORY_TAB;
@@ -571,28 +596,28 @@ export default function Index() {
                   <button
                     type="button"
                     onClick={handleNewChatClick}
-                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-rose-600 text-left transition-colors duration-200 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF0088] text-left transition-colors duration-200 hover:bg-[#FF0088]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
                   >
                     + New chat
                   </button>
                   <div className="pl-10">
-                    <div className="text-sm font-semibold text-slate-700">
+                    <div className="text-sm font-semibold text-[#FF0088]">
                       History
                     </div>
                     <div className="mt-2 space-y-2">
                       {sessions.length === 0 ? (
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-[#BD4385]">
                           Belum ada riwayat chat
                         </div>
                       ) : (
                         sessions.map((s) => (
                           <div
                             key={s.id}
-                            className="flex items-center justify-between gap-2 text-xs text-slate-600"
+                            className="flex items-center justify-between gap-2 text-xs text-slate-300"
                           >
                             <button
                               type="button"
-                              className="flex-1 truncate text-left font-medium text-slate-700"
+                              className="flex-1 truncate text-left font-medium text-[#FF0088] hover:text-[#FF0088]/80"
                               onClick={() => {
                                 loadSession(s.id);
                                 if (closeSidebar) setSidebarOpen(false);
@@ -607,14 +632,14 @@ export default function Index() {
                                   loadSession(s.id);
                                   if (closeSidebar) setSidebarOpen(false);
                                 }}
-                                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                                className="text-[11px] font-semibold text-[#FF0088] hover:text-[#FF0088]/80"
                               >
                                 Open
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteSession(s.id)}
-                                className="text-[11px] text-slate-400 hover:text-slate-600"
+                                className="text-[11px] text-slate-400 hover:text-slate-200"
                               >
                                 Del
                               </button>
@@ -644,7 +669,7 @@ export default function Index() {
   return (
     <div className="min-h-[100dvh] bg-slate-50">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-slate-100 text-slate-700 py-6 px-4 border-r border-slate-100 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-black text-slate-200 py-6 px-4 border-r border-slate-100/30 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
           <div className="flex w-full flex-col gap-6">
             {renderBrandHeader()}
             {renderHistorySection()}
@@ -667,7 +692,7 @@ export default function Index() {
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-slate-100 text-slate-700 py-6 px-4 h-full overflow-y-auto border-r border-slate-100"
+                className="relative w-64 bg-black text-slate-200 py-6 px-4 h-full overflow-y-auto border-r border-slate-100/30"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -677,7 +702,7 @@ export default function Index() {
                   <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-md text-slate-700 hover:bg-slate-200/60 transition-colors"
+                    className="p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 transition-colors"
                     aria-label="Tutup menu"
                   >
                     ✕
@@ -692,22 +717,22 @@ export default function Index() {
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-transparent">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-black">
             <motion.header
-              className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-transparent"
+              className="flex items-center gap-3 px-4 py-3 border-b border-[#BD4385]/40 bg-black"
               variants={fadeUp}
               initial="initial"
               animate="animate"
             >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md hover:bg-slate-100 active:scale-[0.98] transition-all"
+                className="md:hidden p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-slate-700"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -723,19 +748,19 @@ export default function Index() {
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
                 alt="Radut Agent"
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
+                className="h-9 w-9 rounded-full object-cover bg-[#FF0088]"
               />
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="btn-ghost text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 px-2 py-1 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
+                  className="btn-ghost inline-flex items-center gap-2 rounded-md px-2 py-1 text-lg font-semibold tracking-tight text-[#FF0088] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
                   aria-expanded={assistantMenuOpen}
                 >
-                  {selectedAssistant}
+                  <span className="text-[#FF0088]">{selectedAssistant}</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-slate-500"
+                    className="w-4 h-4 text-slate-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -775,7 +800,7 @@ export default function Index() {
                 )}
               </div>
             </motion.header>
-            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-black">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => {
                   if (msg.from === "user") {
@@ -793,7 +818,7 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                        <div className="bg-black border border-[#BD4385] text-[#BD4385] px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
                         </div>
                       </motion.div>
@@ -828,10 +853,10 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                        <div className="bg-black border border-[#BD4385] px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm text-[#BD4385]">
                           <div>{msg.text}</div>
                           {verificationObject ? (
-                            <div className="mt-2 text-xs text-slate-400">
+                            <div className="mt-2 text-xs text-slate-300">
                               Verifikasi akhir:{" "}
                               <span
                                 role="button"
@@ -845,13 +870,13 @@ export default function Index() {
                                     setActiveDetail(verificationObject.code);
                                   }
                                 }}
-                                className="cursor-pointer text-blue-600 underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+                                className="cursor-pointer text-[#FF0088] underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40 rounded"
                               >
                                 {verificationObject.label}
                               </span>
                             </div>
                           ) : verificationText ? (
-                            <div className="mt-2 text-xs text-slate-400">
+                            <div className="mt-2 text-xs text-slate-300">
                               {verificationText}
                             </div>
                           ) : null}
@@ -877,7 +902,7 @@ export default function Index() {
                         <img
                           src={msg.url}
                           alt="Upload"
-                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-slate-200"
+                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#BD4385]"
                           onLoad={() => scrollToBottom()}
                           onError={() => scrollToBottom()}
                         />
@@ -897,7 +922,7 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <div className="bg-white border border-slate-100 px-3 py-2 rounded-lg">
+                    <div className="bg-black border border-[#BD4385]/50 px-3 py-2 rounded-lg">
                       <span className="dot" />
                       <span className="dot" />
                       <span className="dot" />
@@ -909,7 +934,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-3 px-6 py-3 border-t bg-transparent flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-[#BD4385]/40 bg-black flex-none sticky bottom-0 z-10"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
@@ -918,13 +943,13 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full hover:bg-slate-100 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-slate-600"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -951,13 +976,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100 transition-shadow duration-200"
+                className="flex-1 resize-none p-3 rounded-xl border border-[#BD4385] bg-black text-[#FF0088] placeholder:text-slate-500 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF0088]/40 transition-shadow duration-200"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-rose-600 text-white disabled:opacity-50 shadow-md hover:bg-rose-700 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF0088] text-[#FF0088] disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

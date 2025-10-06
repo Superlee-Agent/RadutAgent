@@ -517,7 +517,7 @@ export default function Index() {
     const renderSidebarRow = (
       item: HistoryTab,
       isActive: boolean,
-      extra?: React.ReactNode,
+      extra?: ReactNode,
     ) => {
       const Icon = item.icon;
       const itemClasses = [

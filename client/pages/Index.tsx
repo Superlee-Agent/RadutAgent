@@ -6,7 +6,6 @@ import {
   Briefcase,
   History,
   Home,
-  LayoutDashboard,
   Settings as SettingsIcon,
   ShoppingBag,
 } from "lucide-react";

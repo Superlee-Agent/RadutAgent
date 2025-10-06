@@ -98,6 +98,7 @@ Rules:
 - Fill every field; use null only where schema allows.
 - "rationale", "evidence", "ai_artifacts", "human_cues", "overall_notes" are arrays of terse strings.
 - "count" must be an integer >=0 or null if unknown.
+- Only mark faces as present when at least 70% of key facial features (eyes, nose, mouth) are clearly visible; otherwise set presence="None" and count=0.
 - "primary_source" must reflect your best hypothesis given evidence.
 - If unsure about brands, set present=false and leave names empty.
 - If unsure about identities, use "Unknown" presence and empty arrays.

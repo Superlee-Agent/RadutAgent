@@ -677,7 +677,7 @@ export default function Index() {
                   <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-md text-slate-700 hover:bg-slate-200/60 transition-colors"
+                    className="p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 transition-colors"
                     aria-label="Tutup menu"
                   >
                     ✕

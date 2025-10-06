@@ -148,6 +148,10 @@ const HISTORY_TABS: HistoryTab[] = [
   { id: "history-chat", label: "History chat", icon: History },
 ];
 
+const BRAND_NAME = "Radut Verse";
+const BRAND_IMAGE_URL =
+  "https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F52cfa9fa715049a49469c1473e1a313e";
+
 const ACTIVE_HISTORY_TAB = "history-chat";
 
 

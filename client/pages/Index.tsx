@@ -632,13 +632,18 @@ export default function Index() {
       <header className="bg-slate-950 text-slate-100 px-4 py-3 md:px-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex w-full items-center gap-3 md:max-w-xl">
-            <div className="flex w-full items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-sm text-slate-200 shadow-inner shadow-black/10">
-              <Search className="h-4 w-4 text-slate-400" />
-              <input
-                type="search"
-                placeholder="Search assets, tokens, addresses..."
-                className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 outline-none"
+            <div className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-500 transition-colors">
+              <span
+                aria-hidden
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-200"
+                style={{
+                  backgroundImage: `url(${BRAND_IMAGE_URL})`,
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                }}
               />
+              <div className="text-base font-semibold text-white">{BRAND_NAME}</div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3 md:justify-end">

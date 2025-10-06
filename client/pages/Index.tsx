@@ -67,7 +67,7 @@ const ANSWER_DETAILS: Record<
   3: {
     jenis: "AI Generated",
     keterangan: "Mengandung wajah manusia biasa (tidak terkenal)",
-    statusRegistrasi: "��� Langsung tidak diizinkan → ✅ Jika selfie sukses",
+    statusRegistrasi: "❌ Langsung tidak diizinkan → ✅ Jika selfie sukses",
     aksi: "Take Selfi Photo / Submit Review",
     smartLicensing: "Commercial Remix License (jika selfie sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
@@ -561,7 +561,7 @@ export default function Index() {
     };
 
     return (
-      <nav className="mt-2 flex-1 w-full">
+      <nav className="mt-2 flex-1 w-full text-slate-300">
         <ul className="flex flex-col gap-2">
           {additionalItems.map((item) => {
             const isActive = item.id === ACTIVE_HISTORY_TAB;
@@ -571,28 +571,28 @@ export default function Index() {
                   <button
                     type="button"
                     onClick={handleNewChatClick}
-                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-rose-600 text-left transition-colors duration-200 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF0088] text-left transition-colors duration-200 hover:bg-[#FF0088]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
                   >
                     + New chat
                   </button>
                   <div className="pl-10">
-                    <div className="text-sm font-semibold text-slate-700">
+                    <div className="text-sm font-semibold text-[#FF0088]">
                       History
                     </div>
                     <div className="mt-2 space-y-2">
                       {sessions.length === 0 ? (
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-[#BD4385]">
                           Belum ada riwayat chat
                         </div>
                       ) : (
                         sessions.map((s) => (
                           <div
                             key={s.id}
-                            className="flex items-center justify-between gap-2 text-xs text-slate-600"
+                            className="flex items-center justify-between gap-2 text-xs text-slate-300"
                           >
                             <button
                               type="button"
-                              className="flex-1 truncate text-left font-medium text-slate-700"
+                              className="flex-1 truncate text-left font-medium text-[#FF0088] hover:text-[#FF0088]/80"
                               onClick={() => {
                                 loadSession(s.id);
                                 if (closeSidebar) setSidebarOpen(false);
@@ -607,14 +607,14 @@ export default function Index() {
                                   loadSession(s.id);
                                   if (closeSidebar) setSidebarOpen(false);
                                 }}
-                                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                                className="text-[11px] font-semibold text-[#FF0088] hover:text-[#FF0088]/80"
                               >
                                 Open
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteSession(s.id)}
-                                className="text-[11px] text-slate-400 hover:text-slate-600"
+                                className="text-[11px] text-slate-400 hover:text-slate-200"
                               >
                                 Del
                               </button>

@@ -701,7 +701,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md hover:bg-slate-100 active:scale-[0.98] transition-all"
+                className="md:hidden p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >

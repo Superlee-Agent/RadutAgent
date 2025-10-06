@@ -775,7 +775,7 @@ export default function Index() {
                 )}
               </div>
             </motion.header>
-            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-black">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => {
                   if (msg.from === "user") {

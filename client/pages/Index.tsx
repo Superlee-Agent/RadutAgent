@@ -729,13 +729,13 @@ export default function Index() {
                 <button
                   type="button"
                   onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="btn-ghost text-lg font-semibold tracking-tight text-slate-900 inline-flex items-center gap-2 px-2 py-1 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
+                  className="btn-ghost inline-flex items-center gap-2 rounded-md px-2 py-1 text-lg font-semibold tracking-tight text-[#FF0088] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
                   aria-expanded={assistantMenuOpen}
                 >
-                  {selectedAssistant}
+                  <span className="text-[#FF0088]">{selectedAssistant}</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-slate-500"
+                    className="w-4 h-4 text-slate-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

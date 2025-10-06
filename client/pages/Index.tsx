@@ -2,13 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
+  Bell,
   Bot,
   Briefcase,
+  ChevronDown,
+  Copy,
+  Globe,
   History,
   Home,
   LayoutDashboard,
+  Search,
   Settings as SettingsIcon,
   ShoppingBag,
+  Wallet,
 } from "lucide-react";
 
 

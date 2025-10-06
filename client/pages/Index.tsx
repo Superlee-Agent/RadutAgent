@@ -1068,34 +1068,6 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
         </main>
       </div>
 
-      <footer className="bg-slate-950 text-slate-300 px-4 py-3 md:px-6 border-t border-slate-900">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-xs md:text-sm">
-          <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs">
-            <Globe className="h-3.5 w-3.5 text-slate-400" />
-            <span className="uppercase tracking-wide text-[11px] text-slate-500">
-              Network :
-            </span>
-            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-slate-100">
-              <span>Ethereum</span>
-              <ChevronDown className="h-4 w-4 text-slate-500" />
-            </div>
-            <div className="flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Connected
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-end gap-3 text-xs text-slate-300">
-            <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </a>
-            <span className="text-slate-500">© 2025 RadutVerse</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

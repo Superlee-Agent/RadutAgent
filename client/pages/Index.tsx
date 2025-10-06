@@ -918,7 +918,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full hover:bg-slate-100 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >

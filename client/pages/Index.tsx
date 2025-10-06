@@ -651,10 +651,6 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
           </div>
         </aside>
 
-        <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
-          {renderHistorySection()}
-        </aside>
-
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div

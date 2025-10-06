@@ -536,23 +536,23 @@ export default function Index() {
     const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
       const Icon = item.icon;
       const itemClasses = [
-      "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150",
-      isActive
-        ? "border-[#BD4385] bg-black text-[#FF0088] shadow-[0_6px_18px_rgba(189,67,133,0.15)]"
-        : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF0088]",
-    ].join(" ");
-    const iconClasses = [
-      "flex h-8 w-8 items-center justify-center rounded-md border border-[#BD4385] bg-black text-slate-400",
-      isActive ? "text-[#FF0088]" : "",
-    ].join(" ");
-    return (
-      <div className={itemClasses}>
-        <span className={iconClasses}>
-          <Icon className="h-4 w-4" />
-        </span>
-        <span className="text-[#FF0088]">{item.label}</span>
-      </div>
-    );
+        "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150",
+        isActive
+          ? "border-[#BD4385] bg-black text-[#FF0088] shadow-[0_6px_18px_rgba(189,67,133,0.15)]"
+          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF0088]",
+      ].join(" ");
+      const iconClasses = [
+        "flex h-8 w-8 items-center justify-center rounded-md border border-[#BD4385] bg-black text-slate-400",
+        isActive ? "text-[#FF0088]" : "",
+      ].join(" ");
+      return (
+        <div className={itemClasses}>
+          <span className={iconClasses}>
+            <Icon className="h-4 w-4" />
+          </span>
+          <span className="text-[#FF0088]">{item.label}</span>
+        </div>
+      );
     };
 
     const handleNewChatClick = () => {

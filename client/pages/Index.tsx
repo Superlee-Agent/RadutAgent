@@ -951,7 +951,7 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-slate-100 bg-white min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-100 transition-shadow duration-200"
+                className="flex-1 resize-none p-3 rounded-xl border border-[#BD4385] bg-black text-[#FF0088] placeholder:text-slate-500 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF0088]/40 transition-shadow duration-200"
               />
 
               <button

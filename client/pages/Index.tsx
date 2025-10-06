@@ -644,7 +644,7 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
   return (
     <div className="min-h-[100dvh] bg-slate-50">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-slate-100 text-slate-700 py-6 px-4 border-r border-slate-100 sticky top-0 max-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-slate-100 text-slate-700 py-6 px-4 border-r border-slate-100 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
           <div className="flex w-full flex-col gap-6">
             {renderBrandHeader()}
             {renderHistorySection()}

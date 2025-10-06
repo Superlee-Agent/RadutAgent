@@ -75,7 +75,7 @@ const ANSWER_DETAILS: Record<
   1: {
     jenis: "AI Generated",
     keterangan: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
-    statusRegistrasi: "�� Diizinkan",
+    statusRegistrasi: "✅ Diizinkan",
     aksi: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -161,7 +161,7 @@ type HistoryTab = {
 
 const HISTORY_TABS: HistoryTab[] = [
   { id: "logo", label: "Logo", icon: Home },
-  { id: "dashboard", label: "IP Assistant", icon: LayoutDashboard },
+  { id: "dashboard", label: "IP Assistant", icon: BuildingPanels },
   { id: "ipfi-assistant", label: "IPFi Assistant", icon: Bot },
   { id: "marketplace", label: "NFT Marketplace", icon: ShoppingBag },
   { id: "portfolio", label: "My Portofolio", icon: Briefcase },

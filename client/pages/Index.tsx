@@ -667,21 +667,25 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full overflow-y-auto border-r border-slate-100"
+                className="relative w-64 bg-slate-100 text-slate-700 py-6 px-4 h-full overflow-y-auto border-r border-slate-100"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 320, damping: 28 }}
               >
-                <div className="flex items-center w-full mt-0 justify-between">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
                     className="p-2 rounded-md text-slate-700 hover:bg-slate-200/60 transition-colors"
+                    aria-label="Tutup menu"
                   >
                     ✕
                   </button>
                 </div>
-                {renderHistorySection({ closeSidebar: true })}
+                <div className="mt-6">
+                  {renderHistorySection({ closeSidebar: true })}
+                </div>
               </motion.aside>
             </motion.div>
           )}

@@ -831,7 +831,7 @@ export default function Index() {
                         <div className="bg-black border border-[#BD4385] px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm text-[#BD4385]">
                           <div>{msg.text}</div>
                           {verificationObject ? (
-                            <div className="mt-2 text-xs text-slate-400">
+                            <div className="mt-2 text-xs text-slate-300">
                               Verifikasi akhir:{" "}
                               <span
                                 role="button"
@@ -845,7 +845,7 @@ export default function Index() {
                                     setActiveDetail(verificationObject.code);
                                   }
                                 }}
-                                className="cursor-pointer text-blue-600 underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded"
+                                className="cursor-pointer text-[#FF0088] underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40 rounded"
                               >
                                 {verificationObject.label}
                               </span>

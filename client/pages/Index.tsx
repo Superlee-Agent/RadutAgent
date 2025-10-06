@@ -32,7 +32,7 @@ const BuildingPanels = forwardRef<SVGSVGElement, LucideProps>(
       <path d="M15 13v2" />
       <path d="M9 13v2" />
     </svg>
-  )
+  ),
 );
 BuildingPanels.displayName = "BuildingPanels";
 

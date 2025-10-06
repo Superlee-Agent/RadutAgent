@@ -1099,6 +1099,40 @@ export default function Index() {
           </div>
         </main>
       </div>
+
+      <footer className="bg-slate-950 text-slate-300 px-4 py-3 md:px-6 border-t border-slate-900">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-xs md:text-sm">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs">
+            <span className="uppercase tracking-wide text-[11px] text-slate-500">Network</span>
+            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-slate-100">
+              <Globe className="h-4 w-4 text-slate-400" />
+              <span>Ethereum</span>
+              <ChevronDown className="h-4 w-4 text-slate-500" />
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              Connected
+            </div>
+          </div>
+
+          <p className="text-center text-[11px] text-slate-500 md:flex-1 md:text-center">
+            Trading involves risk. Past performance does not guarantee future results. Not available to US residents.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-end gap-3 text-xs text-slate-300">
+            <a href="#" className="hover:text-white transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              Risk Disclosure
+            </a>
+            <span className="text-slate-500">© 2024 TokenVault</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

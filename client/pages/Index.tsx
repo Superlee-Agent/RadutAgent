@@ -642,45 +642,15 @@ const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 md:overflow-hidden flex flex-col">
-      <header className="bg-slate-950 text-slate-100 px-4 py-3 md:px-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex w-full items-center gap-3 md:max-w-xl">
-            <div className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-500 transition-colors">
-              <span
-                aria-hidden
-                className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-200"
-                style={{
-                  backgroundImage: `url(${BRAND_IMAGE_URL})`,
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                }}
-              />
-              <div className="text-base font-semibold text-white">
-                {BRAND_NAME}
-              </div>
-            </div>
+    <div className="min-h-[100dvh] bg-slate-50">
+      <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
+        <aside className="hidden md:flex w-64 flex-col bg-slate-100 text-slate-700 py-6 px-4 border-r border-slate-100 sticky top-0 max-h-screen overflow-y-auto">
+          <div className="flex w-full flex-col gap-6">
+            {renderBrandHeader()}
+            {renderHistorySection()}
           </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3 md:justify-end">
-            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-100">
-              <Wallet className="h-4 w-4 text-slate-400" />
-              <span>0x2f4...5678</span>
-              <Copy className="h-4 w-4 text-slate-500" />
-            </div>
-            <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-100">
-              <Globe className="h-4 w-4 text-slate-400" />
-              <span>Ethereum</span>
-              <ChevronDown className="h-4 w-4 text-slate-500" />
-            </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-600 text-sm font-semibold text-white">
-              JD
-            </div>
-          </div>
-        </div>
-      </header>
+        </aside>
 
-      <div className="flex-1 w-full h-full min-h-0 flex gap-0 items-stretch">
         <aside className="hidden md:flex flex-col w-64 bg-slate-100 text-slate-700 py-4 px-4 h-full sticky top-0 overflow-y-auto items-start border-r border-slate-100">
           {renderHistorySection()}
         </aside>

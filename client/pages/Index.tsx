@@ -15,7 +15,6 @@ import {
   Wallet,
 } from "lucide-react";
 
-
 type BotMessage = {
   from: "bot";
   text: string;
@@ -153,7 +152,6 @@ const BRAND_IMAGE_URL =
   "https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F52cfa9fa715049a49469c1473e1a313e";
 
 const ACTIVE_HISTORY_TAB = "history-chat";
-
 
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
@@ -566,10 +564,14 @@ export default function Index() {
                     + New chat
                   </button>
                   <div className="pl-10">
-                    <div className="text-sm font-semibold text-slate-700">History</div>
+                    <div className="text-sm font-semibold text-slate-700">
+                      History
+                    </div>
                     <div className="mt-2 space-y-2">
                       {sessions.length === 0 ? (
-                        <div className="text-xs text-slate-500">Belum ada riwayat chat</div>
+                        <div className="text-xs text-slate-500">
+                          Belum ada riwayat chat
+                        </div>
                       ) : (
                         sessions.map((s) => (
                           <div
@@ -643,7 +645,9 @@ export default function Index() {
                   backgroundSize: "cover",
                 }}
               />
-              <div className="text-base font-semibold text-white">{BRAND_NAME}</div>
+              <div className="text-base font-semibold text-white">
+                {BRAND_NAME}
+              </div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 md:gap-3 md:justify-end">
@@ -1086,7 +1090,9 @@ export default function Index() {
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-xs md:text-sm">
           <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs">
             <Globe className="h-3.5 w-3.5 text-slate-400" />
-            <span className="uppercase tracking-wide text-[11px] text-slate-500">Network :</span>
+            <span className="uppercase tracking-wide text-[11px] text-slate-500">
+              Network :
+            </span>
             <div className="flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-slate-100">
               <span>Ethereum</span>
               <ChevronDown className="h-4 w-4 text-slate-500" />

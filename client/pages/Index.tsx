@@ -514,11 +514,8 @@ export default function Index() {
   const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
     const { closeSidebar } = options;
     const [primaryItem, ...additionalItems] = HISTORY_TABS;
-    const renderSidebarRow = (
-      item: HistoryTab,
-      isActive: boolean,
-      extra?: ReactNode,
-    ) => {
+
+    const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
       const Icon = item.icon;
       const itemClasses = [
         "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
@@ -531,15 +528,12 @@ export default function Index() {
         isActive ? "bg-rose-100 text-rose-600" : "bg-slate-200 text-slate-600",
       ].join(" ");
       return (
-        <>
-          <div className={itemClasses}>
-            <span className={iconClasses}>
-              <Icon className="h-4 w-4" />
-            </span>
-            <span>{item.label}</span>
-          </div>
-          {extra}
-        </>
+        <div className={itemClasses}>
+          <span className={iconClasses}>
+            <Icon className="h-4 w-4" />
+          </span>
+          <span>{item.label}</span>
+        </div>
       );
     };
 
@@ -559,74 +553,71 @@ export default function Index() {
           <ul className="flex flex-col gap-2">
             {additionalItems.map((item) => {
               const isActive = item.id === ACTIVE_HISTORY_TAB;
-              const isHistoryTab = item.id === "history-chat";
-              return (
-                <li key={item.id} className="space-y-2">
-                  {renderSidebarRow(
-                    item,
-                    isActive,
-                    isHistoryTab && (
-                      <div className="space-y-3">
-                        <button
-                          type="button"
-                          onClick={handleNewChatClick}
-                          className="w-full rounded-lg border border-transparent bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
-                        >
-                          + New chat
-                        </button>
-                        <div className="pl-10">
-                          <div className="text-sm font-semibold text-slate-700">
-                            History
-                          </div>
-                          <div className="mt-2 space-y-2">
-                            {sessions.length === 0 ? (
-                              <div className="text-xs text-slate-500">
-                                Belum ada riwayat chat
-                              </div>
-                            ) : (
-                              sessions.map((s) => (
-                                <div
-                                  key={s.id}
-                                  className="flex items-center justify-between gap-2 text-xs text-slate-600"
-                                >
-                                  <button
-                                    type="button"
-                                    className="flex-1 truncate text-left font-medium text-slate-700"
-                                    onClick={() => {
-                                      loadSession(s.id);
-                                      if (closeSidebar) setSidebarOpen(false);
-                                    }}
-                                  >
-                                    {s.title}
-                                  </button>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        loadSession(s.id);
-                                        if (closeSidebar) setSidebarOpen(false);
-                                      }}
-                                      className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
-                                    >
-                                      Open
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => deleteSession(s.id)}
-                                      className="text-[11px] text-slate-400 hover:text-slate-600"
-                                    >
-                                      Del
-                                    </button>
-                                  </div>
-                                </div>
-                              ))
-                            )}
-                          </div>
-                        </div>
+              if (item.id === "history-chat") {
+                return (
+                  <li key={item.id} className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={handleNewChatClick}
+                      className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-rose-600 text-left transition-colors duration-200 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                    >
+                      + New chat
+                    </button>
+                    <div className="pl-10">
+                      <div className="text-sm font-semibold text-slate-700">
+                        History
                       </div>
-                    ),
-                  )}
-                </li>
+                      <div className="mt-2 space-y-2">
+                        {sessions.length === 0 ? (
+                          <div className="text-xs text-slate-500">
+                            Belum ada riwayat chat
+                          </div>
+                        ) : (
+                          sessions.map((s) => (
+                            <div
+                              key={s.id}
+                              className="flex items-center justify-between gap-2 text-xs text-slate-600"
+                            >
+                              <button
+                                type="button"
+                                className="flex-1 truncate text-left font-medium text-slate-700"
+                                onClick={() => {
+                                  loadSession(s.id);
+                                  if (closeSidebar) setSidebarOpen(false);
+                                }}
+                              >
+                                {s.title}
+                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    loadSession(s.id);
+                                    if (closeSidebar) setSidebarOpen(false);
+                                  }}
+                                  className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                                >
+                                  Open
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deleteSession(s.id)}
+                                  className="text-[11px] text-slate-400 hover:text-slate-600"
+                                >
+                                  Del
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              }
+
+              return (
+                <li key={item.id}>{renderSidebarRow(item, isActive)}</li>
               );
             })}
           </ul>

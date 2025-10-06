@@ -723,7 +723,7 @@ export default function Index() {
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
                 alt="Radut Agent"
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
+                className="h-9 w-9 rounded-full object-cover bg-[#FF0088]"
               />
               <div className="relative">
                 <button

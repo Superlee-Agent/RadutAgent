@@ -657,18 +657,6 @@ export default function Index() {
               <span>Ethereum</span>
               <ChevronDown className="h-4 w-4 text-slate-500" />
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Connected
-            </div>
-            <button
-              type="button"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-slate-200 hover:bg-slate-800"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2.5 right-2 h-2 w-2 rounded-full bg-rose-500" />
-            </button>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-600 text-sm font-semibold text-white">
               JD
             </div>

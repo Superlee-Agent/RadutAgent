@@ -510,12 +510,28 @@ export default function Index() {
   }
 
   function deleteSession(id: string) {
-    setSessions((prev) => prev.filter((p) => p.id !== id));
-  }
+  setSessions((prev) => prev.filter((p) => p.id !== id));
+}
 
-  const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
-    const { closeSidebar } = options;
-    const [, ...additionalItems] = HISTORY_TABS;
+const renderBrandHeader = () => (
+  <div className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-500">
+    <span
+      aria-hidden
+      className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-200"
+      style={{
+        backgroundImage: `url(${BRAND_IMAGE_URL})`,
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+      }}
+    />
+    <div className="text-base font-semibold text-slate-700">{BRAND_NAME}</div>
+  </div>
+);
+
+const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
+  const { closeSidebar } = options;
+  const additionalItems = HISTORY_TABS.slice(1);
 
     const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
       const Icon = item.icon;

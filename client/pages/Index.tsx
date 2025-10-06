@@ -793,7 +793,7 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-rose-200 text-slate-900 px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                        <div className="bg-black border border-[#BD4385] text-[#BD4385] px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
                           {msg.text}
                         </div>
                       </motion.div>

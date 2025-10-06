@@ -521,7 +521,7 @@ export default function Index() {
 
   const renderHistorySection = (options: { closeSidebar?: boolean } = {}) => {
     const { closeSidebar } = options;
-    const [primaryItem, ...additionalItems] = HISTORY_TABS;
+    const [, ...additionalItems] = HISTORY_TABS;
 
     const renderSidebarRow = (item: HistoryTab, isActive: boolean) => {
       const Icon = item.icon;

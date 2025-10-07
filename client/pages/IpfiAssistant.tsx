@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import ComingSoon from "@/components/common/ComingSoon";
 
 const IpfiAssistant = () => (

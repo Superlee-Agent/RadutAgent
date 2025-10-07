@@ -161,6 +161,7 @@ const IP_ASSISTANT_AVATAR =
   "https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F885c66a9b5da433b9a8c619e8679d4c7";
 
 const STORAGE_KEY = "radut_sessions";
+const CURRENT_SESSION_KEY = "radut_current_session";
 
 const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);
@@ -215,6 +216,20 @@ const IpAssistant = () => {
 
   useEffect(() => {
     try {
+      const raw = localStorage.getItem(CURRENT_SESSION_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Message[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to restore current session", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as ChatSession[];
@@ -234,6 +249,14 @@ const IpAssistant = () => {
       console.error("Failed to persist sessions", error);
     }
   }, [sessions]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CURRENT_SESSION_KEY, JSON.stringify(messages));
+    } catch (error) {
+      console.error("Failed to persist current session", error);
+    }
+  }, [messages]);
 
   const handleWalletButtonClick = useCallback(() => {
     if (!ready) return;

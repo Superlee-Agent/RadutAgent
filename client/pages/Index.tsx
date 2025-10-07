@@ -573,7 +573,7 @@ export default function Index() {
                   <button
                     type="button"
                     onClick={handleNewChatClick}
-                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF4DA6] text-left transition-colors duration-200 hover:bg-[#FF4DA6]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40"
+                    className="w-full rounded-lg border-0 px-4 py-2.5 text-sm font-semibold text-[#FF4DA6] text-left transition-colors duration-200 hover:bg-[#FF4DA6]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40"
                   >
                     + New chat
                   </button>
@@ -594,7 +594,7 @@ export default function Index() {
                           >
                             <button
                               type="button"
-                              className="flex-1 truncate text-left font-medium text-[#FF4DA6] hover:text-[#FF4DA6]/80"
+                              className="flex-1 truncate text-left font-medium text-[#FF4DA6] hover:text-[#FF4DA6]/80 border-0 bg-transparent"
                               onClick={() => {
                                 loadSession(s.id);
                                 if (closeSidebar) setSidebarOpen(false);
@@ -609,14 +609,14 @@ export default function Index() {
                                   loadSession(s.id);
                                   if (closeSidebar) setSidebarOpen(false);
                                 }}
-                                className="text-[11px] font-semibold text-[#FF4DA6] hover:text-[#FF4DA6]/80"
+                                className="text-[11px] font-semibold text-[#FF4DA6] hover:text-[#FF4DA6]/80 border-0 bg-transparent"
                               >
                                 Open
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteSession(s.id)}
-                                className="text-[11px] text-slate-400 hover:text-slate-200"
+                                className="text-[11px] text-slate-400 hover:text-slate-200 border-0 bg-transparent"
                               >
                                 Del
                               </button>
@@ -679,7 +679,7 @@ export default function Index() {
                   <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-md text-[#FF4DA6] hover:bg-[#FF4DA6]/10 transition-colors"
+                    className="p-2 rounded-md border-0 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 transition-colors"
                     aria-label="Tutup menu"
                   >
                     ✕
@@ -703,7 +703,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
+                className="md:hidden p-2 rounded-md border-0 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
@@ -876,7 +876,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF4DA6]/40 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >
@@ -915,7 +915,7 @@ export default function Index() {
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full bg-[#FF4DA6] text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_12px_24px_rgba(0,0,0,0.35)] hover:bg-[#ff2d99] active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF4DA6] bg-transparent text-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_12px_24px_rgba(0,0,0,0.25)] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

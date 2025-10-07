@@ -6,6 +6,11 @@ import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import IpfiAssistant from "./pages/IpfiAssistant";
+import NftMarketplace from "./pages/NftMarketplace";
+import MyPortfolio from "./pages/MyPortfolio";
+import Settings from "./pages/Settings";
+import History from "./pages/History";
 import NotFound from "./pages/NotFound";
 
 declare global {
@@ -48,6 +53,11 @@ const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Index />} />
+      <Route path="/ipfi-assistant" element={<IpfiAssistant />} />
+      <Route path="/nft-marketplace" element={<NftMarketplace />} />
+      <Route path="/my-portfolio" element={<MyPortfolio />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/history" element={<History />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -61,7 +71,7 @@ const App = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-200">
         <p className="text-sm font-medium">
-          Konfigurasi Privy tidak ditemukan. Tambahkan VITE_PRIVY_APP_ID pada
+          Privy configuration not found. Add VITE_PRIVY_APP_ID to the
           environment.
         </p>
       </div>

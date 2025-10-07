@@ -175,6 +175,12 @@ const BRAND_IMAGE_URL =
 
 const ACTIVE_HISTORY_TAB = "history-chat";
 
+const truncateAddress = (address: string) => {
+  if (!address) return "";
+  if (address.length <= 10) return address;
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
     {

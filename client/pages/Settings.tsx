@@ -30,7 +30,7 @@ const Settings = () => {
     (key: keyof typeof toggles) => (checked: boolean) => {
       setToggles((prev) => ({ ...prev, [key]: checked }));
     },
-    [toggles],
+    [],
   );
 
   const scrollToSection = useCallback((id: string) => {

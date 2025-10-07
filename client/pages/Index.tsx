@@ -727,54 +727,10 @@ export default function Index() {
                 alt="Radut Agent"
                 className="h-9 w-9 rounded-full object-cover bg-[#FF4DA6]"
               />
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="btn-ghost inline-flex items-center gap-2 rounded-md px-2 py-1 text-lg font-semibold tracking-tight text-[#FF0088] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
-                  aria-expanded={assistantMenuOpen}
-                >
-                  <span className="text-[#FF0088]">{selectedAssistant}</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {assistantMenuOpen && (
-                  <div
-                    ref={assistantMenuRef}
-                    className="absolute left-0 mt-2 w-52 bg-white border border-slate-100 rounded-md shadow-sm z-50"
-                  >
-                    <div className="py-2">
-                      {assistantOptions.map((opt) => (
-                        <button
-                          key={opt.id}
-                          onClick={() => {
-                            setSelectedAssistant(opt.label);
-                            setAssistantMenuOpen(false);
-                          }}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between"
-                        >
-                          <span>{opt.label}</span>
-                          {opt.soon ? (
-                            <span className="text-xs text-slate-400">Soon</span>
-                          ) : null}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <div>
+                <h1 className="text-lg font-semibold tracking-tight text-white">
+                  IP Assistant
+                </h1>
               </div>
             </motion.header>
             <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">

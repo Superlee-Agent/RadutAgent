@@ -1,1 +1,9 @@
 /// <reference types="vite/client" />
+
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_PRIVY_APP_ID: string;
+  }
+}
+
+export {};

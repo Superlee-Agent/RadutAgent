@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LucideIcon, LucideProps } from "lucide-react";
 import {
@@ -9,6 +16,7 @@ import {
   Settings as SettingsIcon,
   ShoppingBag,
 } from "lucide-react";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 const BuildingPanels = forwardRef<SVGSVGElement, LucideProps>(
   ({ color = "currentColor", size = 24, strokeWidth = 2, ...props }, ref) => (
@@ -174,6 +182,12 @@ const BRAND_IMAGE_URL =
 
 const ACTIVE_HISTORY_TAB = "history-chat";
 
+const truncateAddress = (address: string) => {
+  if (!address) return "";
+  if (address.length <= 10) return address;
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
 export default function Index() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -188,6 +202,40 @@ export default function Index() {
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { ready, authenticated, login, logout, user } = usePrivy();
+  const { wallets } = useWallets();
+
+  const primaryWalletAddress = useMemo(() => {
+    if (wallets && wallets.length > 0) {
+      const walletWithAddress = wallets.find((wallet) => wallet.address);
+      if (walletWithAddress?.address) {
+        return walletWithAddress.address;
+      }
+    }
+    return user?.wallet?.address ?? null;
+  }, [wallets, user?.wallet?.address]);
+
+  const handleWalletButtonClick = useCallback(() => {
+    if (!ready) return;
+    if (authenticated) {
+      logout();
+    } else {
+      void login({ loginMethods: ["wallet"] });
+    }
+  }, [ready, authenticated, login, logout]);
+
+  const walletButtonText = authenticated
+    ? "Disconnect"
+    : ready
+      ? "Connect Wallet"
+      : "Loading Wallet";
+
+  const walletButtonDisabled = !ready && !authenticated;
+  const connectedAddressLabel =
+    authenticated && primaryWalletAddress
+      ? truncateAddress(primaryWalletAddress)
+      : null;
 
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
   const detailData =
@@ -731,6 +779,21 @@ export default function Index() {
                 <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
                   IP Assistant
                 </h1>
+              </div>
+              <div className="ml-auto flex items-center gap-3">
+                {connectedAddressLabel ? (
+                  <span className="hidden text-xs font-medium text-[#FF4DA6]/80 sm:inline">
+                    {connectedAddressLabel}
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleWalletButtonClick}
+                  disabled={walletButtonDisabled}
+                  className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {walletButtonText}
+                </button>
               </div>
             </motion.header>
             <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">

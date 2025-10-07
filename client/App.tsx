@@ -61,7 +61,8 @@ const App = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-200">
         <p className="text-sm font-medium">
-          Konfigurasi Privy tidak ditemukan. Tambahkan VITE_PRIVY_APP_ID pada environment.
+          Konfigurasi Privy tidak ditemukan. Tambahkan VITE_PRIVY_APP_ID pada
+          environment.
         </p>
       </div>
     );

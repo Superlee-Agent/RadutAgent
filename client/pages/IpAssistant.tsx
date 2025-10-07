@@ -17,7 +17,7 @@ type BotMessage = {
   verification?: { label: string; code: number } | string | null;
 };
 
-type Message =
+export type Message =
   | { from: "user"; text: string; ts?: string }
   | BotMessage
   | { from: "user-image"; url: string; ts?: string };

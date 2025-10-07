@@ -200,19 +200,6 @@ export default function Index() {
   const autoScrollNextRef = useRef(true);
 
   useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (
-        assistantMenuRef.current &&
-        !assistantMenuRef.current.contains(e.target as Node)
-      ) {
-        setAssistantMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
-
-  useEffect(() => {
     if (typeof window !== "undefined") {
       isMobileRef.current = window.matchMedia("(max-width: 767px)").matches;
     }

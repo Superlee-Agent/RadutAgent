@@ -751,7 +751,7 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-black border border-[#BD4385] text-[#BD4385] px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                        <div className="bg-[#FF4DA6] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_14px_28px_rgba(0,0,0,0.45)]">
                           {msg.text}
                         </div>
                       </motion.div>
@@ -786,10 +786,10 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-black border border-[#BD4385] px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm text-[#BD4385]">
+                        <div className="bg-[#FF4DA6] px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_14px_28px_rgba(0,0,0,0.45)] text-white">
                           <div>{msg.text}</div>
                           {verificationObject ? (
-                            <div className="mt-2 text-xs text-slate-300">
+                            <div className="mt-2 text-xs text-white/80">
                               Verifikasi akhir:{" "}
                               <span
                                 role="button"
@@ -803,13 +803,13 @@ export default function Index() {
                                     setActiveDetail(verificationObject.code);
                                   }
                                 }}
-                                className="cursor-pointer text-[#FF0088] underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40 rounded"
+                                className="cursor-pointer text-white font-semibold underline underline-offset-2 decoration-white/60 outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded"
                               >
                                 {verificationObject.label}
                               </span>
                             </div>
                           ) : verificationText ? (
-                            <div className="mt-2 text-xs text-slate-300">
+                            <div className="mt-2 text-xs text-white/80">
                               {verificationText}
                             </div>
                           ) : null}
@@ -835,7 +835,7 @@ export default function Index() {
                         <img
                           src={msg.url}
                           alt="Upload"
-                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#BD4385]"
+                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
                           onLoad={() => scrollToBottom()}
                           onError={() => scrollToBottom()}
                         />
@@ -855,7 +855,7 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <div className="bg-black border border-[#BD4385]/50 px-3 py-2 rounded-lg">
+                    <div className="bg-[#FF4DA6] px-3 py-2 rounded-lg text-white shadow-[0_12px_24px_rgba(0,0,0,0.4)]">
                       <span className="dot" />
                       <span className="dot" />
                       <span className="dot" />
@@ -867,7 +867,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-[#BD4385]/40 bg-black flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-white/10 bg-gradient-to-r from-slate-900/70 to-black/70 flex-none sticky bottom-0 z-10 backdrop-blur"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
@@ -876,7 +876,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >
@@ -909,13 +909,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-[#BD4385] bg-black text-[#FF0088] placeholder:text-slate-500 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF0088]/40 transition-shadow duration-200"
+                className="flex-1 resize-none p-3 rounded-2xl border border-white/20 bg-white/5 text-white placeholder:text-white/50 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40 transition-shadow duration-200 backdrop-blur"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full border border-[#FF0088] text-[#FF0088] disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full bg-[#FF4DA6] text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_12px_24px_rgba(0,0,0,0.35)] hover:bg-[#ff2d99] active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

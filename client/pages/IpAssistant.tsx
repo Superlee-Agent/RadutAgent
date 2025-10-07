@@ -22,7 +22,7 @@ export type Message =
   | BotMessage
   | { from: "user-image"; url: string; ts?: string };
 
-type ChatSession = {
+export type ChatSession = {
   id: string;
   title: string;
   messages: Message[];

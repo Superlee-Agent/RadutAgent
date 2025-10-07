@@ -109,7 +109,7 @@ html {
   body {
     @apply bg-background text-foreground;
     margin: 0;
-    background: #f8fafc;
+    background: #05070f;
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -197,22 +197,22 @@ textarea {
   font-size: 1rem;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.22);
-  background: #fff;
+  border: 1px solid rgba(255, 77, 166, 0.25);
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
   transition:
     box-shadow 0.12s ease,
     border-color 0.12s ease,
     transform 0.12s ease;
   outline: none;
-  /* shadow reduced by ~60% earlier; now reduce darkness by 40% (lower alpha) */
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.11);
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.35);
 }
 
 input[type="text"]:hover,
 input[type="search"]:hover,
 input:hover,
 textarea:hover {
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.13);
+  box-shadow: 0 1px 3px rgba(255, 77, 166, 0.25);
   transform: translateY(-1px);
 }
 
@@ -220,21 +220,21 @@ input[type="text"]:focus,
 input[type="search"]:focus,
 input:focus,
 textarea:focus {
-  border-color: rgba(15, 23, 42, 0.28);
-  /* compact, slightly stronger on focus but reduced darkness */
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.13);
+  border-color: rgba(255, 77, 166, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 77, 166, 0.18);
   transform: translateY(-1px);
 }
 
 /* Make chat input match agent message bubble */
 .chat-input textarea,
 .chat-input input[type="text"] {
-  background: #fff; /* same as agent bubble */
-  border: 1px solid rgba(15, 23, 42, 0.06); /* lighter border like message bubble */
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important; /* compact, subtle shadow matching bubble */
-  transform: none !important; /* prevent lift */
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 77, 166, 0.35);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35) !important;
+  transform: none !important;
   outline: none !important;
   --tw-ring-color: transparent !important;
+  color: #fff;
 }
 
 /* show thin pink ring on focus */
@@ -242,26 +242,33 @@ textarea:focus {
 .chat-input input[type="text"]:focus,
 .chat-input textarea:focus-visible,
 .chat-input input[type="text"]:focus-visible {
-  border-color: rgba(190, 24, 93, 0.28) !important; /* subtle pink border */
+  border-color: rgba(255, 77, 166, 0.6) !important;
   outline: none !important;
-  /* base subtle shadow + thin pink ring */
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06) !important,
-    0 0 0 3px rgba(190, 24, 93, 0.08) !important;
+    0 0 0 3px rgba(255, 77, 166, 0.22) !important,
+    0 10px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* active state matches focus (no pink) */
 .chat-input textarea:active,
 .chat-input input[type="text"]:active {
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25) !important;
 }
 button {
   font-weight: 600;
   border-radius: 10px;
-  background: #be185d !important; /* rose-600 */
-  color: white;
-  border: none;
+  background: transparent;
+  color: #ff4da6;
+  border: 1px solid rgba(255, 77, 166, 0.5);
   padding: 6px 14px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+button:hover {
+  background: rgba(255, 77, 166, 0.1);
 }
 
 button[disabled] {
@@ -277,11 +284,36 @@ button.btn-ghost {
 }
 
 button.btn-ghost:hover {
-  background: rgba(244, 114, 182, 0.18) !important;
+  background: rgba(255, 77, 166, 0.18) !important;
 }
 
 button.btn-ghost:focus-visible {
-  background: rgba(244, 114, 182, 0.24) !important;
+  background: rgba(255, 77, 166, 0.28) !important;
+}
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #ff4da6 rgba(255, 255, 255, 0.08);
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #ff4da6;
+    border-radius: 9999px;
+    border: 2px solid rgba(5, 7, 15, 0.6);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #ff2d99;
+  }
 }
 .dot {
   display: inline-block;
@@ -296,14 +328,14 @@ button.btn-ghost:focus-visible {
 }
 @keyframes dotty {
   0% {
-    background: #fbcfe8;
-  } /* rose-200 */
+    background: #ffc6e6;
+  }
   100% {
-    background: #be185d;
-  } /* rose-600 */
+    background: #ff4da6;
+  }
 }
 :::selection {
-  background: rgba(190, 24, 93, 0.12);
+  background: rgba(255, 77, 166, 0.18);
 }
 @media (max-width: 500px) {
   .chat-wrap {
@@ -323,7 +355,7 @@ button.btn-ghost:focus-visible {
 /* color overrides removed for minimalist theme */
 /* removed duplicate keyframes to keep single animation */
 ::selection {
-  background: rgba(190, 24, 93, 0.12);
+  background: rgba(255, 77, 166, 0.18);
 }
 /* buttons use solid accent color from earlier rule */
 

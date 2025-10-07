@@ -189,38 +189,15 @@ export default function Index() {
   const [waiting, setWaiting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Assistant selection / popover
-  const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
-  const [selectedAssistant, setSelectedAssistant] =
-    useState<string>("IP Assistant");
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
   const detailData =
     activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
-  const assistantMenuRef = useRef<HTMLDivElement | null>(null);
-  const assistantOptions = [
-    { id: "ip", label: "IP Assistant" },
-    { id: "defi", label: "DeFi Assistant (Soon)", soon: true },
-    { id: "nft", label: "NFT (Soon)", soon: true },
-  ];
 
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const isMobileRef = useRef(false);
   const autoScrollNextRef = useRef(true);
-
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (
-        assistantMenuRef.current &&
-        !assistantMenuRef.current.contains(e.target as Node)
-      ) {
-        setAssistantMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -550,7 +527,7 @@ export default function Index() {
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-semibold text-[#FF0088]">{BRAND_NAME}</div>
+      <div className="text-base font-semibold text-[#FF4DA6]">{BRAND_NAME}</div>
     </div>
   );
 
@@ -563,19 +540,19 @@ export default function Index() {
       const itemClasses = [
         "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150",
         isActive
-          ? "border-[#BD4385] bg-black text-[#FF0088] shadow-[0_6px_18px_rgba(189,67,133,0.15)]"
-          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF0088]",
+          ? "border-[#FF4DA6]/60 bg-black text-[#FF4DA6] shadow-[0_6px_18px_rgba(255,77,166,0.2)]"
+          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF4DA6]",
       ].join(" ");
       const iconClasses = [
-        "flex h-8 w-8 items-center justify-center rounded-md border border-[#BD4385] bg-black text-slate-400",
-        isActive ? "text-[#FF0088]" : "",
+        "flex h-8 w-8 items-center justify-center rounded-md border border-[#FF4DA6]/40 bg-black text-slate-400",
+        isActive ? "text-[#FF4DA6]" : "",
       ].join(" ");
       return (
         <div className={itemClasses}>
           <span className={iconClasses}>
             <Icon className="h-4 w-4" />
           </span>
-          <span className="text-[#FF0088]">{item.label}</span>
+          <span className="text-[#FF4DA6]">{item.label}</span>
         </div>
       );
     };
@@ -596,12 +573,12 @@ export default function Index() {
                   <button
                     type="button"
                     onClick={handleNewChatClick}
-                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF0088] text-left transition-colors duration-200 hover:bg-[#FF0088]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
+                    className="w-full rounded-lg border-0 px-4 py-2.5 text-sm font-semibold text-[#FF4DA6] text-left transition-colors duration-200 hover:bg-[#FF4DA6]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40"
                   >
                     + New chat
                   </button>
                   <div className="pl-10">
-                    <div className="text-sm font-semibold text-[#FF0088]">
+                    <div className="text-sm font-semibold text-[#FF4DA6]">
                       History
                     </div>
                     <div className="mt-2 space-y-2">
@@ -617,7 +594,7 @@ export default function Index() {
                           >
                             <button
                               type="button"
-                              className="flex-1 truncate text-left font-medium text-[#FF0088] hover:text-[#FF0088]/80"
+                              className="flex-1 truncate text-left font-medium text-[#FF4DA6] hover:text-[#FF4DA6]/80 border-0 bg-transparent"
                               onClick={() => {
                                 loadSession(s.id);
                                 if (closeSidebar) setSidebarOpen(false);
@@ -632,14 +609,14 @@ export default function Index() {
                                   loadSession(s.id);
                                   if (closeSidebar) setSidebarOpen(false);
                                 }}
-                                className="text-[11px] font-semibold text-[#FF0088] hover:text-[#FF0088]/80"
+                                className="text-[11px] font-semibold text-[#FF4DA6] hover:text-[#FF4DA6]/80 border-0 bg-transparent"
                               >
                                 Open
                               </button>
                               <button
                                 type="button"
                                 onClick={() => deleteSession(s.id)}
-                                className="text-[11px] text-slate-400 hover:text-slate-200"
+                                className="text-[11px] text-slate-400 hover:text-slate-200 border-0 bg-transparent"
                               >
                                 Del
                               </button>
@@ -667,9 +644,9 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-100">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-black text-slate-200 py-6 px-4 border-r border-slate-100/30 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-slate-950/80 to-black/80 text-slate-100 py-6 px-4 border-r border-white/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto backdrop-blur">
           <div className="flex w-full flex-col gap-6">
             {renderBrandHeader()}
             {renderHistorySection()}
@@ -692,7 +669,7 @@ export default function Index() {
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-black text-slate-200 py-6 px-4 h-full overflow-y-auto border-r border-slate-100/30"
+                className="relative w-64 bg-gradient-to-b from-slate-950/90 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-white/10 backdrop-blur"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -702,7 +679,7 @@ export default function Index() {
                   <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 transition-colors"
+                    className="p-2 rounded-md border-0 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 transition-colors"
                     aria-label="Tutup menu"
                   >
                     ✕
@@ -717,16 +694,16 @@ export default function Index() {
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-black">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-900/80 via-slate-950/80 to-black">
             <motion.header
-              className="flex items-center gap-3 px-4 py-3 border-b border-[#BD4385]/40 bg-black"
+              className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/60 via-slate-900/30 to-black/60 backdrop-blur"
               variants={fadeUp}
               initial="initial"
               animate="animate"
             >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="md:hidden p-2 rounded-md border-0 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
@@ -746,61 +723,17 @@ export default function Index() {
                 </svg>
               </button>
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
+                src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F885c66a9b5da433b9a8c619e8679d4c7"
                 alt="Radut Agent"
-                className="h-9 w-9 rounded-full object-cover bg-[#FF0088]"
+                className="h-9 w-9 rounded-full object-cover"
               />
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setAssistantMenuOpen((s) => !s)}
-                  className="btn-ghost inline-flex items-center gap-2 rounded-md px-2 py-1 text-lg font-semibold tracking-tight text-[#FF0088] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
-                  aria-expanded={assistantMenuOpen}
-                >
-                  <span className="text-[#FF0088]">{selectedAssistant}</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {assistantMenuOpen && (
-                  <div
-                    ref={assistantMenuRef}
-                    className="absolute left-0 mt-2 w-52 bg-white border border-slate-100 rounded-md shadow-sm z-50"
-                  >
-                    <div className="py-2">
-                      {assistantOptions.map((opt) => (
-                        <button
-                          key={opt.id}
-                          onClick={() => {
-                            setSelectedAssistant(opt.label);
-                            setAssistantMenuOpen(false);
-                          }}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between"
-                        >
-                          <span>{opt.label}</span>
-                          {opt.soon ? (
-                            <span className="text-xs text-slate-400">Soon</span>
-                          ) : null}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <div>
+                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
+                  IP Assistant
+                </h1>
               </div>
             </motion.header>
-            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-black">
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => {
                   if (msg.from === "user") {
@@ -818,7 +751,7 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-black border border-[#BD4385] text-[#BD4385] px-5 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm">
+                        <div className="bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_32px_rgba(0,0,0,0.35)]">
                           {msg.text}
                         </div>
                       </motion.div>
@@ -853,10 +786,10 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-black border border-[#BD4385] px-4 py-3 rounded-xl max-w-[88%] md:max-w-[70%] break-words shadow-sm text-[#BD4385]">
+                        <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm">
                           <div>{msg.text}</div>
                           {verificationObject ? (
-                            <div className="mt-2 text-xs text-slate-300">
+                            <div className="mt-2 text-xs text-[#FF4DA6]">
                               Verifikasi akhir:{" "}
                               <span
                                 role="button"
@@ -870,7 +803,7 @@ export default function Index() {
                                     setActiveDetail(verificationObject.code);
                                   }
                                 }}
-                                className="cursor-pointer text-[#FF0088] underline font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40 rounded"
+                                className="cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded"
                               >
                                 {verificationObject.label}
                               </span>
@@ -902,7 +835,7 @@ export default function Index() {
                         <img
                           src={msg.url}
                           alt="Upload"
-                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#BD4385]"
+                          className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
                           onLoad={() => scrollToBottom()}
                           onError={() => scrollToBottom()}
                         />
@@ -922,7 +855,7 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <div className="bg-black border border-[#BD4385]/50 px-3 py-2 rounded-lg">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                       <span className="dot" />
                       <span className="dot" />
                       <span className="dot" />
@@ -934,7 +867,7 @@ export default function Index() {
             </div>
 
             <form
-              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-[#BD4385]/40 bg-black flex-none sticky bottom-0 z-10"
+              className="chat-input flex items-center gap-3 px-6 py-3 border-t border-white/10 bg-gradient-to-r from-slate-900/70 to-black/70 flex-none sticky bottom-0 z-10 backdrop-blur"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
@@ -943,7 +876,7 @@ export default function Index() {
             >
               <button
                 type="button"
-                className="p-2 rounded-full text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF4DA6]/40 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => uploadRef.current?.click()}
                 aria-label="Attach image"
               >
@@ -976,13 +909,13 @@ export default function Index() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan…"
                 disabled={waiting}
-                className="flex-1 resize-none p-3 rounded-xl border border-[#BD4385] bg-black text-[#FF0088] placeholder:text-slate-500 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF0088]/40 transition-shadow duration-200"
+                className="flex-1 resize-none p-3 rounded-2xl border border-white/20 bg-white/5 text-white placeholder:text-white/50 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40 transition-shadow duration-200 backdrop-blur"
               />
 
               <button
                 type="submit"
                 disabled={waiting || !input.trim()}
-                className="p-2 rounded-full border border-[#FF0088] text-[#FF0088] disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="p-2 rounded-full border border-[#FF4DA6] bg-transparent text-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_12px_24px_rgba(0,0,0,0.25)] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

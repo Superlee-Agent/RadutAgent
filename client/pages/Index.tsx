@@ -728,7 +728,7 @@ export default function Index() {
                 className="h-9 w-9 rounded-full object-cover bg-[#FF4DA6]"
               />
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-white">
+                <h1 className="text-lg font-semibold tracking-tight text-slate-100">
                   IP Assistant
                 </h1>
               </div>

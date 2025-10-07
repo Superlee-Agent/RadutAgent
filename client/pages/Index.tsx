@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LucideIcon, LucideProps } from "lucide-react";
 import {
@@ -9,6 +9,7 @@ import {
   Settings as SettingsIcon,
   ShoppingBag,
 } from "lucide-react";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 const BuildingPanels = forwardRef<SVGSVGElement, LucideProps>(
   ({ color = "currentColor", size = 24, strokeWidth = 2, ...props }, ref) => (

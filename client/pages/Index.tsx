@@ -527,7 +527,7 @@ export default function Index() {
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-semibold text-[#FF0088]">{BRAND_NAME}</div>
+      <div className="text-base font-semibold text-[#FF4DA6]">{BRAND_NAME}</div>
     </div>
   );
 
@@ -540,19 +540,19 @@ export default function Index() {
       const itemClasses = [
         "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150",
         isActive
-          ? "border-[#BD4385] bg-black text-[#FF0088] shadow-[0_6px_18px_rgba(189,67,133,0.15)]"
-          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF0088]",
+          ? "border-[#FF4DA6]/60 bg-black text-[#FF4DA6] shadow-[0_6px_18px_rgba(255,77,166,0.2)]"
+          : "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF4DA6]",
       ].join(" ");
       const iconClasses = [
-        "flex h-8 w-8 items-center justify-center rounded-md border border-[#BD4385] bg-black text-slate-400",
-        isActive ? "text-[#FF0088]" : "",
+        "flex h-8 w-8 items-center justify-center rounded-md border border-[#FF4DA6]/40 bg-black text-slate-400",
+        isActive ? "text-[#FF4DA6]" : "",
       ].join(" ");
       return (
         <div className={itemClasses}>
           <span className={iconClasses}>
             <Icon className="h-4 w-4" />
           </span>
-          <span className="text-[#FF0088]">{item.label}</span>
+          <span className="text-[#FF4DA6]">{item.label}</span>
         </div>
       );
     };
@@ -573,12 +573,12 @@ export default function Index() {
                   <button
                     type="button"
                     onClick={handleNewChatClick}
-                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF0088] text-left transition-colors duration-200 hover:bg-[#FF0088]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF0088]/40"
+                    className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-[#FF4DA6] text-left transition-colors duration-200 hover:bg-[#FF4DA6]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40"
                   >
                     + New chat
                   </button>
                   <div className="pl-10">
-                    <div className="text-sm font-semibold text-[#FF0088]">
+                    <div className="text-sm font-semibold text-[#FF4DA6]">
                       History
                     </div>
                     <div className="mt-2 space-y-2">
@@ -594,7 +594,7 @@ export default function Index() {
                           >
                             <button
                               type="button"
-                              className="flex-1 truncate text-left font-medium text-[#FF0088] hover:text-[#FF0088]/80"
+                              className="flex-1 truncate text-left font-medium text-[#FF4DA6] hover:text-[#FF4DA6]/80"
                               onClick={() => {
                                 loadSession(s.id);
                                 if (closeSidebar) setSidebarOpen(false);
@@ -609,7 +609,7 @@ export default function Index() {
                                   loadSession(s.id);
                                   if (closeSidebar) setSidebarOpen(false);
                                 }}
-                                className="text-[11px] font-semibold text-[#FF0088] hover:text-[#FF0088]/80"
+                                className="text-[11px] font-semibold text-[#FF4DA6] hover:text-[#FF4DA6]/80"
                               >
                                 Open
                               </button>

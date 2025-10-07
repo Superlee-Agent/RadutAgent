@@ -55,6 +55,8 @@ const AppRoutes = () => (
 );
 
 const App = () => {
+  ensurePrivyAnalyticsFetchPatched();
+
   if (!privyAppId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-200">

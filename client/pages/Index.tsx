@@ -196,6 +196,40 @@ export default function Index() {
   const [waiting, setWaiting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { ready, authenticated, login, logout, user } = usePrivy();
+  const { wallets } = useWallets();
+
+  const primaryWalletAddress = useMemo(() => {
+    if (wallets && wallets.length > 0) {
+      const walletWithAddress = wallets.find((wallet) => wallet.address);
+      if (walletWithAddress?.address) {
+        return walletWithAddress.address;
+      }
+    }
+    return user?.wallet?.address ?? null;
+  }, [wallets, user?.wallet?.address]);
+
+  const handleWalletButtonClick = useCallback(() => {
+    if (!ready) return;
+    if (authenticated) {
+      logout();
+    } else {
+      void login({ loginMethods: ["wallet"] });
+    }
+  }, [ready, authenticated, login, logout]);
+
+  const walletButtonText = authenticated
+    ? "Disconnect"
+    : ready
+      ? "Connect Wallet"
+      : "Loading Wallet";
+
+  const walletButtonDisabled = !ready && !authenticated;
+  const connectedAddressLabel =
+    authenticated && primaryWalletAddress
+      ? truncateAddress(primaryWalletAddress)
+      : null;
+
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
   const detailData =
     activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;

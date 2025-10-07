@@ -644,9 +644,9 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-100">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-black text-slate-200 py-6 px-4 border-r border-slate-100/30 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-slate-950/80 to-black/80 text-slate-100 py-6 px-4 border-r border-white/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto backdrop-blur">
           <div className="flex w-full flex-col gap-6">
             {renderBrandHeader()}
             {renderHistorySection()}
@@ -669,7 +669,7 @@ export default function Index() {
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-black text-slate-200 py-6 px-4 h-full overflow-y-auto border-r border-slate-100/30"
+                className="relative w-64 bg-gradient-to-b from-slate-950/90 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-white/10 backdrop-blur"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -679,7 +679,7 @@ export default function Index() {
                   <div className="flex-1">{renderBrandHeader()}</div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 transition-colors"
+                    className="p-2 rounded-md text-[#FF4DA6] hover:bg-[#FF4DA6]/10 transition-colors"
                     aria-label="Tutup menu"
                   >
                     ✕
@@ -694,16 +694,16 @@ export default function Index() {
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-black">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-900/80 via-slate-950/80 to-black">
             <motion.header
-              className="flex items-center gap-3 px-4 py-3 border-b border-[#BD4385]/40 bg-black"
+              className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/60 via-slate-900/30 to-black/60 backdrop-blur"
               variants={fadeUp}
               initial="initial"
               animate="animate"
             >
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md text-[#FF0088] hover:bg-[#FF0088]/10 active:scale-[0.98] transition-all"
+                className="md:hidden p-2 rounded-md text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
@@ -725,7 +725,7 @@ export default function Index() {
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
                 alt="Radut Agent"
-                className="h-9 w-9 rounded-full object-cover bg-[#FF0088]"
+                className="h-9 w-9 rounded-full object-cover bg-[#FF4DA6]"
               />
               <div className="relative">
                 <button
@@ -777,7 +777,7 @@ export default function Index() {
                 )}
               </div>
             </motion.header>
-            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-black">
+            <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => {
                   if (msg.from === "user") {

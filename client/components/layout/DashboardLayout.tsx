@@ -1,4 +1,5 @@
 import { type ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { APP_NAV_ITEMS, type AppNavItem } from "@/config/navigation";

@@ -189,19 +189,9 @@ export default function Index() {
   const [waiting, setWaiting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Assistant selection / popover
-  const [assistantMenuOpen, setAssistantMenuOpen] = useState(false);
-  const [selectedAssistant, setSelectedAssistant] =
-    useState<string>("IP Assistant");
   const [activeDetail, setActiveDetail] = useState<number | null>(null);
   const detailData =
     activeDetail !== null ? ANSWER_DETAILS[activeDetail] : null;
-  const assistantMenuRef = useRef<HTMLDivElement | null>(null);
-  const assistantOptions = [
-    { id: "ip", label: "IP Assistant" },
-    { id: "defi", label: "DeFi Assistant (Soon)", soon: true },
-    { id: "nft", label: "NFT (Soon)", soon: true },
-  ];
 
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);

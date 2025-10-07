@@ -751,7 +751,7 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-[#FF4DA6] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_14px_28px_rgba(0,0,0,0.45)]">
+                        <div className="bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_32px_rgba(0,0,0,0.35)]">
                           {msg.text}
                         </div>
                       </motion.div>
@@ -786,10 +786,10 @@ export default function Index() {
                         }}
                         layout
                       >
-                        <div className="bg-[#FF4DA6] px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_14px_28px_rgba(0,0,0,0.45)] text-white">
+                        <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm">
                           <div>{msg.text}</div>
                           {verificationObject ? (
-                            <div className="mt-2 text-xs text-white/80">
+                            <div className="mt-2 text-xs text-[#FF4DA6]">
                               Verifikasi akhir:{" "}
                               <span
                                 role="button"
@@ -803,13 +803,13 @@ export default function Index() {
                                     setActiveDetail(verificationObject.code);
                                   }
                                 }}
-                                className="cursor-pointer text-white font-semibold underline underline-offset-2 decoration-white/60 outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded"
+                                className="cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded"
                               >
                                 {verificationObject.label}
                               </span>
                             </div>
                           ) : verificationText ? (
-                            <div className="mt-2 text-xs text-white/80">
+                            <div className="mt-2 text-xs text-slate-300">
                               {verificationText}
                             </div>
                           ) : null}
@@ -855,7 +855,7 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <div className="bg-[#FF4DA6] px-3 py-2 rounded-lg text-white shadow-[0_12px_24px_rgba(0,0,0,0.4)]">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                       <span className="dot" />
                       <span className="dot" />
                       <span className="dot" />

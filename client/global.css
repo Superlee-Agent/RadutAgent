@@ -261,7 +261,10 @@ button {
   color: #ff4da6;
   border: 1px solid rgba(255, 77, 166, 0.5);
   padding: 6px 14px;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 button:hover {

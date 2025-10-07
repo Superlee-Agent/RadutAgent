@@ -723,12 +723,12 @@ export default function Index() {
                 </svg>
               </button>
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2Fcaea3727c7414261a029f9c3450b5e2b"
+                src="https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F885c66a9b5da433b9a8c619e8679d4c7"
                 alt="Radut Agent"
-                className="h-9 w-9 rounded-full object-cover bg-[#FF4DA6]"
+                className="h-9 w-9 rounded-full object-cover"
               />
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-slate-100">
+                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
                   IP Assistant
                 </h1>
               </div>

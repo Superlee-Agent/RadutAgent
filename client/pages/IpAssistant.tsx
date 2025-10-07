@@ -1,5 +1,4 @@
 import {
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
@@ -7,36 +6,9 @@ import {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { LucideProps } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
-
-const CameraPanels = forwardRef<SVGSVGElement, LucideProps>(
-  ({ color = "currentColor", size = 24, strokeWidth = 2, ...props }, ref) => (
-    <svg
-      ref={ref}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12 8V4H8" />
-      <rect width={16} height={12} x={4} y={8} rx={2} />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
-      <path d="M15 13v2" />
-      <path d="M9 13v2" />
-    </svg>
-  ),
-);
-CameraPanels.displayName = "CameraPanels";
 
 type BotMessage = {
   from: "bot";
@@ -224,8 +196,8 @@ const IpAssistant = () => {
 
   useEffect(() => {
     if (activeDetail === null) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setActiveDetail(null);
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setActiveDetail(null);
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -292,7 +264,7 @@ const IpAssistant = () => {
   const saveSession = useCallback(
     (history: Message[]) => {
       if (history.length <= 1) return;
-      const firstUserMessage = history.find((m) => m.from === "user");
+      const firstUserMessage = history.find((message) => message.from === "user");
       const title = firstUserMessage
         ? firstUserMessage.text.length > 30
           ? `${firstUserMessage.text.slice(0, 30)}...`
@@ -351,9 +323,9 @@ const IpAssistant = () => {
   }, [input, pushMessage]);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
         void handleSend();
       }
     },
@@ -673,18 +645,14 @@ const IpAssistant = () => {
       avatarSrc={IP_ASSISTANT_AVATAR}
       actions={headerActions}
       sidebarExtras={sidebarExtras}
-      navItems={[
-        { id: "ip-assistant", label: "IP Assistant", to: "/", icon: CameraPanels },
-        ...
-      ]}
     >
       <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
         <AnimatePresence initial={false}>
-          {messages.map((msg, i) => {
+          {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
-                  key={`user-${i}`}
+                  key={`user-${index}`}
                   className="flex justify-end mb-3 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -715,7 +683,7 @@ const IpAssistant = () => {
 
               return (
                 <motion.div
-                  key={`bot-${i}`}
+                  key={`bot-${index}`}
                   className="flex items-start mb-2 gap-2 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -726,7 +694,7 @@ const IpAssistant = () => {
                     damping: 26,
                   }}
                   onAnimationComplete={() => {
-                    if (i === messages.length - 1) {
+                    if (index === messages.length - 1) {
                       setTimeout(() => {
                         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
                       }, 0);
@@ -743,9 +711,9 @@ const IpAssistant = () => {
                           role="button"
                           tabIndex={0}
                           onClick={() => setActiveDetail(verificationObject.code)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
                               setActiveDetail(verificationObject.code);
                             }
                           }}
@@ -764,7 +732,7 @@ const IpAssistant = () => {
 
             return (
               <motion.div
-                key={`image-${i}`}
+                key={`image-${index}`}
                 className="flex justify-end mb-3 px-3 md:px-8"
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -813,8 +781,8 @@ const IpAssistant = () => {
 
       <form
         className="chat-input flex items-center gap-3 px-6 py-3 border-t border-white/10 bg-gradient-to-r from-slate-900/70 to-black/70 flex-none sticky bottom-0 z-10 backdrop-blur"
-        onSubmit={(e) => {
-          e.preventDefault();
+        onSubmit={(event) => {
+          event.preventDefault();
           void handleSend();
         }}
         autoComplete="off"
@@ -850,7 +818,7 @@ const IpAssistant = () => {
         <textarea
           ref={inputRef as any}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}

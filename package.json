@@ -26,7 +26,8 @@
     "zod": "^3.25.76",
     "multer": "^1.4.5-lts.1",
     "sharp": "^0.32.1",
-    "openai": "^4.11.0"
+    "openai": "^4.11.0",
+    "@privy-io/react-auth": "^1.76.0"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -282,6 +282,31 @@ button.btn-ghost:hover {
 button.btn-ghost:focus-visible {
   background: rgba(255, 77, 166, 0.28) !important;
 }
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #ff4da6 rgba(255, 255, 255, 0.08);
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #ff4da6;
+    border-radius: 9999px;
+    border: 2px solid rgba(5, 7, 15, 0.6);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #ff2d99;
+  }
+}
 .dot {
   display: inline-block;
   width: 8px;

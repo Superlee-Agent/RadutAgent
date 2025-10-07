@@ -773,6 +773,21 @@ export default function Index() {
                   IP Assistant
                 </h1>
               </div>
+              <div className="ml-auto flex items-center gap-3">
+                {connectedAddressLabel ? (
+                  <span className="hidden text-xs font-medium text-[#FF4DA6]/80 sm:inline">
+                    {connectedAddressLabel}
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleWalletButtonClick}
+                  disabled={walletButtonDisabled}
+                  className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {walletButtonText}
+                </button>
+              </div>
             </motion.header>
             <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
               <AnimatePresence initial={false}>

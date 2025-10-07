@@ -64,7 +64,10 @@ export const DashboardLayout = ({
                     "border-[#FF4DA6]/60 bg-black text-[#FF4DA6] shadow-[0_6px_18px_rgba(255,77,166,0.2)]";
                   const inactiveClasses =
                     "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF4DA6]";
-                  return [baseClasses, isActive ? activeClasses : inactiveClasses].join(" ");
+                  return [
+                    baseClasses,
+                    isActive ? activeClasses : inactiveClasses,
+                  ].join(" ");
                 }}
                 onClick={() => closeSidebar?.()}
               >
@@ -84,7 +87,9 @@ export const DashboardLayout = ({
     <div className="flex w-full flex-col gap-6">
       {renderBrandHeader()}
       {renderNavItems(() => setSidebarOpen(false))}
-      {sidebarExtras ? sidebarExtras({ closeSidebar: () => setSidebarOpen(false) }) : null}
+      {sidebarExtras
+        ? sidebarExtras({ closeSidebar: () => setSidebarOpen(false) })
+        : null}
     </div>
   );
 
@@ -129,7 +134,11 @@ export const DashboardLayout = ({
                 </div>
                 <div className="mt-6">
                   {renderNavItems(() => setSidebarOpen(false))}
-                  {sidebarExtras ? sidebarExtras({ closeSidebar: () => setSidebarOpen(false) }) : null}
+                  {sidebarExtras
+                    ? sidebarExtras({
+                        closeSidebar: () => setSidebarOpen(false),
+                      })
+                    : null}
                 </div>
               </motion.aside>
             </motion.div>
@@ -173,7 +182,9 @@ export const DashboardLayout = ({
                 />
               ) : null}
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">{title}</h1>
+                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
+                  {title}
+                </h1>
               </div>
               <div className="ml-auto flex items-center gap-3">{actions}</div>
             </motion.header>

@@ -73,7 +73,8 @@ const History = () => {
   const combinedSessions = useMemo<DisplaySession[]>(() => {
     const result: DisplaySession[] = [];
     if (currentMessages.length > 0) {
-      const lastTimestamp = currentMessages[currentMessages.length - 1]?.ts ?? "";
+      const lastTimestamp =
+        currentMessages[currentMessages.length - 1]?.ts ?? "";
       result.push({
         id: "current",
         title: "Current conversation",
@@ -100,7 +101,8 @@ const History = () => {
       if (session.title.toLowerCase().includes(query)) return true;
       return session.messages.some(
         (message) =>
-          message.from !== "user-image" && message.text.toLowerCase().includes(query),
+          message.from !== "user-image" &&
+          message.text.toLowerCase().includes(query),
       );
     });
   }, [combinedSessions, search]);
@@ -116,7 +118,9 @@ const History = () => {
     }
   }, [filteredSessions, activeId]);
 
-  const activeSession = filteredSessions.find((session) => session.id === activeId);
+  const activeSession = filteredSessions.find(
+    (session) => session.id === activeId,
+  );
 
   const handleDeleteSession = (id: string) => {
     setSessions((prev) => prev.filter((session) => session.id !== id));
@@ -163,7 +167,9 @@ const History = () => {
                     {session.isCurrent ? " (active)" : ""}
                   </div>
                   <div className="mt-1 text-xs text-slate-400">
-                    {previewMessage ? getMessagePreview(previewMessage) : "No text messages yet"}
+                    {previewMessage
+                      ? getMessagePreview(previewMessage)
+                      : "No text messages yet"}
                   </div>
                   <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-500">
                     <span>{session.messages.length} messages</span>
@@ -194,7 +200,9 @@ const History = () => {
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <aside className="hidden w-80 flex-col border-r border-white/10 px-6 py-8 text-sm text-slate-300 md:flex">
           <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs uppercase tracking-wide text-slate-300">
-            <span className="text-[10px] font-semibold text-[#FF4DA6]">Search</span>
+            <span className="text-[10px] font-semibold text-[#FF4DA6]">
+              Search
+            </span>
             <input
               type="search"
               value={search}
@@ -216,7 +224,9 @@ const History = () => {
         <section className="flex-1 min-h-0">
           <div className="md:hidden px-4 py-4">
             <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs uppercase tracking-wide text-slate-300">
-              <span className="text-[10px] font-semibold text-[#FF4DA6]">Search</span>
+              <span className="text-[10px] font-semibold text-[#FF4DA6]">
+                Search
+              </span>
               <input
                 type="search"
                 value={search}
@@ -242,9 +252,13 @@ const History = () => {
               <>
                 <header className="flex flex-col gap-2 border-b border-white/5 pb-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">{activeSession.title}</h2>
+                    <h2 className="text-lg font-semibold text-white">
+                      {activeSession.title}
+                    </h2>
                     <div className="text-xs text-slate-400">
-                      {activeSession.isCurrent ? "Live conversation snapshot" : `Saved on ${activeSession.ts}`}
+                      {activeSession.isCurrent
+                        ? "Live conversation snapshot"
+                        : `Saved on ${activeSession.ts}`}
                     </div>
                   </div>
                   <div className="text-xs text-slate-400">
@@ -253,17 +267,24 @@ const History = () => {
                 </header>
                 <div className="mt-4 flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                   {activeSession.messages.length === 0 ? (
-                    <div className="text-center text-sm text-slate-300">No messages recorded for this conversation.</div>
+                    <div className="text-center text-sm text-slate-300">
+                      No messages recorded for this conversation.
+                    </div>
                   ) : (
                     <div className="space-y-3">
                       {activeSession.messages.map((message, index) => {
                         if (message.from === "user") {
                           return (
-                            <div key={`user-${index}`} className="flex justify-end">
+                            <div
+                              key={`user-${index}`}
+                              className="flex justify-end"
+                            >
                               <div className="max-w-[80%] rounded-2xl bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] px-4 py-3 text-sm text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                                 {message.text}
                                 {message.ts ? (
-                                  <div className="mt-1 text-[10px] text-white/70">{message.ts}</div>
+                                  <div className="mt-1 text-[10px] text-white/70">
+                                    {message.ts}
+                                  </div>
                                 ) : null}
                               </div>
                             </div>
@@ -271,18 +292,26 @@ const History = () => {
                         }
                         if (message.from === "bot") {
                           return (
-                            <div key={`bot-${index}`} className="flex justify-start">
+                            <div
+                              key={`bot-${index}`}
+                              className="flex justify-start"
+                            >
                               <div className="max-w-[80%] rounded-2xl border border-[#FF4DA6]/40 bg-black/60 px-4 py-3 text-sm text-slate-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                                 {message.text}
                                 {message.ts ? (
-                                  <div className="mt-1 text-[10px] text-slate-400">{message.ts}</div>
+                                  <div className="mt-1 text-[10px] text-slate-400">
+                                    {message.ts}
+                                  </div>
                                 ) : null}
                               </div>
                             </div>
                           );
                         }
                         return (
-                          <div key={`image-${index}`} className="flex justify-end">
+                          <div
+                            key={`image-${index}`}
+                            className="flex justify-end"
+                          >
                             <div className="max-w-[80%] overflow-hidden rounded-xl border border-[#FF4DA6]/60">
                               <img
                                 src={message.url}

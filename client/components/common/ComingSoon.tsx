@@ -16,7 +16,9 @@ const ComingSoon = ({ title, description, actions }: ComingSoonProps) => (
       {description ? (
         <p className="text-sm text-slate-300 sm:text-base">{description}</p>
       ) : null}
-      {actions ? <div className="mt-6 flex justify-center">{actions}</div> : null}
+      {actions ? (
+        <div className="mt-6 flex justify-center">{actions}</div>
+      ) : null}
     </div>
   </div>
 );

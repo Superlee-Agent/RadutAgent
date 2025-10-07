@@ -84,18 +84,24 @@ const Settings = () => {
             <div className="space-y-12 pb-16">
               <section id="general" className="space-y-6">
                 <header className="space-y-1">
-                  <h2 className="text-xl font-semibold text-white">General preferences</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    General preferences
+                  </h2>
                   <p className="text-sm text-slate-300">
-                    Control interface behavior, localization, and productivity shortcuts.
+                    Control interface behavior, localization, and productivity
+                    shortcuts.
                   </p>
                 </header>
                 <div className="grid gap-6 lg:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">Dark mode</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          Dark mode
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Automatically match the dashboard theme to your system preferences.
+                          Automatically match the dashboard theme to your system
+                          preferences.
                         </p>
                       </div>
                       <Switch
@@ -108,9 +114,12 @@ const Settings = () => {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">Autosave drafts</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          Autosave drafts
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Keep partial prompts and responses for 24 hours for quick recovery.
+                          Keep partial prompts and responses for 24 hours for
+                          quick recovery.
                         </p>
                       </div>
                       <Switch
@@ -142,9 +151,13 @@ const Settings = () => {
                           onChange={(event) => setTimezone(event.target.value)}
                           className="rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40"
                         >
-                          <option value="UTC">Coordinated Universal Time (UTC)</option>
+                          <option value="UTC">
+                            Coordinated Universal Time (UTC)
+                          </option>
                           <option value="Asia/Jakarta">Jakarta (GMT+7)</option>
-                          <option value="America/New_York">New York (GMT-5)</option>
+                          <option value="America/New_York">
+                            New York (GMT-5)
+                          </option>
                           <option value="Europe/London">London (GMT+1)</option>
                         </select>
                       </label>
@@ -155,24 +168,32 @@ const Settings = () => {
 
               <section id="notifications" className="space-y-6">
                 <header className="space-y-1">
-                  <h2 className="text-xl font-semibold text-white">Notifications</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    Notifications
+                  </h2>
                   <p className="text-sm text-slate-300">
-                    Choose how you are notified about agent activity, analysis completions, and system alerts.
+                    Choose how you are notified about agent activity, analysis
+                    completions, and system alerts.
                   </p>
                 </header>
                 <div className="grid gap-6 lg:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">Email summaries</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          Email summaries
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Receive a digest of new activity and licensing updates every week.
+                          Receive a digest of new activity and licensing updates
+                          every week.
                         </p>
                         <label className="mt-3 flex flex-col gap-2 text-xs font-medium uppercase tracking-wide text-slate-300">
                           Delivery schedule
                           <select
                             value={weeklyDigest}
-                            onChange={(event) => setWeeklyDigest(event.target.value)}
+                            onChange={(event) =>
+                              setWeeklyDigest(event.target.value)
+                            }
                             className="rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40"
                           >
                             <option value="monday">Monday</option>
@@ -191,9 +212,12 @@ const Settings = () => {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">SMS alerts</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          SMS alerts
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Get instant alerts when verification steps require attention.
+                          Get instant alerts when verification steps require
+                          attention.
                         </p>
                       </div>
                       <Switch
@@ -206,14 +230,19 @@ const Settings = () => {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur lg:col-span-2">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">In-app push notifications</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          In-app push notifications
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Display floating alerts inside the dashboard when the assistant completes an analysis.
+                          Display floating alerts inside the dashboard when the
+                          assistant completes an analysis.
                         </p>
                       </div>
                       <Switch
                         checked={toggles.pushNotifications}
-                        onCheckedChange={handleToggleChange("pushNotifications")}
+                        onCheckedChange={handleToggleChange(
+                          "pushNotifications",
+                        )}
                         aria-label="Toggle push notifications"
                       />
                     </div>
@@ -223,18 +252,24 @@ const Settings = () => {
 
               <section id="privacy" className="space-y-6">
                 <header className="space-y-1">
-                  <h2 className="text-xl font-semibold text-white">Privacy & retention</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    Privacy & retention
+                  </h2>
                   <p className="text-sm text-slate-300">
-                    Decide how your data is stored and whether anonymized results are shared for training.
+                    Decide how your data is stored and whether anonymized
+                    results are shared for training.
                   </p>
                 </header>
                 <div className="grid gap-6 lg:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">Analytics sharing</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          Analytics sharing
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Share usage metrics to improve dashboard stability and roadmap planning.
+                          Share usage metrics to improve dashboard stability and
+                          roadmap planning.
                         </p>
                       </div>
                       <Switch
@@ -247,9 +282,12 @@ const Settings = () => {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-semibold text-white">Allow AI training</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                          Allow AI training
+                        </h3>
                         <p className="text-xs text-slate-300">
-                          Contribute anonymized results to improve Radut Agent detection accuracy.
+                          Contribute anonymized results to improve Radut Agent
+                          detection accuracy.
                         </p>
                       </div>
                       <Switch
@@ -274,7 +312,8 @@ const Settings = () => {
                       </select>
                     </label>
                     <p className="mt-3 text-xs text-slate-400">
-                      Retention preferences apply to all conversation history stored locally in this workspace.
+                      Retention preferences apply to all conversation history
+                      stored locally in this workspace.
                     </p>
                   </div>
                 </div>
@@ -282,9 +321,12 @@ const Settings = () => {
 
               <section id="integrations" className="space-y-6">
                 <header className="space-y-1">
-                  <h2 className="text-xl font-semibold text-white">Integrations</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    Integrations
+                  </h2>
                   <p className="text-sm text-slate-300">
-                    Manage third-party services connected to your IP Assistant workspace.
+                    Manage third-party services connected to your IP Assistant
+                    workspace.
                   </p>
                 </header>
                 <div className="grid gap-4">
@@ -294,14 +336,20 @@ const Settings = () => {
                       className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_12px_32px_rgba(15,23,42,0.35)] backdrop-blur sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div>
-                        <h3 className="text-sm font-semibold text-white">{integration.name}</h3>
-                        <p className="text-xs text-slate-300">{integration.description}</p>
+                        <h3 className="text-sm font-semibold text-white">
+                          {integration.name}
+                        </h3>
+                        <p className="text-xs text-slate-300">
+                          {integration.description}
+                        </p>
                       </div>
                       <button
                         type="button"
                         className="inline-flex items-center justify-center rounded-lg border border-[#FF4DA6]/50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15"
                       >
-                        {integration.status === "Connected" ? "Manage" : "Connect"}
+                        {integration.status === "Connected"
+                          ? "Manage"
+                          : "Connect"}
                       </button>
                     </div>
                   ))}

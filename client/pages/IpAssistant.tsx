@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 
@@ -57,7 +51,8 @@ const ANSWER_DETAILS: Record<
     notes: "No human faces, no famous brands or characters",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (manual minting fee and revenue share)",
+    smartLicensing:
+      "Commercial Remix License (manual minting fee and revenue share)",
     aiTraining: "❌ Not allowed (fixed)",
   },
   2: {
@@ -71,7 +66,8 @@ const ANSWER_DETAILS: Record<
   3: {
     type: "AI Generated",
     notes: "Contains regular human faces (non-public)",
-    registrationStatus: "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
+    registrationStatus:
+      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
     action: "Take Selfie Photo / Submit Review",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "❌ Not allowed (fixed)",
@@ -81,7 +77,8 @@ const ANSWER_DETAILS: Record<
     notes: "No human faces, no famous brands or characters",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (manual minting fee and revenue share)",
+    smartLicensing:
+      "Commercial Remix License (manual minting fee and revenue share)",
     aiTraining: "✅ Allowed (manual setting)",
   },
   5: {
@@ -95,7 +92,8 @@ const ANSWER_DETAILS: Record<
   6: {
     type: "Human Generated",
     notes: "Contains regular human faces (non-celebrity)",
-    registrationStatus: "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
+    registrationStatus:
+      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
     action: "Take Selfie Photo / Submit Review",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "✅ Allowed (manual setting)",
@@ -105,7 +103,8 @@ const ANSWER_DETAILS: Record<
     notes: "No human faces, no famous brands or characters",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (manual minting fee and revenue share)",
+    smartLicensing:
+      "Commercial Remix License (manual minting fee and revenue share)",
     aiTraining: "❌ Not allowed (fixed)",
   },
   8: {
@@ -119,7 +118,8 @@ const ANSWER_DETAILS: Record<
   9: {
     type: "AI Generated (Animation)",
     notes: "Contains regular human faces (non-public)",
-    registrationStatus: "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
+    registrationStatus:
+      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
     action: "Take Selfie Photo / Submit Review",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "❌ Not allowed (fixed)",
@@ -284,27 +284,24 @@ const IpAssistant = () => {
     setMessages((prev) => [...prev, msg]);
   }, []);
 
-  const saveSession = useCallback(
-    (history: Message[]) => {
-      if (history.length <= 1) return;
-      const firstUserMessage = history.find((message) => message.from === "user");
-      const title = firstUserMessage
-        ? firstUserMessage.text.length > 30
-          ? `${firstUserMessage.text.slice(0, 30)}...`
-          : firstUserMessage.text
-        : `Session ${new Date().toLocaleString()}`;
+  const saveSession = useCallback((history: Message[]) => {
+    if (history.length <= 1) return;
+    const firstUserMessage = history.find((message) => message.from === "user");
+    const title = firstUserMessage
+      ? firstUserMessage.text.length > 30
+        ? `${firstUserMessage.text.slice(0, 30)}...`
+        : firstUserMessage.text
+      : `Session ${new Date().toLocaleString()}`;
 
-      const newSession: ChatSession = {
-        id: String(Date.now()),
-        title,
-        messages: history,
-        ts: new Date().toLocaleString(),
-      };
+    const newSession: ChatSession = {
+      id: String(Date.now()),
+      title,
+      messages: history,
+      ts: new Date().toLocaleString(),
+    };
 
-      setSessions((prev) => [newSession, ...prev].slice(0, 50));
-    },
-    [],
-  );
+    setSessions((prev) => [newSession, ...prev].slice(0, 50));
+  }, []);
 
   const handleNewChat = useCallback(() => {
     saveSession([...messages]);
@@ -562,7 +559,9 @@ const IpAssistant = () => {
         </button>
         <div className="pl-10 space-y-4">
           <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">Current chat</div>
+            <div className="text-sm font-semibold text-[#FF4DA6]">
+              Current chat
+            </div>
             <div className="mt-2 space-y-2">
               {messages.length === 0 ? (
                 <div className="text-xs text-[#BD4385]">No messages yet</div>
@@ -584,17 +583,23 @@ const IpAssistant = () => {
                               : "You"}
                         </span>
                         {message.ts ? (
-                          <span className="text-[10px] text-slate-400">{message.ts}</span>
+                          <span className="text-[10px] text-slate-400">
+                            {message.ts}
+                          </span>
                         ) : null}
                       </div>
-                      <div className="mt-1 text-slate-200">{getMessagePreview(message)}</div>
+                      <div className="mt-1 text-slate-200">
+                        {getMessagePreview(message)}
+                      </div>
                     </div>
                   ))
               )}
             </div>
           </div>
           <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">Saved conversations</div>
+            <div className="text-sm font-semibold text-[#FF4DA6]">
+              Saved conversations
+            </div>
             <div className="mt-2 space-y-2">
               {sessions.length === 0 ? (
                 <div className="text-xs text-[#BD4385]">No saved chats</div>
@@ -719,7 +724,9 @@ const IpAssistant = () => {
                   onAnimationComplete={() => {
                     if (index === messages.length - 1) {
                       setTimeout(() => {
-                        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+                        chatEndRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                        });
                       }, 0);
                     }
                   }}
@@ -733,7 +740,9 @@ const IpAssistant = () => {
                         <span
                           role="button"
                           tabIndex={0}
-                          onClick={() => setActiveDetail(verificationObject.code)}
+                          onClick={() =>
+                            setActiveDetail(verificationObject.code)
+                          }
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
                               event.preventDefault();
@@ -746,7 +755,9 @@ const IpAssistant = () => {
                         </span>
                       </div>
                     ) : verificationText ? (
-                      <div className="mt-2 text-xs text-slate-300">{verificationText}</div>
+                      <div className="mt-2 text-xs text-slate-300">
+                        {verificationText}
+                      </div>
                     ) : null}
                   </div>
                 </motion.div>
@@ -772,8 +783,12 @@ const IpAssistant = () => {
                     src={msg.url}
                     alt="Uploaded"
                     className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
-                    onLoad={() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" })}
-                    onError={() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" })}
+                    onLoad={() =>
+                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    onError={() =>
+                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
+                    }
                   />
                 </div>
               </motion.div>
@@ -952,7 +967,9 @@ const IpAssistant = () => {
                 </div>
               </dl>
             ) : (
-              <p className="mt-4 text-sm text-slate-500">Detail data not found.</p>
+              <p className="mt-4 text-sm text-slate-500">
+                Detail data not found.
+              </p>
             )}
           </div>
         </div>

@@ -130,7 +130,7 @@ const Settings = () => {
                           className="rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40"
                         >
                           <option value="en">English</option>
-                          <option value="id">Bahasa Indonesia</option>
+                          <option value="id">Indonesian</option>
                           <option value="ja">日本語</option>
                           <option value="es">Español</option>
                         </select>

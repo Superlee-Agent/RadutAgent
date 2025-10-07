@@ -8,6 +8,39 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+declare global {
+  interface Window {
+    __privyAnalyticsFetchPatched?: boolean;
+  }
+}
+
+const ensurePrivyAnalyticsFetchPatched = () => {
+  if (typeof window === "undefined") return;
+  if (window.__privyAnalyticsFetchPatched) return;
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    try {
+      return await originalFetch(...args);
+    } catch (error) {
+      const input = args[0];
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof Request
+            ? input.url
+            : undefined;
+      if (url && url.includes("edge.fullstory.com")) {
+        return new Response(null, {
+          status: 204,
+          statusText: "No Content",
+        });
+      }
+      throw error;
+    }
+  };
+  window.__privyAnalyticsFetchPatched = true;
+};
+
 const queryClient = new QueryClient();
 const privyAppId = import.meta.env.VITE_PRIVY_APP_ID;
 

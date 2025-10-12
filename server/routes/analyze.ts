@@ -11,8 +11,46 @@ const upload = multer({
 const PRIMARY_MODEL = process.env.OPENAI_PRIMARY_MODEL ?? "gpt-4o-mini";
 const VERIFIER_MODEL = process.env.OPENAI_VERIFIER_MODEL ?? PRIMARY_MODEL;
 
-const aiAnswers = new Set([1, 2, 3, 4, 9, 10, 11, 12]);
-const humanAnswers = new Set([5, 6, 7, 8]);
+// New classification groups from CSV
+const CLASS_CODES = [
+  "1",
+  "2A",
+  "2B",
+  "3A",
+  "3B",
+  "4",
+  "5A",
+  "5B",
+  "6A",
+  "6B",
+  "7",
+  "8",
+  "9",
+] as const;
+
+const GROUP_META: Record<(typeof CLASS_CODES)[number], { source: "AI" | "Human" | "AI (Animasi)"; notes: string } > = {
+  "1": { source: "AI", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
+  "2A": { source: "AI", notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)" },
+  "2B": { source: "AI", notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)" },
+  "3A": { source: "AI", notes: "Wajah manusia biasa (tidak terkenal), full wajah" },
+  "3B": { source: "AI", notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah" },
+  "4": { source: "Human", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
+  "5A": { source: "Human", notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)" },
+  "5B": { source: "Human", notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)" },
+  "6A": { source: "Human", notes: "Wajah manusia biasa (tidak terkenal), full wajah" },
+  "6B": { source: "Human", notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah" },
+  "7": { source: "AI (Animasi)", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
+  "8": { source: "AI (Animasi)", notes: "Brand/karakter terkenal atau wajah manusia terkenal" },
+  "9": { source: "AI (Animasi)", notes: "Wajah manusia biasa (tidak terkenal)" },
+};
+
+function generationTypeFor(code: (typeof CLASS_CODES)[number] | null): "AI generated" | "Human generated" | null {
+  if (!code) return null;
+  const meta = GROUP_META[code as keyof typeof GROUP_META];
+  if (!meta) return null;
+  if (meta.source === "Human") return "Human generated";
+  return "AI generated"; // AI and AI (Animasi) map to AI generated
+}
 
 const ALLOWED_FACE_TYPES = new Set([
   "None",
@@ -50,7 +88,7 @@ interface AnalysisNormalized {
   ai_artifacts: string[];
   human_cues: string[];
   overall_notes: string[];
-  recommended_answer: number | null;
+  recommended_answer: string | null;
   recommended_reason: string | null;
   raw: any;
 }
@@ -97,7 +135,7 @@ Schema (exact keys, camelCase):
   "ai_artifacts": string[],
   "human_cues": string[],
   "overall_notes": string[],
-  "recommended_answer": 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null,
+  "recommended_answer": string | null, // one of: ${CLASS_CODES.join(", ")}
   "recommended_reason": string | null
 }
 Rules:
@@ -107,28 +145,43 @@ Rules:
 - "primary_source" must reflect your best hypothesis given evidence.
 - If unsure about brands, set present=false and leave names empty.
 - If unsure about identities, use "Unknown" presence and empty arrays.
-- "recommended_answer" should follow the mappings (12 classes): 1=AI no face/brand, 2=AI partial/covered/blurred face (non-public) no clear brand, 3=AI ordinary face (non-public), 4=AI brand/celebrity/public figure, 5=Human no face/brand, 6=Human partial/covered/blurred face (non-public) no clear brand, 7=Human ordinary face (non-public), 8=Human brand/celebrity/public figure, 9=AI animation no face/brand, 10=AI animation partial/covered/blurred face (non-public), 11=AI animation ordinary face (non-public), 12=AI animation brand/celebrity/public figure. Use null if ambiguous.
+- "recommended_answer" should follow these new groups:
+  1 = AI; Tanpa wajah manusia; tanpa brand/karakter terkenal
+  2A = AI; Brand/karakter terkenal atau wajah manusia terkenal (full wajah)
+  2B = AI; Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)
+  3A = AI; Wajah manusia biasa (tidak terkenal); full wajah
+  3B = AI; Wajah manusia biasa (tidak terkenal); tidak full wajah
+  4 = Manusia; Tanpa wajah manusia; tanpa brand/karakter terkenal
+  5A = Manusia; Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)
+  5B = Manusia; Brand/karakter terkenal atau wajah manusia terkenal (full wajah)
+  6A = Manusia; Wajah manusia biasa (tidak terkenal); full wajah
+  6B = Manusia; Wajah manusia biasa (tidak terkenal); tidak full wajah
+  7 = AI (Animasi); Tanpa wajah manusia; tanpa brand/karakter terkenal
+  8 = AI (Animasi); Brand/karakter terkenal atau wajah manusia terkenal
+  9 = AI (Animasi); Wajah manusia biasa (tidak terkenal)
+- Use null if ambiguous.
 - "recommended_reason" <= 25 words describing decisive cues.
 Return exactly one JSON object.`;
 
-const CLASSIFICATION_GUIDE = `Answer mapping:
-1 = AI, no human face, no brand/celebrity
-2 = AI, partial/covered/blurred human face (non-public), no clear brand
-3 = AI, ordinary human face (non-public)
-4 = AI, contains brand/celebrity/public figure
-5 = Human, no human face, no brand/celebrity
-6 = Human, partial/covered/blurred human face (non-public), no clear brand
-7 = Human, ordinary human face (non-public)
-8 = Human, contains brand/celebrity/public figure
-9 = AI animation, no face, no brand
-10 = AI animation, partial/covered/blurred human face (non-public)
-11 = AI animation, ordinary human face (non-public)
-12 = AI animation, contains brand/celebrity/public figure`;
+const CLASSIFICATION_GUIDE = `Answer mapping (use these exact codes):
+1 = AI; Tanpa wajah manusia; tanpa brand/karakter terkenal
+2A = AI; Brand/karakter terkenal atau wajah manusia terkenal (full wajah)
+2B = AI; Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)
+3A = AI; Wajah manusia biasa (tidak terkenal); full wajah
+3B = AI; Wajah manusia biasa (tidak terkenal); tidak full wajah
+4 = Manusia; Tanpa wajah manusia; tanpa brand/karakter terkenal
+5A = Manusia; Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)
+5B = Manusia; Brand/karakter terkenal atau wajah manusia terkenal (full wajah)
+6A = Manusia; Wajah manusia biasa (tidak terkenal); full wajah
+6B = Manusia; Wajah manusia biasa (tidak terkenal); tidak full wajah
+7 = AI (Animasi); Tanpa wajah manusia; tanpa brand/karakter terkenal
+8 = AI (Animasi); Brand/karakter terkenal atau wajah manusia terkenal
+9 = AI (Animasi); Wajah manusia biasa (tidak terkenal)`;
 
-const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-12) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
+const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
 Output ONLY one JSON object with keys exactly:
 {
-  "selected_answer": 1|2|3|4|5|6|7|8|9|10|11|12|null,
+  "selected_answer": string|null, // one of: ${CLASS_CODES.join(", ")}
   "reason": string|null,
   "generation_type": "AI generated"|"Human generated"|null,
   "reconstructed_prompt": string|null,
@@ -144,12 +197,12 @@ Output ONLY one JSON object with keys exactly:
 }
 Rules:
 - "reason" must cite decisive evidence in <=20 words.
-- Align "generation_type" with selected answer (AI answers => "AI generated", human answers => "Human generated").
+- Align "generation_type" with selected answer (codes with source AI or AI (Animasi) => "AI generated", Manusia => "Human generated").
 - If evidence insufficient, set selected_answer=null, reason="ambiguous", generation_type=null, reconstructed_prompt=null.
 - Keep arrays concise (<=4 items each).
 - "confidence" is 0-1 or null.
 - Provide warnings if stage-1 data conflicts with the mapping.
-- If any face is cropped/half/occluded/masked/blurred, set diagnostics.face_type="Partial" and prefer classes 2/6/10 accordingly.`;
+- If any face is cropped/half/occluded/masked/blurred, set diagnostics.face_type="Partial".`;
 
 function buildVerdictPrompt(analysis: AnalysisNormalized, issues: string[]) {
   const context = {
@@ -251,14 +304,11 @@ function normalizeAnalysis(raw: any): {
   const humanCues = normalizeTextArray(raw?.human_cues);
   const overallNotes = normalizeTextArray(raw?.overall_notes);
 
-  let recommendedAnswer: number | null = null;
-  if (typeof raw?.recommended_answer === "number") {
-    if (
-      Number.isInteger(raw.recommended_answer) &&
-      raw.recommended_answer >= 1 &&
-      raw.recommended_answer <= 12
-    ) {
-      recommendedAnswer = raw.recommended_answer;
+  let recommendedAnswer: string | null = null;
+  if (typeof raw?.recommended_answer === "string") {
+    const candidate = raw.recommended_answer.trim().toUpperCase();
+    if ((CLASS_CODES as readonly string[]).includes(candidate)) {
+      recommendedAnswer = candidate;
     } else {
       issues.push("analysis.recommended_answer_out_of_range");
     }
@@ -490,10 +540,10 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     const validateAndNormalize = (rawParsed: any, rawText: string) => {
       const issues: string[] = [];
       const out: any = {
-        selected_answer: null,
-        reason: null,
-        generation_type: null,
-        reconstructed_prompt: null,
+        selected_answer: null as null | (typeof CLASS_CODES)[number],
+        reason: null as null | string,
+        generation_type: null as null | "AI generated" | "Human generated",
+        reconstructed_prompt: null as null | string,
       };
 
       if (!rawParsed || typeof rawParsed !== "object") {
@@ -505,17 +555,11 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       if (sa === null || sa === undefined) {
         out.selected_answer = null;
         issues.push("selected_answer_missing");
-      } else if (
-        typeof sa === "number" &&
-        Number.isInteger(sa) &&
-        sa >= 1 &&
-        sa <= 12
-      ) {
-        out.selected_answer = sa;
-      } else if (typeof sa === "string" && /^\d+$/.test(sa)) {
-        const n = parseInt(sa, 10);
-        if (n >= 1 && n <= 12) out.selected_answer = n;
-        else {
+      } else if (typeof sa === "string") {
+        const candidate = sa.trim().toUpperCase();
+        if ((CLASS_CODES as readonly string[]).includes(candidate)) {
+          out.selected_answer = candidate as (typeof CLASS_CODES)[number];
+        } else {
           issues.push("selected_answer_out_of_range");
         }
       } else {
@@ -555,18 +599,10 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       }
 
       if (out.selected_answer != null) {
-        if (aiAnswers.has(out.selected_answer)) {
-          if (out.generation_type !== "AI generated") {
-            issues.push("generation_type_mismatch_with_answer");
-            out.generation_type = "AI generated";
-          }
-        } else if (humanAnswers.has(out.selected_answer)) {
-          if (out.generation_type !== "Human generated") {
-            issues.push("generation_type_mismatch_with_answer");
-            out.generation_type = "Human generated";
-          }
-        } else {
-          issues.push("selected_answer_not_in_mapping");
+        const expectedGen = generationTypeFor(out.selected_answer);
+        if (expectedGen && out.generation_type !== expectedGen) {
+          issues.push("generation_type_mismatch_with_answer");
+          out.generation_type = expectedGen;
         }
       }
 
@@ -629,6 +665,7 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       _validation_issues: Array.from(
         new Set([...analysisIssues, ...validation.issues]),
       ),
+      _allowed_codes: CLASS_CODES,
     };
 
     const out = {

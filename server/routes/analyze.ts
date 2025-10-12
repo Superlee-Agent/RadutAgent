@@ -173,40 +173,42 @@ const SIMPLE_CLASSIFY_PROMPT = `gambar ini termasuk grup yg mana, jawab hny deng
 8,"AI (Animasi)","Brand/karakter terkenal atau wajah manusia terkenal","❌ Tidak diizinkan","Submit Review","-","-"
 9,"AI (Animasi)","Wajah manusia biasa (tidak terkenal)","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"`;
 
-const MULTI_IMAGE_PROMPT = `Kamu adalah sistem klasifikasi IP otomatis. Tugasmu menganalisis beberapa gambar sekaligus dan mengeluarkan hasil klasifikasi dalam JSON array.
+const MULTI_IMAGE_PROMPT = `Kamu adalah sistem klasifikasi IP otomatis. Tugasmu adalah menganalisis beberapa gambar sekaligus dan mengeluarkan hasil klasifikasi lengkap dalam format JSON.
 
-Langkah Analisis per Gambar:
-1) Tentukan Sumber Gambar: AI / Manusia / AI (Animasi)
-2) Tentukan Kandungan Gambar:
-- wajah_manusia: Ya/Tidak
-- wajah_full: Ya/Tidak
-- wajah_terkenal: Ya/Tidak
-- brand_karakter_terkenal: Ya/Tidak
-- jumlah_orang: angka
-- animasi_style: 2D/3D/cartoon/stylized/realistic
-- metadata: EXIF/watermark/software edit (jika terlihat)
-3) Tentukan Grup_UTAMA, Sub_Grup, dan aturan IP (Status Registrasi, Opsi Tambahan, Smart Licensing, AI Training) mengikuti tabel 13 sub-grup di bawah.
-4) Gunakan ambang kepercayaan (confidence) 0-1. Jika < 0.85, tandai kasus sebagai perlu "Review Manual".
+Langkah-langkah Analisis per Gambar:
 
-Tabel 13 Sub-Grup (patokan presisi output):
-Grup,Sumber Gambar,Kandungan,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training
-1,AI,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
-2A,AI,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
-2B,AI,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
-3A,AI,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"
-3B,AI,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
-4,Manusia,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
-5A,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
-5B,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
-6A,Manusia,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","✅ Diizinkan (manual setting)"
-6B,Manusia,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
-7,"AI (Animasi)","Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
-8,"AI (Animasi)","Brand/karakter terkenal atau wajah manusia terkenal","❌ Tidak diizinkan","Submit Review","-","-"
-9,"AI (Animasi)","Wajah manusia biasa (tidak terkenal)","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"
+1️⃣ Tentukan Sumber Gambar:
+- AI → Hasil sepenuhnya dari model AI (DALL·E, MidJourney, Stable Diffusion, dll)
+- Manusia → Hasil jepretan kamera nyata atau gambar manual manusia
+- AI (Animasi) → Hasil AI berbentuk animasi/cartoon, bukan foto nyata
+Jawaban: AI / Manusia / AI (Animasi)
 
-Nama file gambar (berurutan): GUNAKAN DAFTAR NAMA YANG DISEDIAKAN PENGGUNA di pesan ini, dan pastikan field "nama_file_gambar" persis sama.
+2️⃣ Tentukan Kandungan Gambar:
+- Apakah ada wajah manusia? → Ya / Tidak
+- Jika ya, apakah wajahnya penuh (rambut sampai dagu)? → Ya / Tidak
+- Apakah wajah termasuk orang terkenal (selebriti/public figure)? → Ya / Tidak
+- Apakah ada brand atau karakter terkenal (misal Disney, Marvel, anime populer)? → Ya / Tidak
+- Jumlah orang dalam gambar
+- Animasi / Style: 2D, 3D, cartoon, stylized, realistic
+- Metadata / Provenance: EXIF, watermark, software edit (jika tersedia)
 
-Kembalikan HANYA satu JSON array dengan format tepat (tanpa teks lain):
+Format jawaban JSON per gambar:
+{
+  "wajah_manusia": "Ya/Tidak",
+  "wajah_full": "Ya/Tidak",
+  "wajah_terkenal": "Ya/Tidak",
+  "brand_karakter_terkenal": "Ya/Tidak",
+  "jumlah_orang": angka,
+  "animasi_style": "text",
+  "metadata": "text"
+}
+
+3️⃣ Berdasarkan hasil di atas, tentukan Grup_UTAMA, Sub_Grup, dan aturan IP:
+- Gunakan tabel klasifikasi 13 sub-grup yang sudah ada (versi diperluas)
+- Tentukan Status Registrasi IP, Opsi Tambahan, Smart Licensing, AI Training sesuai logika grup
+- Gunakan threshold confidence ≥0.85 untuk keputusan otomatis, jika dibawah → tandai “Review Manual”
+
+4️⃣ Output batch JSON untuk semua gambar yang dianalisis, format:
 [
   {
     "nama_file_gambar": "string",
@@ -218,7 +220,23 @@ Kembalikan HANYA satu JSON array dengan format tepat (tanpa teks lain):
     "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
     "confidence": number
   }
-]`;
+]
+
+Tabel klasifikasi (CSV):
+Grup_UTAMA,Sub_Grup,Sumber Gambar,Subkategori Sumber,Wajah Manusia,Wajah Full,Wajah Terkenal,Brand/Karakter Terkenal,Jumlah Orang,Animasi/Style,Metadata/Provenance,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training,Confidence
+1,1,AI,Realistic/Styled,Tidak,-,-,Tidak,-,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+2,2A,AI,Realistic/Styled,Ya,Ya,Ya,Ya,-,-,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
+2,2B,AI,Realistic/Styled,Ya,Tidak,Ya,Ya,-,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+3,3A,AI,Realistic/Styled,Ya,Ya,Tidak,Tidak,1,-,-,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),❌ Tidak diizinkan (fixed),0.85
+3,3B,AI,Realistic/Styled,Ya,Tidak,Tidak,Tidak,1,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.85
+4,4,Manusia,Foto/Ilustrasi,Tidak,-,-,Tidak,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
+5,5A,Manusia,Foto/Ilustrasi,Ya,Tidak,Ya,Ya,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
+5,5B,Manusia,Foto/Ilustrasi,Ya,Ya,Ya,Ya,-,-,Ada EXIF, watermark optional,❌ Tidak diizinkan,Submit Review,-,-,0.95
+6,6A,Manusia,Foto/Ilustrasi,Ya,Ya,Tidak,Tidak,1,-,Ada EXIF, watermark optional,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),✅ Diizinkan (manual),0.85
+6,6B,Manusia,Foto/Ilustrasi,Ya,Tidak,Tidak,Tidak,1,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.85
+7,7,AI (Animasi),Cartoon/2D/3D,Tidak,-,-,Tidak,-,2D/3D Cartoon,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+8,8,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Ya,Ya,-,2D/3D Cartoon,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
+9,9,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Tidak,Tidak,1,2D/3D Cartoon,-,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),❌ Tidak diizinkan (fixed),0.85`;
 
 const ANALYSIS_PROMPT = `You are an expert forensic analyst. Examine the provided image thoroughly and return ONLY a single JSON object (no markdown, no text outside JSON).
 Schema (exact keys, camelCase):

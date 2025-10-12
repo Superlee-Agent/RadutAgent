@@ -477,29 +477,30 @@ const IpAssistant = () => {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
         const inputEl = event.currentTarget as HTMLInputElement;
-        const file = inputEl.files?.[0];
+        const files = inputEl.files ? Array.from(inputEl.files) : [];
         if (inputEl) inputEl.value = "";
-        if (!file) return;
+        if (files.length === 0) return;
 
-        const url = URL.createObjectURL(file);
-        pushMessage({
-          from: "user-image",
-          url,
-          ts: getCurrentTimestamp(),
-        });
+        // Show previews
+        for (const f of files) {
+          const url = URL.createObjectURL(f);
+          pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
+        }
         autoScrollNextRef.current = true;
         setWaiting(true);
 
-        let blob: Blob;
-        try {
-          blob = await compressAndEnsureSize(file, 250 * 1024);
-        } catch (error) {
-          console.error("Compression failed, sending original file", error);
-          blob = file;
-        }
-
+        // Compress and build form
         const form = new FormData();
-        form.append("image", blob, file.name);
+        for (const f of files) {
+          let blob: Blob;
+          try {
+            blob = await compressAndEnsureSize(f, 250 * 1024);
+          } catch (error) {
+            console.error("Compression failed, sending original file", error);
+            blob = f;
+          }
+          form.append("images", blob, f.name || "image.jpg");
+        }
 
         const response = await fetch("/api/analyze", {
           method: "POST",
@@ -532,10 +533,30 @@ const IpAssistant = () => {
 
         const data = await response.json();
         const parsed = data?.parsed;
+        const parsedBatch = Array.isArray(data?.parsed_batch)
+          ? (data.parsed_batch as any[])
+          : null;
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (parsed && typeof parsed === "object") {
+        if (parsedBatch && parsedBatch.length > 0) {
+          // Summarize batch
+          const lines = parsedBatch.slice(0, 6).map((item: any) => {
+            const name = String(item?.nama_file_gambar ?? "?");
+            const sub = String(item?.Sub_Grup ?? "?").toUpperCase();
+            const status = String(item?.status_registrasi ?? "");
+            const conf =
+              typeof item?.confidence === "number"
+                ? ` (${item.confidence.toFixed(2)})`
+                : "";
+            return `${name}: ${sub} · ${status}${conf}`;
+          });
+          display = lines.join("\n");
+          const firstSub = String(parsedBatch[0]?.Sub_Grup ?? "").toUpperCase();
+          if (firstSub && ANSWER_LABELS[firstSub]) {
+            verification = { label: ANSWER_LABELS[firstSub], code: firstSub };
+          }
+        } else if (parsed && typeof parsed === "object") {
           const finalAnswer =
             typeof parsed.selected_answer === "string"
               ? String(parsed.selected_answer).trim().toUpperCase()
@@ -932,6 +953,7 @@ const IpAssistant = () => {
         ref={uploadRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={handleImage}
       />

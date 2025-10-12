@@ -64,7 +64,7 @@ const ANSWER_DETAILS: Record<
     notes: "Partial/covered/blurred human face (non-public), no clear brand",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
+    smartLicensing: "Commercial Remix License",
     aiTraining: "❌ Not allowed (fixed)",
   },
   3: {
@@ -99,7 +99,7 @@ const ANSWER_DETAILS: Record<
     notes: "Partial/covered/blurred human face (non-public), no clear brand",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
+    smartLicensing: "Commercial Remix License",
     aiTraining: "✅ Allowed (manual setting)",
   },
   7: {
@@ -134,7 +134,7 @@ const ANSWER_DETAILS: Record<
     notes: "Partial/covered/blurred human face (non-public)",
     registrationStatus: "✅ Allowed",
     action: "-",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
+    smartLicensing: "Commercial Remix License",
     aiTraining: "❌ Not allowed (fixed)",
   },
   11: {

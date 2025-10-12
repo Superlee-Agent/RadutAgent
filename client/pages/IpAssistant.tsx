@@ -455,6 +455,20 @@ const IpAssistant = () => {
     [compressToBlob],
   );
 
+  const summaryFromAnswer = (code: number): string => {
+    const source = code <= 4 ? "AI generated" : code <= 8 ? "Human generated" : "AI generated (Animation)";
+    const bucket = code % 4 === 1 ? 1 : code % 4 === 2 ? 2 : code % 4 === 3 ? 3 : 0; // 0 represents brand/celebrity/public figure
+    const detail =
+      bucket === 1
+        ? "no human face/brand"
+        : bucket === 2
+          ? "partial/occluded human face (non-public), no clear brand"
+          : bucket === 3
+            ? "ordinary human face (non-public)"
+            : "brand/celebrity/public figure present";
+    return `${source} · ${detail}.`;
+  };
+
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
@@ -518,10 +532,6 @@ const IpAssistant = () => {
         let verification: { label: string; code: number } | string | undefined;
 
         if (parsed && typeof parsed === "object") {
-          const reason =
-            typeof parsed.reason === "string" ? parsed.reason.trim() : "";
-          display = reason || "(No analysis result)";
-
           const finalAnswer =
             typeof parsed.selected_answer === "number" &&
             Number.isInteger(parsed.selected_answer)
@@ -531,6 +541,11 @@ const IpAssistant = () => {
           if (finalAnswer != null) {
             const label = ANSWER_LABELS[finalAnswer] ?? `Group ${finalAnswer}`;
             verification = { label, code: finalAnswer };
+            display = summaryFromAnswer(finalAnswer);
+          } else {
+            const reason =
+              typeof parsed.reason === "string" ? parsed.reason.trim() : "";
+            display = reason || "(No analysis result)";
           }
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";

@@ -112,7 +112,12 @@ interface StageAttempt {
   ok: boolean;
   text: string | null;
   raw: any;
-  stage: "analysis" | "analysis-repair" | "verdict" | "verdict-repair";
+  stage:
+    | "simple"
+    | "analysis"
+    | "analysis-repair"
+    | "verdict"
+    | "verdict-repair";
 }
 
 interface AnalysisNormalized {

@@ -11,10 +11,10 @@ const upload = multer({
 const PRIMARY_MODEL = process.env.OPENAI_PRIMARY_MODEL ?? "gpt-4o-mini";
 const VERIFIER_MODEL = process.env.OPENAI_VERIFIER_MODEL ?? PRIMARY_MODEL;
 
-const aiAnswers = new Set([1, 2, 3, 7, 8, 9]);
-const humanAnswers = new Set([4, 5, 6]);
+const aiAnswers = new Set([1, 2, 3, 4, 9, 10, 11, 12]);
+const humanAnswers = new Set([5, 6, 7, 8]);
 
-const ALLOWED_FACE_TYPES = new Set(["None", "Ordinary", "Famous", "Unknown"]);
+const ALLOWED_FACE_TYPES = new Set(["None", "Partial", "Ordinary", "Famous", "Unknown"]);
 const ALLOWED_SOURCE_LABELS = new Set(["AI", "Human", "Animation", "Unknown"]);
 
 interface StageAttempt {
@@ -74,7 +74,7 @@ Schema (exact keys, camelCase):
     "rationale": string[]        // bullet-like evidence phrases
   },
   "faces": {
-    "presence": "None" | "Ordinary" | "Famous" | "Unknown",
+    "presence": "None" | "Partial" | "Ordinary" | "Famous" | "Unknown",
     "count": integer | null,
     "evidence": string[],
     "noted_identities": string[]
@@ -107,19 +107,22 @@ Return exactly one JSON object.`;
 
 const CLASSIFICATION_GUIDE = `Answer mapping:
 1 = AI, no human face, no brand/celebrity
-2 = AI, contains brand/celebrity face
-3 = AI, contains ordinary human face
-4 = Human, no human face, no brand/celebrity
-5 = Human, contains brand/celebrity face
-6 = Human, contains ordinary human face
-7 = AI animation, no face, no brand
-8 = AI animation, contains brand/celebrity
-9 = AI animation, contains ordinary human face`;
+2 = AI, partial/covered/blurred human face (non-public), no clear brand
+3 = AI, ordinary human face (non-public)
+4 = AI, contains brand/celebrity/public figure
+5 = Human, no human face, no brand/celebrity
+6 = Human, partial/covered/blurred human face (non-public), no clear brand
+7 = Human, ordinary human face (non-public)
+8 = Human, contains brand/celebrity/public figure
+9 = AI animation, no face, no brand
+10 = AI animation, partial/covered/blurred human face (non-public)
+11 = AI animation, ordinary human face (non-public)
+12 = AI animation, contains brand/celebrity/public figure`;
 
 const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-9) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
 Output ONLY one JSON object with keys exactly:
 {
-  "selected_answer": 1|2|3|4|5|6|7|8|9|null,
+  "selected_answer": 1|2|3|4|5|6|7|8|9|10|11|12|null,
   "reason": string|null,
   "generation_type": "AI generated"|"Human generated"|null,
   "reconstructed_prompt": string|null,
@@ -499,12 +502,12 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         typeof sa === "number" &&
         Number.isInteger(sa) &&
         sa >= 1 &&
-        sa <= 9
+        sa <= 12
       ) {
         out.selected_answer = sa;
       } else if (typeof sa === "string" && /^\d+$/.test(sa)) {
         const n = parseInt(sa, 10);
-        if (n >= 1 && n <= 9) out.selected_answer = n;
+        if (n >= 1 && n <= 12) out.selected_answer = n;
         else {
           issues.push("selected_answer_out_of_range");
         }

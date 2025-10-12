@@ -70,7 +70,8 @@ const ANSWER_DETAILS: Record<
   },
   "2B": {
     type: "AI Generated",
-    notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
+    notes:
+      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
     registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
     smartLicensing:
@@ -81,8 +82,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes: "Wajah manusia biasa (tidak terkenal), full wajah",
     registrationStatus: "❌ Tidak langsung diizinkan",
-    action:
-      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
     smartLicensing: "Commercial Remix License (jika sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },
@@ -117,8 +117,7 @@ const ANSWER_DETAILS: Record<
   },
   "5B": {
     type: "Human Generated",
-    notes:
-      "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
     registrationStatus: "❌ Tidak diizinkan",
     action: "Submit Review",
     smartLicensing: "-",
@@ -128,8 +127,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated",
     notes: "Wajah manusia biasa (tidak terkenal), full wajah",
     registrationStatus: "❌ Tidak langsung diizinkan",
-    action:
-      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
     smartLicensing: "Commercial Remix License (jika sukses)",
     aiTraining: "✅ Diizinkan (manual setting)",
   },
@@ -164,8 +162,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated (Animation)",
     notes: "Wajah manusia biasa (tidak terkenal)",
     registrationStatus: "❌ Tidak langsung diizinkan",
-    action:
-      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
     smartLicensing: "Commercial Remix License (jika sukses)",
     aiTraining: "❌ Tidak diizinkan (fixed)",
   },

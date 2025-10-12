@@ -28,23 +28,69 @@ const CLASS_CODES = [
   "9",
 ] as const;
 
-const GROUP_META: Record<(typeof CLASS_CODES)[number], { source: "AI" | "Human" | "AI (Animasi)"; notes: string } > = {
-  "1": { source: "AI", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
-  "2A": { source: "AI", notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)" },
-  "2B": { source: "AI", notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)" },
-  "3A": { source: "AI", notes: "Wajah manusia biasa (tidak terkenal), full wajah" },
-  "3B": { source: "AI", notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah" },
-  "4": { source: "Human", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
-  "5A": { source: "Human", notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)" },
-  "5B": { source: "Human", notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)" },
-  "6A": { source: "Human", notes: "Wajah manusia biasa (tidak terkenal), full wajah" },
-  "6B": { source: "Human", notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah" },
-  "7": { source: "AI (Animasi)", notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal" },
-  "8": { source: "AI (Animasi)", notes: "Brand/karakter terkenal atau wajah manusia terkenal" },
-  "9": { source: "AI (Animasi)", notes: "Wajah manusia biasa (tidak terkenal)" },
+const GROUP_META: Record<
+  (typeof CLASS_CODES)[number],
+  { source: "AI" | "Human" | "AI (Animasi)"; notes: string }
+> = {
+  "1": {
+    source: "AI",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+  },
+  "2A": {
+    source: "AI",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
+  },
+  "2B": {
+    source: "AI",
+    notes:
+      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
+  },
+  "3A": {
+    source: "AI",
+    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
+  },
+  "3B": {
+    source: "AI",
+    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
+  },
+  "4": {
+    source: "Human",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+  },
+  "5A": {
+    source: "Human",
+    notes:
+      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
+  },
+  "5B": {
+    source: "Human",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
+  },
+  "6A": {
+    source: "Human",
+    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
+  },
+  "6B": {
+    source: "Human",
+    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
+  },
+  "7": {
+    source: "AI (Animasi)",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+  },
+  "8": {
+    source: "AI (Animasi)",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal",
+  },
+  "9": {
+    source: "AI (Animasi)",
+    notes: "Wajah manusia biasa (tidak terkenal)",
+  },
 };
 
-function generationTypeFor(code: (typeof CLASS_CODES)[number] | null): "AI generated" | "Human generated" | null {
+function generationTypeFor(
+  code: (typeof CLASS_CODES)[number] | null,
+): "AI generated" | "Human generated" | null {
   if (!code) return null;
   const meta = GROUP_META[code as keyof typeof GROUP_META];
   if (!meta) return null;

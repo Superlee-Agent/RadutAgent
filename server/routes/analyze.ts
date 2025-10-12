@@ -514,10 +514,12 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       stage: StageAttempt["stage"],
       prompt: string,
       model: string,
+      maxTokens = 900,
+      temperature = 0.1,
     ) => {
       const response = await client.responses.create({
         model,
-        temperature: 0.1,
+        temperature,
         input: [
           {
             role: "user",
@@ -527,7 +529,7 @@ const analyzeHandler: RequestHandler = async (req, res) => {
             ],
           },
         ],
-        max_output_tokens: 900,
+        max_output_tokens: maxTokens,
       } as any);
       const text = (extractText(response) || "").trim();
       attempts.push({

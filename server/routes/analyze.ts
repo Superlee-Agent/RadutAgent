@@ -11,10 +11,16 @@ const upload = multer({
 const PRIMARY_MODEL = process.env.OPENAI_PRIMARY_MODEL ?? "gpt-4o-mini";
 const VERIFIER_MODEL = process.env.OPENAI_VERIFIER_MODEL ?? PRIMARY_MODEL;
 
-const aiAnswers = new Set([1, 2, 3, 7, 8, 9]);
-const humanAnswers = new Set([4, 5, 6]);
+const aiAnswers = new Set([1, 2, 3, 4, 9, 10, 11, 12]);
+const humanAnswers = new Set([5, 6, 7, 8]);
 
-const ALLOWED_FACE_TYPES = new Set(["None", "Ordinary", "Famous", "Unknown"]);
+const ALLOWED_FACE_TYPES = new Set([
+  "None",
+  "Partial",
+  "Ordinary",
+  "Famous",
+  "Unknown",
+]);
 const ALLOWED_SOURCE_LABELS = new Set(["AI", "Human", "Animation", "Unknown"]);
 
 interface StageAttempt {
@@ -33,7 +39,7 @@ interface AnalysisNormalized {
     human: number | null;
     animation: number | null;
   };
-  faces_presence: "None" | "Ordinary" | "Famous" | "Unknown";
+  faces_presence: "None" | "Partial" | "Ordinary" | "Famous" | "Unknown";
   faces_count: number | null;
   faces_evidence: string[];
   brand_present: boolean | null;
@@ -53,7 +59,7 @@ interface VerdictExtras {
   decision_notes: string[];
   consistency_warnings: string[];
   diagnostics: {
-    face_type: "None" | "Ordinary" | "Famous" | "Unknown" | null;
+    face_type: "None" | "Partial" | "Ordinary" | "Famous" | "Unknown" | null;
     has_brand: boolean | null;
     is_animation: boolean | null;
     source_label: "AI" | "Human" | "Animation" | "Unknown" | null;
@@ -74,7 +80,7 @@ Schema (exact keys, camelCase):
     "rationale": string[]        // bullet-like evidence phrases
   },
   "faces": {
-    "presence": "None" | "Ordinary" | "Famous" | "Unknown",
+    "presence": "None" | "Partial" | "Ordinary" | "Famous" | "Unknown",
     "count": integer | null,
     "evidence": string[],
     "noted_identities": string[]
@@ -91,7 +97,7 @@ Schema (exact keys, camelCase):
   "ai_artifacts": string[],
   "human_cues": string[],
   "overall_notes": string[],
-  "recommended_answer": 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | null,
+  "recommended_answer": 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null,
   "recommended_reason": string | null
 }
 Rules:
@@ -101,32 +107,35 @@ Rules:
 - "primary_source" must reflect your best hypothesis given evidence.
 - If unsure about brands, set present=false and leave names empty.
 - If unsure about identities, use "Unknown" presence and empty arrays.
-- "recommended_answer" should follow the mappings: 1=AI no face/brand, 2=AI with brand/celebrity, 3=AI with ordinary face, 4=Human no face/brand, 5=Human celebrity, 6=Human ordinary face, 7=AI animation no face/brand, 8=AI animation with brand/celebrity, 9=AI animation with ordinary face. Use null if ambiguous.
+- "recommended_answer" should follow the mappings (12 classes): 1=AI no face/brand, 2=AI partial/covered/blurred face (non-public) no clear brand, 3=AI ordinary face (non-public), 4=AI brand/celebrity/public figure, 5=Human no face/brand, 6=Human partial/covered/blurred face (non-public) no clear brand, 7=Human ordinary face (non-public), 8=Human brand/celebrity/public figure, 9=AI animation no face/brand, 10=AI animation partial/covered/blurred face (non-public), 11=AI animation ordinary face (non-public), 12=AI animation brand/celebrity/public figure. Use null if ambiguous.
 - "recommended_reason" <= 25 words describing decisive cues.
 Return exactly one JSON object.`;
 
 const CLASSIFICATION_GUIDE = `Answer mapping:
 1 = AI, no human face, no brand/celebrity
-2 = AI, contains brand/celebrity face
-3 = AI, contains ordinary human face
-4 = Human, no human face, no brand/celebrity
-5 = Human, contains brand/celebrity face
-6 = Human, contains ordinary human face
-7 = AI animation, no face, no brand
-8 = AI animation, contains brand/celebrity
-9 = AI animation, contains ordinary human face`;
+2 = AI, partial/covered/blurred human face (non-public), no clear brand
+3 = AI, ordinary human face (non-public)
+4 = AI, contains brand/celebrity/public figure
+5 = Human, no human face, no brand/celebrity
+6 = Human, partial/covered/blurred human face (non-public), no clear brand
+7 = Human, ordinary human face (non-public)
+8 = Human, contains brand/celebrity/public figure
+9 = AI animation, no face, no brand
+10 = AI animation, partial/covered/blurred human face (non-public)
+11 = AI animation, ordinary human face (non-public)
+12 = AI animation, contains brand/celebrity/public figure`;
 
-const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-9) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
+const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-12) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
 Output ONLY one JSON object with keys exactly:
 {
-  "selected_answer": 1|2|3|4|5|6|7|8|9|null,
+  "selected_answer": 1|2|3|4|5|6|7|8|9|10|11|12|null,
   "reason": string|null,
   "generation_type": "AI generated"|"Human generated"|null,
   "reconstructed_prompt": string|null,
   "decision_notes": string[],
   "consistency_warnings": string[],
   "diagnostics": {
-    "face_type": "None"|"Ordinary"|"Famous"|"Unknown"|null,
+    "face_type": "None"|"Partial"|"Ordinary"|"Famous"|"Unknown"|null,
     "has_brand": boolean|null,
     "is_animation": boolean|null,
     "source_label": "AI"|"Human"|"Animation"|"Unknown"|null,
@@ -139,7 +148,8 @@ Rules:
 - If evidence insufficient, set selected_answer=null, reason="ambiguous", generation_type=null, reconstructed_prompt=null.
 - Keep arrays concise (<=4 items each).
 - "confidence" is 0-1 or null.
-- Provide warnings if stage-1 data conflicts with the mapping.`;
+- Provide warnings if stage-1 data conflicts with the mapping.
+- If any face is cropped/half/occluded/masked/blurred, set diagnostics.face_type="Partial" and prefer classes 2/6/10 accordingly.`;
 
 function buildVerdictPrompt(analysis: AnalysisNormalized, issues: string[]) {
   const context = {
@@ -246,7 +256,7 @@ function normalizeAnalysis(raw: any): {
     if (
       Number.isInteger(raw.recommended_answer) &&
       raw.recommended_answer >= 1 &&
-      raw.recommended_answer <= 9
+      raw.recommended_answer <= 12
     ) {
       recommendedAnswer = raw.recommended_answer;
     } else {
@@ -499,12 +509,12 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         typeof sa === "number" &&
         Number.isInteger(sa) &&
         sa >= 1 &&
-        sa <= 9
+        sa <= 12
       ) {
         out.selected_answer = sa;
       } else if (typeof sa === "string" && /^\d+$/.test(sa)) {
         const n = parseInt(sa, 10);
-        if (n >= 1 && n <= 9) out.selected_answer = n;
+        if (n >= 1 && n <= 12) out.selected_answer = n;
         else {
           issues.push("selected_answer_out_of_range");
         }

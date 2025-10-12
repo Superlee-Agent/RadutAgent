@@ -33,6 +33,9 @@ const ANSWER_LABELS: Record<number, string> = {
   7: "Group 7",
   8: "Group 8",
   9: "Group 9",
+  10: "Group 10",
+  11: "Group 11",
+  12: "Group 12",
 };
 
 const ANSWER_DETAILS: Record<
@@ -46,6 +49,7 @@ const ANSWER_DETAILS: Record<
     aiTraining: string;
   }
 > = {
+  // AI: 1-4
   1: {
     type: "AI Generated",
     notes: "No human faces, no famous brands or characters",
@@ -57,11 +61,11 @@ const ANSWER_DETAILS: Record<
   },
   2: {
     type: "AI Generated",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
-    action: "Submit Review",
-    smartLicensing: "-",
-    aiTraining: "-",
+    notes: "Partial/covered/blurred human face (non-public), no clear brand",
+    registrationStatus: "✅ Allowed",
+    action: "-",
+    smartLicensing: "Commercial Remix License",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   3: {
     type: "AI Generated",
@@ -73,6 +77,15 @@ const ANSWER_DETAILS: Record<
     aiTraining: "❌ Not allowed (fixed)",
   },
   4: {
+    type: "AI Generated",
+    notes: "Contains famous brands/characters or public figure faces",
+    registrationStatus: "❌ Not allowed",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  // Human: 5-8
+  5: {
     type: "Human Generated",
     notes: "No human faces, no famous brands or characters",
     registrationStatus: "✅ Allowed",
@@ -81,15 +94,15 @@ const ANSWER_DETAILS: Record<
       "Commercial Remix License (manual minting fee and revenue share)",
     aiTraining: "✅ Allowed (manual setting)",
   },
-  5: {
-    type: "Human Generated",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
-    action: "Submit Review",
-    smartLicensing: "-",
-    aiTraining: "-",
-  },
   6: {
+    type: "Human Generated",
+    notes: "Partial/covered/blurred human face (non-public), no clear brand",
+    registrationStatus: "✅ Allowed",
+    action: "-",
+    smartLicensing: "Commercial Remix License",
+    aiTraining: "✅ Allowed (manual setting)",
+  },
+  7: {
     type: "Human Generated",
     notes: "Contains regular human faces (non-celebrity)",
     registrationStatus:
@@ -98,7 +111,16 @@ const ANSWER_DETAILS: Record<
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "✅ Allowed (manual setting)",
   },
-  7: {
+  8: {
+    type: "Human Generated",
+    notes: "Contains famous brands/characters or public figure faces",
+    registrationStatus: "❌ Not allowed",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  // AI Animation: 9-12
+  9: {
     type: "AI Generated (Animation)",
     notes: "No human faces, no famous brands or characters",
     registrationStatus: "✅ Allowed",
@@ -107,15 +129,15 @@ const ANSWER_DETAILS: Record<
       "Commercial Remix License (manual minting fee and revenue share)",
     aiTraining: "❌ Not allowed (fixed)",
   },
-  8: {
+  10: {
     type: "AI Generated (Animation)",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
-    action: "Submit Review",
-    smartLicensing: "-",
-    aiTraining: "-",
+    notes: "Partial/covered/blurred human face (non-public)",
+    registrationStatus: "✅ Allowed",
+    action: "-",
+    smartLicensing: "Commercial Remix License",
+    aiTraining: "❌ Not allowed (fixed)",
   },
-  9: {
+  11: {
     type: "AI Generated (Animation)",
     notes: "Contains regular human faces (non-public)",
     registrationStatus:
@@ -123,6 +145,14 @@ const ANSWER_DETAILS: Record<
     action: "Take Selfie Photo / Submit Review",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "❌ Not allowed (fixed)",
+  },
+  12: {
+    type: "AI Generated (Animation)",
+    notes: "Contains famous brands/characters or public figure faces",
+    registrationStatus: "❌ Not allowed",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
   },
 };
 
@@ -425,6 +455,26 @@ const IpAssistant = () => {
     [compressToBlob],
   );
 
+  const summaryFromAnswer = (code: number): string => {
+    const source =
+      code <= 4
+        ? "AI generated"
+        : code <= 8
+          ? "Human generated"
+          : "AI generated (Animation)";
+    const bucket =
+      code % 4 === 1 ? 1 : code % 4 === 2 ? 2 : code % 4 === 3 ? 3 : 0; // 0 represents brand/celebrity/public figure
+    const detail =
+      bucket === 1
+        ? "no human face/brand"
+        : bucket === 2
+          ? "partial/occluded human face (non-public), no clear brand"
+          : bucket === 3
+            ? "ordinary human face (non-public)"
+            : "brand/celebrity/public figure present";
+    return `${source} · ${detail}.`;
+  };
+
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
@@ -488,10 +538,6 @@ const IpAssistant = () => {
         let verification: { label: string; code: number } | string | undefined;
 
         if (parsed && typeof parsed === "object") {
-          const reason =
-            typeof parsed.reason === "string" ? parsed.reason.trim() : "";
-          display = reason || "(No analysis result)";
-
           const finalAnswer =
             typeof parsed.selected_answer === "number" &&
             Number.isInteger(parsed.selected_answer)
@@ -501,6 +547,11 @@ const IpAssistant = () => {
           if (finalAnswer != null) {
             const label = ANSWER_LABELS[finalAnswer] ?? `Group ${finalAnswer}`;
             verification = { label, code: finalAnswer };
+            display = summaryFromAnswer(finalAnswer);
+          } else {
+            const reason =
+              typeof parsed.reason === "string" ? parsed.reason.trim() : "";
+            display = reason || "(No analysis result)";
           }
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";

@@ -8,7 +8,7 @@ type BotMessage = {
   from: "bot";
   text: string;
   ts?: string;
-  verification?: { label: string; code: number } | string | null;
+  verification?: { label: string; code: string } | string | null;
 };
 
 export type Message =
@@ -23,23 +23,24 @@ export type ChatSession = {
   ts: string;
 };
 
-const ANSWER_LABELS: Record<number, string> = {
-  1: "Group 1",
-  2: "Group 2",
-  3: "Group 3",
-  4: "Group 4",
-  5: "Group 5",
-  6: "Group 6",
-  7: "Group 7",
-  8: "Group 8",
-  9: "Group 9",
-  10: "Group 10",
-  11: "Group 11",
-  12: "Group 12",
+const ANSWER_LABELS: Record<string, string> = {
+  "1": "Group 1",
+  "2A": "Group 2A",
+  "2B": "Group 2B",
+  "3A": "Group 3A",
+  "3B": "Group 3B",
+  "4": "Group 4",
+  "5A": "Group 5A",
+  "5B": "Group 5B",
+  "6A": "Group 6A",
+  "6B": "Group 6B",
+  "7": "Group 7",
+  "8": "Group 8",
+  "9": "Group 9",
 };
 
 const ANSWER_DETAILS: Record<
-  number,
+  string,
   {
     type: string;
     notes: string;
@@ -49,110 +50,124 @@ const ANSWER_DETAILS: Record<
     aiTraining: string;
   }
 > = {
-  // AI: 1-4
-  1: {
+  // AI
+  "1": {
     type: "AI Generated",
-    notes: "No human faces, no famous brands or characters",
-    registrationStatus: "✅ Allowed",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (manual minting fee and revenue share)",
-    aiTraining: "❌ Not allowed (fixed)",
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
-  2: {
+  "2A": {
     type: "AI Generated",
-    notes: "Partial/covered/blurred human face (non-public), no clear brand",
-    registrationStatus: "✅ Allowed",
-    action: "-",
-    smartLicensing: "Commercial Remix License",
-    aiTraining: "❌ Not allowed (fixed)",
-  },
-  3: {
-    type: "AI Generated",
-    notes: "Contains regular human faces (non-public)",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
-    aiTraining: "❌ Not allowed (fixed)",
-  },
-  4: {
-    type: "AI Generated",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
+    registrationStatus: "❌ Tidak diizinkan",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
-  // Human: 5-8
-  5: {
-    type: "Human Generated",
-    notes: "No human faces, no famous brands or characters",
-    registrationStatus: "✅ Allowed",
+  "2B": {
+    type: "AI Generated",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
+    registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (manual minting fee and revenue share)",
-    aiTraining: "✅ Allowed (manual setting)",
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
-  6: {
-    type: "Human Generated",
-    notes: "Partial/covered/blurred human face (non-public), no clear brand",
-    registrationStatus: "✅ Allowed",
+  "3A": {
+    type: "AI Generated",
+    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
+    registrationStatus: "❌ Tidak langsung diizinkan",
+    action:
+      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    smartLicensing: "Commercial Remix License (jika sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
+  },
+  "3B": {
+    type: "AI Generated",
+    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
+    registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
-    smartLicensing: "Commercial Remix License",
-    aiTraining: "✅ Allowed (manual setting)",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
-  7: {
+  // Human
+  "4": {
     type: "Human Generated",
-    notes: "Contains regular human faces (non-celebrity)",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
-    aiTraining: "✅ Allowed (manual setting)",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    registrationStatus: "✅ Bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting)",
   },
-  8: {
+  "5A": {
     type: "Human Generated",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
+    notes:
+      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
+    registrationStatus: "✅ Bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  "5B": {
+    type: "Human Generated",
+    notes:
+      "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
+    registrationStatus: "❌ Tidak diizinkan",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
-  // AI Animation: 9-12
-  9: {
-    type: "AI Generated (Animation)",
-    notes: "No human faces, no famous brands or characters",
-    registrationStatus: "✅ Allowed",
+  "6A": {
+    type: "Human Generated",
+    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
+    registrationStatus: "❌ Tidak langsung diizinkan",
+    action:
+      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    smartLicensing: "Commercial Remix License (jika sukses)",
+    aiTraining: "✅ Diizinkan (manual setting)",
+  },
+  "6B": {
+    type: "Human Generated",
+    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
+    registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (manual minting fee and revenue share)",
-    aiTraining: "❌ Not allowed (fixed)",
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting)",
   },
-  10: {
+  // AI Animation
+  "7": {
     type: "AI Generated (Animation)",
-    notes: "Partial/covered/blurred human face (non-public)",
-    registrationStatus: "✅ Allowed",
+    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
+    registrationStatus: "✅ Bisa diregistrasi",
     action: "-",
-    smartLicensing: "Commercial Remix License",
-    aiTraining: "❌ Not allowed (fixed)",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
-  11: {
+  "8": {
     type: "AI Generated (Animation)",
-    notes: "Contains regular human faces (non-public)",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
-    smartLicensing: "Commercial Remix License (upon successful selfie)",
-    aiTraining: "❌ Not allowed (fixed)",
-  },
-  12: {
-    type: "AI Generated (Animation)",
-    notes: "Contains famous brands/characters or public figure faces",
-    registrationStatus: "❌ Not allowed",
+    notes: "Brand/karakter terkenal atau wajah manusia terkenal",
+    registrationStatus: "❌ Tidak diizinkan",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
+  },
+  "9": {
+    type: "AI Generated (Animation)",
+    notes: "Wajah manusia biasa (tidak terkenal)",
+    registrationStatus: "❌ Tidak langsung diizinkan",
+    action:
+      "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
+    smartLicensing: "Commercial Remix License (jika sukses)",
+    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
 };
 
@@ -197,7 +212,7 @@ const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);
   const [input, setInput] = useState("");
   const [waiting, setWaiting] = useState(false);
-  const [activeDetail, setActiveDetail] = useState<number | null>(null);
+  const [activeDetail, setActiveDetail] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
 
   const uploadRef = useRef<HTMLInputElement | null>(null);
@@ -455,24 +470,10 @@ const IpAssistant = () => {
     [compressToBlob],
   );
 
-  const summaryFromAnswer = (code: number): string => {
-    const source =
-      code <= 4
-        ? "AI generated"
-        : code <= 8
-          ? "Human generated"
-          : "AI generated (Animation)";
-    const bucket =
-      code % 4 === 1 ? 1 : code % 4 === 2 ? 2 : code % 4 === 3 ? 3 : 0; // 0 represents brand/celebrity/public figure
-    const detail =
-      bucket === 1
-        ? "no human face/brand"
-        : bucket === 2
-          ? "partial/occluded human face (non-public), no clear brand"
-          : bucket === 3
-            ? "ordinary human face (non-public)"
-            : "brand/celebrity/public figure present";
-    return `${source} · ${detail}.`;
+  const summaryFromAnswer = (code: string): string => {
+    const info = ANSWER_DETAILS[code];
+    if (info) return `${info.type} · ${info.notes}.`;
+    return "(Unknown classification)";
   };
 
   const handleImage = useCallback(
@@ -539,12 +540,11 @@ const IpAssistant = () => {
 
         if (parsed && typeof parsed === "object") {
           const finalAnswer =
-            typeof parsed.selected_answer === "number" &&
-            Number.isInteger(parsed.selected_answer)
-              ? parsed.selected_answer
+            typeof parsed.selected_answer === "string"
+              ? String(parsed.selected_answer).trim().toUpperCase()
               : null;
 
-          if (finalAnswer != null) {
+          if (finalAnswer) {
             const label = ANSWER_LABELS[finalAnswer] ?? `Group ${finalAnswer}`;
             verification = { label, code: finalAnswer };
             display = summaryFromAnswer(finalAnswer);
@@ -953,7 +953,7 @@ const IpAssistant = () => {
                   Group {activeDetail}
                 </p>
                 <h2 className="mt-1 text-lg font-semibold text-slate-900">
-                  {ANSWER_DETAILS[activeDetail]?.type ?? "Group details"}
+                  {ANSWER_DETAILS[activeDetail ?? ""]?.type ?? "Group details"}
                 </h2>
               </div>
               <button
@@ -973,7 +973,7 @@ const IpAssistant = () => {
                     Image Type
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.type}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.type}
                   </dd>
                 </div>
                 <div>
@@ -981,7 +981,7 @@ const IpAssistant = () => {
                     Additional Notes
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.notes}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
                   </dd>
                 </div>
                 <div>
@@ -989,7 +989,7 @@ const IpAssistant = () => {
                     Registration Status
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.registrationStatus}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
                   </dd>
                 </div>
                 <div>
@@ -997,7 +997,7 @@ const IpAssistant = () => {
                     User Action
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.action}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.action}
                   </dd>
                 </div>
                 <div>
@@ -1005,7 +1005,7 @@ const IpAssistant = () => {
                     Smart Licensing (Recommendation)
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.smartLicensing}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
                   </dd>
                 </div>
                 <div>
@@ -1013,7 +1013,7 @@ const IpAssistant = () => {
                     AI Training
                   </dt>
                   <dd className="mt-1 text-slate-800">
-                    {ANSWER_DETAILS[activeDetail]?.aiTraining}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
                   </dd>
                 </div>
               </dl>

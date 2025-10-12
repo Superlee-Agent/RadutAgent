@@ -113,6 +113,7 @@ interface StageAttempt {
   text: string | null;
   raw: any;
   stage:
+    | "batch"
     | "simple"
     | "analysis"
     | "analysis-repair"
@@ -171,6 +172,53 @@ const SIMPLE_CLASSIFY_PROMPT = `gambar ini termasuk grup yg mana, jawab hny deng
 7,"AI (Animasi)","Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
 8,"AI (Animasi)","Brand/karakter terkenal atau wajah manusia terkenal","❌ Tidak diizinkan","Submit Review","-","-"
 9,"AI (Animasi)","Wajah manusia biasa (tidak terkenal)","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"`;
+
+const MULTI_IMAGE_PROMPT = `Kamu adalah sistem klasifikasi IP otomatis. Tugasmu menganalisis beberapa gambar sekaligus dan mengeluarkan hasil klasifikasi dalam JSON array.
+
+Langkah Analisis per Gambar:
+1) Tentukan Sumber Gambar: AI / Manusia / AI (Animasi)
+2) Tentukan Kandungan Gambar:
+- wajah_manusia: Ya/Tidak
+- wajah_full: Ya/Tidak
+- wajah_terkenal: Ya/Tidak
+- brand_karakter_terkenal: Ya/Tidak
+- jumlah_orang: angka
+- animasi_style: 2D/3D/cartoon/stylized/realistic
+- metadata: EXIF/watermark/software edit (jika terlihat)
+3) Tentukan Grup_UTAMA, Sub_Grup, dan aturan IP (Status Registrasi, Opsi Tambahan, Smart Licensing, AI Training) mengikuti tabel 13 sub-grup di bawah.
+4) Gunakan ambang kepercayaan (confidence) 0-1. Jika < 0.85, tandai kasus sebagai perlu "Review Manual".
+
+Tabel 13 Sub-Grup (patokan presisi output):
+Grup,Sumber Gambar,Kandungan,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training
+1,AI,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+2A,AI,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
+2B,AI,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+3A,AI,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"
+3B,AI,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+4,Manusia,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+5A,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+5B,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
+6A,Manusia,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","✅ Diizinkan (manual setting)"
+6B,Manusia,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+7,"AI (Animasi)","Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+8,"AI (Animasi)","Brand/karakter terkenal atau wajah manusia terkenal","❌ Tidak diizinkan","Submit Review","-","-"
+9,"AI (Animasi)","Wajah manusia biasa (tidak terkenal)","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"
+
+Nama file gambar (berurutan): GUNAKAN DAFTAR NAMA YANG DISEDIAKAN PENGGUNA di pesan ini, dan pastikan field "nama_file_gambar" persis sama.
+
+Kembalikan HANYA satu JSON array dengan format tepat (tanpa teks lain):
+[
+  {
+    "nama_file_gambar": "string",
+    "Grup_UTAMA": "1–9",
+    "Sub_Grup": "1|2A|2B|3A|3B|4|5A|5B|6A|6B|7|8|9",
+    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "❌ Tidak langsung diizinkan",
+    "opsi_tambahan": "Take Selfie Photo" | "Submit Review" | "-",
+    "smart_licensing": "Commercial Remix License (minting fee & revenue share manual)" | "-",
+    "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
+    "confidence": number
+  }
+]`;
 
 const ANALYSIS_PROMPT = `You are an expert forensic analyst. Examine the provided image thoroughly and return ONLY a single JSON object (no markdown, no text outside JSON).
 Schema (exact keys, camelCase):
@@ -463,26 +511,45 @@ function extractVerdictExtras(raw: any): VerdictExtras {
 
 const analyzeHandler: RequestHandler = async (req, res) => {
   try {
-    const file = (req as any).file as
-      | {
-          buffer: Buffer;
-          size: number;
-          mimetype: string;
-          originalname?: string;
-        }
-      | undefined;
-    if (!file) return res.status(400).json({ error: "No file received" });
+    const anyReq = req as any;
+    let files: {
+      buffer: Buffer;
+      size: number;
+      mimetype: string;
+      originalname?: string;
+    }[] = [];
 
-    const hash = createHash("sha256").update(file.buffer).digest("hex");
-    if (cache.has(hash)) return res.status(200).json(cache.get(hash));
+    if (anyReq.file) files.push(anyReq.file);
+    if (anyReq.files) {
+      if (Array.isArray(anyReq.files)) files.push(...anyReq.files);
+      else {
+        if (Array.isArray(anyReq.files.image)) files.push(...anyReq.files.image);
+        if (Array.isArray(anyReq.files.images))
+          files.push(...anyReq.files.images);
+      }
+    }
+
+    if (files.length === 0)
+      return res.status(400).json({ error: "No file received" });
 
     const MAX_ACCEPT = 8 * 1024 * 1024;
-    if (file.size > MAX_ACCEPT)
-      return res
-        .status(413)
-        .json({ error: "file_too_large", maxSize: MAX_ACCEPT });
+    for (const f of files) {
+      if (f.size > MAX_ACCEPT)
+        return res
+          .status(413)
+          .json({ error: "file_too_large", maxSize: MAX_ACCEPT });
+    }
 
-    const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    const hash = createHash("sha256")
+      .update(Buffer.concat(files.map((f) => f.buffer)))
+      .digest("hex");
+    if (cache.has(hash)) return res.status(200).json(cache.get(hash));
+
+    const dataUrls = files.map(
+      (f) => `data:${f.mimetype};base64,${f.buffer.toString("base64")}`,
+    );
+    const names = files.map((f, i) => f.originalname || `image-${i + 1}`);
+    const dataUrl = dataUrls[0]; // primary for single-image fallbacks
 
     const OpenAI = (await import("openai")).default;
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -516,17 +583,23 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       model: string,
       maxTokens = 900,
       temperature = 0.1,
+      imageUrls?: string[],
     ) => {
+      const contents = [
+        { type: "input_text", text: prompt } as any,
+        ...(
+          (imageUrls && imageUrls.length > 0 ? imageUrls : [dataUrl]).map(
+            (img) => ({ type: "input_image", image_url: img } as any),
+          )
+        ),
+      ];
       const response = await client.responses.create({
         model,
         temperature,
         input: [
           {
             role: "user",
-            content: [
-              { type: "input_text", text: prompt },
-              { type: "input_image", image_url: dataUrl },
-            ],
+            content: contents,
           },
         ],
         max_output_tokens: maxTokens,
@@ -559,6 +632,25 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       }
     };
 
+    const tryParseArray = (t: string) => {
+      if (!t) return null;
+      try {
+        const parsed = JSON.parse(t);
+        return Array.isArray(parsed) ? parsed : null;
+      } catch {
+        const m = t.match(/\[[\s\S]*\]/);
+        if (m) {
+          try {
+            const parsed = JSON.parse(m[0]);
+            return Array.isArray(parsed) ? parsed : null;
+          } catch {
+            return null;
+          }
+        }
+        return null;
+      }
+    };
+
     const extractCode = (t: string): (typeof CLASS_CODES)[number] | null => {
       if (!t) return null;
       const upper = t.toUpperCase();
@@ -569,6 +661,82 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         ? (code as (typeof CLASS_CODES)[number])
         : null;
     };
+
+    // Batch attempt (works for 1 atau banyak gambar)
+    const namesList = names.map((n, i) => `${i + 1}. ${n}`).join("\n");
+    const batchPrompt = `${MULTI_IMAGE_PROMPT}\n\nDaftar nama file:\n${namesList}`;
+    const batch = await callModel(
+      "batch",
+      batchPrompt,
+      PRIMARY_MODEL,
+      1400,
+      0,
+      dataUrls,
+    );
+    const batchParsed = tryParseArray(batch.text);
+    if (batchParsed && Array.isArray(batchParsed) && batchParsed.length > 0) {
+      // Derive single-image normalized for compatibility if hanya satu gambar
+      let normalized: any | null = null;
+      const first = batchParsed[0] || null;
+      const sub = (first?.Sub_Grup || first?.sub_grup || first?.subGroup || "")
+        .toString()
+        .trim()
+        .toUpperCase();
+      const code = (CLASS_CODES as readonly string[]).includes(sub as any)
+        ? (sub as (typeof CLASS_CODES)[number])
+        : null;
+      if (code) {
+        normalized = {
+          selected_answer: code,
+          reason: `Batch classification (confidence ${
+            typeof first?.confidence === "number" ? first.confidence : "n/a"
+          }).`,
+          generation_type: generationTypeFor(code),
+          reconstructed_prompt: null,
+          analysis: {
+            scene_summary: "",
+            source_primary: "Unknown" as const,
+            source_scores: { ai: null, human: null, animation: null },
+            faces_presence: "Unknown" as const,
+            faces_count: null,
+            faces_evidence: [],
+            brand_present: null,
+            brand_names: [],
+            brand_evidence: [],
+            animation_is: null,
+            animation_evidence: [],
+            ai_artifacts: [],
+            human_cues: [],
+            overall_notes: [],
+            recommended_answer: code,
+            recommended_reason: null,
+            raw: null,
+          },
+          analysis_issues: ["batch_mode_used"],
+          verdict_details: extractVerdictExtras({}),
+          _analysis_raw_output: null,
+          _verdict_raw_output: null,
+          _raw_model_output: batch.text ?? "",
+          _timestamp: new Date().toISOString(),
+          _validation_issues: [],
+          _allowed_codes: CLASS_CODES,
+        };
+      }
+
+      const out = {
+        parsed: normalized,
+        parsed_batch: batchParsed,
+        raw_attempts: attempts.map((a) => ({
+          ok: a.ok,
+          text: a.text,
+          model: a.model,
+          stage: a.stage,
+        })),
+        attempts,
+      };
+      cache.set(hash, out);
+      return res.status(200).json(out);
+    }
 
     const simple = await callModel(
       "simple",
@@ -822,4 +990,10 @@ const analyzeHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const handleAnalyze: any = [upload.single("image"), analyzeHandler];
+export const handleAnalyze: any = [
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "images", maxCount: 12 },
+  ]),
+  analyzeHandler,
+];

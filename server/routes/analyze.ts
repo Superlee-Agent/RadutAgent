@@ -157,6 +157,21 @@ interface VerdictExtras {
   raw: any;
 }
 
+const SIMPLE_CLASSIFY_PROMPT = `gambar ini termasuk grup yg mana, jawab hny dengan nomor grup: Grup,Sumber Gambar,Kandungan,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training
+1,AI,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+2A,AI,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
+2B,AI,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+3A,AI,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"
+3B,AI,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+4,Manusia,"Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+5A,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+5B,Manusia,"Brand/karakter terkenal atau wajah manusia terkenal (full wajah)","❌ Tidak diizinkan","Submit Review","-","-"
+6A,Manusia,"Wajah manusia biasa (tidak terkenal), full wajah","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","✅ Diizinkan (manual setting)"
+6B,Manusia,"Wajah manusia biasa (tidak terkenal), tidak full wajah","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","✅ Diizinkan (manual setting)"
+7,"AI (Animasi)","Tanpa wajah manusia, tanpa brand/karakter terkenal","✅ Bisa diregistrasi","-","Commercial Remix License (minting fee & revenue share manual)","❌ Tidak diizinkan (fixed)"
+8,"AI (Animasi)","Brand/karakter terkenal atau wajah manusia terkenal","❌ Tidak diizinkan","Submit Review","-","-"
+9,"AI (Animasi)","Wajah manusia biasa (tidak terkenal)","❌ Tidak langsung diizinkan","Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)","Commercial Remix License (jika sukses)","❌ Tidak diizinkan (fixed)"`;
+
 const ANALYSIS_PROMPT = `You are an expert forensic analyst. Examine the provided image thoroughly and return ONLY a single JSON object (no markdown, no text outside JSON).
 Schema (exact keys, camelCase):
 {

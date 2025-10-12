@@ -559,6 +559,74 @@ const analyzeHandler: RequestHandler = async (req, res) => {
       }
     };
 
+    const extractCode = (t: string): (typeof CLASS_CODES)[number] | null => {
+      if (!t) return null;
+      const upper = t.toUpperCase();
+      const match = upper.match(/(?:^|[^A-Z0-9])(2A|2B|3A|3B|5A|5B|6A|6B|[14789]|4)(?=$|[^A-Z0-9])/);
+      if (!match) return null;
+      const code = match[1];
+      return (CLASS_CODES as readonly string[]).includes(code as any)
+        ? (code as (typeof CLASS_CODES)[number])
+        : null;
+    };
+
+    const simple = await callModel(
+      "simple",
+      SIMPLE_CLASSIFY_PROMPT,
+      PRIMARY_MODEL,
+      8,
+      0,
+    );
+    const simpleCode = extractCode(simple.text);
+    if (simpleCode) {
+      const normalized = {
+        selected_answer: simpleCode,
+        reason: "Klasifikasi langsung via prompt sederhana.",
+        generation_type: generationTypeFor(simpleCode),
+        reconstructed_prompt: null,
+        analysis: {
+          scene_summary: "",
+          source_primary: "Unknown" as const,
+          source_scores: { ai: null, human: null, animation: null },
+          faces_presence: "Unknown" as const,
+          faces_count: null,
+          faces_evidence: [],
+          brand_present: null,
+          brand_names: [],
+          brand_evidence: [],
+          animation_is: null,
+          animation_evidence: [],
+          ai_artifacts: [],
+          human_cues: [],
+          overall_notes: [],
+          recommended_answer: simpleCode,
+          recommended_reason: null,
+          raw: null,
+        },
+        analysis_issues: ["simple_mode_used"],
+        verdict_details: extractVerdictExtras({}),
+        _analysis_raw_output: null,
+        _verdict_raw_output: null,
+        _raw_model_output: simple.text ?? "",
+        _timestamp: new Date().toISOString(),
+        _validation_issues: [],
+        _allowed_codes: CLASS_CODES,
+      };
+
+      const out = {
+        parsed: normalized,
+        raw_attempts: attempts.map((a) => ({
+          ok: a.ok,
+          text: a.text,
+          model: a.model,
+          stage: a.stage,
+        })),
+        attempts,
+      };
+      cache.set(hash, out);
+      return res.status(200).json(out);
+    }
+
     const analysisCall = await callModel(
       "analysis",
       ANALYSIS_PROMPT,

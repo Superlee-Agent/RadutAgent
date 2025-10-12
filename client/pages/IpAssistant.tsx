@@ -62,9 +62,8 @@ const ANSWER_DETAILS: Record<
   2: {
     type: "AI Generated",
     notes: "Partial/covered/blurred human face (non-public), no clear brand",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
+    registrationStatus: "✅ Allowed",
+    action: "-",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "❌ Not allowed (fixed)",
   },
@@ -98,9 +97,8 @@ const ANSWER_DETAILS: Record<
   6: {
     type: "Human Generated",
     notes: "Partial/covered/blurred human face (non-public), no clear brand",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
+    registrationStatus: "✅ Allowed",
+    action: "-",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "✅ Allowed (manual setting)",
   },
@@ -134,9 +132,8 @@ const ANSWER_DETAILS: Record<
   10: {
     type: "AI Generated (Animation)",
     notes: "Partial/covered/blurred human face (non-public)",
-    registrationStatus:
-      "❌ Not allowed → ✅ Allowed if selfie verification succeeds",
-    action: "Take Selfie Photo / Submit Review",
+    registrationStatus: "✅ Allowed",
+    action: "-",
     smartLicensing: "Commercial Remix License (upon successful selfie)",
     aiTraining: "❌ Not allowed (fixed)",
   },

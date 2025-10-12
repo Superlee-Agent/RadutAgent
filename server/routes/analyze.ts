@@ -14,7 +14,13 @@ const VERIFIER_MODEL = process.env.OPENAI_VERIFIER_MODEL ?? PRIMARY_MODEL;
 const aiAnswers = new Set([1, 2, 3, 4, 9, 10, 11, 12]);
 const humanAnswers = new Set([5, 6, 7, 8]);
 
-const ALLOWED_FACE_TYPES = new Set(["None", "Partial", "Ordinary", "Famous", "Unknown"]);
+const ALLOWED_FACE_TYPES = new Set([
+  "None",
+  "Partial",
+  "Ordinary",
+  "Famous",
+  "Unknown",
+]);
 const ALLOWED_SOURCE_LABELS = new Set(["AI", "Human", "Animation", "Unknown"]);
 
 interface StageAttempt {

@@ -456,8 +456,14 @@ const IpAssistant = () => {
   );
 
   const summaryFromAnswer = (code: number): string => {
-    const source = code <= 4 ? "AI generated" : code <= 8 ? "Human generated" : "AI generated (Animation)";
-    const bucket = code % 4 === 1 ? 1 : code % 4 === 2 ? 2 : code % 4 === 3 ? 3 : 0; // 0 represents brand/celebrity/public figure
+    const source =
+      code <= 4
+        ? "AI generated"
+        : code <= 8
+          ? "Human generated"
+          : "AI generated (Animation)";
+    const bucket =
+      code % 4 === 1 ? 1 : code % 4 === 2 ? 2 : code % 4 === 3 ? 3 : 0; // 0 represents brand/celebrity/public figure
     const detail =
       bucket === 1
         ? "no human face/brand"

@@ -33,7 +33,7 @@ interface AnalysisNormalized {
     human: number | null;
     animation: number | null;
   };
-  faces_presence: "None" | "Ordinary" | "Famous" | "Unknown";
+  faces_presence: "None" | "Partial" | "Ordinary" | "Famous" | "Unknown";
   faces_count: number | null;
   faces_evidence: string[];
   brand_present: boolean | null;
@@ -53,7 +53,7 @@ interface VerdictExtras {
   decision_notes: string[];
   consistency_warnings: string[];
   diagnostics: {
-    face_type: "None" | "Ordinary" | "Famous" | "Unknown" | null;
+    face_type: "None" | "Partial" | "Ordinary" | "Famous" | "Unknown" | null;
     has_brand: boolean | null;
     is_animation: boolean | null;
     source_label: "AI" | "Human" | "Animation" | "Unknown" | null;
@@ -91,7 +91,7 @@ Schema (exact keys, camelCase):
   "ai_artifacts": string[],
   "human_cues": string[],
   "overall_notes": string[],
-  "recommended_answer": 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | null,
+  "recommended_answer": 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null,
   "recommended_reason": string | null
 }
 Rules:
@@ -101,7 +101,7 @@ Rules:
 - "primary_source" must reflect your best hypothesis given evidence.
 - If unsure about brands, set present=false and leave names empty.
 - If unsure about identities, use "Unknown" presence and empty arrays.
-- "recommended_answer" should follow the mappings: 1=AI no face/brand, 2=AI with brand/celebrity, 3=AI with ordinary face, 4=Human no face/brand, 5=Human celebrity, 6=Human ordinary face, 7=AI animation no face/brand, 8=AI animation with brand/celebrity, 9=AI animation with ordinary face. Use null if ambiguous.
+- "recommended_answer" should follow the mappings (12 classes): 1=AI no face/brand, 2=AI partial/covered/blurred face (non-public) no clear brand, 3=AI ordinary face (non-public), 4=AI brand/celebrity/public figure, 5=Human no face/brand, 6=Human partial/covered/blurred face (non-public) no clear brand, 7=Human ordinary face (non-public), 8=Human brand/celebrity/public figure, 9=AI animation no face/brand, 10=AI animation partial/covered/blurred face (non-public), 11=AI animation ordinary face (non-public), 12=AI animation brand/celebrity/public figure. Use null if ambiguous.
 - "recommended_reason" <= 25 words describing decisive cues.
 Return exactly one JSON object.`;
 
@@ -119,7 +119,7 @@ const CLASSIFICATION_GUIDE = `Answer mapping:
 11 = AI animation, ordinary human face (non-public)
 12 = AI animation, contains brand/celebrity/public figure`;
 
-const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-9) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
+const VERDICT_PROMPT_HEADER = `You are a compliance verifier ensuring the image is assigned a single answer (1-12) using the guide below. Use the stage-1 analysis as facts. Check for inconsistencies before deciding. ${CLASSIFICATION_GUIDE}
 Output ONLY one JSON object with keys exactly:
 {
   "selected_answer": 1|2|3|4|5|6|7|8|9|10|11|12|null,
@@ -129,7 +129,7 @@ Output ONLY one JSON object with keys exactly:
   "decision_notes": string[],
   "consistency_warnings": string[],
   "diagnostics": {
-    "face_type": "None"|"Ordinary"|"Famous"|"Unknown"|null,
+    "face_type": "None"|"Partial"|"Ordinary"|"Famous"|"Unknown"|null,
     "has_brand": boolean|null,
     "is_animation": boolean|null,
     "source_label": "AI"|"Human"|"Animation"|"Unknown"|null,
@@ -142,7 +142,8 @@ Rules:
 - If evidence insufficient, set selected_answer=null, reason="ambiguous", generation_type=null, reconstructed_prompt=null.
 - Keep arrays concise (<=4 items each).
 - "confidence" is 0-1 or null.
-- Provide warnings if stage-1 data conflicts with the mapping.`;
+- Provide warnings if stage-1 data conflicts with the mapping.
+- If any face is cropped/half/occluded/masked/blurred, set diagnostics.face_type="Partial" and prefer classes 2/6/10 accordingly.`;
 
 function buildVerdictPrompt(analysis: AnalysisNormalized, issues: string[]) {
   const context = {

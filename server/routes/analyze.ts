@@ -249,7 +249,7 @@ function normalizeAnalysis(raw: any): {
     if (
       Number.isInteger(raw.recommended_answer) &&
       raw.recommended_answer >= 1 &&
-      raw.recommended_answer <= 9
+      raw.recommended_answer <= 12
     ) {
       recommendedAnswer = raw.recommended_answer;
     } else {

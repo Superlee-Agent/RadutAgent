@@ -239,7 +239,7 @@ Grup_UTAMA,Sub_Grup,Sumber Gambar,Subkategori Sumber,Wajah Manusia,Wajah Full,Wa
 8,8,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Ya,Ya,-,2D/3D Cartoon,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
 9,9,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Tidak,Tidak,1,2D/3D Cartoon,-,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),❌ Tidak diizinkan (fixed),0.85`;
 
-const SINGLE_IMAGE_SCENARIOS_PROMPT = `Kamu adalah sistem klasifikasi IP super canggih. Analisis 1 gambar berikut dan buat 4 skenario paralel untuk memastikan klasifikasi paling akurat.
+const SINGLE_IMAGE_SCENARIOS_PROMPT = `Kamu adalah sistem klasifikasi IP super canggih. Analisis 1 gambar berikut dan buat 2 skenario paralel untuk memastikan klasifikasi paling akurat.
 
 Instruksi:
 
@@ -264,7 +264,7 @@ Instruksi:
 - Tentukan Status Registrasi IP, Opsi Tambahan, Smart Licensing, AI Training
 - Hitung confidence score 0–1 per skenario
 
-5️⃣ Output JSON 4 skenario paralel (JAWAB HANYA JSON VALID TANPA TEKS LAIN):
+5️⃣ Output JSON 2 skenario paralel (JAWAB HANYA JSON VALID TANPA TEKS LAIN):
 {
   "nama_file_gambar": "string",
   "skenario": [
@@ -290,9 +290,7 @@ Instruksi:
         "metadata": "EXIF/watermark/software AI/timestamp | -"
       }
     },
-    { "id": 2, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } },
-    { "id": 3, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } },
-    { "id": 4, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } }
+    { "id": 2, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } }
   ],
   "hasil_terpilih": {
     "Grup_UTAMA": "1–9",

@@ -536,9 +536,11 @@ const IpAssistant = () => {
         const parsedBatch = Array.isArray(data?.parsed_batch)
           ? (data.parsed_batch as any[])
           : null;
-        const parsedScenarios = data?.parsed_scenarios && Array.isArray(data.parsed_scenarios?.skenario)
-          ? data.parsed_scenarios
-          : null;
+        const parsedScenarios =
+          data?.parsed_scenarios &&
+          Array.isArray(data.parsed_scenarios?.skenario)
+            ? data.parsed_scenarios
+            : null;
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
@@ -555,7 +557,9 @@ const IpAssistant = () => {
             return `Skenario ${id}: ${sub} · ${status}${conf}`;
           });
           const chosen = parsedScenarios.hasil_terpilih || null;
-          const chosenSub = chosen?.Sub_Grup ? String(chosen.Sub_Grup).toUpperCase() : "";
+          const chosenSub = chosen?.Sub_Grup
+            ? String(chosen.Sub_Grup).toUpperCase()
+            : "";
           if (chosenSub && ANSWER_LABELS[chosenSub]) {
             verification = { label: ANSWER_LABELS[chosenSub], code: chosenSub };
           }

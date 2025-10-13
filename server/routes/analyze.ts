@@ -6,7 +6,8 @@ const cache = new Map<string, any>();
 
 const HF_TOKEN = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN || "";
 const HF_MODELS = {
-  CAPTION: process.env.HF_CAPTION_MODEL || "Salesforce/blip-image-captioning-base",
+  CAPTION:
+    process.env.HF_CAPTION_MODEL || "Salesforce/blip-image-captioning-base",
   FACE: process.env.HF_FACE_MODEL || "hustvl/yolov5l-face",
   LOGO: process.env.HF_LOGO_MODEL || "microsoft/dit-base-finetuned-funsd",
   STYLE: process.env.HF_STYLE_MODEL || "laion/clap-htsat-unfused",
@@ -768,7 +769,8 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     if (anyReq.files) {
       if (Array.isArray(anyReq.files)) files.push(...anyReq.files);
       else {
-        if (Array.isArray(anyReq.files.image)) files.push(...anyReq.files.image);
+        if (Array.isArray(anyReq.files.image))
+          files.push(...anyReq.files.image);
         if (Array.isArray(anyReq.files.images))
           files.push(...anyReq.files.images);
       }
@@ -898,10 +900,8 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     ) => {
       const contents = [
         { type: "input_text", text: prompt } as any,
-        ...(
-          (imageUrls && imageUrls.length > 0 ? imageUrls : [dataUrl]).map(
-            (img) => ({ type: "input_image", image_url: img } as any),
-          )
+        ...(imageUrls && imageUrls.length > 0 ? imageUrls : [dataUrl]).map(
+          (img) => ({ type: "input_image", image_url: img }) as any,
         ),
       ];
       const response = await client.responses.create({
@@ -965,7 +965,9 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     const extractCode = (t: string): (typeof CLASS_CODES)[number] | null => {
       if (!t) return null;
       const upper = t.toUpperCase();
-      const match = upper.match(/(?:^|[^A-Z0-9])(2A|2B|3A|3B|5A|5B|6A|6B|[14789]|4)(?=$|[^A-Z0-9])/);
+      const match = upper.match(
+        /(?:^|[^A-Z0-9])(2A|2B|3A|3B|5A|5B|6A|6B|[14789]|4)(?=$|[^A-Z0-9])/,
+      );
       if (!match) return null;
       const code = match[1];
       return (CLASS_CODES as readonly string[]).includes(code as any)
@@ -986,18 +988,22 @@ const analyzeHandler: RequestHandler = async (req, res) => {
             chosen === "2A" || chosen === "5B"
               ? "❌ Tidak diizinkan"
               : chosen === "3A" || chosen === "6A" || chosen === "9"
-              ? "❌ Tidak langsung diizinkan"
-              : "✅ Bisa diregistrasi",
+                ? "❌ Tidak langsung diizinkan"
+                : "✅ Bisa diregistrasi",
           opsi_tambahan:
             chosen === "3A" || chosen === "6A" || chosen === "9"
               ? "Take Selfie Photo"
               : chosen === "2A" || chosen === "5B"
-              ? "Submit Review"
-              : "-",
+                ? "Submit Review"
+                : "-",
           smart_licensing:
-            chosen === "2A" || chosen === "5B" ? "-" : "Commercial Remix License (minting fee & revenue share manual)",
+            chosen === "2A" || chosen === "5B"
+              ? "-"
+              : "Commercial Remix License (minting fee & revenue share manual)",
           ai_training:
-            GROUP_META[chosen].source === "Human" ? "✅ Diizinkan" : "❌ Tidak diizinkan (fixed)",
+            GROUP_META[chosen].source === "Human"
+              ? "✅ Diizinkan"
+              : "❌ Tidak diizinkan (fixed)",
           confidence: tools.pre.confidence,
           atribut: {
             sumber: GROUP_META[chosen].source,
@@ -1006,7 +1012,9 @@ const analyzeHandler: RequestHandler = async (req, res) => {
             wajah_terkenal: "Tidak",
             jumlah_orang: Math.max(0, tools.metadata.faces.count || 0),
             ekspresi: "-",
-            brand_karakter_terkenal: tools.metadata.brand.present ? "Ya" : "Tidak",
+            brand_karakter_terkenal: tools.metadata.brand.present
+              ? "Ya"
+              : "Tidak",
             brand_nama: tools.metadata.brand.names || [],
             style: tools.metadata.style || "-",
             metadata: tools.metadata.exif ? "EXIF/Provenance tersedia" : "-",
@@ -1043,7 +1051,12 @@ const analyzeHandler: RequestHandler = async (req, res) => {
           },
           parsed_scenarios: outObj,
           attempts,
-          raw_attempts: attempts.map((a) => ({ ok: a.ok, text: a.text, model: a.model, stage: a.stage })),
+          raw_attempts: attempts.map((a) => ({
+            ok: a.ok,
+            text: a.text,
+            model: a.model,
+            stage: a.stage,
+          })),
           tools_metadata: tools.metadata,
         };
         cache.set(hash, out);
@@ -1060,9 +1073,15 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         [dataUrl],
       );
       const scenObj = tryParseJson(scen.text);
-      if (scenObj && typeof scenObj === "object" && Array.isArray(scenObj.skenario)) {
+      if (
+        scenObj &&
+        typeof scenObj === "object" &&
+        Array.isArray(scenObj.skenario)
+      ) {
         const pick = scenObj.hasil_terpilih || null;
-        const pickSub = pick?.Sub_Grup ? String(pick.Sub_Grup).toUpperCase() : null;
+        const pickSub = pick?.Sub_Grup
+          ? String(pick.Sub_Grup).toUpperCase()
+          : null;
         const code = (CLASS_CODES as readonly string[]).includes(pickSub as any)
           ? (pickSub as (typeof CLASS_CODES)[number])
           : null;
@@ -1120,7 +1139,9 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     // Batch attempt (works for 1 atau banyak gambar)
     if (files.length > 1) {
-      const toolsAll = await Promise.all(files.map((f) => runToolsFor(f.buffer)));
+      const toolsAll = await Promise.all(
+        files.map((f) => runToolsFor(f.buffer)),
+      );
       const quick = toolsAll.map((t, idx) => {
         const pc = preClassify({
           exif: t.metadata.exif,
@@ -1145,18 +1166,22 @@ const analyzeHandler: RequestHandler = async (req, res) => {
               code === "2A" || code === "5B"
                 ? "❌ Tidak diizinkan"
                 : code === "3A" || code === "6A" || code === "9"
-                ? "❌ Tidak langsung diizinkan"
-                : "✅ Bisa diregistrasi",
+                  ? "❌ Tidak langsung diizinkan"
+                  : "✅ Bisa diregistrasi",
             opsi_tambahan:
               code === "3A" || code === "6A" || code === "9"
                 ? "Take Selfie Photo"
                 : code === "2A" || code === "5B"
-                ? "Submit Review"
-                : "-",
+                  ? "Submit Review"
+                  : "-",
             smart_licensing:
-              code === "2A" || code === "5B" ? "-" : "Commercial Remix License (minting fee & revenue share manual)",
+              code === "2A" || code === "5B"
+                ? "-"
+                : "Commercial Remix License (minting fee & revenue share manual)",
             ai_training:
-              GROUP_META[code].source === "Human" ? "✅ Diizinkan" : "❌ Tidak diizinkan (fixed)",
+              GROUP_META[code].source === "Human"
+                ? "✅ Diizinkan"
+                : "❌ Tidak diizinkan (fixed)",
             confidence: q.pc.confidence,
           };
         });
@@ -1164,7 +1189,12 @@ const analyzeHandler: RequestHandler = async (req, res) => {
           parsed: null,
           parsed_batch: arr,
           attempts,
-          raw_attempts: attempts.map((a) => ({ ok: a.ok, text: a.text, model: a.model, stage: a.stage })),
+          raw_attempts: attempts.map((a) => ({
+            ok: a.ok,
+            text: a.text,
+            model: a.model,
+            stage: a.stage,
+          })),
         };
         cache.set(hash, out);
         return res.status(200).json(out);

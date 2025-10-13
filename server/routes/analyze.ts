@@ -359,7 +359,7 @@ Format jawaban JSON per gambar:
     "nama_file_gambar": "string",
     "Grup_UTAMA": "1–9",
     "Sub_Grup": "1|2A|2B|3A|3B|4|5A|5B|6A|6B|7|8|9",
-    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "�� Tidak langsung diizinkan",
+    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "❌ Tidak langsung diizinkan",
     "opsi_tambahan": "Take Selfie Photo" | "Submit Review" | "-",
     "smart_licensing": "Commercial Remix License (minting fee & revenue share manual)" | "-",
     "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
@@ -975,6 +975,81 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     // If single image, run 4-scenarios flow first
     if (files.length === 1) {
+      const tools = await runToolsFor(files[0].buffer);
+      if (tools.pre.confidence >= 0.9 && tools.pre.code) {
+        const chosen = tools.pre.code;
+        const skenario = [1, 2].map((id) => ({
+          id,
+          Grup_UTAMA: chosen.replace(/[^0-9]/g, ""),
+          Sub_Grup: chosen,
+          status_registrasi:
+            chosen === "2A" || chosen === "5B"
+              ? "❌ Tidak diizinkan"
+              : chosen === "3A" || chosen === "6A" || chosen === "9"
+              ? "❌ Tidak langsung diizinkan"
+              : "✅ Bisa diregistrasi",
+          opsi_tambahan:
+            chosen === "3A" || chosen === "6A" || chosen === "9"
+              ? "Take Selfie Photo"
+              : chosen === "2A" || chosen === "5B"
+              ? "Submit Review"
+              : "-",
+          smart_licensing:
+            chosen === "2A" || chosen === "5B" ? "-" : "Commercial Remix License (minting fee & revenue share manual)",
+          ai_training:
+            GROUP_META[chosen].source === "Human" ? "✅ Diizinkan" : "❌ Tidak diizinkan (fixed)",
+          confidence: tools.pre.confidence,
+          atribut: {
+            sumber: GROUP_META[chosen].source,
+            wajah_manusia: tools.metadata.faces.count > 0 ? "Ya" : "Tidak",
+            wajah_full: tools.metadata.faces.fullFaceLikely ? "Ya" : "Tidak",
+            wajah_terkenal: "Tidak",
+            jumlah_orang: Math.max(0, tools.metadata.faces.count || 0),
+            ekspresi: "-",
+            brand_karakter_terkenal: tools.metadata.brand.present ? "Ya" : "Tidak",
+            brand_nama: tools.metadata.brand.names || [],
+            style: tools.metadata.style || "-",
+            metadata: tools.metadata.exif ? "EXIF/Provenance tersedia" : "-",
+          },
+        }));
+        const outObj = {
+          nama_file_gambar: names[0],
+          skenario,
+          hasil_terpilih: {
+            Grup_UTAMA: chosen.replace(/[^0-9]/g, ""),
+            Sub_Grup: chosen,
+            status_registrasi: skenario[0].status_registrasi,
+            opsi_tambahan: skenario[0].opsi_tambahan,
+            smart_licensing: skenario[0].smart_licensing,
+            ai_training: skenario[0].ai_training,
+            confidence: tools.pre.confidence,
+          },
+        };
+        const out = {
+          parsed: {
+            selected_answer: chosen,
+            reason: "Early-exit tools classification",
+            generation_type: generationTypeFor(chosen),
+            reconstructed_prompt: null,
+            analysis: null,
+            analysis_issues: ["early_exit_tools"],
+            verdict_details: extractVerdictExtras({}),
+            _analysis_raw_output: null,
+            _verdict_raw_output: null,
+            _raw_model_output: null,
+            _timestamp: new Date().toISOString(),
+            _validation_issues: [],
+            _allowed_codes: CLASS_CODES,
+          },
+          parsed_scenarios: outObj,
+          attempts,
+          raw_attempts: attempts.map((a) => ({ ok: a.ok, text: a.text, model: a.model, stage: a.stage })),
+          tools_metadata: tools.metadata,
+        };
+        cache.set(hash, out);
+        return res.status(200).json(out);
+      }
+
       const singlePrompt = `${SINGLE_IMAGE_SCENARIOS_PROMPT}\n\nNama file gambar: ${names[0]}`;
       const scen = await callModel(
         "scenarios",

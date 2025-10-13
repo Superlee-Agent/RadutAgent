@@ -113,6 +113,7 @@ interface StageAttempt {
   text: string | null;
   raw: any;
   stage:
+    | "scenarios"
     | "batch"
     | "simple"
     | "analysis"
@@ -223,6 +224,90 @@ Format jawaban JSON per gambar:
 ]
 
 Tabel klasifikasi (CSV):
+Grup_UTAMA,Sub_Grup,Sumber Gambar,Subkategori Sumber,Wajah Manusia,Wajah Full,Wajah Terkenal,Brand/Karakter Terkenal,Jumlah Orang,Animasi/Style,Metadata/Provenance,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training,Confidence
+1,1,AI,Realistic/Styled,Tidak,-,-,Tidak,-,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+2,2A,AI,Realistic/Styled,Ya,Ya,Ya,Ya,-,-,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
+2,2B,AI,Realistic/Styled,Ya,Tidak,Ya,Ya,-,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+3,3A,AI,Realistic/Styled,Ya,Ya,Tidak,Tidak,1,-,-,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),❌ Tidak diizinkan (fixed),0.85
+3,3B,AI,Realistic/Styled,Ya,Tidak,Tidak,Tidak,1,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.85
+4,4,Manusia,Foto/Ilustrasi,Tidak,-,-,Tidak,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
+5,5A,Manusia,Foto/Ilustrasi,Ya,Tidak,Ya,Ya,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
+5,5B,Manusia,Foto/Ilustrasi,Ya,Ya,Ya,Ya,-,-,Ada EXIF, watermark optional,❌ Tidak diizinkan,Submit Review,-,-,0.95
+6,6A,Manusia,Foto/Ilustrasi,Ya,Ya,Tidak,Tidak,1,-,Ada EXIF, watermark optional,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),✅ Diizinkan (manual),0.85
+6,6B,Manusia,Foto/Ilustrasi,Ya,Tidak,Tidak,Tidak,1,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.85
+7,7,AI (Animasi),Cartoon/2D/3D,Tidak,-,-,Tidak,-,2D/3D Cartoon,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
+8,8,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Ya,Ya,-,2D/3D Cartoon,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
+9,9,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Tidak,Tidak,1,2D/3D Cartoon,-,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),❌ Tidak diizinkan (fixed),0.85`;
+
+const SINGLE_IMAGE_SCENARIOS_PROMPT = `Kamu adalah sistem klasifikasi IP super canggih. Analisis 1 gambar berikut dan buat 4 skenario paralel untuk memastikan klasifikasi paling akurat.
+
+Instruksi:
+
+1️⃣ Analisis sumber gambar:
+- AI, Manusia, AI Animasi, Hybrid
+- Pertimbangkan semua kemungkinan ambigu, buat skenario berbeda jika perlu
+
+2️⃣ Analisis wajah & brand:
+- Wajah manusia: Ya/Tidak
+- Full wajah: Ya/Tidak
+- Terkenal: Ya/Tidak
+- Jumlah orang
+- Ekspresi wajah: tersenyum / serius / tertutup masker / lainnya
+- Brand/karakter terkenal: Ya/Tidak (sebutkan nama/kategori jika ada)
+
+3️⃣ Analisis style & metadata:
+- Style: realistik / stylized / 2D / 3D / pixel art / low-poly
+- Metadata: EXIF, watermark, software AI, timestamp
+
+4️⃣ Klasifikasi IP:
+- Tentukan Grup_UTAMA & Sub_Grup sesuai tabel 13 sub-grup + 9 grup utama
+- Tentukan Status Registrasi IP, Opsi Tambahan, Smart Licensing, AI Training
+- Hitung confidence score 0–1 per skenario
+
+5️⃣ Output JSON 4 skenario paralel (JAWAB HANYA JSON VALID TANPA TEKS LAIN):
+{
+  "nama_file_gambar": "string",
+  "skenario": [
+    {
+      "id": 1,
+      "Grup_UTAMA": "1–9",
+      "Sub_Grup": "1|2A|2B|3A|3B|4|5A|5B|6A|6B|7|8|9",
+      "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "❌ Tidak langsung diizinkan",
+      "opsi_tambahan": "Take Selfie Photo" | "Submit Review" | "-",
+      "smart_licensing": "Commercial Remix License (minting fee & revenue share manual)" | "-",
+      "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
+      "confidence": number,
+      "atribut": {
+        "sumber": "AI | Manusia | AI (Animasi) | Hybrid",
+        "wajah_manusia": "Ya/Tidak",
+        "wajah_full": "Ya/Tidak",
+        "wajah_terkenal": "Ya/Tidak",
+        "jumlah_orang": number,
+        "ekspresi": "string",
+        "brand_karakter_terkenal": "Ya/Tidak",
+        "brand_nama": "string[] | []",
+        "style": "realistik | stylized | 2D | 3D | pixel art | low-poly",
+        "metadata": "EXIF/watermark/software AI/timestamp | -"
+      }
+    },
+    { "id": 2, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } },
+    { "id": 3, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } },
+    { "id": 4, "Grup_UTAMA": "...", "Sub_Grup": "...", "status_registrasi": "...", "opsi_tambahan": "...", "smart_licensing": "...", "ai_training": "...", "confidence": number, "atribut": { } }
+  ],
+  "hasil_terpilih": {
+    "Grup_UTAMA": "1–9",
+    "Sub_Grup": "1|2A|2B|3A|3B|4|5A|5B|6A|6B|7|8|9",
+    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "❌ Tidak langsung diizinkan",
+    "opsi_tambahan": "Take Selfie Photo" | "Submit Review" | "-",
+    "smart_licensing": "Commercial Remix License (minting fee & revenue share manual)" | "-",
+    "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
+    "confidence": number
+  }
+}
+
+Jika semua confidence < 0.85, hasil_terpilih tetap isi JSON namun tandai perlu "Review Manual" pada status_registrasi atau opsi_tambahan sesuai.
+
+Tabel klasifikasi (CSV patokan):
 Grup_UTAMA,Sub_Grup,Sumber Gambar,Subkategori Sumber,Wajah Manusia,Wajah Full,Wajah Terkenal,Brand/Karakter Terkenal,Jumlah Orang,Animasi/Style,Metadata/Provenance,Status Registrasi IP,Opsi Tambahan,Smart Licensing,AI Training,Confidence
 1,1,AI,Realistic/Styled,Tidak,-,-,Tidak,-,-,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
 2,2A,AI,Realistic/Styled,Ya,Ya,Ya,Ya,-,-,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
@@ -679,6 +764,76 @@ const analyzeHandler: RequestHandler = async (req, res) => {
         ? (code as (typeof CLASS_CODES)[number])
         : null;
     };
+
+    // If single image, run 4-scenarios flow first
+    if (files.length === 1) {
+      const singlePrompt = `${SINGLE_IMAGE_SCENARIOS_PROMPT}\n\nNama file gambar: ${names[0]}`;
+      const scen = await callModel(
+        "scenarios",
+        singlePrompt,
+        PRIMARY_MODEL,
+        1600,
+        0,
+        [dataUrl],
+      );
+      const scenObj = tryParseJson(scen.text);
+      if (scenObj && typeof scenObj === "object" && Array.isArray(scenObj.skenario)) {
+        const pick = scenObj.hasil_terpilih || null;
+        const pickSub = pick?.Sub_Grup ? String(pick.Sub_Grup).toUpperCase() : null;
+        const code = (CLASS_CODES as readonly string[]).includes(pickSub as any)
+          ? (pickSub as (typeof CLASS_CODES)[number])
+          : null;
+        const normalized = code
+          ? {
+              selected_answer: code,
+              reason: "Hasil_terpilih dari skenario paralel.",
+              generation_type: generationTypeFor(code),
+              reconstructed_prompt: null,
+              analysis: {
+                scene_summary: "",
+                source_primary: "Unknown" as const,
+                source_scores: { ai: null, human: null, animation: null },
+                faces_presence: "Unknown" as const,
+                faces_count: null,
+                faces_evidence: [],
+                brand_present: null,
+                brand_names: [],
+                brand_evidence: [],
+                animation_is: null,
+                animation_evidence: [],
+                ai_artifacts: [],
+                human_cues: [],
+                overall_notes: [],
+                recommended_answer: code,
+                recommended_reason: null,
+                raw: null,
+              },
+              analysis_issues: ["scenarios_mode_used"],
+              verdict_details: extractVerdictExtras({}),
+              _analysis_raw_output: null,
+              _verdict_raw_output: null,
+              _raw_model_output: scen.text ?? "",
+              _timestamp: new Date().toISOString(),
+              _validation_issues: [],
+              _allowed_codes: CLASS_CODES,
+            }
+          : null;
+
+        const out = {
+          parsed: normalized,
+          parsed_scenarios: scenObj,
+          raw_attempts: attempts.map((a) => ({
+            ok: a.ok,
+            text: a.text,
+            model: a.model,
+            stage: a.stage,
+          })),
+          attempts,
+        };
+        cache.set(hash, out);
+        return res.status(200).json(out);
+      }
+    }
 
     // Batch attempt (works for 1 atau banyak gambar)
     const namesList = names.map((n, i) => `${i + 1}. ${n}`).join("\n");

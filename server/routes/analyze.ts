@@ -459,7 +459,7 @@ Grup_UTAMA,Sub_Grup,Sumber Gambar,Subkategori Sumber,Wajah Manusia,Wajah Full,Wa
 4,4,Manusia,Foto/Ilustrasi,Tidak,-,-,Tidak,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
 5,5A,Manusia,Foto/Ilustrasi,Ya,Tidak,Ya,Ya,-,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.9
 5,5B,Manusia,Foto/Ilustrasi,Ya,Ya,Ya,Ya,-,-,Ada EXIF, watermark optional,❌ Tidak diizinkan,Submit Review,-,-,0.95
-6,6A,Manusia,Foto/Ilustrasi,Ya,Ya,Tidak,Tidak,1,-,Ada EXIF, watermark optional,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),✅ Diizinkan (manual),0.85
+6,6A,Manusia,Foto/Ilustrasi,Ya,Ya,Tidak,Tidak,1,-,Ada EXIF, watermark optional,❌ Tidak langsung diizinkan,Take Selfie Photo → (Jika sukses ✅, gagal ❌ Submit Review),Commercial Remix License (jika sukses),�� Diizinkan (manual),0.85
 6,6B,Manusia,Foto/Ilustrasi,Ya,Tidak,Tidak,Tidak,1,-,Ada EXIF, watermark optional,✅ Bisa diregistrasi,-,Commercial Remix License,✅ Diizinkan (manual),0.85
 7,7,AI (Animasi),Cartoon/2D/3D,Tidak,-,-,Tidak,-,2D/3D Cartoon,-,✅ Bisa diregistrasi,-,Commercial Remix License,❌ Tidak diizinkan (fixed),0.9
 8,8,AI (Animasi),Cartoon/2D/3D,Ya,Ya/Tidak,Ya,Ya,-,2D/3D Cartoon,-,❌ Tidak diizinkan,Submit Review,-,-,0.95
@@ -1119,6 +1119,58 @@ const analyzeHandler: RequestHandler = async (req, res) => {
     }
 
     // Batch attempt (works for 1 atau banyak gambar)
+    if (files.length > 1) {
+      const toolsAll = await Promise.all(files.map((f) => runToolsFor(f.buffer)));
+      const quick = toolsAll.map((t, idx) => {
+        const pc = preClassify({
+          exif: t.metadata.exif,
+          faceCount: t.metadata.faces.count || 0,
+          famousFace: false,
+          fullFace: !!t.metadata.faces.fullFaceLikely,
+          brandPresent: !!t.metadata.brand.present,
+          brandNames: t.metadata.brand.names || [],
+          styleLabel: t.metadata.style || null,
+        });
+        return { pc, name: names[idx] };
+      });
+      const allHigh = quick.every((q) => q.pc.code && q.pc.confidence >= 0.9);
+      if (allHigh) {
+        const arr = quick.map((q) => {
+          const code = q.pc.code as (typeof CLASS_CODES)[number];
+          return {
+            nama_file_gambar: q.name,
+            Grup_UTAMA: String(code).replace(/[^0-9]/g, ""),
+            Sub_Grup: code,
+            status_registrasi:
+              code === "2A" || code === "5B"
+                ? "❌ Tidak diizinkan"
+                : code === "3A" || code === "6A" || code === "9"
+                ? "❌ Tidak langsung diizinkan"
+                : "✅ Bisa diregistrasi",
+            opsi_tambahan:
+              code === "3A" || code === "6A" || code === "9"
+                ? "Take Selfie Photo"
+                : code === "2A" || code === "5B"
+                ? "Submit Review"
+                : "-",
+            smart_licensing:
+              code === "2A" || code === "5B" ? "-" : "Commercial Remix License (minting fee & revenue share manual)",
+            ai_training:
+              GROUP_META[code].source === "Human" ? "✅ Diizinkan" : "❌ Tidak diizinkan (fixed)",
+            confidence: q.pc.confidence,
+          };
+        });
+        const out = {
+          parsed: null,
+          parsed_batch: arr,
+          attempts,
+          raw_attempts: attempts.map((a) => ({ ok: a.ok, text: a.text, model: a.model, stage: a.stage })),
+        };
+        cache.set(hash, out);
+        return res.status(200).json(out);
+      }
+    }
+
     const namesList = names.map((n, i) => `${i + 1}. ${n}`).join("\n");
     const batchPrompt = `${MULTI_IMAGE_PROMPT}\n\nDaftar nama file:\n${namesList}`;
     const batch = await callModel(

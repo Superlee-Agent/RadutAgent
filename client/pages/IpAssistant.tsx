@@ -544,7 +544,7 @@ const IpAssistant = () => {
 
         if (parsedScenarios) {
           const list = parsedScenarios.skenario as any[];
-          const lines = list.slice(0, 4).map((it: any) => {
+          const lines = list.slice(0, 2).map((it: any) => {
             const id = typeof it?.id === "number" ? it.id : "?";
             const sub = String(it?.Sub_Grup ?? "?").toUpperCase();
             const status = String(it?.status_registrasi ?? "");

@@ -359,7 +359,7 @@ Format jawaban JSON per gambar:
     "nama_file_gambar": "string",
     "Grup_UTAMA": "1–9",
     "Sub_Grup": "1|2A|2B|3A|3B|4|5A|5B|6A|6B|7|8|9",
-    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "❌ Tidak langsung diizinkan",
+    "status_registrasi": "✅ Bisa diregistrasi" | "❌ Tidak diizinkan" | "�� Tidak langsung diizinkan",
     "opsi_tambahan": "Take Selfie Photo" | "Submit Review" | "-",
     "smart_licensing": "Commercial Remix License (minting fee & revenue share manual)" | "-",
     "ai_training": "✅ Diizinkan" | "❌ Tidak diizinkan (fixed)",
@@ -798,6 +798,72 @@ const analyzeHandler: RequestHandler = async (req, res) => {
 
     const OpenAI = (await import("openai")).default;
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    async function runToolsFor(bytes: Buffer) {
+      const [exif] = await Promise.all([tryExif(bytes)]);
+      let caption = "";
+      let faceCount = 0;
+      let fullFace = false;
+      let famousFace = false;
+      let brandPresent = false;
+      let brandNames: string[] = [];
+      let styleLabel: string | null = null;
+
+      if (HF_TOKEN) {
+        const [cap, faces, logos] = await Promise.all([
+          hfRequest(HF_MODELS.CAPTION, bytes),
+          hfRequest(HF_MODELS.FACE, bytes),
+          hfRequest(HF_MODELS.LOGO, bytes),
+        ]);
+        try {
+          if (Array.isArray(cap) && cap[0]?.generated_text) {
+            caption = String(cap[0].generated_text || "");
+          }
+        } catch {}
+        try {
+          if (Array.isArray(faces)) {
+            faceCount = faces.length;
+            fullFace = faceCount > 0;
+          }
+        } catch {}
+        try {
+          if (Array.isArray(logos)) {
+            const labels = logos
+              .map((x: any) => String(x?.label || "").toLowerCase())
+              .filter(Boolean);
+            brandNames = Array.from(new Set(labels));
+            brandPresent = brandNames.length > 0;
+          }
+        } catch {}
+      }
+      if (caption) {
+        const s = guessStyleFromCaption(caption);
+        if (s) styleLabel = s;
+        const b = detectBrandsFromCaption(caption);
+        if (b.present && brandNames.length === 0) {
+          brandPresent = true;
+          brandNames = b.names;
+        }
+      }
+
+      const pre = preClassify({
+        exif,
+        faceCount,
+        famousFace,
+        fullFace,
+        brandPresent,
+        brandNames,
+        styleLabel,
+      });
+      const metadata = {
+        exif,
+        caption: caption || null,
+        faces: { count: faceCount, fullFaceLikely: fullFace },
+        brand: { present: brandPresent, names: brandNames },
+        style: styleLabel,
+      };
+      return { pre, metadata };
+    }
 
     const extractText = (r: any) => {
       if (!r) return "";

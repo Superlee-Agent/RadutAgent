@@ -536,10 +536,31 @@ const IpAssistant = () => {
         const parsedBatch = Array.isArray(data?.parsed_batch)
           ? (data.parsed_batch as any[])
           : null;
+        const parsedScenarios = data?.parsed_scenarios && Array.isArray(data.parsed_scenarios?.skenario)
+          ? data.parsed_scenarios
+          : null;
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (parsedBatch && parsedBatch.length > 0) {
+        if (parsedScenarios) {
+          const list = parsedScenarios.skenario as any[];
+          const lines = list.slice(0, 4).map((it: any) => {
+            const id = typeof it?.id === "number" ? it.id : "?";
+            const sub = String(it?.Sub_Grup ?? "?").toUpperCase();
+            const status = String(it?.status_registrasi ?? "");
+            const conf =
+              typeof it?.confidence === "number"
+                ? ` (${it.confidence.toFixed(2)})`
+                : "";
+            return `Skenario ${id}: ${sub} · ${status}${conf}`;
+          });
+          const chosen = parsedScenarios.hasil_terpilih || null;
+          const chosenSub = chosen?.Sub_Grup ? String(chosen.Sub_Grup).toUpperCase() : "";
+          if (chosenSub && ANSWER_LABELS[chosenSub]) {
+            verification = { label: ANSWER_LABELS[chosenSub], code: chosenSub };
+          }
+          display = lines.join("\n");
+        } else if (parsedBatch && parsedBatch.length > 0) {
           // Summarize batch
           const lines = parsedBatch.slice(0, 6).map((item: any) => {
             const name = String(item?.nama_file_gambar ?? "?");

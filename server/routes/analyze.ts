@@ -3,6 +3,150 @@ import { RequestHandler } from "express";
 import { createHash } from "crypto";
 
 const cache = new Map<string, any>();
+
+const HF_TOKEN = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN || "";
+const HF_MODELS = {
+  CAPTION: process.env.HF_CAPTION_MODEL || "Salesforce/blip-image-captioning-base",
+  FACE: process.env.HF_FACE_MODEL || "hustvl/yolov5l-face",
+  LOGO: process.env.HF_LOGO_MODEL || "microsoft/dit-base-finetuned-funsd",
+  STYLE: process.env.HF_STYLE_MODEL || "laion/clap-htsat-unfused",
+};
+
+async function tryExif(buffer: Buffer) {
+  try {
+    const exifr = await import("exifr").catch(() => null as any);
+    if (!exifr || !(exifr as any).parse) return null;
+    const data = await (exifr as any).parse(buffer).catch(() => null);
+    if (!data) return null;
+    return {
+      hasExif: true,
+      make: data.Make || null,
+      model: data.Model || null,
+      software: data.Software || null,
+      dateTime: data.DateTimeOriginal || data.CreateDate || null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function hfRequest(model: string, bytes: Buffer) {
+  if (!HF_TOKEN) return null;
+  const url = `https://api-inference.huggingface.co/models/${model}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${HF_TOKEN}`,
+      "Content-Type": "application/octet-stream",
+    },
+    body: bytes,
+  });
+  if (!res.ok) return null;
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return res.json();
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+function guessStyleFromCaption(caption: string) {
+  const t = caption.toLowerCase();
+  if (/(anime|manga|cartoon|toon|pixar|disney|ghibli|cel[- ]?shade)/.test(t))
+    return "2D";
+  if (/(3d|render|cgi|blender|maya|unreal|unity|low[- ]?poly|voxel)/.test(t))
+    return "3D";
+  if (/(pixel art|8[- ]?bit|16[- ]?bit)/.test(t)) return "pixel art";
+  if (/(stylized|illustration|painting|watercolor|comic)/.test(t))
+    return "stylized";
+  if (/(photo|photograph|realistic|realism|dslr|bokeh)/.test(t))
+    return "realistic";
+  return null;
+}
+
+function detectBrandsFromCaption(caption: string) {
+  const known = [
+    "disney",
+    "marvel",
+    "dc",
+    "pokemon",
+    "naruto",
+    "one piece",
+    "star wars",
+    "harry potter",
+    "nike",
+    "adidas",
+    "gucci",
+    "prada",
+    "apple",
+    "microsoft",
+    "coca-cola",
+    "pepsi",
+    "twitter",
+    "instagram",
+    "facebook",
+    "minecraft",
+    "fortnite",
+  ];
+  const t = caption.toLowerCase();
+  const found = known.filter((k) => t.includes(k));
+  return { present: found.length > 0, names: found };
+}
+
+function preClassify({
+  exif,
+  faceCount,
+  famousFace,
+  fullFace,
+  brandPresent,
+  brandNames,
+  styleLabel,
+}: {
+  exif: any;
+  faceCount: number;
+  famousFace: boolean;
+  fullFace: boolean;
+  brandPresent: boolean;
+  brandNames: string[];
+  styleLabel: string | null;
+}) {
+  let source: "AI" | "Human" | "AI (Animasi)" = "AI";
+  if (styleLabel && (styleLabel === "2D" || styleLabel === "3D")) {
+    source = "AI (Animasi)";
+  } else if (exif?.model || exif?.make) {
+    source = "Human";
+  }
+  const hasFace = faceCount > 0;
+  const isFamous = famousFace;
+  const isFull = fullFace;
+  const hasBrand = brandPresent;
+
+  let code: (typeof CLASS_CODES)[number] | null = null;
+  if (source === "AI (Animasi)") {
+    if (!hasFace && !hasBrand) code = "7";
+    else if (isFamous || hasBrand) code = "8";
+    else code = "9";
+  } else if (source === "AI") {
+    if (!hasFace && !hasBrand) code = "1";
+    else if (isFamous || hasBrand) code = isFull ? "2A" : "2B";
+    else code = hasFace ? (isFull ? "3A" : "3B") : "1";
+  } else {
+    if (!hasFace && !hasBrand) code = "4";
+    else if (isFamous || hasBrand) code = isFull ? "5B" : "5A";
+    else code = hasFace ? (isFull ? "6A" : "6B") : "4";
+  }
+
+  let conf = 0.82;
+  if (source === "Human" && exif?.model) conf += 0.08;
+  if (styleLabel === "2D" || styleLabel === "3D") conf += 0.08;
+  if (!hasFace && !hasBrand) conf += 0.05;
+  if (isFamous || hasBrand) conf += 0.05;
+  if (isFull && hasFace) conf += 0.03;
+  conf = Math.max(0, Math.min(0.99, conf));
+
+  return { code, confidence: conf, source, notes: { brandNames } };
+}
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },

@@ -199,7 +199,7 @@ const History = () => {
     <DashboardLayout title="Chat History">
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <aside className="hidden w-80 flex-col border-r border-white/10 px-6 py-8 text-sm text-slate-300 md:flex">
-          <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs uppercase tracking-wide text-slate-300">
+          <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 py-[7px] pl-[11px] pr-0 text-xs uppercase tracking-wide text-slate-300">
             <span className="text-[10px] font-semibold text-[#FF4DA6]">
               Search
             </span>
@@ -208,7 +208,7 @@ const History = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Filter conversations"
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
+              className="flex-1 bg-transparent text-[12px] text-white placeholder:text-slate-400 focus:outline-none"
             />
           </label>
           {renderSessionList()}
@@ -223,7 +223,7 @@ const History = () => {
 
         <section className="flex-1 min-h-0">
           <div className="md:hidden px-4 py-4">
-            <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs uppercase tracking-wide text-slate-300">
+            <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 py-[7px] pl-[11px] pr-0 text-xs uppercase tracking-wide text-slate-300">
               <span className="text-[10px] font-semibold text-[#FF4DA6]">
                 Search
               </span>
@@ -232,7 +232,7 @@ const History = () => {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Filter conversations"
-                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
+                className="flex-1 bg-transparent text-[12px] text-white placeholder:text-slate-400 focus:outline-none"
               />
             </label>
             <div className="mt-4 space-y-3">

@@ -158,7 +158,8 @@ html {
   max-width: 80%;
   word-break: break-word;
   font-size: 0.98rem;
-  line-height: 1.35;
+  line-height: 1.45;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .bubble:last-of-type {
   margin-bottom: 0;

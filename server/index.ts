@@ -39,6 +39,12 @@ export function createServer() {
   );
   app.post("/api/ipfs/upload-json", handleIpfsUploadJson);
 
+  // Generate title/description on demand (POST /api/describe)
+  app.post(
+    "/api/describe",
+    ...(Array.isArray(handleDescribe) ? handleDescribe : [handleDescribe]),
+  );
+
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>
     res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),

@@ -659,7 +659,12 @@ const IpAssistant = () => {
           } else if (requiresSubmitReview(g)) {
             let reason = "perlu peninjauan.";
             if (facts.has_known_brand_or_character) {
-              reason = "mengandung merek/karakter terkenal.";
+              const name = detectedBrand || detectedCharacter;
+              if (name) {
+                reason = `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${name}.`;
+              } else {
+                reason = "mengandung merek/karakter terkenal.";
+              }
             } else if (facts.is_famous_person && facts.is_full_face_visible) {
               reason = "menampilkan wajah figur publik secara penuh.";
             } else if (facts.is_famous_person) {

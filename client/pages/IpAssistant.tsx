@@ -499,10 +499,10 @@ const IpAssistant = () => {
             console.error("Compression failed, sending original file", error);
             blob = f;
           }
-          form.append("images", blob, f.name || "image.jpg");
+          form.append("image", blob, f.name || "image.jpg");
         }
 
-        const response = await fetch("/api/analyze", {
+        const response = await fetch("/api/upload", {
           method: "POST",
           body: form,
         });
@@ -596,6 +596,18 @@ const IpAssistant = () => {
               typeof parsed.reason === "string" ? parsed.reason.trim() : "";
             display = reason || "(No analysis result)";
           }
+        } else if (typeof (data as any)?.group === "number" && (data as any)?.details) {
+          const g = (data as any).group as number;
+          const d = (data as any).details as Record<string, unknown>;
+          const flags = [
+            `AI: ${d.is_ai_generated ? "Ya" : "Tidak"}`,
+            `Animasi: ${d.is_animation ? "Ya" : "Tidak"}`,
+            `Wajah manusia: ${d.has_human_face ? "Ya" : "Tidak"}`,
+            `Full wajah: ${d.is_full_face_visible ? "Ya" : "Tidak"}`,
+            `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
+            `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
+          ];
+          display = `Group ${g}\n` + flags.join(" · ");
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";
@@ -978,7 +990,6 @@ const IpAssistant = () => {
         ref={uploadRef}
         type="file"
         accept="image/*"
-        multiple
         className="hidden"
         onChange={handleImage}
       />

@@ -201,8 +201,12 @@ export const handleUpload: any = [
           (parsed as any).has_known_brand_or_character,
         ),
       };
-      const title = typeof (parsed as any).title === "string" ? (parsed as any).title : "";
-      const description = typeof (parsed as any).description === "string" ? (parsed as any).description : "";
+      const title =
+        typeof (parsed as any).title === "string" ? (parsed as any).title : "";
+      const description =
+        typeof (parsed as any).description === "string"
+          ? (parsed as any).description
+          : "";
       // Enforce logical consistency
       flags.is_full_face_visible = !!(
         flags.has_human_face && flags.is_full_face_visible
@@ -210,7 +214,9 @@ export const handleUpload: any = [
 
       const group = determineGroup(flags);
 
-      return res.status(200).json({ group, details: flags, title, description });
+      return res
+        .status(200)
+        .json({ group, details: flags, title, description });
     } catch (err) {
       console.error("upload error:", err);
       return res.status(500).json({ error: "analysis_failed" });

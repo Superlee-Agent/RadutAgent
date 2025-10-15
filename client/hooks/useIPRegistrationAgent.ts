@@ -8,7 +8,11 @@ import {
   toHttps,
 } from "@/lib/utils/ipfs";
 import { createLicenseTerms, LicenseSettings } from "@/lib/license/terms";
-import { StoryClient, PILFlavor, WIP_TOKEN_ADDRESS } from "@story-protocol/core-sdk";
+import {
+  StoryClient,
+  PILFlavor,
+  WIP_TOKEN_ADDRESS,
+} from "@story-protocol/core-sdk";
 import { createWalletClient, custom, parseEther } from "viem";
 import {
   getLicenseSettingsByGroup,
@@ -129,9 +133,12 @@ export function useIPRegistrationAgent() {
         }));
         let creatorAddr: string | undefined;
         try {
-          const providerTmp: any = ethereumProvider || (globalThis as any).ethereum;
+          const providerTmp: any =
+            ethereumProvider || (globalThis as any).ethereum;
           if (providerTmp) {
-            const walletClientTmp = createWalletClient({ transport: custom(providerTmp) });
+            const walletClientTmp = createWalletClient({
+              transport: custom(providerTmp),
+            });
             const addrs = await walletClientTmp.getAddresses();
             if (addrs && addrs[0]) creatorAddr = String(addrs[0]);
           }
@@ -145,7 +152,8 @@ export function useIPRegistrationAgent() {
           mediaUrl: imageGateway,
           mediaHash: imageHash,
           mediaType: compressedFile.type || "image/jpeg",
-          external_url: typeof window !== "undefined" ? window.location.origin : undefined,
+          external_url:
+            typeof window !== "undefined" ? window.location.origin : undefined,
           creators: creatorAddr
             ? [
                 {
@@ -156,7 +164,12 @@ export function useIPRegistrationAgent() {
               ]
             : [],
           attributes: [
-            { trait_type: "Status", value: isAiGeneratedGroup(group) ? "AI Generated" : "Human Generated" },
+            {
+              trait_type: "Status",
+              value: isAiGeneratedGroup(group)
+                ? "AI Generated"
+                : "Human Generated",
+            },
           ],
           aiMetadata: intent?.prompt
             ? { prompt: intent.prompt, generator: "user", model: "rule-based" }
@@ -177,7 +190,10 @@ export function useIPRegistrationAgent() {
         setRegisterState((p) => ({ ...p, status: "minting", progress: 75 }));
         // SDK integration pending env/deps (Story Protocol). Guard to avoid silent failure.
         const spg = (import.meta as any).env?.VITE_PUBLIC_SPG_COLLECTION;
-        if (!spg) throw new Error("SPG collection env not set (VITE_PUBLIC_SPG_COLLECTION)");
+        if (!spg)
+          throw new Error(
+            "SPG collection env not set (VITE_PUBLIC_SPG_COLLECTION)",
+          );
         const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
         if (!rpcUrl) throw new Error("RPC URL not set (VITE_PUBLIC_STORY_RPC)");
 
@@ -186,7 +202,9 @@ export function useIPRegistrationAgent() {
           {
             terms: PILFlavor.commercialRemix({
               commercialRevShare: Number(licenseSettings.revShare) || 0,
-              defaultMintingFee: parseEther(String(licenseSettings.licensePrice || 0)),
+              defaultMintingFee: parseEther(
+                String(licenseSettings.licensePrice || 0),
+              ),
               currency: WIP_TOKEN_ADDRESS,
             }),
           },
@@ -194,30 +212,51 @@ export function useIPRegistrationAgent() {
 
         // Init wallet client via Privy provider
         const provider = ethereumProvider || (globalThis as any).ethereum;
-        if (!provider) throw new Error("No EIP-1193 provider found. Connect wallet first.");
+        if (!provider)
+          throw new Error("No EIP-1193 provider found. Connect wallet first.");
         try {
-          const chainIdHex: string = await provider.request({ method: "eth_chainId" });
+          const chainIdHex: string = await provider.request({
+            method: "eth_chainId",
+          });
           if (chainIdHex?.toLowerCase() !== "0x523") {
             try {
-              await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x523" }] });
+              await provider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x523" }],
+              });
             } catch (e) {
               const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
               try {
                 await provider.request({
                   method: "wallet_addEthereumChain",
-                  params: [{
-                    chainId: "0x523",
-                    chainName: "Aeneid",
-                    nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
-                    rpcUrls: rpcUrl ? [rpcUrl] : ["https://aeneid.storyrpc.io"],
-                  }],
+                  params: [
+                    {
+                      chainId: "0x523",
+                      chainName: "Aeneid",
+                      nativeCurrency: {
+                        name: "IP",
+                        symbol: "IP",
+                        decimals: 18,
+                      },
+                      rpcUrls: rpcUrl
+                        ? [rpcUrl]
+                        : ["https://aeneid.storyrpc.io"],
+                    },
+                  ],
                 });
               } catch {}
-              try { await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x523" }] }); } catch {}
+              try {
+                await provider.request({
+                  method: "wallet_switchEthereumChain",
+                  params: [{ chainId: "0x523" }],
+                });
+              } catch {}
             }
           }
         } catch {}
-        const walletClient = createWalletClient({ transport: custom(provider) });
+        const walletClient = createWalletClient({
+          transport: custom(provider),
+        });
         const [addr] = await walletClient.getAddresses();
         if (!addr) throw new Error("No wallet address available");
 
@@ -227,21 +266,34 @@ export function useIPRegistrationAgent() {
           chainId: "aeneid",
         });
 
-        const result: any = await story.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: spg as `0x${string}`,
-          recipient: addr as `0x${string}`,
-          licenseTermsData,
-          ipMetadata: {
-            ipMetadataURI,
-            ipMetadataHash: ipMetadataHash as any,
-            nftMetadataURI: ipMetadataURI,
-            nftMetadataHash: ipMetadataHash as any,
-          },
-          allowDuplicates: true,
-        });
+        const result: any =
+          await story.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+            spgNftContract: spg as `0x${string}`,
+            recipient: addr as `0x${string}`,
+            licenseTermsData,
+            ipMetadata: {
+              ipMetadataURI,
+              ipMetadataHash: ipMetadataHash as any,
+              nftMetadataURI: ipMetadataURI,
+              nftMetadataHash: ipMetadataHash as any,
+            },
+            allowDuplicates: true,
+          });
 
-        setRegisterState({ status: "success", progress: 100, error: null, ipId: result?.ipId, txHash: result?.txHash || result?.transactionHash });
-        return { success: true, ipId: result?.ipId, txHash: result?.txHash || result?.transactionHash, imageUrl: imageGateway, ipMetadataUrl: toHttps(ipMetaCid) } as const;
+        setRegisterState({
+          status: "success",
+          progress: 100,
+          error: null,
+          ipId: result?.ipId,
+          txHash: result?.txHash || result?.transactionHash,
+        });
+        return {
+          success: true,
+          ipId: result?.ipId,
+          txHash: result?.txHash || result?.transactionHash,
+          imageUrl: imageGateway,
+          ipMetadataUrl: toHttps(ipMetaCid),
+        } as const;
       } catch (error: any) {
         setRegisterState({ status: "error", progress: 0, error });
         return {

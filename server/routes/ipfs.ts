@@ -1,7 +1,10 @@
 import type { RequestHandler } from "express";
 import multer from "multer";
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024 },
+});
 
 const PINATA_JWT = process.env.PINATA_JWT;
 const PINATA_GATEWAY = process.env.PINATA_GATEWAY; // e.g. mysubdomain.mypinata.cloud
@@ -9,8 +12,10 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY; // e.g. mysubdomain.mypinata.
 async function pinFileToPinata(name: string, buffer: Buffer, mimetype: string) {
   if (!PINATA_JWT) throw new Error("PINATA_JWT not set");
   const form = new FormData();
-  const blob = new Blob([buffer], { type: mimetype || "application/octet-stream" });
-  form.append("file", blob, name || "file" );
+  const blob = new Blob([buffer], {
+    type: mimetype || "application/octet-stream",
+  });
+  form.append("file", blob, name || "file");
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: { Authorization: `Bearer ${PINATA_JWT}` },
@@ -46,8 +51,14 @@ export const handleIpfsUpload: any = [
     try {
       const f = (req as any).file as Express.Multer.File | undefined;
       if (!f) return res.status(400).json({ error: "no_file" });
-      const cid = await pinFileToPinata(f.originalname || "file", f.buffer, f.mimetype || "application/octet-stream");
-      const https = PINATA_GATEWAY ? `https://${PINATA_GATEWAY}/ipfs/${cid}` : undefined;
+      const cid = await pinFileToPinata(
+        f.originalname || "file",
+        f.buffer,
+        f.mimetype || "application/octet-stream",
+      );
+      const https = PINATA_GATEWAY
+        ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
+        : undefined;
       return res.status(200).json({ cid, url: `ipfs://${cid}`, https });
     } catch (err) {
       console.error("ipfs upload error:", err);
@@ -60,7 +71,9 @@ export const handleIpfsUploadJson: RequestHandler = async (req, res) => {
   try {
     const data = req.body?.data ?? req.body;
     const cid = await pinJsonToPinata(data);
-    const https = PINATA_GATEWAY ? `https://${PINATA_GATEWAY}/ipfs/${cid}` : undefined;
+    const https = PINATA_GATEWAY
+      ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
+      : undefined;
     return res.status(200).json({ cid, url: `ipfs://${cid}`, https });
   } catch (err) {
     console.error("ipfs json upload error:", err);

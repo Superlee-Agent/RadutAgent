@@ -33,10 +33,10 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderBrandHeader = () => (
-    <div className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-300">
+    <div className="flex w-full items-center gap-3 rounded-xl border border-[#FF4DA6]/15 px-4 py-3 text-sm font-medium text-slate-300 bg-gradient-to-r from-[#FF4DA6]/5 to-transparent backdrop-blur-sm hover:border-[#FF4DA6]/25 hover:bg-gradient-to-r hover:from-[#FF4DA6]/10 hover:to-transparent transition-all duration-300">
       <span
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-black"
+        className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/5 border border-[#FF4DA6]/20"
         style={{
           backgroundImage: `url(${BRAND_IMAGE_URL})`,
           backgroundPosition: "center",
@@ -44,7 +44,7 @@ export const DashboardLayout = ({
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-semibold text-[#FF4DA6]">{BRAND_NAME}</div>
+      <div className="text-base font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2]">{BRAND_NAME}</div>
     </div>
   );
 

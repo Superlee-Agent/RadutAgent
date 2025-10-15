@@ -109,7 +109,7 @@ html {
   body {
     @apply bg-background text-foreground;
     margin: 0;
-    background: #05070f;
+    background: linear-gradient(135deg, #05070f 0%, #0a0e1f 50%, #05070f 100%);
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -124,6 +124,7 @@ html {
       Arial,
       "Apple Color Emoji",
       "Segoe UI Emoji";
+    letter-spacing: 0.3px;
   }
 }
 

@@ -4,7 +4,7 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
-import { getLicenseSettingsByGroup, GROUPS } from "@/lib/groupLicense";
+import { getLicenseSettingsByGroup, GROUPS, requiresSelfieVerification, requiresSubmitReview } from "@/lib/groupLicense";
 
 type BotMessage = {
   from: "bot";
@@ -87,7 +87,7 @@ const ANSWER_DETAILS: Record<
     action:
       "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
+      "Commercial Remix License (minting fee & revenue share manual) ��� jika verifikasi sukses",
     aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
   },
   "6": {

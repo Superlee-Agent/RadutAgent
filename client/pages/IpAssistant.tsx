@@ -885,14 +885,6 @@ const IpAssistant = () => {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={handleWalletButtonClick}
-          disabled={walletButtonDisabled}
-          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {walletButtonText}
-        </button>
-        <button
-          type="button"
           aria-pressed={guestMode}
           onClick={() => setGuestMode((v) => !v)}
           className={
@@ -903,6 +895,14 @@ const IpAssistant = () => {
           }
         >
           Guest
+        </button>
+        <button
+          type="button"
+          onClick={handleWalletButtonClick}
+          disabled={walletButtonDisabled}
+          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {walletButtonText}
         </button>
       </div>
     </>

@@ -940,7 +940,7 @@ const IpAssistant = () => {
                   }}
                   layout
                 >
-                  <div className="bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_32px_rgba(0,0,0,0.35)]">
+                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem]">
                     {msg.text}
                   </div>
                 </motion.div>
@@ -980,7 +980,7 @@ const IpAssistant = () => {
                   }}
                   layout
                 >
-                  <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm">
+                  <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem]">
                     <div>{msg.text}</div>
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
@@ -1512,7 +1512,7 @@ const IpAssistant = () => {
       </div>
 
       <form
-        className="chat-input flex items-center gap-3 px-6 py-3 border-t border-white/10 bg-gradient-to-r from-slate-900/70 to-black/70 flex-none sticky bottom-0 z-10 backdrop-blur"
+        className="chat-input flex items-center gap-3.5 px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();
@@ -1521,7 +1521,7 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-full border border-[#FF4DA6]/40 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
+          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300"
           onClick={() => uploadRef.current?.click()}
           aria-label="Attach image"
         >
@@ -1554,13 +1554,13 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none p-3 rounded-2xl border border-white/20 bg-white/5 text-white placeholder:text-white/50 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40 transition-shadow duration-200 backdrop-blur"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button
           type="submit"
           disabled={waiting || !input.trim()}
-          className="p-2 rounded-full border border-[#FF4DA6] bg-transparent text-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_12px_24px_rgba(0,0,0,0.25)] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
+          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300"
           aria-label="Send message"
         >
           <svg

@@ -33,10 +33,10 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderBrandHeader = () => (
-    <div className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-300">
+    <div className="flex w-full items-center gap-3 rounded-xl border border-[#FF4DA6]/15 px-4 py-3 text-sm font-medium text-slate-300 bg-gradient-to-r from-[#FF4DA6]/5 to-transparent backdrop-blur-sm hover:border-[#FF4DA6]/25 hover:bg-gradient-to-r hover:from-[#FF4DA6]/10 hover:to-transparent transition-all duration-300">
       <span
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-black"
+        className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/5 border border-[#FF4DA6]/20"
         style={{
           backgroundImage: `url(${BRAND_IMAGE_URL})`,
           backgroundPosition: "center",
@@ -44,13 +44,15 @@ export const DashboardLayout = ({
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-semibold text-[#FF4DA6]">{BRAND_NAME}</div>
+      <div className="text-base font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2]">
+        {BRAND_NAME}
+      </div>
     </div>
   );
 
   const renderNavItems = (closeSidebar?: () => void) => (
-    <nav className="mt-2 flex-1 w-full text-slate-300">
-      <ul className="flex flex-col gap-2">
+    <nav className="mt-6 flex-1 w-full text-slate-300 space-y-1">
+      <ul className="flex flex-col gap-1">
         {navItems.map((item) => {
           const ItemIcon = item.icon;
           return (
@@ -59,11 +61,11 @@ export const DashboardLayout = ({
                 to={item.to}
                 className={({ isActive }) => {
                   const baseClasses =
-                    "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150";
+                    "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300";
                   const activeClasses =
-                    "border-[#FF4DA6]/60 bg-black text-[#FF4DA6] shadow-[0_6px_18px_rgba(255,77,166,0.2)]";
+                    "bg-gradient-to-r from-[#FF4DA6]/20 to-[#FF4DA6]/5 text-[#FF4DA6] border border-[#FF4DA6]/40 shadow-[0_8px_24px_rgba(255,77,166,0.15)]";
                   const inactiveClasses =
-                    "border-transparent text-slate-300 hover:bg-white/5 hover:text-[#FF4DA6]";
+                    "text-slate-400 hover:text-slate-200 border border-transparent hover:bg-white/5 hover:border-[#FF4DA6]/20";
                   return [
                     baseClasses,
                     isActive ? activeClasses : inactiveClasses,
@@ -71,10 +73,10 @@ export const DashboardLayout = ({
                 }}
                 onClick={() => closeSidebar?.()}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[#FF4DA6]/40 bg-black text-slate-400">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-500 transition-all duration-300 group-hover:bg-slate-700/60 group-hover:text-slate-300">
                   <ItemIcon className="h-4 w-4" />
                 </span>
-                <span className="text-[#FF4DA6]">{item.label}</span>
+                <span>{item.label}</span>
               </NavLink>
             </li>
           );
@@ -94,9 +96,9 @@ export const DashboardLayout = ({
   );
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-slate-800 via-slate-900 to-black text-slate-100">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-slate-950/80 to-black/80 text-slate-100 py-6 px-4 border-r border-white/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto backdrop-blur">
+        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-slate-950/90 via-slate-950/70 to-black/80 text-slate-100 py-6 px-4 border-r border-[#FF4DA6]/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto backdrop-blur-xl">
           {sidebar}
         </aside>
 
@@ -116,7 +118,7 @@ export const DashboardLayout = ({
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-gradient-to-b from-slate-950/90 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-white/10 backdrop-blur"
+                className="relative w-64 bg-gradient-to-b from-slate-950/95 via-slate-950/85 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-[#FF4DA6]/10 backdrop-blur-xl"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -146,9 +148,9 @@ export const DashboardLayout = ({
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-900/80 via-slate-950/80 to-black">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-black">
             <motion.header
-              className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/60 via-slate-900/30 to-black/60 backdrop-blur"
+              className="flex items-center gap-4 px-6 py-4 border-b border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 backdrop-blur-xl"
               variants={fadeUp}
               initial="initial"
               animate="animate"
@@ -178,11 +180,11 @@ export const DashboardLayout = ({
                 <img
                   src={avatarSrc}
                   alt="Dashboard avatar"
-                  className="h-9 w-9 rounded-full object-cover"
+                  className="h-10 w-10 rounded-lg object-cover border border-[#FF4DA6]/20 ring-2 ring-[#FF4DA6]/10"
                 />
               ) : null}
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
+                <h1 className="text-lg font-bold tracking-wider bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] bg-clip-text text-transparent">
                   {title}
                 </h1>
               </div>

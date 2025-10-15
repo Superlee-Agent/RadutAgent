@@ -4,7 +4,12 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
-import { getLicenseSettingsByGroup, GROUPS, requiresSelfieVerification, requiresSubmitReview } from "@/lib/groupLicense";
+import {
+  getLicenseSettingsByGroup,
+  GROUPS,
+  requiresSelfieVerification,
+  requiresSubmitReview,
+} from "@/lib/groupLicense";
 
 type BotMessage = {
   from: "bot";
@@ -653,7 +658,8 @@ const IpAssistant = () => {
             }
             sentence = `IP ini bisa diregister karena ${reason}.`;
           } else if (requiresSelfieVerification(g)) {
-            sentence = "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+            sentence =
+              "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
           } else if (requiresSubmitReview(g)) {
             let reason = "perlu peninjauan.";
             if (facts.has_known_brand_or_character) {

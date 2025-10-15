@@ -242,6 +242,7 @@ const IpAssistant = () => {
   const lastUploadNameRef = useRef<string>("");
   const lastAnalysisTitleRef = useRef<string>("");
   const lastAnalysisDescRef = useRef<string>("");
+  const lastAnalysisFactsRef = useRef<Record<string, any> | null>(null);
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -582,22 +583,10 @@ const IpAssistant = () => {
         ) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
+          lastAnalysisFactsRef.current = d;
           verification = { label: `Detail`, code: String(g) as any };
-          let caption = "";
-          try {
-            const blob = lastUploadBlobRef.current;
-            if (blob) {
-              const form = new FormData();
-              form.append("image", blob, lastUploadNameRef.current || "image.jpg");
-              const res = await fetch("/api/describe", { method: "POST", body: form });
-              if (res.ok) {
-                const j = await res.json();
-                const t = typeof j.title === "string" ? j.title : "";
-                const dsc = typeof j.description === "string" ? j.description : "";
-                caption = [t, dsc].filter(Boolean).join(" — ");
-              }
-            }
-          } catch {}
+          const info = ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
+          const caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
           display = caption || summaryFromAnswer(String(g));
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
@@ -865,6 +854,9 @@ const IpAssistant = () => {
                                     if (blob) {
                                       const form = new FormData();
                                       form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+                                      if (lastAnalysisFactsRef.current) {
+                                        form.append("facts", JSON.stringify(lastAnalysisFactsRef.current));
+                                      }
                                       const res = await fetch("/api/describe", { method: "POST", body: form });
                                       if (res.ok) {
                                         const j = await res.json();

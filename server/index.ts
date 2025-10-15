@@ -1,8 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDeterministicRoute } from "./routes/router.js";
 import { handleUpload } from "./routes/upload.js";
+import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
+import { handleDescribe } from "./routes/describe.js";
 
 export function createServer() {
   const app = express();
@@ -19,13 +20,25 @@ export function createServer() {
     res.json({ message: ping });
   });
 
-  // Deterministic router API (POST /api)
-  app.post("/api", handleDeterministicRoute);
-
   // Simple upload-and-classify endpoint (POST /api/upload)
   app.post(
     "/api/upload",
     ...(Array.isArray(handleUpload) ? handleUpload : [handleUpload]),
+  );
+
+  // IPFS endpoints
+  app.post(
+    "/api/ipfs/upload",
+    ...(Array.isArray(handleIpfsUpload)
+      ? handleIpfsUpload
+      : [handleIpfsUpload]),
+  );
+  app.post("/api/ipfs/upload-json", handleIpfsUploadJson);
+
+  // Generate title/description on demand (POST /api/describe)
+  app.post(
+    "/api/describe",
+    ...(Array.isArray(handleDescribe) ? handleDescribe : [handleDescribe]),
   );
 
   // Debug endpoint to check OpenAI env presence

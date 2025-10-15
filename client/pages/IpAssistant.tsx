@@ -855,19 +855,31 @@ const IpAssistant = () => {
                               <span
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => {
+                                onClick={async () => {
                                   const groupNum = Number(codeStr);
-                                  const title =
-                                    lastAnalysisTitleRef.current ||
-                                    ANSWER_DETAILS[
-                                      String(
-                                        codeStr,
-                                      ) as keyof typeof ANSWER_DETAILS
-                                    ]?.type ||
-                                    "IP Asset";
-                                  const desc =
-                                    lastAnalysisDescRef.current ||
-                                    summaryFromAnswer(String(codeStr));
+                                  let title = "";
+                                  let desc = "";
+                                  try {
+                                    const blob = lastUploadBlobRef.current;
+                                    if (blob) {
+                                      const form = new FormData();
+                                      form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+                                      const res = await fetch("/api/describe", { method: "POST", body: form });
+                                      if (res.ok) {
+                                        const j = await res.json();
+                                        title = typeof j.title === "string" ? j.title : "";
+                                        desc = typeof j.description === "string" ? j.description : "";
+                                      }
+                                    }
+                                  } catch {}
+                                  if (!title)
+                                    title =
+                                      ANSWER_DETAILS[
+                                        String(
+                                          codeStr,
+                                        ) as keyof typeof ANSWER_DETAILS
+                                      ]?.type || "IP Asset";
+                                  if (!desc) desc = summaryFromAnswer(String(codeStr));
                                   pushMessage({
                                     from: "register",
                                     group: groupNum,

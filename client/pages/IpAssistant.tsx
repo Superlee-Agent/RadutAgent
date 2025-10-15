@@ -248,7 +248,9 @@ const IpAssistant = () => {
   const lastUploadBlobRef = useRef<Blob | null>(null);
   const lastUploadNameRef = useRef<string>("");
   const lastAnalysisFactsRef = useRef<Record<string, any> | null>(null);
-  const analysisContextsRef = useRef<Map<string, { blob: Blob; name: string; facts: Record<string, any> | null }>>(new Map());
+  const analysisContextsRef = useRef<
+    Map<string, { blob: Blob; name: string; facts: Record<string, any> | null }>
+  >(new Map());
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -274,7 +276,9 @@ const IpAssistant = () => {
   const [mintingFee, setMintingFee] = useState<number>(0);
   const [revShare, setRevShare] = useState<number>(0);
   const [aiTrainingManual, setAiTrainingManual] = useState<boolean>(true);
-  const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(null);
+  const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -906,7 +910,11 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    type: "tween",
+                    duration: 0.3,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                   layout
                 >
                   <div className="bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_32px_rgba(0,0,0,0.35)]">
@@ -933,7 +941,11 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    type: "tween",
+                    duration: 0.3,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                   onAnimationComplete={() => {
                     if (index === messages.length - 1) {
                       setTimeout(() => {
@@ -974,8 +986,10 @@ const IpAssistant = () => {
                             ];
                           const canRegisterByText =
                             !!info && info.registrationStatus.includes("✅");
-                          const canRegisterByGroup = !!getLicenseSettingsByGroup(Number(codeStr));
-                          const canRegister = canRegisterByText || canRegisterByGroup;
+                          const canRegisterByGroup =
+                            !!getLicenseSettingsByGroup(Number(codeStr));
+                          const canRegister =
+                            canRegisterByText || canRegisterByGroup;
                           if (!canRegister) return null;
                           return (
                             <>
@@ -985,15 +999,21 @@ const IpAssistant = () => {
                                 role="button"
                                 tabIndex={0}
                                 onClick={async () => {
-                                  const ctxKeyForMsg = (msg as any).ctxKey as string | undefined;
+                                  const ctxKeyForMsg = (msg as any).ctxKey as
+                                    | string
+                                    | undefined;
                                   if (!ctxKeyForMsg) return;
-                                  if (loadingRegisterFor === ctxKeyForMsg) return;
+                                  if (loadingRegisterFor === ctxKeyForMsg)
+                                    return;
                                   setLoadingRegisterFor(ctxKeyForMsg);
                                   const groupNum = Number(codeStr);
                                   let title = "";
                                   let desc = "";
                                   try {
-                                    const ctx = analysisContextsRef.current.get(ctxKeyForMsg);
+                                    const ctx =
+                                      analysisContextsRef.current.get(
+                                        ctxKeyForMsg,
+                                      );
                                     const blob = ctx?.blob;
                                     const name = ctx?.name || "image.jpg";
                                     const facts = ctx?.facts || null;
@@ -1001,7 +1021,10 @@ const IpAssistant = () => {
                                       const form = new FormData();
                                       form.append("image", blob, name);
                                       if (facts) {
-                                        form.append("facts", JSON.stringify(facts));
+                                        form.append(
+                                          "facts",
+                                          JSON.stringify(facts),
+                                        );
                                       }
                                       const res = await fetch("/api/describe", {
                                         method: "POST",
@@ -1009,19 +1032,30 @@ const IpAssistant = () => {
                                       });
                                       if (res.ok) {
                                         const j = await res.json();
-                                        title = typeof j.title === "string" ? j.title : "";
-                                        desc = typeof j.description === "string" ? j.description : "";
+                                        title =
+                                          typeof j.title === "string"
+                                            ? j.title
+                                            : "";
+                                        desc =
+                                          typeof j.description === "string"
+                                            ? j.description
+                                            : "";
                                       }
                                     }
                                   } catch {}
                                   if (!title)
                                     title =
                                       ANSWER_DETAILS[
-                                        String(codeStr) as keyof typeof ANSWER_DETAILS
+                                        String(
+                                          codeStr,
+                                        ) as keyof typeof ANSWER_DETAILS
                                       ]?.type || "IP Asset";
-                                  if (!desc) desc = summaryFromAnswer(String(codeStr));
-                                  if (title.length > 60) title = title.slice(0, 59) + "…";
-                                  if (desc.length > 120) desc = desc.slice(0, 119) + "…";
+                                  if (!desc)
+                                    desc = summaryFromAnswer(String(codeStr));
+                                  if (title.length > 60)
+                                    title = title.slice(0, 59) + "…";
+                                  if (desc.length > 120)
+                                    desc = desc.slice(0, 119) + "…";
                                   pushMessage({
                                     from: "register",
                                     group: groupNum,
@@ -1080,7 +1114,11 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    type: "tween",
+                    duration: 0.32,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                   layout
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
@@ -1141,8 +1179,11 @@ const IpAssistant = () => {
                       <button
                         type="button"
                         onClick={async () => {
-                          const ctxKey = (msg as any).ctxKey as string | undefined;
-                          if (!ctxKey) return alert("No analysis context found.");
+                          const ctxKey = (msg as any).ctxKey as
+                            | string
+                            | undefined;
+                          if (!ctxKey)
+                            return alert("No analysis context found.");
                           const ctx = analysisContextsRef.current.get(ctxKey);
                           const blob = ctx?.blob;
                           if (!blob)
@@ -1150,7 +1191,7 @@ const IpAssistant = () => {
                           const displayTitle = msg.title || `IP Asset`;
                           const file = new File(
                             [blob],
-                            (ctx?.name || `image-${Date.now()}.jpg`),
+                            ctx?.name || `image-${Date.now()}.jpg`,
                             { type: blob.type || "image/jpeg" },
                           );
                           let ethProvider: any = (window as any).ethereum;
@@ -1172,7 +1213,9 @@ const IpAssistant = () => {
                         }}
                         disabled={
                           registerState.status === "minting" ||
-                          !(analysisContextsRef.current.get((msg as any).ctxKey || "")?.blob)
+                          !analysisContextsRef.current.get(
+                            (msg as any).ctxKey || "",
+                          )?.blob
                         }
                         className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50"
                       >
@@ -1222,7 +1265,11 @@ const IpAssistant = () => {
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                transition={{ type: "tween", duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  type: "tween",
+                  duration: 0.28,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 layout
               >
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">

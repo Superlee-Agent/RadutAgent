@@ -1536,94 +1536,110 @@ const IpAssistant = () => {
         onChange={handleImage}
       />
 
-      {activeDetail !== null ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
-          <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-            onClick={() => setActiveDetail(null)}
-            aria-hidden="true"
-          />
-          <div className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Group {activeDetail}
-                </p>
-                <h2 className="mt-1 text-lg font-semibold text-slate-900">
-                  {ANSWER_DETAILS[activeDetail ?? ""]?.type ?? "Group details"}
-                </h2>
+      <AnimatePresence>
+        {activeDetail !== null ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+              onClick={() => setActiveDetail(null)}
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Group {activeDetail}
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.type ?? "Group details"}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDetail(null)}
+                  className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                  aria-label="Close detail modal"
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveDetail(null)}
-                className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
-                aria-label="Close detail modal"
-              >
-                ✕
-              </button>
-            </div>
 
-            {ANSWER_DETAILS[activeDetail] ? (
-              <>
-                <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Image Type
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.type}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Additional Notes
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Registration Status
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      User Action
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.action}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Smart Licensing (Recommendation)
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      AI Training
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
-                    </dd>
-                  </div>
-                </dl>
-              </>
-            ) : (
-              <p className="mt-4 text-sm text-slate-500">
-                Detail data not found.
-              </p>
-            )}
-          </div>
-        </div>
-      ) : null}
+              {ANSWER_DETAILS[activeDetail] ? (
+                <>
+                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Image Type
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.type}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Additional Notes
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Registration Status
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        User Action
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.action}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Smart Licensing (Recommendation)
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        AI Training
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
+                      </dd>
+                    </div>
+                  </dl>
+                </>
+              ) : (
+                <p className="mt-4 text-sm text-slate-500">Detail data not found.</p>
+              )}
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </DashboardLayout>
   );
 };

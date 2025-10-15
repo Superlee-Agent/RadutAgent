@@ -1,7 +1,10 @@
 import type { RequestHandler } from "express";
 import multer from "multer";
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 },
+});
 const MODEL = process.env.OPENAI_PRIMARY_MODEL || "gpt-4o-mini";
 
 function parseJsonLoose(text: string | null | undefined): any | null {
@@ -65,12 +68,17 @@ export const handleDescribe: any = [
 
       const extractText = (r: any) => {
         if (!r) return "";
-        if (typeof r.output_text === "string" && r.output_text.trim()) return r.output_text;
+        if (typeof r.output_text === "string" && r.output_text.trim())
+          return r.output_text;
         if (Array.isArray(r.output) && r.output.length > 0) {
           for (const o of r.output) {
             if (o?.content && Array.isArray(o.content)) {
               for (const c of o.content) {
-                if ((c.type === "output_text" || c.type === "text") && typeof c.text === "string") return c.text;
+                if (
+                  (c.type === "output_text" || c.type === "text") &&
+                  typeof c.text === "string"
+                )
+                  return c.text;
               }
             }
             if (typeof o?.text === "string") return o.text;
@@ -82,11 +90,14 @@ export const handleDescribe: any = [
       const text = (extractText(response) || "").trim();
       const parsed = parseJsonLoose(text) || {};
       let title = typeof parsed.title === "string" ? parsed.title : "";
-      let description = typeof parsed.description === "string" ? parsed.description : "";
+      let description =
+        typeof parsed.description === "string" ? parsed.description : "";
       const brand = typeof parsed.brand === "string" ? parsed.brand : "";
-      const character = typeof parsed.character === "string" ? parsed.character : "";
+      const character =
+        typeof parsed.character === "string" ? parsed.character : "";
 
-      const clip = (s: string, max: number) => (s && s.length > max ? s.slice(0, max - 1) + "…" : s);
+      const clip = (s: string, max: number) =>
+        s && s.length > max ? s.slice(0, max - 1) + "…" : s;
       title = clip(title, 50);
       description = clip(description, 120);
 

@@ -590,23 +590,41 @@ const IpAssistant = () => {
             const blob = lastUploadBlobRef.current;
             if (blob) {
               const form = new FormData();
-              form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+              form.append(
+                "image",
+                blob,
+                lastUploadNameRef.current || "image.jpg",
+              );
               if (lastAnalysisFactsRef.current) {
-                form.append("facts", JSON.stringify(lastAnalysisFactsRef.current));
+                form.append(
+                  "facts",
+                  JSON.stringify(lastAnalysisFactsRef.current),
+                );
               }
-              const res = await fetch("/api/describe", { method: "POST", body: form });
+              const res = await fetch("/api/describe", {
+                method: "POST",
+                body: form,
+              });
               if (res.ok) {
                 const j = await res.json();
                 const t = typeof j.title === "string" ? j.title : "";
-                const dsc = typeof j.description === "string" ? j.description : "";
-                const br = typeof j.brand === "string" && j.brand ? ` — Brand: ${j.brand}` : "";
-                const ch = typeof j.character === "string" && j.character ? ` — Character: ${j.character}` : "";
+                const dsc =
+                  typeof j.description === "string" ? j.description : "";
+                const br =
+                  typeof j.brand === "string" && j.brand
+                    ? ` — Brand: ${j.brand}`
+                    : "";
+                const ch =
+                  typeof j.character === "string" && j.character
+                    ? ` — Character: ${j.character}`
+                    : "";
                 caption = [t, dsc].filter(Boolean).join(" — ") + (br || ch);
               }
             }
           } catch {}
           if (!caption) {
-            const info = ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
+            const info =
+              ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
             caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
           }
           if (caption && caption.length > 140) {
@@ -878,15 +896,34 @@ const IpAssistant = () => {
                                     const blob = lastUploadBlobRef.current;
                                     if (blob) {
                                       const form = new FormData();
-                                      form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+                                      form.append(
+                                        "image",
+                                        blob,
+                                        lastUploadNameRef.current ||
+                                          "image.jpg",
+                                      );
                                       if (lastAnalysisFactsRef.current) {
-                                        form.append("facts", JSON.stringify(lastAnalysisFactsRef.current));
+                                        form.append(
+                                          "facts",
+                                          JSON.stringify(
+                                            lastAnalysisFactsRef.current,
+                                          ),
+                                        );
                                       }
-                                      const res = await fetch("/api/describe", { method: "POST", body: form });
+                                      const res = await fetch("/api/describe", {
+                                        method: "POST",
+                                        body: form,
+                                      });
                                       if (res.ok) {
                                         const j = await res.json();
-                                        title = typeof j.title === "string" ? j.title : "";
-                                        desc = typeof j.description === "string" ? j.description : "";
+                                        title =
+                                          typeof j.title === "string"
+                                            ? j.title
+                                            : "";
+                                        desc =
+                                          typeof j.description === "string"
+                                            ? j.description
+                                            : "";
                                       }
                                     }
                                   } catch {}
@@ -897,10 +934,13 @@ const IpAssistant = () => {
                                           codeStr,
                                         ) as keyof typeof ANSWER_DETAILS
                                       ]?.type || "IP Asset";
-                                  if (!desc) desc = summaryFromAnswer(String(codeStr));
+                                  if (!desc)
+                                    desc = summaryFromAnswer(String(codeStr));
                                   // Trim for UI brevity
-                                  if (title.length > 60) title = title.slice(0, 59) + "…";
-                                  if (desc.length > 120) desc = desc.slice(0, 119) + "…";
+                                  if (title.length > 60)
+                                    title = title.slice(0, 59) + "…";
+                                  if (desc.length > 120)
+                                    desc = desc.slice(0, 119) + "…";
                                   pushMessage({
                                     from: "register",
                                     group: groupNum,
@@ -1061,7 +1101,8 @@ const IpAssistant = () => {
                         {registerState.progress
                           ? `(${registerState.progress}%)`
                           : ""}
-                        {registerState.status === "success" && registerState.ipId ? (
+                        {registerState.status === "success" &&
+                        registerState.ipId ? (
                           <>
                             {" "}
                             <span className="mx-1 text-slate-500">•</span>
@@ -1293,7 +1334,6 @@ const IpAssistant = () => {
                     </dd>
                   </div>
                 </dl>
-
               </>
             ) : (
               <p className="mt-4 text-sm text-slate-500">

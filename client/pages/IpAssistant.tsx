@@ -980,8 +980,10 @@ const IpAssistant = () => {
                             ANSWER_DETAILS[
                               codeStr as keyof typeof ANSWER_DETAILS
                             ];
-                          const canRegister =
+                          const canRegisterByText =
                             !!info && info.registrationStatus.includes("✅");
+                          const canRegisterByGroup = !!getLicenseSettingsByGroup(Number(codeStr));
+                          const canRegister = canRegisterByText || canRegisterByGroup;
                           if (!canRegister) return null;
                           return (
                             <>

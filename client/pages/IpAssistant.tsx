@@ -41,7 +41,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "Gambar hasil AI; Tidak ada wajah orang; Tidak ada brand/karakter terkenal",
-    registrationStatus: "��� IP bisa diregistrasi",
+    registrationStatus: "✅ IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -846,9 +846,8 @@ const IpAssistant = () => {
                                 tabIndex={0}
                                 onClick={() => {
                                   const groupNum = Number(codeStr);
-                                  const info = ANSWER_DETAILS[String(codeStr) as keyof typeof ANSWER_DETAILS];
-                                  const title = info?.type || "IP Classification";
-                                  const desc = info?.notes || summaryFromAnswer(String(codeStr));
+                                  const title = lastAnalysisTitleRef.current || (ANSWER_DETAILS[String(codeStr) as keyof typeof ANSWER_DETAILS]?.type || "IP Asset");
+                                  const desc = lastAnalysisDescRef.current || summaryFromAnswer(String(codeStr));
                                   pushMessage({ from: "register", group: groupNum, title, description: desc, ts: getCurrentTimestamp() });
                                 }}
                                 onKeyDown={(e) => {

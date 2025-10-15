@@ -186,7 +186,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated (Animation)",
     notes:
       "Gambar animasi 2D/3D asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    registrationStatus: "�� IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -1148,14 +1148,16 @@ const IpAssistant = () => {
                       <button
                         type="button"
                         onClick={async () => {
-                          const blob = lastUploadBlobRef.current;
+                          const ctxKey = (msg as any).ctxKey as string | undefined;
+                          if (!ctxKey) return alert("No analysis context found.");
+                          const ctx = analysisContextsRef.current.get(ctxKey);
+                          const blob = ctx?.blob;
                           if (!blob)
                             return alert("No uploaded image to register.");
                           const displayTitle = msg.title || `IP Asset`;
                           const file = new File(
                             [blob],
-                            lastUploadNameRef.current ||
-                              `image-${Date.now()}.jpg`,
+                            (ctx?.name || `image-${Date.now()}.jpg`),
                             { type: blob.type || "image/jpeg" },
                           );
                           let ethProvider: any = (window as any).ethereum;
@@ -1177,7 +1179,7 @@ const IpAssistant = () => {
                         }}
                         disabled={
                           registerState.status === "minting" ||
-                          !lastUploadBlobRef.current
+                          !(analysisContextsRef.current.get((msg as any).ctxKey || "")?.blob)
                         }
                         className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50"
                       >

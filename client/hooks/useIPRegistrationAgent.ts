@@ -8,6 +8,8 @@ import {
   toHttps,
 } from "@/lib/utils/ipfs";
 import { createLicenseTerms, LicenseSettings } from "@/lib/license/terms";
+import { StoryClient, PILFlavor, WIP_TOKEN_ADDRESS } from "@story-protocol/core-sdk";
+import { createWalletClient, custom, parseEther } from "viem";
 import {
   getLicenseSettingsByGroup,
   requiresSelfieVerification,
@@ -78,6 +80,7 @@ export function useIPRegistrationAgent() {
       revShare?: number,
       aiTrainingManual?: boolean,
       intent?: { title?: string; prompt?: string },
+      ethereumProvider?: any,
     ) => {
       try {
         const licenseSettings = getLicenseSettingsByGroup(
@@ -155,17 +158,46 @@ export function useIPRegistrationAgent() {
         const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
         if (!rpcUrl) throw new Error("RPC URL not set (VITE_PUBLIC_STORY_RPC)");
 
-        const licenseTermsData = createLicenseTerms(
-          licenseSettings as LicenseSettings,
-        );
-        // TODO: integrate Story SDK wallet+client here.
-        throw new Error(
-          "Minting not yet configured. Please install and configure Story SDK.",
-        );
+        // Build license terms for Story SDK
+        const licenseTermsData = [
+          {
+            terms: PILFlavor.commercialRemix({
+              commercialRevShare: Number(licenseSettings.revShare) || 0,
+              defaultMintingFee: parseEther(String(licenseSettings.licensePrice || 0)),
+              currency: WIP_TOKEN_ADDRESS,
+              aiTrainingAllowed: !!licenseSettings.aiLearning,
+            } as any),
+          },
+        ];
 
-        // On success (example):
-        // setRegisterState({ status: "success", progress: 100, error: null, ipId: result.ipId, txHash: result.txHash });
-        // return { success: true, ipId: result.ipId, txHash: result.txHash, imageUrl: imageGateway, ipMetadataUrl: toHttps(ipMetaCid) } as const;
+        // Init wallet client via Privy provider
+        const provider = ethereumProvider || (globalThis as any).ethereum;
+        if (!provider) throw new Error("No EIP-1193 provider found. Connect wallet first.");
+        const walletClient = createWalletClient({ transport: custom(provider) });
+        const [addr] = await walletClient.getAddresses();
+        if (!addr) throw new Error("No wallet address available");
+
+        const story = StoryClient.newClient({
+          account: addr as any,
+          transport: custom(provider),
+          chainId: "aeneid",
+        });
+
+        const result: any = await story.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: spg as `0x${string}`,
+          recipient: addr as `0x${string}`,
+          licenseTermsData,
+          ipMetadata: {
+            ipMetadataURI,
+            ipMetadataHash: ipMetadataHash as any,
+            nftMetadataURI: ipMetadataURI,
+            nftMetadataHash: ipMetadataHash as any,
+          },
+          allowDuplicates: true,
+        });
+
+        setRegisterState({ status: "success", progress: 100, error: null, ipId: result?.ipId, txHash: result?.txHash || result?.transactionHash });
+        return { success: true, ipId: result?.ipId, txHash: result?.txHash || result?.transactionHash, imageUrl: imageGateway, ipMetadataUrl: toHttps(ipMetaCid) } as const;
       } catch (error: any) {
         setRegisterState({ status: "error", progress: 0, error });
         return {

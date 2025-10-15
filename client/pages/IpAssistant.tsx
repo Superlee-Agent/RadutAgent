@@ -186,7 +186,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated (Animation)",
     notes:
       "Gambar animasi 2D/3D asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "�� IP tidak bisa diregistrasi",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -987,14 +987,13 @@ const IpAssistant = () => {
                             <>
                               {" "}
                               <span className="mx-1 text-slate-400">•</span>
-                              const ctxKeyForMsg = (msg as any).ctxKey as string | undefined;
-                              const isLoadingThis = !!ctxKeyForMsg && loadingRegisterFor === ctxKeyForMsg;
                               <span
                                 role="button"
                                 tabIndex={0}
                                 onClick={async () => {
+                                  const ctxKeyForMsg = (msg as any).ctxKey as string | undefined;
                                   if (!ctxKeyForMsg) return;
-                                  if (isLoadingThis) return;
+                                  if (loadingRegisterFor === ctxKeyForMsg) return;
                                   setLoadingRegisterFor(ctxKeyForMsg);
                                   const groupNum = Number(codeStr);
                                   let title = "";
@@ -1045,9 +1044,9 @@ const IpAssistant = () => {
                                     setActiveDetail(codeStr);
                                   }
                                 }}
-                                className={`cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded ${isLoadingThis ? "pointer-events-none opacity-70" : ""}`}
+                                className={`cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded ${loadingRegisterFor === (msg as any).ctxKey ? "pointer-events-none opacity-70" : ""}`}
                               >
-                                {isLoadingThis ? (
+                                {loadingRegisterFor === (msg as any).ctxKey ? (
                                   <>
                                     Please wait
                                     <span className="ml-2 inline-flex align-middle">

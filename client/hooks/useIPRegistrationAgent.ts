@@ -225,7 +225,7 @@ export function useIPRegistrationAgent() {
         ];
 
         // Init wallet client via Privy provider if available, otherwise fallback to guest key
-        const provider = ethereumProvider || (globalThis as any).ethereum;
+        const provider = ethereumProvider;
         let addr: string | undefined;
         let story: any;
         if (provider) {

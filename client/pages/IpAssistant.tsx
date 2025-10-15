@@ -630,33 +630,40 @@ const IpAssistant = () => {
           if (caption && caption.length > 140) {
             caption = caption.slice(0, 139) + "…";
           }
-          // Build eligibility message in Bahasa Indonesia
-          let eligibilityMessage = "";
+          let eligibilitySnippet = "";
           const licenseSettings = getLicenseSettingsByGroup(g);
           if (licenseSettings) {
-            eligibilityMessage = "Kelayakan IP: ✅ Bisa diregistrasi langsung.";
+            eligibilitySnippet = "IP: ✅ Bisa langsung.";
           } else if (requiresSelfieVerification(g)) {
-            eligibilityMessage =
-              "Kelayakan IP: ⛔ Tidak bisa langsung. Alasan: perlu verifikasi selfie karena menampilkan wajah orang biasa secara penuh.";
+            eligibilitySnippet = "IP: ⛔ Tidak bisa langsung (perlu verifikasi selfie).";
           } else if (requiresSubmitReview(g)) {
-            let reason = "perlu peninjauan manual.";
+            let reason = "";
             try {
               const facts = d || {};
               if (facts.has_known_brand_or_character) {
-                reason = "mengandung merek/karakter terkenal.";
+                reason = "mengandung merek/karakter terkenal";
               } else if (facts.is_famous_person && facts.is_full_face_visible) {
-                reason = "menampilkan wajah figur publik secara penuh.";
+                reason = "figur publik terlihat penuh";
               } else if (facts.is_famous_person) {
-                reason = "menampilkan figur publik.";
+                reason = "figur publik";
+              } else {
+                reason = "perlu peninjauan";
               }
-            } catch {}
-            eligibilityMessage = `Kelayakan IP: ⛔ Tidak bisa langsung. Alasan: ${reason}`;
+            } catch {
+              reason = "perlu peninjauan";
+            }
+            eligibilitySnippet = `IP: ⛔ Tidak bisa langsung (${reason}).`;
           } else {
-            eligibilityMessage = "Kelayakan IP: ⛔ Tidak bisa diregistrasi.";
+            eligibilitySnippet = "IP: ⛔ Tidak bisa diregistrasi.";
           }
 
-          const baseText = caption || summaryFromAnswer(String(g));
-          display = baseText ? `${baseText}\n${eligibilityMessage}` : eligibilityMessage;
+          const baseText = (caption || summaryFromAnswer(String(g))).trim();
+          if (baseText) {
+            const joiner = /[.!?…]$/.test(baseText) ? " " : ". ";
+            display = `${baseText}${joiner}${eligibilitySnippet}`;
+          } else {
+            display = eligibilitySnippet;
+          }
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

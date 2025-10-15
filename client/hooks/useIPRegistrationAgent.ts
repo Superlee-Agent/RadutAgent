@@ -165,8 +165,7 @@ export function useIPRegistrationAgent() {
               commercialRevShare: Number(licenseSettings.revShare) || 0,
               defaultMintingFee: parseEther(String(licenseSettings.licensePrice || 0)),
               currency: WIP_TOKEN_ADDRESS,
-              aiTrainingAllowed: !!licenseSettings.aiLearning,
-            } as any),
+            }),
           },
         ];
 

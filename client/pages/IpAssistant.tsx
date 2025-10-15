@@ -630,40 +630,43 @@ const IpAssistant = () => {
           if (caption && caption.length > 140) {
             caption = caption.slice(0, 139) + "…";
           }
-          let eligibilitySnippet = "";
+          const facts = d || {};
           const licenseSettings = getLicenseSettingsByGroup(g);
+          let sentence = "";
+
           if (licenseSettings) {
-            eligibilitySnippet = "IP: ✅ Bisa langsung.";
-          } else if (requiresSelfieVerification(g)) {
-            eligibilitySnippet = "IP: ⛔ Tidak bisa langsung (perlu verifikasi selfie).";
-          } else if (requiresSubmitReview(g)) {
-            let reason = "";
-            try {
-              const facts = d || {};
+            let reason = "memenuhi kriteria kebijakan";
+            if (g === 1 || g === 12 || g === 14) {
               if (facts.has_known_brand_or_character) {
-                reason = "mengandung merek/karakter terkenal";
-              } else if (facts.is_famous_person && facts.is_full_face_visible) {
-                reason = "figur publik terlihat penuh";
-              } else if (facts.is_famous_person) {
-                reason = "figur publik";
+                reason = "tidak mengandung merek/karakter terkenal";
+              } else if (!facts.has_human_face) {
+                reason = "tidak menampilkan wajah manusia";
               } else {
-                reason = "perlu peninjauan";
+                reason = "memenuhi kriteria kebijakan";
               }
-            } catch {
-              reason = "perlu peninjauan";
+            } else if (g === 4 || g === 9) {
+              reason = "figur publik tidak terlihat penuh";
+            } else if (g === 6 || g === 11) {
+              reason = "wajah tidak terlihat penuh";
             }
-            eligibilitySnippet = `IP: ⛔ Tidak bisa langsung (${reason}).`;
+            sentence = `IP ini bisa diregister karena ${reason}.`;
+          } else if (requiresSelfieVerification(g)) {
+            sentence = "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+          } else if (requiresSubmitReview(g)) {
+            let reason = "perlu peninjauan.";
+            if (facts.has_known_brand_or_character) {
+              reason = "mengandung merek/karakter terkenal.";
+            } else if (facts.is_famous_person && facts.is_full_face_visible) {
+              reason = "menampilkan wajah figur publik secara penuh.";
+            } else if (facts.is_famous_person) {
+              reason = "menampilkan figur publik.";
+            }
+            sentence = `IP ini tidak bisa diregister langsung karena ${reason}`;
           } else {
-            eligibilitySnippet = "IP: ⛔ Tidak bisa diregistrasi.";
+            sentence = "IP ini tidak bisa diregister.";
           }
 
-          const baseText = (caption || summaryFromAnswer(String(g))).trim();
-          if (baseText) {
-            const joiner = /[.!?…]$/.test(baseText) ? " " : ". ";
-            display = `${baseText}${joiner}${eligibilitySnippet}`;
-          } else {
-            display = eligibilitySnippet;
-          }
+          display = sentence;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

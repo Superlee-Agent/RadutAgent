@@ -1,10 +1,19 @@
 import type { RequestHandler } from "express";
 import multer from "multer";
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024 },
+});
 
-async function postToWeb3Storage(data: Buffer | string, contentType = "application/octet-stream") {
-  const token = process.env.WEB3_STORAGE_TOKEN || process.env.WEB3STORAGE_TOKEN || process.env.WEB3_STORAGE_API_TOKEN;
+async function postToWeb3Storage(
+  data: Buffer | string,
+  contentType = "application/octet-stream",
+) {
+  const token =
+    process.env.WEB3_STORAGE_TOKEN ||
+    process.env.WEB3STORAGE_TOKEN ||
+    process.env.WEB3_STORAGE_API_TOKEN;
   if (!token) throw new Error("WEB3_STORAGE_TOKEN not set");
   const res = await fetch("https://api.web3.storage/upload", {
     method: "POST",
@@ -27,7 +36,10 @@ export const handleIpfsUpload: any = [
     try {
       const f = (req as any).file as Express.Multer.File | undefined;
       if (!f) return res.status(400).json({ error: "no_file" });
-      const cid = await postToWeb3Storage(f.buffer, f.mimetype || "application/octet-stream");
+      const cid = await postToWeb3Storage(
+        f.buffer,
+        f.mimetype || "application/octet-stream",
+      );
       return res.status(200).json({ cid, url: `ipfs://${cid}` });
     } catch (err) {
       console.error("ipfs upload error:", err);

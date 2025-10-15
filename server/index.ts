@@ -32,7 +32,9 @@ export function createServer() {
   // IPFS endpoints
   app.post(
     "/api/ipfs/upload",
-    ...(Array.isArray(handleIpfsUpload) ? handleIpfsUpload : [handleIpfsUpload]),
+    ...(Array.isArray(handleIpfsUpload)
+      ? handleIpfsUpload
+      : [handleIpfsUpload]),
   );
   app.post("/api/ipfs/upload-json", handleIpfsUploadJson);
 

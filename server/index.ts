@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleAnalyze } from "./routes/analyze.js";
 import { handleDeterministicRoute } from "./routes/router.js";
+import { handleUpload } from "./routes/upload.js";
 
 export function createServer() {
   const app = express();
@@ -26,6 +27,12 @@ export function createServer() {
   app.post(
     "/api/analyze",
     ...(Array.isArray(handleAnalyze) ? handleAnalyze : [handleAnalyze]),
+  );
+
+  // Simple upload-and-classify endpoint (POST /api/upload)
+  app.post(
+    "/api/upload",
+    ...(Array.isArray(handleUpload) ? handleUpload : [handleUpload]),
   );
 
   // Debug endpoint to check OpenAI env presence

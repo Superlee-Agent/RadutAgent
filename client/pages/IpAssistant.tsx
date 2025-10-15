@@ -274,7 +274,7 @@ const IpAssistant = () => {
   const [mintingFee, setMintingFee] = useState<number>(0);
   const [revShare, setRevShare] = useState<number>(0);
   const [aiTrainingManual, setAiTrainingManual] = useState<boolean>(true);
-  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
+  const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeDetail === null) return;

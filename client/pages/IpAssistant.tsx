@@ -151,7 +151,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated (Animation)",
     notes:
       "Gambar animasi 2D/3D hasil AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    registrationStatus: "�� IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -898,6 +898,9 @@ const IpAssistant = () => {
                                         ) as keyof typeof ANSWER_DETAILS
                                       ]?.type || "IP Asset";
                                   if (!desc) desc = summaryFromAnswer(String(codeStr));
+                                  // Trim for UI brevity
+                                  if (title.length > 60) title = title.slice(0, 59) + "…";
+                                  if (desc.length > 120) desc = desc.slice(0, 119) + "…";
                                   pushMessage({
                                     from: "register",
                                     group: groupNum,

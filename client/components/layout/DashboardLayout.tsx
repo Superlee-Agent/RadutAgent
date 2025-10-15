@@ -178,11 +178,11 @@ export const DashboardLayout = ({
                 <img
                   src={avatarSrc}
                   alt="Dashboard avatar"
-                  className="h-9 w-9 rounded-full object-cover"
+                  className="h-10 w-10 rounded-lg object-cover border border-[#FF4DA6]/20 ring-2 ring-[#FF4DA6]/10"
                 />
               ) : null}
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-[#FF4DA6]">
+                <h1 className="text-lg font-bold tracking-wider bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] bg-clip-text text-transparent">
                   {title}
                 </h1>
               </div>

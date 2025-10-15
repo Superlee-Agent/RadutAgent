@@ -28,6 +28,7 @@ export type Message =
       group: number;
       title: string;
       description: string;
+      ctxKey: string;
       ts?: string;
     };
 

@@ -387,7 +387,7 @@ button.btn-ghost:focus-visible {
   }
   /* avoid chat messages being hidden behind the sticky input */
   .chat-box {
-    padding-bottom: 96px;
+    padding-bottom: 64px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }

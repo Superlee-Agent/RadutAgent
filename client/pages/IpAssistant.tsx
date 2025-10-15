@@ -248,6 +248,7 @@ const IpAssistant = () => {
   const lastUploadBlobRef = useRef<Blob | null>(null);
   const lastUploadNameRef = useRef<string>("");
   const lastAnalysisFactsRef = useRef<Record<string, any> | null>(null);
+  const analysisContextsRef = useRef<Map<string, { blob: Blob; name: string; facts: Record<string, any> | null }>>(new Map());
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();

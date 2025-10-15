@@ -116,7 +116,7 @@ export const DashboardLayout = ({
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-gradient-to-b from-slate-950/90 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-white/10 backdrop-blur"
+                className="relative w-64 bg-gradient-to-b from-slate-950/95 via-slate-950/85 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-[#FF4DA6]/10 backdrop-blur-xl"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}

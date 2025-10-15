@@ -16,7 +16,8 @@ type BotMessage = {
 export type Message =
   | { from: "user"; text: string; ts?: string }
   | BotMessage
-  | { from: "user-image"; url: string; ts?: string };
+  | { from: "user-image"; url: string; ts?: string }
+  | { from: "register"; group: number; title: string; description: string; ts?: string };
 
 export type ChatSession = {
   id: string;
@@ -200,6 +201,9 @@ const getInitialBotMessage = (): BotMessage => ({
 const getMessagePreview = (message: Message) => {
   if (message.from === "user-image") {
     return "Image uploaded";
+  }
+  if ((message as any).from === "register") {
+    return `Register IP: ${(message as any).title}`;
   }
   if (message.text.trim().length === 0) {
     return "(Empty message)";
@@ -834,7 +838,12 @@ const IpAssistant = () => {
                               <span
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => setActiveDetail(codeStr)}
+                                onClick={() => {
+                                  const groupNum = Number(codeStr);
+                                  const title = lastUploadNameRef.current || `image-${Date.now()}.jpg`;
+                                  const desc = summaryFromAnswer(codeStr);
+                                  pushMessage({ from: "register", group: groupNum, title, description: desc, ts: getCurrentTimestamp() });
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
@@ -854,6 +863,101 @@ const IpAssistant = () => {
                         {verificationText}
                       </div>
                     ) : null}
+                  </div>
+                </motion.div>
+              );
+            }
+
+            if (msg.from === "register") {
+              const groupNum = msg.group;
+              const info = ANSWER_DETAILS[String(groupNum) as keyof typeof ANSWER_DETAILS];
+              const isManualAI = GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(groupNum);
+              return (
+                <motion.div
+                  key={`register-${index}`}
+                  className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 12 }}
+                  transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                  layout
+                >
+                  <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
+                    <div className="text-sm font-semibold text-[#FF4DA6]">Register This IP</div>
+                    <div className="mt-1 text-slate-200">
+                      <div className="text-xs text-slate-400">{info?.type || ""}</div>
+                      <div className="mt-1 font-medium">{msg.title}</div>
+                      <div className="mt-1 text-sm whitespace-pre-line">{msg.description}</div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                      <label className="text-sm text-slate-300">
+                        Minting Fee
+                        <input
+                          type="number"
+                          min={0}
+                          value={mintingFee}
+                          onChange={(e) => setMintingFee(Number(e.target.value) || 0)}
+                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                        />
+                      </label>
+                      <label className="text-sm text-slate-300">
+                        Rev Share (%)
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={revShare}
+                          onChange={(e) => setRevShare(Math.min(100, Math.max(0, Number(e.target.value) || 0)))}
+                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                        />
+                      </label>
+                      <label className="text-sm text-slate-300 flex items-center gap-2 sm:col-span-1">
+                        <input
+                          type="checkbox"
+                          checked={aiTrainingManual}
+                          onChange={(e) => setAiTrainingManual(e.target.checked)}
+                          disabled={!isManualAI}
+                          className="h-4 w-4"
+                        />
+                        <span>Allow AI Training</span>
+                      </label>
+                    </div>
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const blob = lastUploadBlobRef.current;
+                          if (!blob) return alert("No uploaded image to register.");
+                          const name = msg.title || `image-${Date.now()}.jpg`;
+                          const file = new File([blob], name, { type: blob.type || "image/jpeg" });
+                          let ethProvider: any = (window as any).ethereum;
+                          try {
+                            if (wallets && wallets[0]?.getEthereumProvider) {
+                              ethProvider = await wallets[0].getEthereumProvider();
+                            }
+                          } catch {}
+                          await executeRegister(
+                            groupNum,
+                            file,
+                            mintingFee,
+                            revShare,
+                            aiTrainingManual,
+                            { title: name, prompt: msg.description },
+                            ethProvider,
+                          );
+                        }}
+                        disabled={registerState.status === "minting" || !lastUploadBlobRef.current}
+                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50"
+                      >
+                        {registerState.status === "minting" ? "Registering…" : "Register IP"}
+                      </button>
+                      <div className="text-xs text-slate-400">
+                        Status: {registerState.status} {registerState.progress ? `(${registerState.progress}%)` : ""}
+                        {registerState.error ? (
+                          <span className="ml-2 text-red-500">{String(registerState.error?.message || registerState.error)}</span>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               );

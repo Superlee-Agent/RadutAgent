@@ -165,7 +165,7 @@ html {
   margin-bottom: 0;
 }
 .user {
-  background: linear-gradient(135deg, #FF4DA6 0%, #ff77c2 100%);
+  background: linear-gradient(135deg, #ff4da6 0%, #ff77c2 100%);
   align-self: flex-end;
   float: right;
   box-shadow: 0 8px 24px rgba(255, 77, 166, 0.3);
@@ -206,7 +206,11 @@ textarea {
   padding: 12px 16px;
   border-radius: 14px;
   border: 1px solid rgba(255, 77, 166, 0.2);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.8) 0%,
+    rgba(15, 23, 42, 0.6) 100%
+  );
   color: #fff;
   transition:
     box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -214,7 +218,9 @@ textarea {
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     background 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   outline: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
 }
 
@@ -223,8 +229,14 @@ input[type="search"]:hover,
 input:hover,
 textarea:hover {
   border-color: rgba(255, 77, 166, 0.4);
-  box-shadow: 0 8px 24px rgba(255, 77, 166, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
+  box-shadow:
+    0 8px 24px rgba(255, 77, 166, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(15, 23, 42, 0.7) 100%
+  );
 }
 
 input[type="text"]:focus,
@@ -232,16 +244,28 @@ input[type="search"]:focus,
 input:focus,
 textarea:focus {
   border-color: rgba(255, 77, 166, 0.6);
-  box-shadow: 0 0 0 3px rgba(255, 77, 166, 0.2), 0 8px 24px rgba(255, 77, 166, 0.15);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.75) 100%);
+  box-shadow:
+    0 0 0 3px rgba(255, 77, 166, 0.2),
+    0 8px 24px rgba(255, 77, 166, 0.15);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(15, 23, 42, 0.75) 100%
+  );
 }
 
 /* Make chat input match agent message bubble */
 .chat-input textarea,
 .chat-input input[type="text"] {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.65) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.85) 0%,
+    rgba(15, 23, 42, 0.65) 100%
+  );
   border: 1px solid rgba(255, 77, 166, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
   transform: none !important;
   outline: none !important;
   --tw-ring-color: transparent !important;
@@ -261,13 +285,19 @@ textarea:focus {
     0 0 0 3px rgba(255, 77, 166, 0.25) !important,
     0 12px 32px rgba(255, 77, 166, 0.15) !important,
     inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.75) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(15, 23, 42, 0.75) 100%
+  );
 }
 
 /* active state matches focus (no pink) */
 .chat-input textarea:active,
 .chat-input input[type="text"]:active {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
 }
 button {
   font-weight: 600;

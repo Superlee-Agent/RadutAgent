@@ -44,7 +44,9 @@ export const DashboardLayout = ({
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2]">{BRAND_NAME}</div>
+      <div className="text-base font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2]">
+        {BRAND_NAME}
+      </div>
     </div>
   );
 

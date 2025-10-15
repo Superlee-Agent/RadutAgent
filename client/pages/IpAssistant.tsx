@@ -279,6 +279,7 @@ const IpAssistant = () => {
   const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(
     null,
   );
+  const [guestMode, setGuestMode] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -881,14 +882,29 @@ const IpAssistant = () => {
           {connectedAddressLabel}
         </span>
       ) : null}
-      <button
-        type="button"
-        onClick={handleWalletButtonClick}
-        disabled={walletButtonDisabled}
-        className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {walletButtonText}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleWalletButtonClick}
+          disabled={walletButtonDisabled}
+          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {walletButtonText}
+        </button>
+        <button
+          type="button"
+          aria-pressed={guestMode}
+          onClick={() => setGuestMode((v) => !v)}
+          className={
+            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 border " +
+            (guestMode
+              ? "bg-[#FF4DA6] text-white border-[#FF4DA6] hover:bg-[#ff77c2]"
+              : "text-[#FF4DA6] border-[#FF4DA6]/50 hover:bg-[#FF4DA6]/15")
+          }
+        >
+          Guest
+        </button>
+      </div>
     </>
   );
 
@@ -1194,11 +1210,12 @@ const IpAssistant = () => {
                             ctx?.name || `image-${Date.now()}.jpg`,
                             { type: blob.type || "image/jpeg" },
                           );
-                          let ethProvider: any = (window as any).ethereum;
+                          let ethProvider: any = guestMode
+                            ? undefined
+                            : (window as any).ethereum;
                           try {
-                            if (wallets && wallets[0]?.getEthereumProvider) {
-                              ethProvider =
-                                await wallets[0].getEthereumProvider();
+                            if (!guestMode && wallets && wallets[0]?.getEthereumProvider) {
+                              ethProvider = await wallets[0].getEthereumProvider();
                             }
                           } catch {}
                           await executeRegister(

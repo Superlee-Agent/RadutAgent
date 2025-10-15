@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDeterministicRoute } from "./routes/router.js";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
+import { handleDescribe } from "./routes/describe.js";
 
 export function createServer() {
   const app = express();

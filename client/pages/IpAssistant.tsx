@@ -53,25 +53,25 @@ const ANSWER_DETAILS: Record<
   "1": {
     type: "AI Generated",
     notes:
-      "Gambar hasil AI; Tidak ada wajah orang; Tidak ada brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "AI-generated image; No human face; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "2": {
     type: "AI Generated",
-    notes: "Gambar hasil AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated image; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "3": {
     type: "AI Generated",
-    notes: "Gambar hasil AI; Wajah orang terkenal; wajah terlihat full",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated image; Famous person's face; full face visible",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -79,46 +79,46 @@ const ANSWER_DETAILS: Record<
   "4": {
     type: "AI Generated",
     notes:
-      "Gambar hasil AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "AI-generated image; Famous person's face; not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "5": {
     type: "AI Generated",
     notes:
-      "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
-    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+      "AI-generated image; Regular person's face (not famous); full face visible",
+    registrationStatus: "❌ Cannot be registered directly",
     action:
-      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+      "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "6": {
     type: "AI Generated",
     notes:
       "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "7": {
     type: "Human Generated",
-    notes: "Gambar asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "Original non-AI image; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "8": {
     type: "Human Generated",
-    notes: "Gambar asli non AI; Wajah orang terkenal; wajah terlihat full",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "Original non-AI image; Famous person's face; full face visible",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -126,48 +126,48 @@ const ANSWER_DETAILS: Record<
   "9": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "Original non-AI image; Famous person's face; not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
-    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+      "Original non-AI image; Regular person's face (not famous); full face visible",
+    registrationStatus: "❌ Cannot be registered directly",
     action:
-      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+      "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "11": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "Original non-AI image; Regular person's face (not famous); not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "12": {
     type: "AI Generated (Animation)",
     notes:
-      "Gambar animasi 2D/3D hasil AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "�� IP bisa diregistrasi",
+      "AI-generated 2D/3D animation; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "13": {
     type: "AI Generated (Animation)",
-    notes: "Gambar animasi 2D/3D hasil AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated 2D/3D animation; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -175,18 +175,18 @@ const ANSWER_DETAILS: Record<
   "14": {
     type: "Human Generated (Animation)",
     notes:
-      "Gambar animasi 2D/3D asli non AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "Original non-AI 2D/3D animation; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "15": {
     type: "Human Generated (Animation)",
     notes:
-      "Gambar animasi 2D/3D asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+      "Original non-AI 2D/3D animation; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",

@@ -44,7 +44,7 @@ export const handleDescribe: any = [
         : "";
 
       const instruction =
-        "You are an AI image captioner. Return ONLY strict minified JSON with keys: title, description. Title: concise 3-6 words describing the image. Description: 1-2 sentences summarizing what is depicted (no line breaks). Keep neutral, do not contradict provided facts." +
+        "You are an AI image captioner. Return ONLY strict minified JSON with keys: title, description, brand, character. Title: concise 3-6 words describing the image. Description: 1-2 sentences summarizing what is depicted (no line breaks). If a known brand or fictional character is clearly present, set 'brand' or 'character' to its short name, otherwise use an empty string. Keep neutral and DO NOT contradict provided facts." +
         factsText +
         " No extra text.";
 
@@ -83,8 +83,10 @@ export const handleDescribe: any = [
       const parsed = parseJsonLoose(text) || {};
       const title = typeof parsed.title === "string" ? parsed.title : "";
       const description = typeof parsed.description === "string" ? parsed.description : "";
+      const brand = typeof parsed.brand === "string" ? parsed.brand : "";
+      const character = typeof parsed.character === "string" ? parsed.character : "";
 
-      return res.status(200).json({ title, description });
+      return res.status(200).json({ title, description, brand, character });
     } catch (err) {
       console.error("describe error:", err);
       return res.status(500).json({ error: "describe_failed" });

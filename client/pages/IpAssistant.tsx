@@ -906,11 +906,7 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 340,
-                    damping: 26,
-                  }}
+                  transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   layout
                 >
                   <div className="bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] text-white px-5 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_32px_rgba(0,0,0,0.35)]">
@@ -937,11 +933,7 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 340,
-                    damping: 26,
-                  }}
+                  transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   onAnimationComplete={() => {
                     if (index === messages.length - 1) {
                       setTimeout(() => {
@@ -1088,7 +1080,7 @@ const IpAssistant = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
-                  transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                  transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                   layout
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
@@ -1230,11 +1222,7 @@ const IpAssistant = () => {
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 320,
-                  damping: 22,
-                }}
+                transition={{ type: "tween", duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 layout
               >
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">

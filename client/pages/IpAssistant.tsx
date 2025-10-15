@@ -1043,6 +1043,20 @@ const IpAssistant = () => {
                         {registerState.progress
                           ? `(${registerState.progress}%)`
                           : ""}
+                        {registerState.status === "success" && registerState.ipId ? (
+                          <>
+                            {" "}
+                            <span className="mx-1 text-slate-500">•</span>
+                            <a
+                              href={`https://aeneid.explorer.story.foundation/ipa/${registerState.ipId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#FF4DA6] hover:underline"
+                            >
+                              View
+                            </a>
+                          </>
+                        ) : null}
                         {registerState.error ? (
                           <span className="ml-2 text-red-500">
                             {String(

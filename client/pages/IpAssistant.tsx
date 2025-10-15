@@ -585,8 +585,30 @@ const IpAssistant = () => {
           const d = (data as any).details as Record<string, any>;
           lastAnalysisFactsRef.current = d;
           verification = { label: `Detail`, code: String(g) as any };
-          const info = ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
-          const caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
+          let caption = "";
+          try {
+            const blob = lastUploadBlobRef.current;
+            if (blob) {
+              const form = new FormData();
+              form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+              if (lastAnalysisFactsRef.current) {
+                form.append("facts", JSON.stringify(lastAnalysisFactsRef.current));
+              }
+              const res = await fetch("/api/describe", { method: "POST", body: form });
+              if (res.ok) {
+                const j = await res.json();
+                const t = typeof j.title === "string" ? j.title : "";
+                const dsc = typeof j.description === "string" ? j.description : "";
+                const br = typeof j.brand === "string" && j.brand ? ` — Brand: ${j.brand}` : "";
+                const ch = typeof j.character === "string" && j.character ? ` — Character: ${j.character}` : "";
+                caption = [t, dsc].filter(Boolean).join(" — ") + (br || ch);
+              }
+            }
+          } catch {}
+          if (!caption) {
+            const info = ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
+            caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
+          }
           display = caption || summaryFromAnswer(String(g));
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";

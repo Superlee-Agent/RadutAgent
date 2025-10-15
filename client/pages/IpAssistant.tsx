@@ -280,6 +280,7 @@ const IpAssistant = () => {
     null,
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
+  const [registerEdits, setRegisterEdits] = useState<Record<string, { title: string; description: string; editingTitle: boolean; editingDesc: boolean }>>({});
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -1142,10 +1143,142 @@ const IpAssistant = () => {
                       Register This IP
                     </div>
                     <div className="mt-1 text-slate-200">
-                      <div className="mt-1 font-medium">{msg.title}</div>
-                      <div className="mt-1 text-sm whitespace-pre-line">
-                        {msg.description}
-                      </div>
+                      {(() => {
+                        const ctxKey = (msg as any).ctxKey as string | undefined;
+                        const meta = ctxKey ? registerEdits[ctxKey] : undefined;
+                        const titleVal = meta?.title ?? msg.title;
+                        const descVal = meta?.description ?? msg.description;
+                        return (
+                          <>
+                            <div className="mt-1 font-medium flex items-center gap-2">
+                              {meta?.editingTitle ? (
+                                <>
+                                  <input
+                                    type="text"
+                                    value={titleVal}
+                                    onChange={(e) => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: e.target.value,
+                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          editingTitle: true,
+                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                    className="min-w-0 flex-1 rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                  />
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          editingTitle: false,
+                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Done
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="truncate">{titleVal}</span>
+                                  <button
+                                    type="button"
+                                    className="ml-1 text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: titleVal,
+                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          editingTitle: true,
+                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                            <div className="mt-1 text-sm whitespace-pre-line">
+                              {meta?.editingDesc ? (
+                                <div className="flex items-start gap-2">
+                                  <textarea
+                                    value={descVal}
+                                    onChange={(e) => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          description: e.target.value,
+                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: true,
+                                        },
+                                      }));
+                                    }}
+                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    rows={3}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent mt-1"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Done
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-start gap-2">
+                                  <div className="whitespace-pre-line break-words flex-1">{descVal}</div>
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          description: descVal,
+                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: true,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <label className="text-sm text-slate-300">
@@ -1203,7 +1336,10 @@ const IpAssistant = () => {
                           const blob = ctx?.blob;
                           if (!blob)
                             return alert("No uploaded image to register.");
-                          const displayTitle = msg.title || `IP Asset`;
+                          const ctxKey2 = (msg as any).ctxKey as string | undefined;
+                          const editedMeta = ctxKey2 ? registerEdits[ctxKey2] : undefined;
+                          const displayTitle = (editedMeta?.title && editedMeta.title.trim().length > 0 ? editedMeta.title : msg.title) || `IP Asset`;
+                          const displayDesc = editedMeta?.description ?? msg.description;
                           const file = new File(
                             [blob],
                             ctx?.name || `image-${Date.now()}.jpg`,
@@ -1225,7 +1361,7 @@ const IpAssistant = () => {
                             mf,
                             rs,
                             aiTrainingManual,
-                            { title: displayTitle, prompt: msg.description },
+                            { title: displayTitle, prompt: displayDesc },
                             ethProvider,
                           );
                         }}

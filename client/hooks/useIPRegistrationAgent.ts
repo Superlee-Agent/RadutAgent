@@ -7,7 +7,6 @@ import {
   toIpfsUri,
   toHttps,
 } from "@/lib/utils/ipfs";
-import { createLicenseTerms, LicenseSettings } from "@/lib/license/terms";
 import {
   StoryClient,
   PILFlavor,

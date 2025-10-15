@@ -38,6 +38,12 @@ function determineGroup(result: AnalysisFlags): number {
     has_known_brand_or_character,
   } = result;
 
+  // Prioritize animation categories regardless of faces
+  if (is_animation) {
+    if (is_ai_generated) return has_known_brand_or_character ? 13 : 12;
+    return has_known_brand_or_character ? 15 : 14;
+  }
+
   if (
     is_ai_generated &&
     !has_human_face &&
@@ -146,7 +152,7 @@ export const handleUpload: any = [
       const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
       const instruction =
-        "You are an AI image analyzer. Return ONLY strict minified JSON with keys: is_ai_generated, is_animation, has_human_face, is_full_face_visible, is_famous_person, has_known_brand_or_character, title, description. Definitions: is_full_face_visible = TRUE only if a single human face is clearly visible facing the camera with both eyes, nose, mouth and chin unobstructed, and the full head (forehead to chin) is not cropped; side/angle >45°, heavy occlusion (mask, big sunglasses obscuring eyes), or any crop that cuts forehead/chin/ears => FALSE. If has_human_face is FALSE, is_full_face_visible must be FALSE. For title: concise 3-6 words describing the image. For description: 1-2 sentences summarizing what is depicted. Use true/false booleans for flags. No extra text.";
+        "You are an AI image analyzer. Return ONLY strict minified JSON with keys: is_ai_generated, is_animation, has_human_face, is_full_face_visible, is_famous_person, has_known_brand_or_character, title, description. Definitions: is_animation = TRUE for 2D/3D animated/cartoon/illustration style (anime, toon, CGI), FALSE for photographic/realistic renders. is_full_face_visible = TRUE only if a single human face is clearly visible facing the camera with both eyes, nose, mouth and chin unobstructed, and the full head (forehead to chin) is not cropped; side/angle >45°, heavy occlusion (mask, big sunglasses obscuring eyes), or any crop that cuts forehead/chin/ears => FALSE. If has_human_face is FALSE, is_full_face_visible must be FALSE. For title: concise 3-6 words describing the image. For description: 1-2 sentences summarizing what is depicted. Use true/false booleans for flags. No extra text.";
 
       const response: any = await client.responses.create({
         model: MODEL,

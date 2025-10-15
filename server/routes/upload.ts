@@ -86,23 +86,17 @@ export const handleUpload: any = [
       const { default: OpenAI } = await import("openai");
       const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-      const system =
+      const instruction =
         "You are an AI image analyzer. Return ONLY strict minified JSON with keys: is_ai_generated, is_animation, has_human_face, is_full_face_visible, is_famous_person, has_known_brand_or_character. Use true/false booleans. No extra text.";
-
-      const user = "Analyze this image and return JSON.";
 
       const response: any = await client.responses.create({
         model: MODEL,
         temperature: 0,
         input: [
           {
-            role: "system",
-            content: [{ type: "text", text: system } as any],
-          },
-          {
             role: "user",
             content: [
-              { type: "input_text", text: user } as any,
+              { type: "input_text", text: instruction } as any,
               { type: "input_image", image_url: dataUrl } as any,
             ],
           },
@@ -110,7 +104,23 @@ export const handleUpload: any = [
         max_output_tokens: 300,
       } as any);
 
-      const text = ((response as any)?.output_text || "").trim() || "";
+      const extractText = (r: any) => {
+        if (!r) return "";
+        if (typeof r.output_text === "string" && r.output_text.trim()) return r.output_text;
+        if (Array.isArray(r.output) && r.output.length > 0) {
+          for (const o of r.output) {
+            if (o?.content && Array.isArray(o.content)) {
+              for (const c of o.content) {
+                if ((c.type === "output_text" || c.type === "text") && typeof c.text === "string") return c.text;
+              }
+            }
+            if (typeof o?.text === "string") return o.text;
+          }
+        }
+        return r?.choices?.[0]?.message?.content ?? "";
+      };
+
+      const text = (extractText(response) || "").trim();
       const parsed = parseJsonLoose(text);
 
       if (!parsed || typeof parsed !== "object") {

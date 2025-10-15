@@ -987,32 +987,28 @@ const IpAssistant = () => {
                             <>
                               {" "}
                               <span className="mx-1 text-slate-400">•</span>
+                              const ctxKeyForMsg = (msg as any).ctxKey as string | undefined;
+                              const isLoadingThis = !!ctxKeyForMsg && loadingRegisterFor === ctxKeyForMsg;
                               <span
                                 role="button"
                                 tabIndex={0}
                                 onClick={async () => {
-                                  if (registerLoading) return;
-                                  setRegisterLoading(true);
+                                  if (!ctxKeyForMsg) return;
+                                  if (isLoadingThis) return;
+                                  setLoadingRegisterFor(ctxKeyForMsg);
                                   const groupNum = Number(codeStr);
                                   let title = "";
                                   let desc = "";
                                   try {
-                                    const blob = lastUploadBlobRef.current;
+                                    const ctx = analysisContextsRef.current.get(ctxKeyForMsg);
+                                    const blob = ctx?.blob;
+                                    const name = ctx?.name || "image.jpg";
+                                    const facts = ctx?.facts || null;
                                     if (blob) {
                                       const form = new FormData();
-                                      form.append(
-                                        "image",
-                                        blob,
-                                        lastUploadNameRef.current ||
-                                          "image.jpg",
-                                      );
-                                      if (lastAnalysisFactsRef.current) {
-                                        form.append(
-                                          "facts",
-                                          JSON.stringify(
-                                            lastAnalysisFactsRef.current,
-                                          ),
-                                        );
+                                      form.append("image", blob, name);
+                                      if (facts) {
+                                        form.append("facts", JSON.stringify(facts));
                                       }
                                       const res = await fetch("/api/describe", {
                                         method: "POST",
@@ -1020,39 +1016,28 @@ const IpAssistant = () => {
                                       });
                                       if (res.ok) {
                                         const j = await res.json();
-                                        title =
-                                          typeof j.title === "string"
-                                            ? j.title
-                                            : "";
-                                        desc =
-                                          typeof j.description === "string"
-                                            ? j.description
-                                            : "";
+                                        title = typeof j.title === "string" ? j.title : "";
+                                        desc = typeof j.description === "string" ? j.description : "";
                                       }
                                     }
                                   } catch {}
                                   if (!title)
                                     title =
                                       ANSWER_DETAILS[
-                                        String(
-                                          codeStr,
-                                        ) as keyof typeof ANSWER_DETAILS
+                                        String(codeStr) as keyof typeof ANSWER_DETAILS
                                       ]?.type || "IP Asset";
-                                  if (!desc)
-                                    desc = summaryFromAnswer(String(codeStr));
-                                  // Trim for UI brevity
-                                  if (title.length > 60)
-                                    title = title.slice(0, 59) + "…";
-                                  if (desc.length > 120)
-                                    desc = desc.slice(0, 119) + "…";
+                                  if (!desc) desc = summaryFromAnswer(String(codeStr));
+                                  if (title.length > 60) title = title.slice(0, 59) + "…";
+                                  if (desc.length > 120) desc = desc.slice(0, 119) + "…";
                                   pushMessage({
                                     from: "register",
                                     group: groupNum,
                                     title,
                                     description: desc,
+                                    ctxKey: ctxKeyForMsg,
                                     ts: getCurrentTimestamp(),
                                   });
-                                  setRegisterLoading(false);
+                                  setLoadingRegisterFor(null);
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" || e.key === " ") {
@@ -1060,9 +1045,9 @@ const IpAssistant = () => {
                                     setActiveDetail(codeStr);
                                   }
                                 }}
-                                className={`cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded ${registerLoading ? "pointer-events-none opacity-70" : ""}`}
+                                className={`cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded ${isLoadingThis ? "pointer-events-none opacity-70" : ""}`}
                               >
-                                {registerLoading ? (
+                                {isLoadingThis ? (
                                   <>
                                     Please wait
                                     <span className="ml-2 inline-flex align-middle">

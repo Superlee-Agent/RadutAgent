@@ -599,8 +599,8 @@ const IpAssistant = () => {
             `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
             `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
           ];
-          verification = { label: `Group ${g}`, code: String(g) as any };
-          display = `Group ${g}\n` + flags.join(" · ");
+          verification = { label: `Detail`, code: String(g) as any };
+          display = `Detail\n` + flags.join(" · ");
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

@@ -136,6 +136,7 @@ export function useIPRegistrationAgent() {
           }
         } catch {}
         const ipMetadata = {
+          name: intent?.title || file.name,
           title: intent?.title || file.name,
           description: intent?.prompt || "",
           image: imageGateway,
@@ -143,6 +144,7 @@ export function useIPRegistrationAgent() {
           mediaUrl: imageGateway,
           mediaHash: imageHash,
           mediaType: compressedFile.type || "image/jpeg",
+          external_url: typeof window !== "undefined" ? window.location.origin : undefined,
           creators: creatorAddr
             ? [
                 {
@@ -152,6 +154,21 @@ export function useIPRegistrationAgent() {
                 },
               ]
             : [],
+          attributes: [
+            { trait_type: "Group", value: group },
+            { trait_type: "AI Training", value: licenseSettings.aiLearning ? "Allowed" : "Disabled" },
+            { trait_type: "Minting Fee", value: Number(licenseSettings.licensePrice) || 0 },
+            { trait_type: "Revenue Share %", value: Number(licenseSettings.revShare) || 0 },
+            { trait_type: "Media Type", value: compressedFile.type || "image/jpeg" },
+            ...(intent?.prompt ? [{ trait_type: "AI Prompt", value: intent.prompt }] : []),
+          ],
+          properties: {
+            group,
+            ai_training: !!licenseSettings.aiLearning,
+            minting_fee: Number(licenseSettings.licensePrice) || 0,
+            rev_share_percent: Number(licenseSettings.revShare) || 0,
+            media_type: compressedFile.type || "image/jpeg",
+          },
           aiMetadata: intent?.prompt
             ? { prompt: intent.prompt, generator: "user", model: "rule-based" }
             : undefined,

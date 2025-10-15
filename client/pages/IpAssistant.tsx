@@ -684,25 +684,37 @@ const IpAssistant = () => {
           let verdict = "";
           if (licenseSettings) {
             if (famousNotFullGroups.includes(g)) {
-              verdict = "IP ini bisa diregister karena figur publik tidak terlihat penuh.";
+              verdict =
+                "IP ini bisa diregister karena figur publik tidak terlihat penuh.";
             } else if (ordinaryNotFullGroups.includes(g)) {
-              verdict = "IP ini bisa diregister karena wajah tidak terlihat penuh.";
+              verdict =
+                "IP ini bisa diregister karena wajah tidak terlihat penuh.";
             } else if (isAnimGroup && !isBrandGroup) {
-              verdict = "IP ini bisa diregister karena animasi tanpa merek/karakter.";
-            } else if (!isBrandGroup && !famousFullGroups.includes(g) && !ordinaryFullGroups.includes(g)) {
-              verdict = "IP ini bisa diregister karena tidak menampilkan wajah/merek.";
+              verdict =
+                "IP ini bisa diregister karena animasi tanpa merek/karakter.";
+            } else if (
+              !isBrandGroup &&
+              !famousFullGroups.includes(g) &&
+              !ordinaryFullGroups.includes(g)
+            ) {
+              verdict =
+                "IP ini bisa diregister karena tidak menampilkan wajah/merek.";
             } else {
-              verdict = "IP ini bisa diregister karena memenuhi kriteria kebijakan.";
+              verdict =
+                "IP ini bisa diregister karena memenuhi kriteria kebijakan.";
             }
           } else if (requiresSelfieVerification(g)) {
-            verdict = "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+            verdict =
+              "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
           } else if (requiresSubmitReview(g)) {
             if (isBrandGroup) {
               verdict = `IP ini tidak bisa diregister langsung karena ${brandName ? `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${brandName}` : "mengandung merek/karakter terkenal"}.`;
             } else if (famousFullGroups.includes(g)) {
-              verdict = "IP ini tidak bisa diregister langsung karena menampilkan wajah figur publik secara penuh.";
+              verdict =
+                "IP ini tidak bisa diregister langsung karena menampilkan wajah figur publik secara penuh.";
             } else {
-              verdict = "IP ini tidak bisa diregister langsung karena perlu peninjauan.";
+              verdict =
+                "IP ini tidak bisa diregister langsung karena perlu peninjauan.";
             }
           } else if (g === 0) {
             verdict = "Analisis tidak pasti; kirim untuk peninjauan.";

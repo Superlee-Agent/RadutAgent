@@ -59,7 +59,7 @@ export const DashboardLayout = ({
                 to={item.to}
                 className={({ isActive }) => {
                   const baseClasses =
-                    "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 group relative";
+                    "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300";
                   const activeClasses =
                     "bg-gradient-to-r from-[#FF4DA6]/20 to-[#FF4DA6]/5 text-[#FF4DA6] border border-[#FF4DA6]/40 shadow-[0_8px_24px_rgba(255,77,166,0.15)]";
                   const inactiveClasses =
@@ -71,18 +71,10 @@ export const DashboardLayout = ({
                 }}
                 onClick={() => closeSidebar?.()}
               >
-                {({ isActive }) => (
-                  <>
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${
-                      isActive
-                        ? "bg-gradient-to-br from-[#FF4DA6]/30 to-[#FF4DA6]/10 border border-[#FF4DA6]/40 text-[#FF4DA6]"
-                        : "bg-slate-800/50 border border-slate-700/50 text-slate-500 group-hover:bg-slate-700/60 group-hover:text-slate-300"
-                    }`}>
-                      <ItemIcon className="h-4 w-4" />
-                    </span>
-                    <span>{item.label}</span>
-                  </>
-                )}
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-500 transition-all duration-300 group-hover:bg-slate-700/60 group-hover:text-slate-300">
+                  <ItemIcon className="h-4 w-4" />
+                </span>
+                <span>{item.label}</span>
               </NavLink>
             </li>
           );

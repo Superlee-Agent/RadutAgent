@@ -23,21 +23,6 @@ export type ChatSession = {
   ts: string;
 };
 
-const ANSWER_LABELS: Record<string, string> = {
-  "1": "Group 1",
-  "2A": "Group 2A",
-  "2B": "Group 2B",
-  "3A": "Group 3A",
-  "3B": "Group 3B",
-  "4": "Group 4",
-  "5A": "Group 5A",
-  "5B": "Group 5B",
-  "6A": "Group 6A",
-  "6B": "Group 6B",
-  "7": "Group 7",
-  "8": "Group 8",
-  "9": "Group 9",
-};
 
 const ANSWER_DETAILS: Record<
   string,
@@ -182,7 +167,7 @@ const getCurrentTimestamp = () =>
 
 const getInitialBotMessage = (): BotMessage => ({
   from: "bot",
-  text: "Hello, I am Radut Agent. Type 'gradut' to start an image analysis.",
+  text: "Hello, I am Radut Agent. Attach an image to analyze.",
   ts: getCurrentTimestamp(),
 });
 
@@ -532,71 +517,10 @@ const IpAssistant = () => {
         }
 
         const data = await response.json();
-        const parsed = data?.parsed;
-        const parsedBatch = Array.isArray(data?.parsed_batch)
-          ? (data.parsed_batch as any[])
-          : null;
-        const parsedScenarios =
-          data?.parsed_scenarios &&
-          Array.isArray(data.parsed_scenarios?.skenario)
-            ? data.parsed_scenarios
-            : null;
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (parsedScenarios) {
-          const list = parsedScenarios.skenario as any[];
-          const lines = list.slice(0, 2).map((it: any) => {
-            const id = typeof it?.id === "number" ? it.id : "?";
-            const sub = String(it?.Sub_Grup ?? "?").toUpperCase();
-            const status = String(it?.status_registrasi ?? "");
-            const conf =
-              typeof it?.confidence === "number"
-                ? ` (${it.confidence.toFixed(2)})`
-                : "";
-            return `Skenario ${id}: ${sub} · ${status}${conf}`;
-          });
-          const chosen = parsedScenarios.hasil_terpilih || null;
-          const chosenSub = chosen?.Sub_Grup
-            ? String(chosen.Sub_Grup).toUpperCase()
-            : "";
-          if (chosenSub && ANSWER_LABELS[chosenSub]) {
-            verification = { label: ANSWER_LABELS[chosenSub], code: chosenSub };
-          }
-          display = lines.join("\n");
-        } else if (parsedBatch && parsedBatch.length > 0) {
-          // Summarize batch
-          const lines = parsedBatch.slice(0, 6).map((item: any) => {
-            const name = String(item?.nama_file_gambar ?? "?");
-            const sub = String(item?.Sub_Grup ?? "?").toUpperCase();
-            const status = String(item?.status_registrasi ?? "");
-            const conf =
-              typeof item?.confidence === "number"
-                ? ` (${item.confidence.toFixed(2)})`
-                : "";
-            return `${name}: ${sub} · ${status}${conf}`;
-          });
-          display = lines.join("\n");
-          const firstSub = String(parsedBatch[0]?.Sub_Grup ?? "").toUpperCase();
-          if (firstSub && ANSWER_LABELS[firstSub]) {
-            verification = { label: ANSWER_LABELS[firstSub], code: firstSub };
-          }
-        } else if (parsed && typeof parsed === "object") {
-          const finalAnswer =
-            typeof parsed.selected_answer === "string"
-              ? String(parsed.selected_answer).trim().toUpperCase()
-              : null;
-
-          if (finalAnswer) {
-            const label = ANSWER_LABELS[finalAnswer] ?? `Group ${finalAnswer}`;
-            verification = { label, code: finalAnswer };
-            display = summaryFromAnswer(finalAnswer);
-          } else {
-            const reason =
-              typeof parsed.reason === "string" ? parsed.reason.trim() : "";
-            display = reason || "(No analysis result)";
-          }
-        } else if (typeof (data as any)?.group === "number" && (data as any)?.details) {
+        if (typeof (data as any)?.group === "number" && (data as any)?.details) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
           const flags = [
@@ -607,7 +531,6 @@ const IpAssistant = () => {
             `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
             `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
           ];
-          // set Final verification to clickable label
           verification = { label: `Group ${g}`, code: String(g) as any };
           display = `Group ${g}\n` + flags.join(" · ");
         } else {

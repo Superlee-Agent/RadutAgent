@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleAnalyze } from "./routes/analyze.js";
 import { handleDeterministicRoute } from "./routes/router.js";
+import { handleUpload } from "./routes/upload.js";
 
 export function createServer() {
   const app = express();
@@ -22,10 +22,10 @@ export function createServer() {
   // Deterministic router API (POST /api)
   app.post("/api", handleDeterministicRoute);
 
-  // Analyze endpoint (POST /api/analyze) - multer middleware + handler
+  // Simple upload-and-classify endpoint (POST /api/upload)
   app.post(
-    "/api/analyze",
-    ...(Array.isArray(handleAnalyze) ? handleAnalyze : [handleAnalyze]),
+    "/api/upload",
+    ...(Array.isArray(handleUpload) ? handleUpload : [handleUpload]),
   );
 
   // Debug endpoint to check OpenAI env presence

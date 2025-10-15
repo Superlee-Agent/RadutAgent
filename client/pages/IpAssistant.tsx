@@ -23,22 +23,6 @@ export type ChatSession = {
   ts: string;
 };
 
-const ANSWER_LABELS: Record<string, string> = {
-  "1": "Group 1",
-  "2A": "Group 2A",
-  "2B": "Group 2B",
-  "3A": "Group 3A",
-  "3B": "Group 3B",
-  "4": "Group 4",
-  "5A": "Group 5A",
-  "5B": "Group 5B",
-  "6A": "Group 6A",
-  "6B": "Group 6B",
-  "7": "Group 7",
-  "8": "Group 8",
-  "9": "Group 9",
-};
-
 const ANSWER_DETAILS: Record<
   string,
   {
@@ -50,121 +34,146 @@ const ANSWER_DETAILS: Record<
     aiTraining: string;
   }
 > = {
-  // AI
   "1": {
     type: "AI Generated",
-    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
-    registrationStatus: "✅ Bisa diregistrasi",
+    notes:
+      "Gambar hasil AI; Tidak ada wajah orang; Tidak ada brand/karakter terkenal",
+    registrationStatus: "✅ IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
+    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
   },
-  "2A": {
+  "2": {
     type: "AI Generated",
-    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
-    registrationStatus: "❌ Tidak diizinkan",
+    notes: "Gambar hasil AI; Mengandung brand/karakter terkenal",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
-  "2B": {
+  "3": {
     type: "AI Generated",
-    notes:
-      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
-    registrationStatus: "✅ Bisa diregistrasi",
-    action: "-",
-    smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
+    notes: "Gambar hasil AI; Wajah orang terkenal; wajah terlihat full",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
   },
-  "3A": {
-    type: "AI Generated",
-    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
-    registrationStatus: "❌ Tidak langsung diizinkan",
-    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
-    smartLicensing: "Commercial Remix License (jika sukses)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
-  },
-  "3B": {
-    type: "AI Generated",
-    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
-    registrationStatus: "✅ Bisa diregistrasi",
-    action: "-",
-    smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
-  },
-  // Human
   "4": {
-    type: "Human Generated",
-    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
-    registrationStatus: "✅ Bisa diregistrasi",
-    action: "-",
-    smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting)",
-  },
-  "5A": {
-    type: "Human Generated",
+    type: "AI Generated",
     notes:
-      "Brand/karakter terkenal atau wajah manusia terkenal (tidak full wajah)",
-    registrationStatus: "✅ Bisa diregistrasi",
+      "Gambar hasil AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
+    registrationStatus: "✅ IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting)",
+    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
   },
-  "5B": {
+  "5": {
+    type: "AI Generated",
+    notes:
+      "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
+    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+    action:
+      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
+    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+  },
+  "6": {
+    type: "AI Generated",
+    notes:
+      "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
+    registrationStatus: "✅ IP bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+  },
+  "7": {
     type: "Human Generated",
-    notes: "Brand/karakter terkenal atau wajah manusia terkenal (full wajah)",
-    registrationStatus: "❌ Tidak diizinkan",
+    notes: "Gambar asli non AI; Mengandung brand/karakter terkenal",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
-  },
-  "6A": {
-    type: "Human Generated",
-    notes: "Wajah manusia biasa (tidak terkenal), full wajah",
-    registrationStatus: "❌ Tidak langsung diizinkan",
-    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
-    smartLicensing: "Commercial Remix License (jika sukses)",
-    aiTraining: "✅ Diizinkan (manual setting)",
-  },
-  "6B": {
-    type: "Human Generated",
-    notes: "Wajah manusia biasa (tidak terkenal), tidak full wajah",
-    registrationStatus: "✅ Bisa diregistrasi",
-    action: "-",
-    smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting)",
-  },
-  // AI Animation
-  "7": {
-    type: "AI Generated (Animation)",
-    notes: "Tanpa wajah manusia, tanpa brand/karakter terkenal",
-    registrationStatus: "✅ Bisa diregistrasi",
-    action: "-",
-    smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
   },
   "8": {
-    type: "AI Generated (Animation)",
-    notes: "Brand/karakter terkenal atau wajah manusia terkenal",
-    registrationStatus: "❌ Tidak diizinkan",
+    type: "Human Generated",
+    notes: "Gambar asli non AI; Wajah orang terkenal; wajah terlihat full",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "9": {
+    type: "Human Generated",
+    notes:
+      "Gambar asli non AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
+    registrationStatus: "✅ IP bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+  },
+  "10": {
+    type: "Human Generated",
+    notes:
+      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
+    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+    action:
+      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
+    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+  },
+  "11": {
+    type: "Human Generated",
+    notes:
+      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
+    registrationStatus: "✅ IP bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+  },
+  "12": {
     type: "AI Generated (Animation)",
-    notes: "Wajah manusia biasa (tidak terkenal)",
-    registrationStatus: "❌ Tidak langsung diizinkan",
-    action: "Take Selfie Photo → (Jika sukses ✅, jika gagal ❌ Submit Review)",
-    smartLicensing: "Commercial Remix License (jika sukses)",
-    aiTraining: "❌ Tidak diizinkan (fixed)",
+    notes:
+      "Gambar animasi 2D/3D hasil AI; Tidak mengandung brand/karakter terkenal",
+    registrationStatus: "✅ IP bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+  },
+  "13": {
+    type: "AI Generated (Animation)",
+    notes: "Gambar animasi 2D/3D hasil AI; Mengandung brand/karakter terkenal",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
+  },
+  "14": {
+    type: "Human Generated (Animation)",
+    notes:
+      "Gambar animasi 2D/3D asli non AI; Tidak mengandung brand/karakter terkenal",
+    registrationStatus: "✅ IP bisa diregistrasi",
+    action: "-",
+    smartLicensing:
+      "Commercial Remix License (minting fee & revenue share manual)",
+    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+  },
+  "15": {
+    type: "Human Generated (Animation)",
+    notes:
+      "Gambar animasi 2D/3D asli non AI; Mengandung brand/karakter terkenal",
+    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    action: "Submit Review",
+    smartLicensing: "-",
+    aiTraining: "-",
   },
 };
 
@@ -182,7 +191,7 @@ const getCurrentTimestamp = () =>
 
 const getInitialBotMessage = (): BotMessage => ({
   from: "bot",
-  text: "Hello, I am Radut Agent. Type 'gradut' to start an image analysis.",
+  text: "Hello, I am Radut Agent. Attach an image to analyze.",
   ts: getCurrentTimestamp(),
 });
 
@@ -499,10 +508,10 @@ const IpAssistant = () => {
             console.error("Compression failed, sending original file", error);
             blob = f;
           }
-          form.append("images", blob, f.name || "image.jpg");
+          form.append("image", blob, f.name || "image.jpg");
         }
 
-        const response = await fetch("/api/analyze", {
+        const response = await fetch("/api/upload", {
           method: "POST",
           body: form,
         });
@@ -532,70 +541,25 @@ const IpAssistant = () => {
         }
 
         const data = await response.json();
-        const parsed = data?.parsed;
-        const parsedBatch = Array.isArray(data?.parsed_batch)
-          ? (data.parsed_batch as any[])
-          : null;
-        const parsedScenarios =
-          data?.parsed_scenarios &&
-          Array.isArray(data.parsed_scenarios?.skenario)
-            ? data.parsed_scenarios
-            : null;
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (parsedScenarios) {
-          const list = parsedScenarios.skenario as any[];
-          const lines = list.slice(0, 2).map((it: any) => {
-            const id = typeof it?.id === "number" ? it.id : "?";
-            const sub = String(it?.Sub_Grup ?? "?").toUpperCase();
-            const status = String(it?.status_registrasi ?? "");
-            const conf =
-              typeof it?.confidence === "number"
-                ? ` (${it.confidence.toFixed(2)})`
-                : "";
-            return `Skenario ${id}: ${sub} · ${status}${conf}`;
-          });
-          const chosen = parsedScenarios.hasil_terpilih || null;
-          const chosenSub = chosen?.Sub_Grup
-            ? String(chosen.Sub_Grup).toUpperCase()
-            : "";
-          if (chosenSub && ANSWER_LABELS[chosenSub]) {
-            verification = { label: ANSWER_LABELS[chosenSub], code: chosenSub };
-          }
-          display = lines.join("\n");
-        } else if (parsedBatch && parsedBatch.length > 0) {
-          // Summarize batch
-          const lines = parsedBatch.slice(0, 6).map((item: any) => {
-            const name = String(item?.nama_file_gambar ?? "?");
-            const sub = String(item?.Sub_Grup ?? "?").toUpperCase();
-            const status = String(item?.status_registrasi ?? "");
-            const conf =
-              typeof item?.confidence === "number"
-                ? ` (${item.confidence.toFixed(2)})`
-                : "";
-            return `${name}: ${sub} · ${status}${conf}`;
-          });
-          display = lines.join("\n");
-          const firstSub = String(parsedBatch[0]?.Sub_Grup ?? "").toUpperCase();
-          if (firstSub && ANSWER_LABELS[firstSub]) {
-            verification = { label: ANSWER_LABELS[firstSub], code: firstSub };
-          }
-        } else if (parsed && typeof parsed === "object") {
-          const finalAnswer =
-            typeof parsed.selected_answer === "string"
-              ? String(parsed.selected_answer).trim().toUpperCase()
-              : null;
-
-          if (finalAnswer) {
-            const label = ANSWER_LABELS[finalAnswer] ?? `Group ${finalAnswer}`;
-            verification = { label, code: finalAnswer };
-            display = summaryFromAnswer(finalAnswer);
-          } else {
-            const reason =
-              typeof parsed.reason === "string" ? parsed.reason.trim() : "";
-            display = reason || "(No analysis result)";
-          }
+        if (
+          typeof (data as any)?.group === "number" &&
+          (data as any)?.details
+        ) {
+          const g = (data as any).group as number;
+          const d = (data as any).details as Record<string, any>;
+          const flags = [
+            `AI: ${d.is_ai_generated ? "Ya" : "Tidak"}`,
+            `Animasi: ${d.is_animation ? "Ya" : "Tidak"}`,
+            `Wajah manusia: ${d.has_human_face ? "Ya" : "Tidak"}`,
+            `Full wajah: ${d.is_full_face_visible ? "Ya" : "Tidak"}`,
+            `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
+            `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
+          ];
+          verification = { label: `Group ${g}`, code: String(g) as any };
+          display = `Group ${g}\n` + flags.join(" · ");
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";
@@ -608,18 +572,6 @@ const IpAssistant = () => {
           verification,
           ts: getCurrentTimestamp(),
         });
-
-        void (async () => {
-          try {
-            await fetch("/api", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data),
-            });
-          } catch (error) {
-            console.error("Failed to persist analysis", error);
-          }
-        })();
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
@@ -847,6 +799,36 @@ const IpAssistant = () => {
                         >
                           {verificationObject.label}
                         </span>
+                        {(() => {
+                          const codeStr = String(verificationObject.code);
+                          const info =
+                            ANSWER_DETAILS[
+                              codeStr as keyof typeof ANSWER_DETAILS
+                            ];
+                          const canRegister =
+                            !!info && info.registrationStatus.includes("✅");
+                          if (!canRegister) return null;
+                          return (
+                            <>
+                              {" "}
+                              <span className="mx-1 text-slate-400">•</span>
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setActiveDetail(codeStr)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    setActiveDetail(codeStr);
+                                  }
+                                }}
+                                className="cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded"
+                              >
+                                Register
+                              </span>
+                            </>
+                          );
+                        })()}
                       </div>
                     ) : verificationText ? (
                       <div className="mt-2 text-xs text-slate-300">
@@ -978,7 +960,6 @@ const IpAssistant = () => {
         ref={uploadRef}
         type="file"
         accept="image/*"
-        multiple
         className="hidden"
         onChange={handleImage}
       />

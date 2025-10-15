@@ -115,7 +115,7 @@ export function useIPRegistrationAgent() {
         }));
         const fileUpload = await uploadFile(compressedFile);
         const imageCid = extractCid(fileUpload.cid || fileUpload.url);
-        const imageGateway = toHttps(imageCid);
+        const imageGateway = fileUpload.https || toHttps(imageCid);
         const imageHash = await sha256HexOfFile(compressedFile);
 
         setRegisterState((p) => ({

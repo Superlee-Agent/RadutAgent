@@ -598,7 +598,7 @@ const IpAssistant = () => {
           }
         } else if (typeof (data as any)?.group === "number" && (data as any)?.details) {
           const g = (data as any).group as number;
-          const d = (data as any).details as Record<string, unknown>;
+          const d = (data as any).details as Record<string, any>;
           const flags = [
             `AI: ${d.is_ai_generated ? "Ya" : "Tidak"}`,
             `Animasi: ${d.is_animation ? "Ya" : "Tidak"}`,
@@ -607,6 +607,8 @@ const IpAssistant = () => {
             `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
             `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
           ];
+          // set Final verification to clickable label
+          verification = { label: `Group ${g}`, code: String(g) as any };
           display = `Group ${g}\n` + flags.join(" · ");
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";

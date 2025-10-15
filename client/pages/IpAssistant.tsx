@@ -273,8 +273,8 @@ const IpAssistant = () => {
 
   const { registerState, executeRegister, resetRegister } =
     useIPRegistrationAgent();
-  const [mintingFee, setMintingFee] = useState<number>(0);
-  const [revShare, setRevShare] = useState<number>(0);
+  const [mintingFee, setMintingFee] = useState<number | "">("");
+  const [revShare, setRevShare] = useState<number | "">("");
   const [aiTrainingManual, setAiTrainingManual] = useState<boolean>(true);
   const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(
     null,
@@ -292,8 +292,8 @@ const IpAssistant = () => {
 
   useEffect(() => {
     resetRegister();
-    setMintingFee(0);
-    setRevShare(0);
+    setMintingFee("");
+    setRevShare("");
     setAiTrainingManual(true);
   }, [activeDetail, resetRegister]);
 
@@ -1153,10 +1153,11 @@ const IpAssistant = () => {
                         <input
                           type="number"
                           min={0}
-                          value={mintingFee}
-                          onChange={(e) =>
-                            setMintingFee(Number(e.target.value) || 0)
-                          }
+                          value={mintingFee === "" ? "" : mintingFee}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setMintingFee(v === "" ? "" : Number(v));
+                          }}
                           className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
                         />
                       </label>
@@ -1166,15 +1167,13 @@ const IpAssistant = () => {
                           type="number"
                           min={0}
                           max={100}
-                          value={revShare}
-                          onChange={(e) =>
-                            setRevShare(
-                              Math.min(
-                                100,
-                                Math.max(0, Number(e.target.value) || 0),
-                              ),
-                            )
-                          }
+                          value={revShare === "" ? "" : revShare}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === "") return setRevShare("");
+                            const n = Number(v);
+                            setRevShare(Math.min(100, Math.max(0, isNaN(n) ? 0 : n)));
+                          }}
                           className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
                         />
                       </label>
@@ -1218,11 +1217,13 @@ const IpAssistant = () => {
                               ethProvider = await wallets[0].getEthereumProvider();
                             }
                           } catch {}
+                          const mf = mintingFee === "" ? undefined : Number(mintingFee);
+                          const rs = revShare === "" ? undefined : Number(revShare);
                           await executeRegister(
                             groupNum,
                             file,
-                            mintingFee,
-                            revShare,
+                            mf,
+                            rs,
                             aiTrainingManual,
                             { title: displayTitle, prompt: msg.description },
                             ethProvider,

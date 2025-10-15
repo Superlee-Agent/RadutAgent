@@ -267,6 +267,7 @@ const IpAssistant = () => {
   const [mintingFee, setMintingFee] = useState<number>(0);
   const [revShare, setRevShare] = useState<number>(0);
   const [aiTrainingManual, setAiTrainingManual] = useState<boolean>(true);
+  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -856,6 +857,8 @@ const IpAssistant = () => {
                                 role="button"
                                 tabIndex={0}
                                 onClick={async () => {
+                                  if (registerLoading) return;
+                                  setRegisterLoading(true);
                                   const groupNum = Number(codeStr);
                                   let title = "";
                                   let desc = "";
@@ -887,6 +890,7 @@ const IpAssistant = () => {
                                     description: desc,
                                     ts: getCurrentTimestamp(),
                                   });
+                                  setRegisterLoading(false);
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" || e.key === " ") {
@@ -894,9 +898,20 @@ const IpAssistant = () => {
                                     setActiveDetail(codeStr);
                                   }
                                 }}
-                                className="cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded"
+                                className={`cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded ${registerLoading ? "pointer-events-none opacity-70" : ""}`}
                               >
-                                Register
+                                {registerLoading ? (
+                                  <>
+                                    Please wait
+                                    <span className="ml-2 inline-flex align-middle">
+                                      <span className="dot" />
+                                      <span className="dot" />
+                                      <span className="dot" />
+                                    </span>
+                                  </>
+                                ) : (
+                                  "Register"
+                                )}
                               </span>
                             </>
                           );

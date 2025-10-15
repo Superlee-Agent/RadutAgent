@@ -172,6 +172,28 @@ export function useIPRegistrationAgent() {
         // Init wallet client via Privy provider
         const provider = ethereumProvider || (globalThis as any).ethereum;
         if (!provider) throw new Error("No EIP-1193 provider found. Connect wallet first.");
+        try {
+          const chainIdHex: string = await provider.request({ method: "eth_chainId" });
+          if (chainIdHex?.toLowerCase() !== "0x523") {
+            try {
+              await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x523" }] });
+            } catch (e) {
+              const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
+              try {
+                await provider.request({
+                  method: "wallet_addEthereumChain",
+                  params: [{
+                    chainId: "0x523",
+                    chainName: "Aeneid",
+                    nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
+                    rpcUrls: rpcUrl ? [rpcUrl] : ["https://aeneid.storyrpc.io"],
+                  }],
+                });
+              } catch {}
+              try { await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x523" }] }); } catch {}
+            }
+          }
+        } catch {}
         const walletClient = createWalletClient({ transport: custom(provider) });
         const [addr] = await walletClient.getAddresses();
         if (!addr) throw new Error("No wallet address available");

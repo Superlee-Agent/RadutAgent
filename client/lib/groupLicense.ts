@@ -50,3 +50,8 @@ export function requiresSelfieVerification(group: number) {
 export function requiresSubmitReview(group: number) {
   return GROUPS.SUBMIT_REVIEW.includes(group);
 }
+
+export function isAiGeneratedGroup(group: number) {
+  // Based on determineGroup mapping in server/routes/upload.ts
+  return [1, 2, 3, 4, 5, 6, 12, 13].includes(group);
+}

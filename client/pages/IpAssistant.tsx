@@ -125,7 +125,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated",
     notes:
       "Gambar asli non AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    registrationStatus: "�� IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -639,47 +639,56 @@ const IpAssistant = () => {
           }
           const facts = d || {};
           const licenseSettings = getLicenseSettingsByGroup(g);
-          let sentence = "";
 
-          if (licenseSettings) {
-            let reason = "memenuhi kriteria kebijakan";
-            if (g === 1 || g === 12 || g === 14) {
-              if (facts.has_known_brand_or_character) {
-                reason = "tidak mengandung merek/karakter terkenal";
-              } else if (!facts.has_human_face) {
-                reason = "tidak menampilkan wajah manusia";
-              } else {
-                reason = "memenuhi kriteria kebijakan";
-              }
-            } else if (g === 4 || g === 9) {
-              reason = "figur publik tidak terlihat penuh";
-            } else if (g === 6 || g === 11) {
-              reason = "wajah tidak terlihat penuh";
+          const isAnim = !!facts.is_animation || [12, 13, 14, 15].includes(g);
+          const isAI = !!facts.is_ai_generated || [1, 2, 3, 4, 5, 6, 12, 13].includes(g);
+          const hasFace = !!facts.has_human_face;
+          const isFamous = !!facts.is_famous_person;
+          const isFull = !!facts.is_full_face_visible;
+          const hasBrand = !!facts.has_known_brand_or_character;
+          const brandName = (detectedBrand || detectedCharacter || "").trim();
+
+          // Susun klasifikasi singkat
+          let classification = isAnim ? (isAI ? "Animasi AI" : "Animasi non-AI") : (isAI ? "Gambar AI" : "Foto non-AI");
+          if (hasBrand) {
+            classification += ` dengan ${brandName ? (detectedBrand ? "merek" : "karakter") + " " + brandName : "merek/karakter terkenal"}`;
+          } else if (hasFace) {
+            if (isFamous) {
+              classification += isFull ? " dengan wajah figur publik penuh" : " dengan figur publik tidak penuh";
+            } else {
+              classification += isFull ? " dengan wajah orang biasa penuh" : " dengan wajah orang biasa tidak penuh";
             }
-            sentence = `IP ini bisa diregister karena ${reason}.`;
-          } else if (requiresSelfieVerification(g)) {
-            sentence =
-              "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
-          } else if (requiresSubmitReview(g)) {
-            let reason = "perlu peninjauan.";
-            if (facts.has_known_brand_or_character) {
-              const name = detectedBrand || detectedCharacter;
-              if (name) {
-                reason = `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${name}.`;
-              } else {
-                reason = "mengandung merek/karakter terkenal.";
-              }
-            } else if (facts.is_famous_person && facts.is_full_face_visible) {
-              reason = "menampilkan wajah figur publik secara penuh.";
-            } else if (facts.is_famous_person) {
-              reason = "menampilkan figur publik.";
-            }
-            sentence = `IP ini tidak bisa diregister langsung karena ${reason}`;
           } else {
-            sentence = "IP ini tidak bisa diregister.";
+            classification += " tanpa wajah/merek";
           }
 
-          display = sentence;
+          // Susun keputusan
+          let verdict = "";
+          if (licenseSettings) {
+            if (g === 4 || g === 9) verdict = "IP ini bisa diregister karena figur publik tidak terlihat penuh.";
+            else if (g === 6 || g === 11) verdict = "IP ini bisa diregister karena wajah tidak terlihat penuh.";
+            else if (isAnim && !hasBrand) verdict = "IP ini bisa diregister karena animasi tanpa merek/karakter.";
+            else if (isAI && !hasFace && !hasBrand) verdict = "IP ini bisa diregister karena tidak menampilkan wajah/merek.";
+            else verdict = "IP ini bisa diregister karena memenuhi kriteria kebijakan.";
+          } else if (requiresSelfieVerification(g)) {
+            verdict = "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+          } else if (requiresSubmitReview(g)) {
+            if (hasBrand) {
+              verdict = `IP ini tidak bisa diregister langsung karena ${brandName ? `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${brandName}` : "mengandung merek/karakter terkenal"}.`;
+            } else if (isFamous && isFull) {
+              verdict = "IP ini tidak bisa diregister langsung karena menampilkan wajah figur publik secara penuh.";
+            } else if (isFamous) {
+              verdict = "IP ini tidak bisa diregister langsung karena menampilkan figur publik.";
+            } else {
+              verdict = "IP ini tidak bisa diregister langsung karena perlu peninjauan.";
+            }
+          } else if (g === 0) {
+            verdict = "Analisis tidak pasti; kirim untuk peninjauan.";
+          } else {
+            verdict = "IP ini tidak bisa diregister.";
+          }
+
+          display = `Ini ${classification}. ${verdict}`;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

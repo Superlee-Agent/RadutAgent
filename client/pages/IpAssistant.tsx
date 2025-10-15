@@ -586,6 +586,8 @@ const IpAssistant = () => {
           lastAnalysisFactsRef.current = d;
           verification = { label: `Detail`, code: String(g) as any };
           let caption = "";
+          let detectedBrand = "";
+          let detectedCharacter = "";
           try {
             const blob = lastUploadBlobRef.current;
             if (blob) {
@@ -610,14 +612,16 @@ const IpAssistant = () => {
                 const t = typeof j.title === "string" ? j.title : "";
                 const dsc =
                   typeof j.description === "string" ? j.description : "";
-                const br =
-                  typeof j.brand === "string" && j.brand
-                    ? ` — Brand: ${j.brand}`
+                detectedBrand =
+                  typeof j.brand === "string" ? (j.brand || "").trim() : "";
+                detectedCharacter =
+                  typeof j.character === "string"
+                    ? (j.character || "").trim()
                     : "";
-                const ch =
-                  typeof j.character === "string" && j.character
-                    ? ` — Character: ${j.character}`
-                    : "";
+                const br = detectedBrand ? ` — Brand: ${detectedBrand}` : "";
+                const ch = detectedCharacter
+                  ? ` — Character: ${detectedCharacter}`
+                  : "";
                 caption = [t, dsc].filter(Boolean).join(" — ") + (br || ch);
               }
             }

@@ -922,14 +922,14 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
+      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent">
         <AnimatePresence initial={false}>
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
                   key={`user-${index}`}
-                  className="flex justify-end mb-3 px-3 md:px-8"
+                  className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -960,7 +960,7 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`bot-${index}`}
-                  className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -1133,7 +1133,7 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`register-${index}`}
-                  className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -1461,7 +1461,7 @@ const IpAssistant = () => {
             return (
               <motion.div
                 key={`image-${index}`}
-                className="flex justify-end mb-3 px-3 md:px-8"
+                className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}

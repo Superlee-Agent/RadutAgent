@@ -1521,7 +1521,7 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-full border border-[#FF4DA6]/40 bg-transparent text-[#FF4DA6] hover:bg-[#FF4DA6]/10 active:scale-[0.98] transition-all"
+          className="p-2.5 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300"
           onClick={() => uploadRef.current?.click()}
           aria-label="Attach image"
         >

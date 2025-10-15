@@ -1140,7 +1140,7 @@ const IpAssistant = () => {
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
-                      Register This IP
+                      Smart Licensing
                     </div>
                     <div className="mt-1 text-slate-200">
                       {(() => {

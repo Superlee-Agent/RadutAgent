@@ -732,11 +732,20 @@ const IpAssistant = () => {
         }
 
         autoScrollNextRef.current = false;
+        const ctxKey = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        if (lastUploadBlobRef.current) {
+          analysisContextsRef.current.set(ctxKey, {
+            blob: lastUploadBlobRef.current,
+            name: lastUploadNameRef.current || "image.jpg",
+            facts: lastAnalysisFactsRef.current || null,
+          });
+        }
         pushMessage({
           from: "bot",
           text: display,
           verification,
           ts: getCurrentTimestamp(),
+          ctxKey,
         });
       } catch (error: any) {
         console.error("handleImage error", error);

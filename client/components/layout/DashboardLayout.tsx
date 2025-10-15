@@ -71,16 +71,18 @@ export const DashboardLayout = ({
                 }}
                 onClick={() => closeSidebar?.()}
               >
-                <span className={({ isActive }: any) =>
-                  `flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${
-                    isActive
-                      ? "bg-gradient-to-br from-[#FF4DA6]/30 to-[#FF4DA6]/10 border border-[#FF4DA6]/40 text-[#FF4DA6]"
-                      : "bg-slate-800/50 border border-slate-700/50 text-slate-500 group-hover:bg-slate-700/60 group-hover:text-slate-300"
-                  }`
-                }>
-                  <ItemIcon className="h-4 w-4" />
-                </span>
-                <span>{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 ${
+                      isActive
+                        ? "bg-gradient-to-br from-[#FF4DA6]/30 to-[#FF4DA6]/10 border border-[#FF4DA6]/40 text-[#FF4DA6]"
+                        : "bg-slate-800/50 border border-slate-700/50 text-slate-500 group-hover:bg-slate-700/60 group-hover:text-slate-300"
+                    }`}>
+                      <ItemIcon className="h-4 w-4" />
+                    </span>
+                    <span>{item.label}</span>
+                  </>
+                )}
               </NavLink>
             </li>
           );

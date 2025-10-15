@@ -41,7 +41,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "Gambar hasil AI; Tidak ada wajah orang; Tidak ada brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    registrationStatus: "��� IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -575,6 +575,10 @@ const IpAssistant = () => {
         ) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
+          const aiTitle = typeof (data as any).title === "string" ? (data as any).title : "";
+          const aiDesc = typeof (data as any).description === "string" ? (data as any).description : "";
+          lastAnalysisTitleRef.current = aiTitle || (ANSWER_DETAILS[String(g)]?.type ?? "IP Asset");
+          lastAnalysisDescRef.current = aiDesc || summaryFromAnswer(String(g));
           const flags = [
             `AI: ${d.is_ai_generated ? "Ya" : "Tidak"}`,
             `Animasi: ${d.is_animation ? "Ya" : "Tidak"}`,

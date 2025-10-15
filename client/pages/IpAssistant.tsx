@@ -669,24 +669,24 @@ const IpAssistant = () => {
           // Klasifikasi berbasis grup saja (bukan flag mentah), agar konsisten
           let classification = isAnimGroup
             ? isAIGroup
-              ? "Animasi AI"
-              : "Animasi non-AI"
+              ? "AI Animation"
+              : "Non-AI Animation"
             : isAIGroup
-              ? "Gambar AI"
-              : "Foto non-AI";
+              ? "AI Image"
+              : "Non-AI Image";
 
           if (isBrandGroup) {
-            classification += ` dengan ${brandName ? (detectedBrand ? "merek " + brandName : "karakter " + brandName) : "merek/karakter terkenal"}`;
+            classification += ` with ${brandName ? (detectedBrand ? "brand " + brandName : "character " + brandName) : "a famous brand/character"}`;
           } else if (famousFullGroups.includes(g)) {
-            classification += " dengan wajah figur publik penuh";
+            classification += " with full public figure face";
           } else if (famousNotFullGroups.includes(g)) {
-            classification += " dengan figur publik tidak penuh";
+            classification += " with public figure not fully visible";
           } else if (ordinaryFullGroups.includes(g)) {
-            classification += " dengan wajah orang biasa penuh";
+            classification += " with full regular person face";
           } else if (ordinaryNotFullGroups.includes(g)) {
-            classification += " dengan wajah orang biasa tidak penuh";
+            classification += " with regular person not fully visible";
           } else {
-            classification += " tanpa wajah/merek";
+            classification += " without faces/brands";
           }
 
           // Keputusan berbasis grup + licenseSettings
@@ -694,44 +694,44 @@ const IpAssistant = () => {
           if (licenseSettings) {
             if (famousNotFullGroups.includes(g)) {
               verdict =
-                "IP ini bisa diregister karena figur publik tidak terlihat penuh.";
+                "This IP can be registered because the public figure is not fully visible.";
             } else if (ordinaryNotFullGroups.includes(g)) {
               verdict =
-                "IP ini bisa diregister karena wajah tidak terlihat penuh.";
+                "This IP can be registered because the face is not fully visible.";
             } else if (isAnimGroup && !isBrandGroup) {
               verdict =
-                "IP ini bisa diregister karena animasi tanpa merek/karakter.";
+                "This IP can be registered because it's an animation without brand/character.";
             } else if (
               !isBrandGroup &&
               !famousFullGroups.includes(g) &&
               !ordinaryFullGroups.includes(g)
             ) {
               verdict =
-                "IP ini bisa diregister karena tidak menampilkan wajah/merek.";
+                "This IP can be registered because it doesn't show faces/brands.";
             } else {
               verdict =
-                "IP ini bisa diregister karena memenuhi kriteria kebijakan.";
+                "This IP can be registered as it meets policy criteria.";
             }
           } else if (requiresSelfieVerification(g)) {
             verdict =
-              "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+              "This IP cannot be registered directly because selfie verification is required (regular person's full face).";
           } else if (requiresSubmitReview(g)) {
             if (isBrandGroup) {
-              verdict = `IP ini tidak bisa diregister langsung karena ${brandName ? `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${brandName}` : "mengandung merek/karakter terkenal"}.`;
+              verdict = `This IP cannot be registered directly because ${brandName ? `${detectedBrand ? "it contains the brand" : "it contains the character"} ${brandName}` : "it contains a famous brand/character"}.`;
             } else if (famousFullGroups.includes(g)) {
               verdict =
-                "IP ini tidak bisa diregister langsung karena menampilkan wajah figur publik secara penuh.";
+                "This IP cannot be registered directly because it shows a public figure's full face.";
             } else {
               verdict =
-                "IP ini tidak bisa diregister langsung karena perlu peninjauan.";
+                "This IP cannot be registered directly and needs review.";
             }
           } else if (g === 0) {
-            verdict = "Analisis tidak pasti; kirim untuk peninjauan.";
+            verdict = "Analysis inconclusive; please submit for review.";
           } else {
-            verdict = "IP ini tidak bisa diregister.";
+            verdict = "This IP cannot be registered.";
           }
 
-          display = `Ini ${classification}. ${verdict}`;
+          display = `This is ${classification}. ${verdict}`;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

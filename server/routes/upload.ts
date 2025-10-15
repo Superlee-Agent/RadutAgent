@@ -75,17 +75,11 @@ function parseJsonLoose(text: string | null | undefined): any | null {
 }
 
 export const handleUpload: any = [
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "images", maxCount: 12 },
-  ]),
+  upload.single("image"),
   (async (req, res) => {
     try {
-      const files = ([] as Express.Multer.File[])
-        .concat((req.files as any)?.image || [])
-        .concat((req.files as any)?.images || []);
-      if (!files.length) return res.status(400).json({ error: "no_file" });
-      const f = files[0];
+      const f = (req as any).file as Express.Multer.File | undefined;
+      if (!f) return res.status(400).json({ error: "no_file" });
       const base64 = f.buffer.toString("base64");
       const dataUrl = `data:${f.mimetype};base64,${base64}`;
 

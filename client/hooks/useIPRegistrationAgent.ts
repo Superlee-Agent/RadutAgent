@@ -253,7 +253,9 @@ export function useIPRegistrationAgent() {
                           symbol: "IP",
                           decimals: 18,
                         },
-                        rpcUrls: rpcUrl ? [rpcUrl] : ["https://aeneid.storyrpc.io"],
+                        rpcUrls: rpcUrl
+                          ? [rpcUrl]
+                          : ["https://aeneid.storyrpc.io"],
                       },
                     ],
                   });

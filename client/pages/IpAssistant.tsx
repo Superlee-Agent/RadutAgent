@@ -52,8 +52,7 @@ const ANSWER_DETAILS: Record<
 > = {
   "1": {
     type: "AI Generated",
-    notes:
-      "AI-generated image; No human face; No famous brand/character",
+    notes: "AI-generated image; No human face; No famous brand/character",
     registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
@@ -156,8 +155,7 @@ const ANSWER_DETAILS: Record<
   },
   "12": {
     type: "AI Generated (Animation)",
-    notes:
-      "AI-generated 2D/3D animation; No famous brand/character",
+    notes: "AI-generated 2D/3D animation; No famous brand/character",
     registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
@@ -174,8 +172,7 @@ const ANSWER_DETAILS: Record<
   },
   "14": {
     type: "Human Generated (Animation)",
-    notes:
-      "Original non-AI 2D/3D animation; No famous brand/character",
+    notes: "Original non-AI 2D/3D animation; No famous brand/character",
     registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
@@ -184,8 +181,7 @@ const ANSWER_DETAILS: Record<
   },
   "15": {
     type: "Human Generated (Animation)",
-    notes:
-      "Original non-AI 2D/3D animation; Contains famous brand/character",
+    notes: "Original non-AI 2D/3D animation; Contains famous brand/character",
     registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
@@ -280,7 +276,17 @@ const IpAssistant = () => {
     null,
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
-  const [registerEdits, setRegisterEdits] = useState<Record<string, { title: string; description: string; editingTitle: boolean; editingDesc: boolean }>>({});
+  const [registerEdits, setRegisterEdits] = useState<
+    Record<
+      string,
+      {
+        title: string;
+        description: string;
+        editingTitle: boolean;
+        editingDesc: boolean;
+      }
+    >
+  >({});
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -1144,7 +1150,9 @@ const IpAssistant = () => {
                     </div>
                     <div className="mt-1 text-slate-200">
                       {(() => {
-                        const ctxKey = (msg as any).ctxKey as string | undefined;
+                        const ctxKey = (msg as any).ctxKey as
+                          | string
+                          | undefined;
                         const meta = ctxKey ? registerEdits[ctxKey] : undefined;
                         const titleVal = meta?.title ?? msg.title;
                         const descVal = meta?.description ?? msg.description;
@@ -1162,9 +1170,12 @@ const IpAssistant = () => {
                                         ...prev,
                                         [ctxKey]: {
                                           title: e.target.value,
-                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
                                           editingTitle: true,
-                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
                                         },
                                       }));
                                     }}
@@ -1178,10 +1189,14 @@ const IpAssistant = () => {
                                       setRegisterEdits((prev) => ({
                                         ...prev,
                                         [ctxKey]: {
-                                          title: prev[ctxKey]?.title ?? msg.title,
-                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
                                           editingTitle: false,
-                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
                                         },
                                       }));
                                     }}
@@ -1201,9 +1216,12 @@ const IpAssistant = () => {
                                         ...prev,
                                         [ctxKey]: {
                                           title: titleVal,
-                                          description: prev[ctxKey]?.description ?? msg.description,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
                                           editingTitle: true,
-                                          editingDesc: prev[ctxKey]?.editingDesc ?? false,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
                                         },
                                       }));
                                     }}
@@ -1223,9 +1241,11 @@ const IpAssistant = () => {
                                       setRegisterEdits((prev) => ({
                                         ...prev,
                                         [ctxKey]: {
-                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
                                           description: e.target.value,
-                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
                                           editingDesc: true,
                                         },
                                       }));
@@ -1241,9 +1261,13 @@ const IpAssistant = () => {
                                       setRegisterEdits((prev) => ({
                                         ...prev,
                                         [ctxKey]: {
-                                          title: prev[ctxKey]?.title ?? msg.title,
-                                          description: prev[ctxKey]?.description ?? msg.description,
-                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
                                           editingDesc: false,
                                         },
                                       }));
@@ -1254,7 +1278,9 @@ const IpAssistant = () => {
                                 </div>
                               ) : (
                                 <div className="flex items-start gap-2">
-                                  <div className="whitespace-pre-line break-words flex-1">{descVal}</div>
+                                  <div className="whitespace-pre-line break-words flex-1">
+                                    {descVal}
+                                  </div>
                                   <button
                                     type="button"
                                     className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
@@ -1263,9 +1289,11 @@ const IpAssistant = () => {
                                       setRegisterEdits((prev) => ({
                                         ...prev,
                                         [ctxKey]: {
-                                          title: prev[ctxKey]?.title ?? msg.title,
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
                                           description: descVal,
-                                          editingTitle: prev[ctxKey]?.editingTitle ?? false,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
                                           editingDesc: true,
                                         },
                                       }));
@@ -1305,7 +1333,9 @@ const IpAssistant = () => {
                             const v = e.target.value;
                             if (v === "") return setRevShare("");
                             const n = Number(v);
-                            setRevShare(Math.min(100, Math.max(0, isNaN(n) ? 0 : n)));
+                            setRevShare(
+                              Math.min(100, Math.max(0, isNaN(n) ? 0 : n)),
+                            );
                           }}
                           className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
                         />
@@ -1336,10 +1366,19 @@ const IpAssistant = () => {
                           const blob = ctx?.blob;
                           if (!blob)
                             return alert("No uploaded image to register.");
-                          const ctxKey2 = (msg as any).ctxKey as string | undefined;
-                          const editedMeta = ctxKey2 ? registerEdits[ctxKey2] : undefined;
-                          const displayTitle = (editedMeta?.title && editedMeta.title.trim().length > 0 ? editedMeta.title : msg.title) || `IP Asset`;
-                          const displayDesc = editedMeta?.description ?? msg.description;
+                          const ctxKey2 = (msg as any).ctxKey as
+                            | string
+                            | undefined;
+                          const editedMeta = ctxKey2
+                            ? registerEdits[ctxKey2]
+                            : undefined;
+                          const displayTitle =
+                            (editedMeta?.title &&
+                            editedMeta.title.trim().length > 0
+                              ? editedMeta.title
+                              : msg.title) || `IP Asset`;
+                          const displayDesc =
+                            editedMeta?.description ?? msg.description;
                           const file = new File(
                             [blob],
                             ctx?.name || `image-${Date.now()}.jpg`,
@@ -1349,12 +1388,19 @@ const IpAssistant = () => {
                             ? undefined
                             : (window as any).ethereum;
                           try {
-                            if (!guestMode && wallets && wallets[0]?.getEthereumProvider) {
-                              ethProvider = await wallets[0].getEthereumProvider();
+                            if (
+                              !guestMode &&
+                              wallets &&
+                              wallets[0]?.getEthereumProvider
+                            ) {
+                              ethProvider =
+                                await wallets[0].getEthereumProvider();
                             }
                           } catch {}
-                          const mf = mintingFee === "" ? undefined : Number(mintingFee);
-                          const rs = revShare === "" ? undefined : Number(revShare);
+                          const mf =
+                            mintingFee === "" ? undefined : Number(mintingFee);
+                          const rs =
+                            revShare === "" ? undefined : Number(revShare);
                           await executeRegister(
                             groupNum,
                             file,
@@ -1567,7 +1613,8 @@ const IpAssistant = () => {
                     Group {activeDetail}
                   </p>
                   <h2 className="mt-1 text-lg font-semibold text-slate-900">
-                    {ANSWER_DETAILS[activeDetail ?? ""]?.type ?? "Group details"}
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.type ??
+                      "Group details"}
                   </h2>
                 </div>
                 <button
@@ -1634,7 +1681,9 @@ const IpAssistant = () => {
                   </dl>
                 </>
               ) : (
-                <p className="mt-4 text-sm text-slate-500">Detail data not found.</p>
+                <p className="mt-4 text-sm text-slate-500">
+                  Detail data not found.
+                </p>
               )}
             </motion.div>
           </motion.div>

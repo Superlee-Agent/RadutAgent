@@ -12,13 +12,14 @@ import {
   PILFlavor,
   WIP_TOKEN_ADDRESS,
 } from "@story-protocol/core-sdk";
-import { createWalletClient, custom, parseEther } from "viem";
+import { createWalletClient, custom, parseEther, http } from "viem";
 import {
   getLicenseSettingsByGroup,
   requiresSelfieVerification,
   requiresSubmitReview,
   isAiGeneratedGroup,
 } from "@/lib/groupLicense";
+import { privateKeyToAccount } from "viem/accounts";
 
 export type RegisterState = {
   status:
@@ -142,6 +143,20 @@ export function useIPRegistrationAgent() {
             if (addrs && addrs[0]) creatorAddr = String(addrs[0]);
           }
         } catch {}
+        if (!creatorAddr) {
+          try {
+            const guestPk = (import.meta as any).env?.VITE_GUEST_PRIVATE_KEY;
+            if (guestPk) {
+              const normalized = String(guestPk).startsWith("0x")
+                ? String(guestPk)
+                : `0x${String(guestPk)}`;
+              const guestAccount = privateKeyToAccount(
+                normalized as `0x${string}`,
+              );
+              creatorAddr = guestAccount.address;
+            }
+          } catch {}
+        }
         const ipMetadata = {
           name: intent?.title || file.name,
           title: intent?.title || file.name,
@@ -209,61 +224,77 @@ export function useIPRegistrationAgent() {
           },
         ];
 
-        // Init wallet client via Privy provider
+        // Init wallet client via Privy provider if available, otherwise fallback to guest key
         const provider = ethereumProvider || (globalThis as any).ethereum;
-        if (!provider)
-          throw new Error("No EIP-1193 provider found. Connect wallet first.");
-        try {
-          const chainIdHex: string = await provider.request({
-            method: "eth_chainId",
-          });
-          if (chainIdHex?.toLowerCase() !== "0x523") {
-            try {
-              await provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x523" }],
-              });
-            } catch (e) {
-              const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
-              try {
-                await provider.request({
-                  method: "wallet_addEthereumChain",
-                  params: [
-                    {
-                      chainId: "0x523",
-                      chainName: "Aeneid",
-                      nativeCurrency: {
-                        name: "IP",
-                        symbol: "IP",
-                        decimals: 18,
-                      },
-                      rpcUrls: rpcUrl
-                        ? [rpcUrl]
-                        : ["https://aeneid.storyrpc.io"],
-                    },
-                  ],
-                });
-              } catch {}
+        let addr: string | undefined;
+        let story: any;
+        if (provider) {
+          try {
+            const chainIdHex: string = await provider.request({
+              method: "eth_chainId",
+            });
+            if (chainIdHex?.toLowerCase() !== "0x523") {
               try {
                 await provider.request({
                   method: "wallet_switchEthereumChain",
                   params: [{ chainId: "0x523" }],
                 });
-              } catch {}
+              } catch (e) {
+                const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
+                try {
+                  await provider.request({
+                    method: "wallet_addEthereumChain",
+                    params: [
+                      {
+                        chainId: "0x523",
+                        chainName: "Aeneid",
+                        nativeCurrency: {
+                          name: "IP",
+                          symbol: "IP",
+                          decimals: 18,
+                        },
+                        rpcUrls: rpcUrl ? [rpcUrl] : ["https://aeneid.storyrpc.io"],
+                      },
+                    ],
+                  });
+                } catch {}
+                try {
+                  await provider.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: "0x523" }],
+                  });
+                } catch {}
+              }
             }
-          }
-        } catch {}
-        const walletClient = createWalletClient({
-          transport: custom(provider),
-        });
-        const [addr] = await walletClient.getAddresses();
-        if (!addr) throw new Error("No wallet address available");
-
-        const story = StoryClient.newClient({
-          account: addr as any,
-          transport: custom(provider),
-          chainId: "aeneid",
-        });
+          } catch {}
+          const walletClient = createWalletClient({
+            transport: custom(provider),
+          });
+          const [a] = await walletClient.getAddresses();
+          if (!a) throw new Error("No wallet address available");
+          addr = a as string;
+          story = StoryClient.newClient({
+            account: addr as any,
+            transport: custom(provider),
+            chainId: "aeneid",
+          });
+        } else {
+          const guestPk = (import.meta as any).env?.VITE_GUEST_PRIVATE_KEY;
+          if (!guestPk)
+            throw new Error(
+              "No wallet connected and guest key not configured (VITE_GUEST_PRIVATE_KEY).",
+            );
+          const normalized = String(guestPk).startsWith("0x")
+            ? String(guestPk)
+            : `0x${String(guestPk)}`;
+          const guestAccount = privateKeyToAccount(normalized as `0x${string}`);
+          addr = guestAccount.address;
+          story = StoryClient.newClient({
+            account: guestAccount as any,
+            transport: http(rpcUrl),
+            chainId: "aeneid",
+          });
+        }
 
         const result: any =
           await story.ipAsset.mintAndRegisterIpAssetWithPilTerms({

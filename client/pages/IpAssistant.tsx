@@ -16,6 +16,7 @@ type BotMessage = {
   text: string;
   ts?: string;
   verification?: { label: string; code: string } | string | null;
+  ctxKey?: string;
 };
 
 export type Message =

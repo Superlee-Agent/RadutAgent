@@ -151,7 +151,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated (Animation)",
     notes:
       "Gambar animasi 2D/3D hasil AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "�� IP bisa diregistrasi",
+    registrationStatus: "✅ IP bisa diregistrasi",
     action: "-",
     smartLicensing:
       "Commercial Remix License (minting fee & revenue share manual)",
@@ -240,8 +240,6 @@ const IpAssistant = () => {
   const autoScrollNextRef = useRef(true);
   const lastUploadBlobRef = useRef<Blob | null>(null);
   const lastUploadNameRef = useRef<string>("");
-  const lastAnalysisTitleRef = useRef<string>("");
-  const lastAnalysisDescRef = useRef<string>("");
   const lastAnalysisFactsRef = useRef<Record<string, any> | null>(null);
 
   const { ready, authenticated, login, logout, user } = usePrivy();

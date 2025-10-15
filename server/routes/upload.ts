@@ -38,21 +38,80 @@ function determineGroup(result: AnalysisFlags): number {
     has_known_brand_or_character,
   } = result;
 
-  if (is_ai_generated && !has_human_face && !has_known_brand_or_character && !is_animation) return 1;
-  if (is_ai_generated && has_known_brand_or_character && !has_human_face) return 2;
-  if (is_ai_generated && has_human_face && is_famous_person && is_full_face_visible) return 3;
-  if (is_ai_generated && has_human_face && is_famous_person && !is_full_face_visible) return 4;
-  if (is_ai_generated && has_human_face && !is_famous_person && is_full_face_visible) return 5;
-  if (is_ai_generated && has_human_face && !is_famous_person && !is_full_face_visible) return 6;
+  if (
+    is_ai_generated &&
+    !has_human_face &&
+    !has_known_brand_or_character &&
+    !is_animation
+  )
+    return 1;
+  if (is_ai_generated && has_known_brand_or_character && !has_human_face)
+    return 2;
+  if (
+    is_ai_generated &&
+    has_human_face &&
+    is_famous_person &&
+    is_full_face_visible
+  )
+    return 3;
+  if (
+    is_ai_generated &&
+    has_human_face &&
+    is_famous_person &&
+    !is_full_face_visible
+  )
+    return 4;
+  if (
+    is_ai_generated &&
+    has_human_face &&
+    !is_famous_person &&
+    is_full_face_visible
+  )
+    return 5;
+  if (
+    is_ai_generated &&
+    has_human_face &&
+    !is_famous_person &&
+    !is_full_face_visible
+  )
+    return 6;
   if (!is_ai_generated && has_known_brand_or_character) return 7;
-  if (!is_ai_generated && has_human_face && is_famous_person && is_full_face_visible) return 8;
-  if (!is_ai_generated && has_human_face && is_famous_person && !is_full_face_visible) return 9;
-  if (!is_ai_generated && has_human_face && !is_famous_person && is_full_face_visible) return 10;
-  if (!is_ai_generated && has_human_face && !is_famous_person && !is_full_face_visible) return 11;
-  if (is_ai_generated && is_animation && !has_known_brand_or_character) return 12;
-  if (is_ai_generated && is_animation && has_known_brand_or_character) return 13;
-  if (!is_ai_generated && is_animation && !has_known_brand_or_character) return 14;
-  if (!is_ai_generated && is_animation && has_known_brand_or_character) return 15;
+  if (
+    !is_ai_generated &&
+    has_human_face &&
+    is_famous_person &&
+    is_full_face_visible
+  )
+    return 8;
+  if (
+    !is_ai_generated &&
+    has_human_face &&
+    is_famous_person &&
+    !is_full_face_visible
+  )
+    return 9;
+  if (
+    !is_ai_generated &&
+    has_human_face &&
+    !is_famous_person &&
+    is_full_face_visible
+  )
+    return 10;
+  if (
+    !is_ai_generated &&
+    has_human_face &&
+    !is_famous_person &&
+    !is_full_face_visible
+  )
+    return 11;
+  if (is_ai_generated && is_animation && !has_known_brand_or_character)
+    return 12;
+  if (is_ai_generated && is_animation && has_known_brand_or_character)
+    return 13;
+  if (!is_ai_generated && is_animation && !has_known_brand_or_character)
+    return 14;
+  if (!is_ai_generated && is_animation && has_known_brand_or_character)
+    return 15;
 
   return 0;
 }
@@ -106,12 +165,17 @@ export const handleUpload: any = [
 
       const extractText = (r: any) => {
         if (!r) return "";
-        if (typeof r.output_text === "string" && r.output_text.trim()) return r.output_text;
+        if (typeof r.output_text === "string" && r.output_text.trim())
+          return r.output_text;
         if (Array.isArray(r.output) && r.output.length > 0) {
           for (const o of r.output) {
             if (o?.content && Array.isArray(o.content)) {
               for (const c of o.content) {
-                if ((c.type === "output_text" || c.type === "text") && typeof c.text === "string") return c.text;
+                if (
+                  (c.type === "output_text" || c.type === "text") &&
+                  typeof c.text === "string"
+                )
+                  return c.text;
               }
             }
             if (typeof o?.text === "string") return o.text;
@@ -138,7 +202,9 @@ export const handleUpload: any = [
         ),
       };
       // Enforce logical consistency
-      flags.is_full_face_visible = !!(flags.has_human_face && flags.is_full_face_visible);
+      flags.is_full_face_visible = !!(
+        flags.has_human_face && flags.is_full_face_visible
+      );
 
       const group = determineGroup(flags);
 

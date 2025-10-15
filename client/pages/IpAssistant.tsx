@@ -23,7 +23,6 @@ export type ChatSession = {
   ts: string;
 };
 
-
 const ANSWER_DETAILS: Record<
   string,
   {
@@ -55,8 +54,7 @@ const ANSWER_DETAILS: Record<
   },
   "3": {
     type: "AI Generated",
-    notes:
-      "Gambar hasil AI; Wajah orang terkenal; wajah terlihat full",
+    notes: "Gambar hasil AI; Wajah orang terkenal; wajah terlihat full",
     registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
@@ -103,8 +101,7 @@ const ANSWER_DETAILS: Record<
   },
   "8": {
     type: "Human Generated",
-    notes:
-      "Gambar asli non AI; Wajah orang terkenal; wajah terlihat full",
+    notes: "Gambar asli non AI; Wajah orang terkenal; wajah terlihat full",
     registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
@@ -153,8 +150,7 @@ const ANSWER_DETAILS: Record<
   },
   "13": {
     type: "AI Generated (Animation)",
-    notes:
-      "Gambar animasi 2D/3D hasil AI; Mengandung brand/karakter terkenal",
+    notes: "Gambar animasi 2D/3D hasil AI; Mengandung brand/karakter terkenal",
     registrationStatus: "❌ IP tidak bisa diregistrasi",
     action: "Submit Review",
     smartLicensing: "-",
@@ -548,7 +544,10 @@ const IpAssistant = () => {
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (typeof (data as any)?.group === "number" && (data as any)?.details) {
+        if (
+          typeof (data as any)?.group === "number" &&
+          (data as any)?.details
+        ) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
           const flags = [
@@ -573,7 +572,6 @@ const IpAssistant = () => {
           verification,
           ts: getCurrentTimestamp(),
         });
-
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
@@ -803,8 +801,12 @@ const IpAssistant = () => {
                         </span>
                         {(() => {
                           const codeStr = String(verificationObject.code);
-                          const info = ANSWER_DETAILS[codeStr as keyof typeof ANSWER_DETAILS];
-                          const canRegister = !!info && info.registrationStatus.includes("✅");
+                          const info =
+                            ANSWER_DETAILS[
+                              codeStr as keyof typeof ANSWER_DETAILS
+                            ];
+                          const canRegister =
+                            !!info && info.registrationStatus.includes("✅");
                           if (!canRegister) return null;
                           return (
                             <>

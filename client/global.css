@@ -165,14 +165,17 @@ html {
   margin-bottom: 0;
 }
 .user {
-  background: var(--primary-foreground);
+  background: linear-gradient(135deg, #FF4DA6 0%, #ff77c2 100%);
   align-self: flex-end;
   float: right;
+  box-shadow: 0 8px 24px rgba(255, 77, 166, 0.3);
 }
 .bot {
-  background: #f8fafc;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 77, 166, 0.2);
   align-self: flex-start;
   float: left;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 .user-img img {
   max-width: 100px;

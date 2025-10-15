@@ -234,6 +234,8 @@ const IpAssistant = () => {
   const autoScrollNextRef = useRef(true);
   const lastUploadBlobRef = useRef<Blob | null>(null);
   const lastUploadNameRef = useRef<string>("");
+  const lastAnalysisTitleRef = useRef<string>("");
+  const lastAnalysisDescRef = useRef<string>("");
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();

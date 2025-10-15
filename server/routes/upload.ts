@@ -87,7 +87,7 @@ export const handleUpload: any = [
       const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
       const instruction =
-        "You are an AI image analyzer. Return ONLY strict minified JSON with keys: is_ai_generated, is_animation, has_human_face, is_full_face_visible, is_famous_person, has_known_brand_or_character. Use true/false booleans. No extra text.";
+        "You are an AI image analyzer. Return ONLY strict minified JSON with keys: is_ai_generated, is_animation, has_human_face, is_full_face_visible, is_famous_person, has_known_brand_or_character. Definitions: is_full_face_visible = TRUE only if a single human face is clearly visible facing the camera with both eyes, nose, mouth and chin unobstructed, and the full head (forehead to chin) is not cropped; side/angle >45°, heavy occlusion (mask, big sunglasses obscuring eyes), or any crop that cuts forehead/chin/ears => FALSE. If has_human_face is FALSE, is_full_face_visible must be FALSE. Use true/false booleans only. No extra text.";
 
       const response: any = await client.responses.create({
         model: MODEL,
@@ -137,6 +137,8 @@ export const handleUpload: any = [
           (parsed as any).has_known_brand_or_character,
         ),
       };
+      // Enforce logical consistency
+      flags.is_full_face_visible = !!(flags.has_human_face && flags.is_full_face_visible);
 
       const group = determineGroup(flags);
 

@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleAnalyze } from "./routes/analyze.js";
 import { handleDeterministicRoute } from "./routes/router.js";
 import { handleUpload } from "./routes/upload.js";
 
@@ -22,12 +21,6 @@ export function createServer() {
 
   // Deterministic router API (POST /api)
   app.post("/api", handleDeterministicRoute);
-
-  // Analyze endpoint (POST /api/analyze) - multer middleware + handler
-  app.post(
-    "/api/analyze",
-    ...(Array.isArray(handleAnalyze) ? handleAnalyze : [handleAnalyze]),
-  );
 
   // Simple upload-and-classify endpoint (POST /api/upload)
   app.post(

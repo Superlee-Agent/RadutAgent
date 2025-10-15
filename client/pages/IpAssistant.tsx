@@ -801,6 +801,32 @@ const IpAssistant = () => {
                         >
                           {verificationObject.label}
                         </span>
+                        {(() => {
+                          const codeStr = String(verificationObject.code);
+                          const info = ANSWER_DETAILS[codeStr as keyof typeof ANSWER_DETAILS];
+                          const canRegister = !!info && info.registrationStatus.includes("✅");
+                          if (!canRegister) return null;
+                          return (
+                            <>
+                              {" "}
+                              <span className="mx-1 text-slate-400">•</span>
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setActiveDetail(codeStr)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    setActiveDetail(codeStr);
+                                  }
+                                }}
+                                className="cursor-pointer text-[#FF4DA6] font-semibold underline underline-offset-2 decoration-[#FF4DA6]/60 outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 rounded"
+                              >
+                                Register
+                              </span>
+                            </>
+                          );
+                        })()}
                       </div>
                     ) : verificationText ? (
                       <div className="mt-2 text-xs text-slate-300">

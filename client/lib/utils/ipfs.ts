@@ -1,4 +1,4 @@
-export type IpfsUploadResult = { cid: string; url: string };
+export type IpfsUploadResult = { cid: string; url: string; https?: string };
 
 export async function uploadFile(file: File | Blob): Promise<IpfsUploadResult> {
   const form = new FormData();

@@ -1554,7 +1554,7 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none p-3 rounded-2xl border border-white/20 bg-white/5 text-white placeholder:text-white/50 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/40 transition-shadow duration-200 backdrop-blur"
+          className="flex-1 resize-none px-4 py-3 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[48px] max-h-36 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium disabled:opacity-50"
         />
 
         <button

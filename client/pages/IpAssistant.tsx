@@ -87,7 +87,7 @@ const ANSWER_DETAILS: Record<
     action:
       "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) ��� jika verifikasi sukses",
+      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
     aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
   },
   "6": {
@@ -630,7 +630,33 @@ const IpAssistant = () => {
           if (caption && caption.length > 140) {
             caption = caption.slice(0, 139) + "…";
           }
-          display = caption || summaryFromAnswer(String(g));
+          // Build eligibility message in Bahasa Indonesia
+          let eligibilityMessage = "";
+          const licenseSettings = getLicenseSettingsByGroup(g);
+          if (licenseSettings) {
+            eligibilityMessage = "Kelayakan IP: ✅ Bisa diregistrasi langsung.";
+          } else if (requiresSelfieVerification(g)) {
+            eligibilityMessage =
+              "Kelayakan IP: ⛔ Tidak bisa langsung. Alasan: perlu verifikasi selfie karena menampilkan wajah orang biasa secara penuh.";
+          } else if (requiresSubmitReview(g)) {
+            let reason = "perlu peninjauan manual.";
+            try {
+              const facts = d || {};
+              if (facts.has_known_brand_or_character) {
+                reason = "mengandung merek/karakter terkenal.";
+              } else if (facts.is_famous_person && facts.is_full_face_visible) {
+                reason = "menampilkan wajah figur publik secara penuh.";
+              } else if (facts.is_famous_person) {
+                reason = "menampilkan figur publik.";
+              }
+            } catch {}
+            eligibilityMessage = `Kelayakan IP: ⛔ Tidak bisa langsung. Alasan: ${reason}`;
+          } else {
+            eligibilityMessage = "Kelayakan IP: ⛔ Tidak bisa diregistrasi.";
+          }
+
+          const baseText = caption || summaryFromAnswer(String(g));
+          display = baseText ? `${baseText}\n${eligibilityMessage}` : eligibilityMessage;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

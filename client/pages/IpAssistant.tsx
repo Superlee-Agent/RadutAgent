@@ -52,26 +52,25 @@ const ANSWER_DETAILS: Record<
 > = {
   "1": {
     type: "AI Generated",
-    notes:
-      "Gambar hasil AI; Tidak ada wajah orang; Tidak ada brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    notes: "AI-generated image; No human face; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "2": {
     type: "AI Generated",
-    notes: "Gambar hasil AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated image; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "3": {
     type: "AI Generated",
-    notes: "Gambar hasil AI; Wajah orang terkenal; wajah terlihat full",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated image; Famous person's face; full face visible",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -79,46 +78,46 @@ const ANSWER_DETAILS: Record<
   "4": {
     type: "AI Generated",
     notes:
-      "Gambar hasil AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "AI-generated image; Famous person's face; not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "5": {
     type: "AI Generated",
     notes:
-      "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
-    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+      "AI-generated image; Regular person's face (not famous); full face visible",
+    registrationStatus: "❌ Cannot be registered directly",
     action:
-      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+      "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "6": {
     type: "AI Generated",
     notes:
       "Gambar hasil AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "7": {
     type: "Human Generated",
-    notes: "Gambar asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "Original non-AI image; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "8": {
     type: "Human Generated",
-    notes: "Gambar asli non AI; Wajah orang terkenal; wajah terlihat full",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "Original non-AI image; Famous person's face; full face visible",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -126,67 +125,64 @@ const ANSWER_DETAILS: Record<
   "9": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang terkenal; wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "Original non-AI image; Famous person's face; not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah terlihat full",
-    registrationStatus: "❌ Tidak bisa diregistrasi langsung",
+      "Original non-AI image; Regular person's face (not famous); full face visible",
+    registrationStatus: "❌ Cannot be registered directly",
     action:
-      "Take Selfie Photo → Jika verifikasi selfie sukses: IP bisa diregistrasi; jika gagal: Submit Review",
+      "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual) — jika verifikasi sukses",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "11": {
     type: "Human Generated",
     notes:
-      "Gambar asli non AI; Wajah orang biasa (tidak terkenal); wajah tidak terlihat full (tercrop)",
-    registrationStatus: "✅ IP bisa diregistrasi",
+      "Original non-AI image; Regular person's face (not famous); not fully visible (cropped)",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "12": {
     type: "AI Generated (Animation)",
-    notes:
-      "Gambar animasi 2D/3D hasil AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "�� IP bisa diregistrasi",
+    notes: "AI-generated 2D/3D animation; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "❌ Tidak diizinkan (fixed, tidak bisa diubah)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "❌ Not allowed (fixed)",
   },
   "13": {
     type: "AI Generated (Animation)",
-    notes: "Gambar animasi 2D/3D hasil AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "AI-generated 2D/3D animation; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
   },
   "14": {
     type: "Human Generated (Animation)",
-    notes:
-      "Gambar animasi 2D/3D asli non AI; Tidak mengandung brand/karakter terkenal",
-    registrationStatus: "✅ IP bisa diregistrasi",
+    notes: "Original non-AI 2D/3D animation; No famous brand/character",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
-      "Commercial Remix License (minting fee & revenue share manual)",
-    aiTraining: "✅ Diizinkan (manual setting oleh user)",
+      "Commercial Remix License (manual minting fee & revenue share)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "15": {
     type: "Human Generated (Animation)",
-    notes:
-      "Gambar animasi 2D/3D asli non AI; Mengandung brand/karakter terkenal",
-    registrationStatus: "❌ IP tidak bisa diregistrasi",
+    notes: "Original non-AI 2D/3D animation; Contains famous brand/character",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -273,12 +269,24 @@ const IpAssistant = () => {
 
   const { registerState, executeRegister, resetRegister } =
     useIPRegistrationAgent();
-  const [mintingFee, setMintingFee] = useState<number>(0);
-  const [revShare, setRevShare] = useState<number>(0);
+  const [mintingFee, setMintingFee] = useState<number | "">("");
+  const [revShare, setRevShare] = useState<number | "">("");
   const [aiTrainingManual, setAiTrainingManual] = useState<boolean>(true);
   const [loadingRegisterFor, setLoadingRegisterFor] = useState<string | null>(
     null,
   );
+  const [guestMode, setGuestMode] = useState<boolean>(false);
+  const [registerEdits, setRegisterEdits] = useState<
+    Record<
+      string,
+      {
+        title: string;
+        description: string;
+        editingTitle: boolean;
+        editingDesc: boolean;
+      }
+    >
+  >({});
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -291,8 +299,8 @@ const IpAssistant = () => {
 
   useEffect(() => {
     resetRegister();
-    setMintingFee(0);
-    setRevShare(0);
+    setMintingFee("");
+    setRevShare("");
     setAiTrainingManual(true);
   }, [activeDetail, resetRegister]);
 
@@ -667,24 +675,24 @@ const IpAssistant = () => {
           // Klasifikasi berbasis grup saja (bukan flag mentah), agar konsisten
           let classification = isAnimGroup
             ? isAIGroup
-              ? "Animasi AI"
-              : "Animasi non-AI"
+              ? "AI Animation"
+              : "Non-AI Animation"
             : isAIGroup
-              ? "Gambar AI"
-              : "Foto non-AI";
+              ? "AI Image"
+              : "Non-AI Image";
 
           if (isBrandGroup) {
-            classification += ` dengan ${brandName ? (detectedBrand ? "merek " + brandName : "karakter " + brandName) : "merek/karakter terkenal"}`;
+            classification += ` with ${brandName ? (detectedBrand ? "brand " + brandName : "character " + brandName) : "a famous brand/character"}`;
           } else if (famousFullGroups.includes(g)) {
-            classification += " dengan wajah figur publik penuh";
+            classification += " with full public figure face";
           } else if (famousNotFullGroups.includes(g)) {
-            classification += " dengan figur publik tidak penuh";
+            classification += " with public figure not fully visible";
           } else if (ordinaryFullGroups.includes(g)) {
-            classification += " dengan wajah orang biasa penuh";
+            classification += " with full regular person face";
           } else if (ordinaryNotFullGroups.includes(g)) {
-            classification += " dengan wajah orang biasa tidak penuh";
+            classification += " with regular person not fully visible";
           } else {
-            classification += " tanpa wajah/merek";
+            classification += " without faces/brands";
           }
 
           // Keputusan berbasis grup + licenseSettings
@@ -692,44 +700,44 @@ const IpAssistant = () => {
           if (licenseSettings) {
             if (famousNotFullGroups.includes(g)) {
               verdict =
-                "IP ini bisa diregister karena figur publik tidak terlihat penuh.";
+                "This IP can be registered because the public figure is not fully visible.";
             } else if (ordinaryNotFullGroups.includes(g)) {
               verdict =
-                "IP ini bisa diregister karena wajah tidak terlihat penuh.";
+                "This IP can be registered because the face is not fully visible.";
             } else if (isAnimGroup && !isBrandGroup) {
               verdict =
-                "IP ini bisa diregister karena animasi tanpa merek/karakter.";
+                "This IP can be registered because it's an animation without brand/character.";
             } else if (
               !isBrandGroup &&
               !famousFullGroups.includes(g) &&
               !ordinaryFullGroups.includes(g)
             ) {
               verdict =
-                "IP ini bisa diregister karena tidak menampilkan wajah/merek.";
+                "This IP can be registered because it doesn't show faces/brands.";
             } else {
               verdict =
-                "IP ini bisa diregister karena memenuhi kriteria kebijakan.";
+                "This IP can be registered as it meets policy criteria.";
             }
           } else if (requiresSelfieVerification(g)) {
             verdict =
-              "IP ini tidak bisa diregister langsung karena perlu verifikasi selfie (wajah orang biasa terlihat penuh).";
+              "This IP cannot be registered directly because selfie verification is required (regular person's full face).";
           } else if (requiresSubmitReview(g)) {
             if (isBrandGroup) {
-              verdict = `IP ini tidak bisa diregister langsung karena ${brandName ? `${detectedBrand ? "mengandung merek" : "mengandung karakter"} ${brandName}` : "mengandung merek/karakter terkenal"}.`;
+              verdict = `This IP cannot be registered directly because ${brandName ? `${detectedBrand ? "it contains the brand" : "it contains the character"} ${brandName}` : "it contains a famous brand/character"}.`;
             } else if (famousFullGroups.includes(g)) {
               verdict =
-                "IP ini tidak bisa diregister langsung karena menampilkan wajah figur publik secara penuh.";
+                "This IP cannot be registered directly because it shows a public figure's full face.";
             } else {
               verdict =
-                "IP ini tidak bisa diregister langsung karena perlu peninjauan.";
+                "This IP cannot be registered directly and needs review.";
             }
           } else if (g === 0) {
-            verdict = "Analisis tidak pasti; kirim untuk peninjauan.";
+            verdict = "Analysis inconclusive; please submit for review.";
           } else {
-            verdict = "IP ini tidak bisa diregister.";
+            verdict = "This IP cannot be registered.";
           }
 
-          display = `Ini ${classification}. ${verdict}`;
+          display = `This is ${classification}. ${verdict}`;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";
@@ -881,14 +889,29 @@ const IpAssistant = () => {
           {connectedAddressLabel}
         </span>
       ) : null}
-      <button
-        type="button"
-        onClick={handleWalletButtonClick}
-        disabled={walletButtonDisabled}
-        className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {walletButtonText}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-pressed={guestMode}
+          onClick={() => setGuestMode((v) => !v)}
+          className={
+            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 border " +
+            (guestMode
+              ? "bg-[#FF4DA6] text-white border-[#FF4DA6] hover:bg-[#ff77c2]"
+              : "text-[#FF4DA6] border-[#FF4DA6]/50 hover:bg-[#FF4DA6]/15")
+          }
+        >
+          Guest
+        </button>
+        <button
+          type="button"
+          onClick={handleWalletButtonClick}
+          disabled={walletButtonDisabled}
+          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {walletButtonText}
+        </button>
+      </div>
     </>
   );
 
@@ -899,14 +922,14 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 py-6 flex-1 overflow-y-auto bg-transparent">
+      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent">
         <AnimatePresence initial={false}>
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
                   key={`user-${index}`}
-                  className="flex justify-end mb-3 px-3 md:px-8"
+                  className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -937,7 +960,7 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`bot-${index}`}
-                  className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -1110,7 +1133,7 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`register-${index}`}
-                  className="flex items-start mb-2 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
@@ -1123,13 +1146,167 @@ const IpAssistant = () => {
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
-                      Register This IP
+                      Smart Licensing
                     </div>
                     <div className="mt-1 text-slate-200">
-                      <div className="mt-1 font-medium">{msg.title}</div>
-                      <div className="mt-1 text-sm whitespace-pre-line">
-                        {msg.description}
-                      </div>
+                      {(() => {
+                        const ctxKey = (msg as any).ctxKey as
+                          | string
+                          | undefined;
+                        const meta = ctxKey ? registerEdits[ctxKey] : undefined;
+                        const titleVal = meta?.title ?? msg.title;
+                        const descVal = meta?.description ?? msg.description;
+                        return (
+                          <>
+                            <div className="mt-1 font-medium flex items-center gap-2">
+                              {meta?.editingTitle ? (
+                                <>
+                                  <input
+                                    type="text"
+                                    value={titleVal}
+                                    onChange={(e) => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: e.target.value,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
+                                          editingTitle: true,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                    className="min-w-0 flex-1 rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                  />
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
+                                          editingTitle: false,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Done
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="truncate">{titleVal}</span>
+                                  <button
+                                    type="button"
+                                    className="ml-1 text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title: titleVal,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
+                                          editingTitle: true,
+                                          editingDesc:
+                                            prev[ctxKey]?.editingDesc ?? false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                            <div className="mt-1 text-sm whitespace-pre-line">
+                              {meta?.editingDesc ? (
+                                <div className="flex items-start gap-2">
+                                  <textarea
+                                    value={descVal}
+                                    onChange={(e) => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description: e.target.value,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: true,
+                                        },
+                                      }));
+                                    }}
+                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    rows={3}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent mt-1"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description:
+                                            prev[ctxKey]?.description ??
+                                            msg.description,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: false,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Done
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-start gap-2">
+                                  <div className="whitespace-pre-line break-words flex-1">
+                                    {descVal}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    className="text-xs text-[#FF4DA6] hover:underline border-0 bg-transparent"
+                                    onClick={() => {
+                                      if (!ctxKey) return;
+                                      setRegisterEdits((prev) => ({
+                                        ...prev,
+                                        [ctxKey]: {
+                                          title:
+                                            prev[ctxKey]?.title ?? msg.title,
+                                          description: descVal,
+                                          editingTitle:
+                                            prev[ctxKey]?.editingTitle ?? false,
+                                          editingDesc: true,
+                                        },
+                                      }));
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <label className="text-sm text-slate-300">
@@ -1137,10 +1314,11 @@ const IpAssistant = () => {
                         <input
                           type="number"
                           min={0}
-                          value={mintingFee}
-                          onChange={(e) =>
-                            setMintingFee(Number(e.target.value) || 0)
-                          }
+                          value={mintingFee === "" ? "" : mintingFee}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setMintingFee(v === "" ? "" : Number(v));
+                          }}
                           className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
                         />
                       </label>
@@ -1150,15 +1328,15 @@ const IpAssistant = () => {
                           type="number"
                           min={0}
                           max={100}
-                          value={revShare}
-                          onChange={(e) =>
+                          value={revShare === "" ? "" : revShare}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === "") return setRevShare("");
+                            const n = Number(v);
                             setRevShare(
-                              Math.min(
-                                100,
-                                Math.max(0, Number(e.target.value) || 0),
-                              ),
-                            )
-                          }
+                              Math.min(100, Math.max(0, isNaN(n) ? 0 : n)),
+                            );
+                          }}
                           className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
                         />
                       </label>
@@ -1188,26 +1366,48 @@ const IpAssistant = () => {
                           const blob = ctx?.blob;
                           if (!blob)
                             return alert("No uploaded image to register.");
-                          const displayTitle = msg.title || `IP Asset`;
+                          const ctxKey2 = (msg as any).ctxKey as
+                            | string
+                            | undefined;
+                          const editedMeta = ctxKey2
+                            ? registerEdits[ctxKey2]
+                            : undefined;
+                          const displayTitle =
+                            (editedMeta?.title &&
+                            editedMeta.title.trim().length > 0
+                              ? editedMeta.title
+                              : msg.title) || `IP Asset`;
+                          const displayDesc =
+                            editedMeta?.description ?? msg.description;
                           const file = new File(
                             [blob],
                             ctx?.name || `image-${Date.now()}.jpg`,
                             { type: blob.type || "image/jpeg" },
                           );
-                          let ethProvider: any = (window as any).ethereum;
+                          let ethProvider: any = guestMode
+                            ? undefined
+                            : (window as any).ethereum;
                           try {
-                            if (wallets && wallets[0]?.getEthereumProvider) {
+                            if (
+                              !guestMode &&
+                              wallets &&
+                              wallets[0]?.getEthereumProvider
+                            ) {
                               ethProvider =
                                 await wallets[0].getEthereumProvider();
                             }
                           } catch {}
+                          const mf =
+                            mintingFee === "" ? undefined : Number(mintingFee);
+                          const rs =
+                            revShare === "" ? undefined : Number(revShare);
                           await executeRegister(
                             groupNum,
                             file,
-                            mintingFee,
-                            revShare,
+                            mf,
+                            rs,
                             aiTrainingManual,
-                            { title: displayTitle, prompt: msg.description },
+                            { title: displayTitle, prompt: displayDesc },
                             ethProvider,
                           );
                         }}
@@ -1261,7 +1461,7 @@ const IpAssistant = () => {
             return (
               <motion.div
                 key={`image-${index}`}
-                className="flex justify-end mb-3 px-3 md:px-8"
+                className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
@@ -1382,94 +1582,113 @@ const IpAssistant = () => {
         onChange={handleImage}
       />
 
-      {activeDetail !== null ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
-          <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-            onClick={() => setActiveDetail(null)}
-            aria-hidden="true"
-          />
-          <div className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Group {activeDetail}
-                </p>
-                <h2 className="mt-1 text-lg font-semibold text-slate-900">
-                  {ANSWER_DETAILS[activeDetail ?? ""]?.type ?? "Group details"}
-                </h2>
+      <AnimatePresence>
+        {activeDetail !== null ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+              onClick={() => setActiveDetail(null)}
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Group {activeDetail}
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                    {ANSWER_DETAILS[activeDetail ?? ""]?.type ??
+                      "Group details"}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDetail(null)}
+                  className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                  aria-label="Close detail modal"
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveDetail(null)}
-                className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
-                aria-label="Close detail modal"
-              >
-                ✕
-              </button>
-            </div>
 
-            {ANSWER_DETAILS[activeDetail] ? (
-              <>
-                <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Image Type
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.type}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Additional Notes
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Registration Status
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      User Action
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.action}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Smart Licensing (Recommendation)
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      AI Training
-                    </dt>
-                    <dd className="mt-1 text-slate-800">
-                      {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
-                    </dd>
-                  </div>
-                </dl>
-              </>
-            ) : (
-              <p className="mt-4 text-sm text-slate-500">
-                Detail data not found.
-              </p>
-            )}
-          </div>
-        </div>
-      ) : null}
+              {ANSWER_DETAILS[activeDetail] ? (
+                <>
+                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Image Type
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.type}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Additional Notes
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Registration Status
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        User Action
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.action}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Smart Licensing (Recommendation)
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        AI Training
+                      </dt>
+                      <dd className="mt-1 text-slate-800">
+                        {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
+                      </dd>
+                    </div>
+                  </dl>
+                </>
+              ) : (
+                <p className="mt-4 text-sm text-slate-500">
+                  Detail data not found.
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </DashboardLayout>
   );
 };

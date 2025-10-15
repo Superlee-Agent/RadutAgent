@@ -609,6 +609,9 @@ const IpAssistant = () => {
             const info = ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
             caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
           }
+          if (caption && caption.length > 140) {
+            caption = caption.slice(0, 139) + "…";
+          }
           display = caption || summaryFromAnswer(String(g));
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";

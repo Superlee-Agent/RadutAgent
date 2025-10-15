@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDeterministicRoute } from "./routes/router.js";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
@@ -20,9 +19,6 @@ export function createServer() {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
-
-  // Deterministic router API (POST /api)
-  app.post("/api", handleDeterministicRoute);
 
   // Simple upload-and-classify endpoint (POST /api/upload)
   app.post(

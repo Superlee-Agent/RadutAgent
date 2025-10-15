@@ -1137,6 +1137,12 @@ const IpAssistant = () => {
                             const file = new File([blob], name, {
                               type: blob.type || "image/jpeg",
                             });
+                            let ethProvider: any = (window as any).ethereum;
+                            try {
+                              if (wallets && wallets[0]?.getEthereumProvider) {
+                                ethProvider = await wallets[0].getEthereumProvider();
+                              }
+                            } catch {}
                             await executeRegister(
                               groupNum,
                               file,
@@ -1144,6 +1150,7 @@ const IpAssistant = () => {
                               revShare,
                               aiTrainingManual,
                               { title: name },
+                              ethProvider,
                             );
                           }}
                           disabled={

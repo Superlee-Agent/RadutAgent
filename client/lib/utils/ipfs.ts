@@ -36,6 +36,10 @@ export function toIpfsUri(cid: string): string {
 }
 
 export function toHttps(cidOrUrl: string): string {
+  try {
+    const s = String(cidOrUrl);
+    if (s.startsWith("http://") || s.startsWith("https://")) return s;
+  } catch {}
   const cid = extractCid(cidOrUrl);
-  return `https://w3s.link/ipfs/${cid}`;
+  return `https://ipfs.io/ipfs/${cid}`;
 }

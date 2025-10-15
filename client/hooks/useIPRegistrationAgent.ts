@@ -150,13 +150,10 @@ export function useIPRegistrationAgent() {
 
         setRegisterState((p) => ({ ...p, status: "minting", progress: 75 }));
         // SDK integration pending env/deps (Story Protocol). Guard to avoid silent failure.
-        const spg =
-          (import.meta as any).env?.VITE_SPG_COLLECTION ||
-          (import.meta as any).env?.NEXT_PUBLIC_SPG_COLLECTION;
-        if (!spg)
-          throw new Error(
-            "SPG collection env not set (VITE_SPG_COLLECTION or NEXT_PUBLIC_SPG_COLLECTION)",
-          );
+        const spg = (import.meta as any).env?.VITE_PUBLIC_SPG_COLLECTION;
+        if (!spg) throw new Error("SPG collection env not set (VITE_PUBLIC_SPG_COLLECTION)");
+        const rpcUrl = (import.meta as any).env?.VITE_PUBLIC_STORY_RPC;
+        if (!rpcUrl) throw new Error("RPC URL not set (VITE_PUBLIC_STORY_RPC)");
 
         const licenseTermsData = createLicenseTerms(
           licenseSettings as LicenseSettings,

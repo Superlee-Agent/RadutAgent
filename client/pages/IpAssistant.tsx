@@ -582,25 +582,23 @@ const IpAssistant = () => {
         ) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
-          const aiTitle =
-            typeof (data as any).title === "string" ? (data as any).title : "";
-          const aiDesc =
-            typeof (data as any).description === "string"
-              ? (data as any).description
-              : "";
-          lastAnalysisTitleRef.current =
-            aiTitle || (ANSWER_DETAILS[String(g)]?.type ?? "IP Asset");
-          lastAnalysisDescRef.current = aiDesc || summaryFromAnswer(String(g));
-          const flags = [
-            `AI: ${d.is_ai_generated ? "Ya" : "Tidak"}`,
-            `Animasi: ${d.is_animation ? "Ya" : "Tidak"}`,
-            `Wajah manusia: ${d.has_human_face ? "Ya" : "Tidak"}`,
-            `Full wajah: ${d.is_full_face_visible ? "Ya" : "Tidak"}`,
-            `Terkenal: ${d.is_famous_person ? "Ya" : "Tidak"}`,
-            `Brand/karakter terkenal: ${d.has_known_brand_or_character ? "Ya" : "Tidak"}`,
-          ];
           verification = { label: `Detail`, code: String(g) as any };
-          display = `Detail\n` + flags.join(" · ");
+          let caption = "";
+          try {
+            const blob = lastUploadBlobRef.current;
+            if (blob) {
+              const form = new FormData();
+              form.append("image", blob, lastUploadNameRef.current || "image.jpg");
+              const res = await fetch("/api/describe", { method: "POST", body: form });
+              if (res.ok) {
+                const j = await res.json();
+                const t = typeof j.title === "string" ? j.title : "";
+                const dsc = typeof j.description === "string" ? j.description : "";
+                caption = [t, dsc].filter(Boolean).join(" — ");
+              }
+            }
+          } catch {}
+          display = caption || summaryFromAnswer(String(g));
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";

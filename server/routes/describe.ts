@@ -33,8 +33,20 @@ export const handleDescribe: any = [
       const { default: OpenAI } = await import("openai");
       const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+      const rawFacts = (req as any).body?.facts as string | undefined;
+      let facts: any = undefined;
+      try {
+        facts = rawFacts ? JSON.parse(rawFacts) : undefined;
+      } catch {}
+
+      const factsText = facts
+        ? `\nFacts (MUST be consistent): AI=${!!facts.is_ai_generated}, animation=${!!facts.is_animation}, human_face=${!!facts.has_human_face}, full_face_visible=${!!facts.is_full_face_visible}, famous_person=${!!facts.is_famous_person}, has_brand_or_character=${!!facts.has_known_brand_or_character}.`
+        : "";
+
       const instruction =
-        "You are an AI image captioner. Return ONLY strict minified JSON with keys: title, description. Title: concise 3-6 words describing the image. Description: 1-2 sentences summarizing what is depicted (no line breaks). No extra text.";
+        "You are an AI image captioner. Return ONLY strict minified JSON with keys: title, description. Title: concise 3-6 words describing the image. Description: 1-2 sentences summarizing what is depicted (no line breaks). Keep neutral, do not contradict provided facts." +
+        factsText +
+        " No extra text.";
 
       const response: any = await client.responses.create({
         model: MODEL,

@@ -623,17 +623,6 @@ const IpAssistant = () => {
           ts: getCurrentTimestamp(),
         });
 
-        void (async () => {
-          try {
-            await fetch("/api", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data),
-            });
-          } catch (error) {
-            console.error("Failed to persist analysis", error);
-          }
-        })();
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message

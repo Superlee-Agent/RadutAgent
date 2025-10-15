@@ -126,6 +126,15 @@ export function useIPRegistrationAgent() {
           status: "creating-metadata",
           progress: 50,
         }));
+        let creatorAddr: string | undefined;
+        try {
+          const providerTmp: any = ethereumProvider || (globalThis as any).ethereum;
+          if (providerTmp) {
+            const walletClientTmp = createWalletClient({ transport: custom(providerTmp) });
+            const addrs = await walletClientTmp.getAddresses();
+            if (addrs && addrs[0]) creatorAddr = String(addrs[0]);
+          }
+        } catch {}
         const ipMetadata = {
           title: intent?.title || file.name,
           description: intent?.prompt || "",
@@ -134,7 +143,15 @@ export function useIPRegistrationAgent() {
           mediaUrl: imageGateway,
           mediaHash: imageHash,
           mediaType: compressedFile.type || "image/jpeg",
-          creators: [],
+          creators: creatorAddr
+            ? [
+                {
+                  name: creatorAddr,
+                  address: creatorAddr,
+                  contributionPercent: 100,
+                },
+              ]
+            : [],
           aiMetadata: intent?.prompt
             ? { prompt: intent.prompt, generator: "user", model: "rule-based" }
             : undefined,

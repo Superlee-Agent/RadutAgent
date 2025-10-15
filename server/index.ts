@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDeterministicRoute } from "./routes/router.js";
 import { handleUpload } from "./routes/upload.js";
+import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 
 export function createServer() {
   const app = express();
@@ -27,6 +28,13 @@ export function createServer() {
     "/api/upload",
     ...(Array.isArray(handleUpload) ? handleUpload : [handleUpload]),
   );
+
+  // IPFS endpoints
+  app.post(
+    "/api/ipfs/upload",
+    ...(Array.isArray(handleIpfsUpload) ? handleIpfsUpload : [handleIpfsUpload]),
+  );
+  app.post("/api/ipfs/upload-json", handleIpfsUploadJson);
 
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>

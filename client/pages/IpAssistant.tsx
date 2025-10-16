@@ -650,7 +650,7 @@ const IpAssistant = () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      // Run detection on the last uploaded image
+      // Run detection on the last uploaded image, or open file picker if none uploaded
       if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
@@ -659,17 +659,13 @@ const IpAssistant = () => {
       } else {
         pushMessage({
           from: "bot",
-          text: "Please upload an image first before typing 'register'.",
+          text: "Please upload an image.",
           ts: getCurrentTimestamp(),
         });
+        setTimeout(() => uploadRef.current?.click(), 400);
       }
     } else if (value.toLowerCase() === "gradut") {
-      pushMessage({
-        from: "bot",
-        text: "Please upload an image.",
-        ts: getCurrentTimestamp(),
-      });
-      setTimeout(() => uploadRef.current?.click(), 400);
+      // gradut function is empty
     }
     autoScrollNextRef.current = true;
   }, [input, pushMessage, runDetection]);

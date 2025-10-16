@@ -768,16 +768,14 @@ const IpAssistant = () => {
         if (inputEl) inputEl.value = "";
         if (files.length === 0) return;
 
-        // Show previews
+        // Show image previews
         for (const f of files) {
           const url = URL.createObjectURL(f);
           pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
         }
         autoScrollNextRef.current = true;
-        setWaiting(true);
 
-        // Compress and build form
-        const form = new FormData();
+        // Compress and store the first image for later detection
         for (const f of files) {
           let blob: Blob;
           try {
@@ -786,221 +784,27 @@ const IpAssistant = () => {
             console.error("Compression failed, sending original file", error);
             blob = f;
           }
-          form.append("image", blob, f.name || "image.jpg");
           lastUploadBlobRef.current = blob;
           lastUploadNameRef.current = f.name || "image.jpg";
         }
 
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: form,
-        });
-
-        if (response.status === 413) {
-          autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "The image is too large. Please compress or resize before uploading.",
-            ts: getCurrentTimestamp(),
-          });
-          setWaiting(false);
-          return;
-        }
-
-        if (!response.ok) {
-          const text = await response.text().catch(() => "");
-          console.error("/api/analyze failed:", response.status, text);
-          autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "Image analysis failed.",
-            ts: getCurrentTimestamp(),
-          });
-          setWaiting(false);
-          return;
-        }
-
-        const data = await response.json();
-        let display = "(No analysis result)";
-        let verification: { label: string; code: number } | string | undefined;
-
-        if (
-          typeof (data as any)?.group === "number" &&
-          (data as any)?.details
-        ) {
-          const g = (data as any).group as number;
-          const d = (data as any).details as Record<string, any>;
-          lastAnalysisFactsRef.current = d;
-          verification = { label: `Detail`, code: String(g) as any };
-          let caption = "";
-          let detectedBrand = "";
-          let detectedCharacter = "";
-          try {
-            const blob = lastUploadBlobRef.current;
-            if (blob) {
-              const form = new FormData();
-              form.append(
-                "image",
-                blob,
-                lastUploadNameRef.current || "image.jpg",
-              );
-              if (lastAnalysisFactsRef.current) {
-                form.append(
-                  "facts",
-                  JSON.stringify(lastAnalysisFactsRef.current),
-                );
-              }
-              const res = await fetch("/api/describe", {
-                method: "POST",
-                body: form,
-              });
-              if (res.ok) {
-                const j = await res.json();
-                const t = typeof j.title === "string" ? j.title : "";
-                const dsc =
-                  typeof j.description === "string" ? j.description : "";
-                detectedBrand =
-                  typeof j.brand === "string" ? (j.brand || "").trim() : "";
-                detectedCharacter =
-                  typeof j.character === "string"
-                    ? (j.character || "").trim()
-                    : "";
-                const br = detectedBrand ? ` — Brand: ${detectedBrand}` : "";
-                const ch = detectedCharacter
-                  ? ` — Character: ${detectedCharacter}`
-                  : "";
-                caption = [t, dsc].filter(Boolean).join(" — ") + (br || ch);
-              }
-            }
-          } catch {}
-          if (!caption) {
-            const info =
-              ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
-            caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
-          }
-          if (caption && caption.length > 140) {
-            caption = caption.slice(0, 139) + "…";
-          }
-          const facts = d || {};
-          const licenseSettings = getLicenseSettingsByGroup(g);
-
-          // Gunakan peta grup sebagai sumber kebenaran agar teks relevan dan tidak menyesatkan
-          const brandGroups = [2, 7, 13, 15];
-          const famousFullGroups = [3, 8];
-          const famousNotFullGroups = [4, 9];
-          const ordinaryFullGroups = [5, 10];
-          const ordinaryNotFullGroups = [6, 11];
-          const animationGroups = [12, 13, 14, 15];
-          const aiGroups = [1, 2, 3, 4, 5, 6, 12, 13];
-
-          const isAnimGroup = animationGroups.includes(g);
-          const isAIGroup = aiGroups.includes(g);
-          const isBrandGroup = brandGroups.includes(g);
-
-          const brandName = isBrandGroup
-            ? (detectedBrand || detectedCharacter || "").trim()
-            : "";
-
-          // Klasifikasi berbasis grup saja (bukan flag mentah), agar konsisten
-          let classification = isAnimGroup
-            ? isAIGroup
-              ? "AI Animation"
-              : "Non-AI Animation"
-            : isAIGroup
-              ? "AI Image"
-              : "Non-AI Image";
-
-          if (isBrandGroup) {
-            classification += ` with ${brandName ? (detectedBrand ? "brand " + brandName : "character " + brandName) : "a famous brand/character"}`;
-          } else if (famousFullGroups.includes(g)) {
-            classification += " with full public figure face";
-          } else if (famousNotFullGroups.includes(g)) {
-            classification += " with public figure not fully visible";
-          } else if (ordinaryFullGroups.includes(g)) {
-            classification += " with full regular person face";
-          } else if (ordinaryNotFullGroups.includes(g)) {
-            classification += " with regular person not fully visible";
-          } else {
-            classification += " without faces/brands";
-          }
-
-          // Keputusan berbasis grup + licenseSettings
-          let verdict = "";
-          if (licenseSettings) {
-            if (famousNotFullGroups.includes(g)) {
-              verdict =
-                "This IP can be registered because the public figure is not fully visible.";
-            } else if (ordinaryNotFullGroups.includes(g)) {
-              verdict =
-                "This IP can be registered because the face is not fully visible.";
-            } else if (isAnimGroup && !isBrandGroup) {
-              verdict =
-                "This IP can be registered because it's an animation without brand/character.";
-            } else if (
-              !isBrandGroup &&
-              !famousFullGroups.includes(g) &&
-              !ordinaryFullGroups.includes(g)
-            ) {
-              verdict =
-                "This IP can be registered because it doesn't show faces/brands.";
-            } else {
-              verdict =
-                "This IP can be registered as it meets policy criteria.";
-            }
-          } else if (requiresSelfieVerification(g)) {
-            verdict =
-              "This IP cannot be registered directly because selfie verification is required (regular person's full face).";
-          } else if (requiresSubmitReview(g)) {
-            if (isBrandGroup) {
-              verdict = `This IP cannot be registered directly because ${brandName ? `${detectedBrand ? "it contains the brand" : "it contains the character"} ${brandName}` : "it contains a famous brand/character"}.`;
-            } else if (famousFullGroups.includes(g)) {
-              verdict =
-                "This IP cannot be registered directly because it shows a public figure's full face.";
-            } else {
-              verdict =
-                "This IP cannot be registered directly and needs review.";
-            }
-          } else if (g === 0) {
-            verdict = "Analysis inconclusive; please submit for review.";
-          } else {
-            verdict = "This IP cannot be registered.";
-          }
-
-          display = `This is ${classification}. ${verdict}`;
-        } else {
-          const rawText = data?.raw ? String(data.raw).trim() : "";
-          display = rawText || "(No analysis result)";
-        }
-
-        autoScrollNextRef.current = false;
-        const ctxKey = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        if (lastUploadBlobRef.current) {
-          analysisContextsRef.current.set(ctxKey, {
-            blob: lastUploadBlobRef.current,
-            name: lastUploadNameRef.current || "image.jpg",
-            facts: lastAnalysisFactsRef.current || null,
-          });
-        }
+        // Show instruction message
         pushMessage({
           from: "bot",
-          text: display,
-          verification,
+          text: "Image uploaded. Type 'register' to analyze it.",
           ts: getCurrentTimestamp(),
-          ctxKey,
         });
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
-          ? `Image analysis failed: ${error.message}`
-          : "Image analysis failed.";
+          ? `Image upload failed: ${error.message}`
+          : "Image upload failed.";
         autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: message,
           ts: getCurrentTimestamp(),
         });
-      } finally {
-        setWaiting(false);
       }
     },
     [compressAndEnsureSize, pushMessage],

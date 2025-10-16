@@ -775,6 +775,8 @@ const IpAssistant = () => {
         autoScrollNextRef.current = true;
 
         // Compress and store the first image for later detection
+        let compressedBlob: Blob | null = null;
+        let fileName: string = "image.jpg";
         for (const f of files) {
           let blob: Blob;
           try {
@@ -785,14 +787,15 @@ const IpAssistant = () => {
           }
           lastUploadBlobRef.current = blob;
           lastUploadNameRef.current = f.name || "image.jpg";
+          compressedBlob = blob;
+          fileName = f.name || "image.jpg";
         }
 
-        // Show instruction message
-        pushMessage({
-          from: "bot",
-          text: "Image uploaded. Type 'register' to analyze it.",
-          ts: getCurrentTimestamp(),
-        });
+        // Automatically run detection on the uploaded image
+        if (compressedBlob) {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          await runDetection(compressedBlob, fileName);
+        }
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
@@ -806,7 +809,7 @@ const IpAssistant = () => {
         });
       }
     },
-    [compressAndEnsureSize, pushMessage],
+    [compressAndEnsureSize, pushMessage, runDetection],
   );
 
   const sidebarExtras = useCallback(

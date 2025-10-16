@@ -652,7 +652,10 @@ const IpAssistant = () => {
     if (value.toLowerCase() === "register") {
       // Run detection on the last uploaded image
       if (lastUploadBlobRef.current) {
-        await runDetection(lastUploadBlobRef.current, lastUploadNameRef.current || "image.jpg");
+        await runDetection(
+          lastUploadBlobRef.current,
+          lastUploadNameRef.current || "image.jpg",
+        );
       } else {
         pushMessage({
           from: "bot",

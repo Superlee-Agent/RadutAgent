@@ -34,10 +34,15 @@ export const handleDescribe: any = [
       const dataUrl = `data:${f.mimetype};base64,${base64}`;
 
       if (!process.env.OPENAI_API_KEY) {
-        console.error("OPENAI_API_KEY is not configured on the server (describe)");
+        console.error(
+          "OPENAI_API_KEY is not configured on the server (describe)",
+        );
         return res
           .status(503)
-          .json({ error: "openai_api_key_missing", message: "OpenAI API key not configured on the server" });
+          .json({
+            error: "openai_api_key_missing",
+            message: "OpenAI API key not configured on the server",
+          });
       }
 
       const { default: OpenAI } = await import("openai");

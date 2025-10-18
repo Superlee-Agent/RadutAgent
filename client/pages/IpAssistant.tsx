@@ -835,6 +835,7 @@ const IpAssistant = () => {
               : msg
           )
         );
+        setIpCheckInput("");
       } catch (error: any) {
         const errorMessage = error?.message || "Failed to fetch IP assets";
         setMessages((prev) =>

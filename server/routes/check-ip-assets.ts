@@ -8,19 +8,17 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: "Address is required" });
     }
 
-    const trimmedAddress = address.trim().toLowerCase();
+    const trimmedAddress = address.trim();
 
-    // Validate Ethereum address format (0x + 40 hex characters)
-    if (!/^0x[a-f0-9]{40}$/.test(trimmedAddress)) {
+    // Validate Ethereum address format (0x + 40 hex characters) - case insensitive
+    if (!/^0x[a-fA-F0-9]{40}$/.test(trimmedAddress)) {
       console.error(
         `[IP Check] Invalid address format: "${address}" (trimmed: "${trimmedAddress}", length: ${trimmedAddress.length})`,
       );
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid Ethereum address format. Expected 0x followed by 40 hexadecimal characters.",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid Ethereum address format. Expected 0x followed by 40 hexadecimal characters.",
+      });
     }
 
     const apiKey = process.env.STORY_API_KEY;
@@ -30,6 +28,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     }
 
     console.log("[IP Check] Starting asset fetch for address:", trimmedAddress);
+    console.log(
+      "[IP Check] API Key present:",
+      apiKey ? `${apiKey.substring(0, 10)}...` : "MISSING",
+    );
 
     let allAssets: any[] = [];
     let offset = 0;
@@ -41,21 +43,32 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       requestCount++;
       console.log(`[IP Check] API request #${requestCount}, offset: ${offset}`);
 
+      const requestBody = {
+        includeLicenses: false,
+        moderated: false,
+        orderBy: "blockNumber",
+        orderDirection: "desc",
+        pagination: {
+          limit,
+          offset,
+        },
+        where: {
+          ownerAddress: trimmedAddress,
+        },
+      };
+
+      console.log(
+        `[IP Check] Request body:`,
+        JSON.stringify(requestBody, null, 2),
+      );
+
       const response = await fetch("https://api.storyapis.com/api/v4/assets", {
         method: "POST",
         headers: {
           "X-Api-Key": apiKey,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          where: {
-            ownerAddress: trimmedAddress,
-          },
-          pagination: {
-            limit,
-            offset,
-          },
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -85,6 +98,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
         data = await response.json();
         console.log(
           `[IP Check] API request #${requestCount} succeeded, received ${Array.isArray(data) ? data.length : data?.data?.length || 0} assets`,
+        );
+        console.log(
+          `[IP Check] Raw API response:`,
+          JSON.stringify(data, null, 2).substring(0, 500),
         );
       } catch (parseError) {
         console.error(

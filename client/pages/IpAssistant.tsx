@@ -1725,7 +1725,7 @@ const IpAssistant = () => {
                                 <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.remixCount}</div>
                               </div>
                             </div>
-                            {ipCheckMsg.totalCount > 20 && (
+                            {ipCheckMsg.totalCount > 20 ? (
                               <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-lg">✨</span>
@@ -1733,6 +1733,16 @@ const IpAssistant = () => {
                                 </div>
                                 <div className="text-xs text-slate-300">
                                   Congratulations! You have more than 20 IP assets and are eligible for an NFT OG Card.
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-lg">ℹ️</span>
+                                  <div className="font-bold text-slate-300">NOT ELIGIBLE</div>
+                                </div>
+                                <div className="text-xs text-slate-400">
+                                  You need more than 20 IP assets to be eligible for an NFT OG Card. Current assets: {ipCheckMsg.totalCount}.
                                 </div>
                               </div>
                             )}

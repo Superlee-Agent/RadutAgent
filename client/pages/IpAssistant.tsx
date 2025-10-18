@@ -30,6 +30,16 @@ export type Message =
       description: string;
       ctxKey: string;
       ts?: string;
+    }
+  | {
+      from: "ip-check";
+      status: "pending" | "loading" | "complete";
+      address?: string;
+      originalCount?: number;
+      remixCount?: number;
+      totalCount?: number;
+      error?: string;
+      ts?: string;
     };
 
 export type ChatSession = {
@@ -130,7 +140,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "✅ Allowed (user-configurable)",
+    aiTraining: "��� Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
@@ -214,13 +224,28 @@ const getMessagePreview = (message: Message) => {
   if ((message as any).from === "register") {
     return `Register IP: ${(message as any).title}`;
   }
-  if (message.text.trim().length === 0) {
+  if ((message as any).from === "ip-check") {
+    const ipMsg = message as any;
+    if (ipMsg.status === "pending") {
+      return "IP Assets Check (pending address input)";
+    }
+    if (ipMsg.error) {
+      return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
+    }
+    const eligible =
+      ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
+    return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
+  }
+  if ("text" in message && message.text.trim().length === 0) {
     return "(Empty message)";
   }
-  if (message.text.length <= 40) {
+  if ("text" in message && message.text.length <= 40) {
     return message.text;
   }
-  return `${message.text.slice(0, 40)}...`;
+  if ("text" in message) {
+    return `${message.text.slice(0, 40)}...`;
+  }
+  return "(Unknown message)";
 };
 
 const IP_ASSISTANT_AVATAR =
@@ -287,6 +312,8 @@ const IpAssistant = () => {
       }
     >
   >({});
+  const [ipCheckInput, setIpCheckInput] = useState<string>("");
+  const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -664,6 +691,13 @@ const IpAssistant = () => {
         });
         setTimeout(() => uploadRef.current?.click(), 400);
       }
+    } else if (value.toLowerCase() === "check ip") {
+      autoScrollNextRef.current = false;
+      pushMessage({
+        from: "ip-check",
+        status: "pending",
+        ts: getCurrentTimestamp(),
+      });
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
     }
@@ -758,6 +792,107 @@ const IpAssistant = () => {
     if (info) return `${info.type} · ${info.notes}.`;
     return "(Unknown classification)";
   };
+
+  const checkIpAssets = useCallback(async (address: string) => {
+    if (!address || address.trim().length === 0) {
+      return;
+    }
+
+    const trimmedAddress = address.trim();
+    const loadingKey = `ip-check-${Date.now()}`;
+
+    try {
+      setIpCheckLoading(loadingKey);
+
+      let allAssets: any[] = [];
+      let offset = 0;
+      let hasMore = true;
+      const limit = 100;
+
+      while (hasMore) {
+        const response = await fetch(
+          "https://api.storyapis.com/api/v4/assets",
+          {
+            method: "POST",
+            headers: {
+              "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              where: {
+                ownerAddress: trimmedAddress,
+              },
+              pagination: {
+                limit,
+                offset,
+              },
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        const assets = Array.isArray(data) ? data : data?.data || [];
+        allAssets = allAssets.concat(assets);
+
+        const pagination = data?.pagination;
+        hasMore = pagination?.hasMore === true;
+        offset += limit;
+      }
+
+      const assets = allAssets;
+
+      // Validasi: parentsCount === 0 atau tidak ada = original (root IP)
+      // parentsCount > 0 = derivative/remix (memiliki parent IP)
+      const originalCount = assets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount === 0;
+      }).length;
+
+      const remixCount = assets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount > 0;
+      }).length;
+
+      const totalCount = assets.length;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "ip-check" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                address: trimmedAddress,
+                originalCount,
+                remixCount,
+                totalCount,
+              }
+            : msg,
+        ),
+      );
+      setIpCheckInput("");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to fetch IP assets";
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "ip-check" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                address: trimmedAddress,
+                error: errorMessage,
+              }
+            : msg,
+        ),
+      );
+    } finally {
+      setIpCheckLoading(null);
+    }
+  }, []);
 
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1491,6 +1626,158 @@ const IpAssistant = () => {
                   </div>
                 </motion.div>
               );
+            }
+
+            if (msg.from === "ip-check") {
+              const ipCheckMsg = msg as any;
+              const isLoading =
+                ipCheckLoading !== null && ipCheckMsg.status === "pending";
+
+              if (ipCheckMsg.status === "pending") {
+                return (
+                  <motion.div
+                    key={`ip-check-${index}`}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                    transition={{
+                      type: "spring",
+                      duration: 0.5,
+                      bounce: 0.2,
+                      stiffness: 100,
+                      damping: 15,
+                    }}
+                    layout
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-[0.97rem]">
+                      <div className="text-slate-100">
+                        Please enter a wallet address to check your IP assets:
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          type="text"
+                          value={ipCheckInput}
+                          onChange={(e) => setIpCheckInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !isLoading) {
+                              checkIpAssets(ipCheckInput);
+                            }
+                          }}
+                          placeholder="0x..."
+                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => checkIpAssets(ipCheckInput)}
+                          disabled={
+                            isLoading || ipCheckInput.trim().length === 0
+                          }
+                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center gap-2">
+                              <span className="dot" />
+                              <span className="dot" />
+                              <span className="dot" />
+                            </span>
+                          ) : (
+                            "Check"
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              if (ipCheckMsg.status === "complete") {
+                return (
+                  <motion.div
+                    key={`ip-check-result-${index}`}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                    transition={{
+                      type: "spring",
+                      duration: 0.6,
+                      bounce: 0.15,
+                      stiffness: 100,
+                      damping: 18,
+                    }}
+                    layout
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
+                      {ipCheckMsg.error ? (
+                        <div className="text-red-400">
+                          <div className="font-semibold mb-2">Error</div>
+                          <div className="text-sm">{ipCheckMsg.error}</div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-[0.97rem] mb-3">
+                            Address:{" "}
+                            <span className="text-[#FF4DA6]">
+                              {truncateAddress(ipCheckMsg.address)}
+                            </span>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="text-lg font-bold text-[#FF4DA6]">
+                              Total IP Assets: {ipCheckMsg.totalCount}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-1">
+                                  Original
+                                </div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                  {ipCheckMsg.originalCount}
+                                </div>
+                              </div>
+                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-1">
+                                  Remixes
+                                </div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                  {ipCheckMsg.remixCount}
+                                </div>
+                              </div>
+                            </div>
+                            {ipCheckMsg.totalCount > 20 ? (
+                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-lg">✨</span>
+                                  <div className="font-bold text-[#FF4DA6]">
+                                    STORY OG CARD NFT ELIGIBLE
+                                  </div>
+                                </div>
+                                <div className="text-xs text-slate-300">
+                                  Congratulations! You are eligible for a STORY
+                                  OG CARD NFT.
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-lg">ℹ️</span>
+                                  <div className="font-bold text-slate-300">
+                                    NOT ELIGIBLE
+                                  </div>
+                                </div>
+                                <div className="text-xs text-slate-400">
+                                  You are not eligible for a STORY OG CARD NFT
+                                  at this time.
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              }
             }
 
             return (

@@ -57,15 +57,22 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
           } else if (errorData?.error) {
             errorMessage = errorData.error;
           }
-          console.error(`Story API Error: ${response.status}`, errorData);
+          console.error(`[IP Check] Story API Error: ${response.status}`, errorData);
         } catch (e) {
           // Body might not be JSON or already consumed, just log the status
-          console.error(`Story API Error: ${response.status} - Could not parse response body`);
+          console.error(`[IP Check] Story API Error: ${response.status} - Could not parse response body`);
         }
         return res.status(response.status).json({ error: errorMessage });
       }
 
-      const data = await response.json();
+      let data: any;
+      try {
+        data = await response.json();
+        console.log(`[IP Check] API request #${requestCount} succeeded, received ${Array.isArray(data) ? data.length : (data?.data?.length || 0)} assets`);
+      } catch (parseError) {
+        console.error(`[IP Check] Failed to parse Story API response:`, parseError);
+        return res.status(500).json({ error: "Failed to parse API response" });
+      }
 
       // Handle different response formats from the Story API
       let assets: any[] = [];

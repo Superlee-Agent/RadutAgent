@@ -48,12 +48,16 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          where: {
-            ownerAddress: trimmedAddress,
-          },
+          includeLicenses: false,
+          moderated: false,
+          orderBy: "blockNumber",
+          orderDirection: "desc",
           pagination: {
             limit,
             offset,
+          },
+          where: {
+            ownerAddress: trimmedAddress,
           },
         }),
       });

@@ -30,6 +30,14 @@ export type Message =
       description: string;
       ctxKey: string;
       ts?: string;
+    }
+  | {
+      from: "ip-check";
+      status: "pending" | "loading" | "complete";
+      address?: string;
+      assetCount?: number;
+      error?: string;
+      ts?: string;
     };
 
 export type ChatSession = {

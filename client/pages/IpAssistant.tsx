@@ -814,12 +814,17 @@ const IpAssistant = () => {
     }
 
     const trimmedAddress = address.trim();
-    const loadingKey = `ip-check-${Date.now()}`;
+    const requestId = `ip-check-${Date.now()}-${Math.random()}`;
 
     try {
-      setIpCheckLoading(loadingKey);
+      setIpCheckLoading(requestId);
 
-      console.log("[IP Check] Starting check for address:", trimmedAddress);
+      console.log(
+        "[IP Check] Starting check for address:",
+        trimmedAddress,
+        "requestId:",
+        requestId,
+      );
 
       const response = await fetch("/api/check-ip-assets", {
         method: "POST",
@@ -836,20 +841,32 @@ const IpAssistant = () => {
         response.status,
         "ok:",
         response.ok,
+        "requestId:",
+        requestId,
       );
 
       let data: any;
       try {
         data = await response.json();
-        console.log("[IP Check] Response data:", data);
+        console.log("[IP Check] Response data:", data, "requestId:", requestId);
       } catch (parseError) {
-        console.error("[IP Check] Failed to parse response:", parseError);
+        console.error(
+          "[IP Check] Failed to parse response:",
+          parseError,
+          "requestId:",
+          requestId,
+        );
         throw new Error("Invalid response from server");
       }
 
       if (!response.ok) {
         const errorMsg = data?.error || `API Error: ${response.status}`;
-        console.error("[IP Check] API error:", errorMsg);
+        console.error(
+          "[IP Check] API error:",
+          errorMsg,
+          "requestId:",
+          requestId,
+        );
         throw new Error(errorMsg);
       }
 
@@ -857,38 +874,64 @@ const IpAssistant = () => {
         totalCount: data.totalCount,
         originalCount: data.originalCount,
         remixCount: data.remixCount,
+        requestId,
       });
       const { totalCount, originalCount, remixCount } = data;
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "ip-check" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                address: trimmedAddress,
-                originalCount,
-                remixCount,
-                totalCount,
-              }
-            : msg,
-        ),
-      );
+      // Only update the specific pending message that matches this request
+      setMessages((prev) => {
+        let foundPending = false;
+        const updated = prev.map((msg) => {
+          if (
+            msg.from === "ip-check" &&
+            (msg as any).status === "pending" &&
+            !foundPending
+          ) {
+            foundPending = true;
+            return {
+              ...msg,
+              status: "complete",
+              address: trimmedAddress,
+              originalCount,
+              remixCount,
+              totalCount,
+            };
+          }
+          return msg;
+        });
+        return updated;
+      });
       setIpCheckInput("");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to fetch IP assets";
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "ip-check" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                address: trimmedAddress,
-                error: errorMessage,
-              }
-            : msg,
-        ),
+      console.error(
+        "[IP Check] Caught error:",
+        errorMessage,
+        "requestId:",
+        requestId,
       );
+
+      // Only update the specific pending message that matches this request
+      setMessages((prev) => {
+        let foundPending = false;
+        const updated = prev.map((msg) => {
+          if (
+            msg.from === "ip-check" &&
+            (msg as any).status === "pending" &&
+            !foundPending
+          ) {
+            foundPending = true;
+            return {
+              ...msg,
+              status: "complete",
+              address: trimmedAddress,
+              error: errorMessage,
+            };
+          }
+          return msg;
+        });
+        return updated;
+      });
     } finally {
       setIpCheckLoading(null);
     }

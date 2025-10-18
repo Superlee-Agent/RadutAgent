@@ -42,6 +42,9 @@ export function createServer() {
     ...(Array.isArray(handleDescribe) ? handleDescribe : [handleDescribe]),
   );
 
+  // Check IP Assets endpoint (POST /api/check-ip-assets)
+  app.post("/api/check-ip-assets", handleCheckIpAssets);
+
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>
     res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),

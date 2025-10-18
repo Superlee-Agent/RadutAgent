@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
+import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
 
 export function createServer() {
   const app = express();
@@ -40,6 +41,9 @@ export function createServer() {
     "/api/describe",
     ...(Array.isArray(handleDescribe) ? handleDescribe : [handleDescribe]),
   );
+
+  // Check IP Assets endpoint (POST /api/check-ip-assets)
+  app.post("/api/check-ip-assets", handleCheckIpAssets);
 
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>

@@ -451,7 +451,8 @@ const IpAssistant = () => {
     (id: string) => {
       const session = sessions.find((item) => item.id === id);
       if (session) {
-        setMessages(session.messages);
+        setMessages([...session.messages]);
+        setWaiting(false);
         autoScrollNextRef.current = false;
       }
     },

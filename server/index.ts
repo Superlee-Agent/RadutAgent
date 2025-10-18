@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
+import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
 
 export function createServer() {
   const app = express();

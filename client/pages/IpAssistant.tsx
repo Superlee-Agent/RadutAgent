@@ -841,8 +841,19 @@ const IpAssistant = () => {
         }
 
         const assets = allAssets;
-        const originalCount = assets.filter((asset: any) => !asset.parentsCount || asset.parentsCount === 0).length;
-        const remixCount = assets.filter((asset: any) => asset.parentsCount && asset.parentsCount > 0).length;
+
+        // Validasi: parentsCount === 0 atau tidak ada = original (root IP)
+        // parentsCount > 0 = derivative/remix (memiliki parent IP)
+        const originalCount = assets.filter((asset: any) => {
+          const parentCount = asset.parentsCount ?? 0;
+          return parentCount === 0;
+        }).length;
+
+        const remixCount = assets.filter((asset: any) => {
+          const parentCount = asset.parentsCount ?? 0;
+          return parentCount > 0;
+        }).length;
+
         const totalCount = assets.length;
 
         setMessages((prev) =>

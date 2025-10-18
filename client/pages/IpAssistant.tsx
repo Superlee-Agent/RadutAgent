@@ -451,7 +451,8 @@ const IpAssistant = () => {
     (id: string) => {
       const session = sessions.find((item) => item.id === id);
       if (session) {
-        setMessages(session.messages);
+        setMessages([...session.messages]);
+        setWaiting(false);
         autoScrollNextRef.current = false;
       }
     },
@@ -1066,47 +1067,7 @@ const IpAssistant = () => {
         </button>
         <div className="pl-10 space-y-4">
           <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">
-              Current chat
-            </div>
-            <div className="mt-2 space-y-2">
-              {messages.length === 0 ? (
-                <div className="text-xs text-[#BD4385]">No messages yet</div>
-              ) : (
-                [...messages]
-                  .slice(-6)
-                  .reverse()
-                  .map((message, index) => (
-                    <div
-                      key={`current-${index}-${message.from}`}
-                      className="rounded-md border border-[#FF4DA6]/20 bg-black/40 px-3 py-2 text-xs text-slate-300"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-[#FF4DA6]">
-                          {message.from === "bot"
-                            ? "Assistant"
-                            : message.from === "user"
-                              ? "You"
-                              : "You"}
-                        </span>
-                        {message.ts ? (
-                          <span className="text-[10px] text-slate-400">
-                            {message.ts}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className="mt-1 text-slate-200">
-                        {getMessagePreview(message)}
-                      </div>
-                    </div>
-                  ))
-              )}
-            </div>
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">
-              Saved conversations
-            </div>
+            <div className="text-sm font-semibold text-[#FF4DA6]">Sessions</div>
             <div className="mt-2 space-y-2">
               {sessions.length === 0 ? (
                 <div className="text-xs text-[#BD4385]">No saved chats</div>
@@ -1201,23 +1162,14 @@ const IpAssistant = () => {
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
-                <motion.div
+                <div
                   key={`user-${index}`}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem]">
                     {msg.text}
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1231,28 +1183,18 @@ const IpAssistant = () => {
                   ? msg.verification
                   : null;
 
+              if (index === messages.length - 1) {
+                setTimeout(() => {
+                  chatEndRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 0);
+              }
+
               return (
-                <motion.div
+                <div
                   key={`bot-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  onAnimationComplete={() => {
-                    if (index === messages.length - 1) {
-                      setTimeout(() => {
-                        chatEndRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }, 0);
-                    }
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem]">
                     <div>{msg.text}</div>
@@ -1394,7 +1336,7 @@ const IpAssistant = () => {
                       </div>
                     ) : null}
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1405,18 +1347,9 @@ const IpAssistant = () => {
               const isManualAI =
                 GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(groupNum);
               return (
-                <motion.div
+                <div
                   key={`register-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.32,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  layout
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
@@ -1639,7 +1572,9 @@ const IpAssistant = () => {
                           const ctx = analysisContextsRef.current.get(ctxKey);
                           const blob = ctx?.blob;
                           if (!blob)
-                            return alert("No uploaded image to register.");
+                            return alert(
+                              "Image data is no longer available. Please upload the image again in a new chat to register it.",
+                            );
                           const ctxKey2 = (msg as any).ctxKey as
                             | string
                             | undefined;
@@ -1725,10 +1660,18 @@ const IpAssistant = () => {
                             )}
                           </span>
                         ) : null}
+                        {!analysisContextsRef.current.get(
+                          (msg as any).ctxKey || "",
+                        )?.blob ? (
+                          <div className="mt-2 text-xs text-[#FF4DA6]/70">
+                            💡 Image data not available. Upload the image again
+                            to register.
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1739,20 +1682,9 @@ const IpAssistant = () => {
 
               if (ipCheckMsg.status === "pending") {
                 return (
-                  <motion.div
+                  <div
                     key={`ip-check-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                    transition={{
-                      type: "spring",
-                      duration: 0.5,
-                      bounce: 0.2,
-                      stiffness: 100,
-                      damping: 15,
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
                       <div className="text-slate-100 text-sm md:text-base">
@@ -1791,26 +1723,15 @@ const IpAssistant = () => {
                         </button>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               }
 
               if (ipCheckMsg.status === "complete") {
                 return (
-                  <motion.div
+                  <div
                     key={`ip-check-result-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                    transition={{
-                      type: "spring",
-                      duration: 0.6,
-                      bounce: 0.15,
-                      stiffness: 100,
-                      damping: 18,
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
                       {ipCheckMsg.error ? (
@@ -1887,24 +1808,15 @@ const IpAssistant = () => {
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               }
             }
 
             return (
-              <motion.div
+              <div
                 key={`image-${index}`}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                transition={{
-                  type: "tween",
-                  duration: 0.28,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                layout
               >
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
                   <img
@@ -1919,27 +1831,24 @@ const IpAssistant = () => {
                     }
                   />
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </AnimatePresence>
 
         <AnimatePresence>
           {waiting && (
-            <motion.div
+            <div
               className="flex items-start mb-2 gap-2 px-3 md:px-8"
               aria-live="polite"
               aria-label="Bot is typing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />
                 <span className="dot" />
                 <span className="dot" />
               </div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
         <div ref={chatEndRef} />

@@ -821,7 +821,10 @@ const IpAssistant = () => {
 
         const data = await response.json();
         const assets = Array.isArray(data) ? data : data?.data || [];
-        const assetCount = assets.length;
+
+        const originalCount = assets.filter((asset: any) => !asset.parentsCount || asset.parentsCount === 0).length;
+        const remixCount = assets.filter((asset: any) => asset.parentsCount && asset.parentsCount > 0).length;
+        const totalCount = assets.length;
 
         setMessages((prev) =>
           prev.map((msg) =>
@@ -830,7 +833,9 @@ const IpAssistant = () => {
                   ...msg,
                   status: "complete",
                   address: trimmedAddress,
-                  assetCount,
+                  originalCount,
+                  remixCount,
+                  totalCount,
                 }
               : msg
           )

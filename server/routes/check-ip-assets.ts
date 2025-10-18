@@ -30,6 +30,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     }
 
     console.log("[IP Check] Starting asset fetch for address:", trimmedAddress);
+    console.log(
+      "[IP Check] API Key present:",
+      apiKey ? `${apiKey.substring(0, 10)}...` : "MISSING",
+    );
 
     let allAssets: any[] = [];
     let offset = 0;
@@ -41,25 +45,32 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       requestCount++;
       console.log(`[IP Check] API request #${requestCount}, offset: ${offset}`);
 
+      const requestBody = {
+        includeLicenses: false,
+        moderated: false,
+        orderBy: "blockNumber",
+        orderDirection: "desc",
+        pagination: {
+          limit,
+          offset,
+        },
+        where: {
+          ownerAddress: trimmedAddress,
+        },
+      };
+
+      console.log(
+        `[IP Check] Request body:`,
+        JSON.stringify(requestBody, null, 2),
+      );
+
       const response = await fetch("https://api.storyapis.com/api/v4/assets", {
         method: "POST",
         headers: {
           "X-Api-Key": apiKey,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          includeLicenses: false,
-          moderated: false,
-          orderBy: "blockNumber",
-          orderDirection: "desc",
-          pagination: {
-            limit,
-            offset,
-          },
-          where: {
-            ownerAddress: trimmedAddress,
-          },
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

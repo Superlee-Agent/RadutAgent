@@ -1707,27 +1707,27 @@ const IpAssistant = () => {
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
-                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-lg">✨</span>
-                                  <div className="font-bold text-[#FF4DA6]">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
+                                <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
+                                  <span className="text-base md:text-lg flex-shrink-0">✨</span>
+                                  <div className="font-bold text-[#FF4DA6] text-xs md:text-sm break-words">
                                     STORY OG CARD NFT ELIGIBLE
                                   </div>
                                 </div>
-                                <div className="text-xs text-slate-300">
+                                <div className="text-xs text-slate-300 leading-tight">
                                   Congratulations! You are eligible for a STORY
                                   OG CARD NFT.
                                 </div>
                               </div>
                             ) : (
-                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-lg">ℹ️</span>
-                                  <div className="font-bold text-slate-300">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
+                                <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
+                                  <span className="text-base md:text-lg flex-shrink-0">ℹ️</span>
+                                  <div className="font-bold text-slate-300 text-xs md:text-sm">
                                     NOT ELIGIBLE
                                   </div>
                                 </div>
-                                <div className="text-xs text-slate-400">
+                                <div className="text-xs text-slate-400 leading-tight">
                                   You are not eligible for a STORY OG CARD NFT
                                   at this time.
                                 </div>

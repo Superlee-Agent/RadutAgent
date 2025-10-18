@@ -814,12 +814,12 @@ const IpAssistant = () => {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API Error: ${response.status}`);
+        throw new Error(data.error || `API Error: ${response.status}`);
       }
 
-      const data = await response.json();
       const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>

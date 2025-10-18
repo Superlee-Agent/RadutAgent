@@ -42,16 +42,20 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       });
 
       if (!response.ok) {
+        let errorMessage = `Failed to fetch IP assets: ${response.status}`;
         try {
           const errorData = await response.json();
+          if (errorData?.message) {
+            errorMessage = errorData.message;
+          } else if (errorData?.error) {
+            errorMessage = errorData.error;
+          }
           console.error(`Story API Error: ${response.status}`, errorData);
-        } catch {
-          const errorText = await response.text();
-          console.error(`Story API Error: ${response.status} - ${errorText}`);
+        } catch (e) {
+          // Body might not be JSON or already consumed, just log the status
+          console.error(`Story API Error: ${response.status} - Could not parse response body`);
         }
-        return res.status(response.status).json({
-          error: `Failed to fetch IP assets: ${response.status}`,
-        });
+        return res.status(response.status).json({ error: errorMessage });
       }
 
       const data = await response.json();

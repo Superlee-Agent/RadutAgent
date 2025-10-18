@@ -477,9 +477,11 @@ const IpAssistant = () => {
           return;
         }
 
-        if (!response.ok) {
-          const text = await response.text().catch(() => "");
-          console.error("/api/upload failed:", response.status, text);
+        let data: any;
+        try {
+          data = await response.json();
+        } catch (e) {
+          console.error("/api/upload failed: could not parse response", response.status);
           autoScrollNextRef.current = false;
           pushMessage({
             from: "bot",
@@ -490,7 +492,17 @@ const IpAssistant = () => {
           return;
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+          console.error("/api/upload failed:", response.status, data);
+          autoScrollNextRef.current = false;
+          pushMessage({
+            from: "bot",
+            text: "Image analysis failed.",
+            ts: getCurrentTimestamp(),
+          });
+          setWaiting(false);
+          return;
+        }
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 

@@ -157,7 +157,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated",
     notes:
       "Original non-AI image; Regular person's face (not famous); not fully visible (cropped)",
-    registrationStatus: "✅ IP can be registered",
+    registrationStatus: "�� IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -826,6 +826,7 @@ const IpAssistant = () => {
 
     const trimmedAddress = address.trim();
     const requestId = `ip-check-${Date.now()}-${Math.random()}`;
+    const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
 
     try {
       setIpCheckLoading(requestId);
@@ -837,59 +838,103 @@ const IpAssistant = () => {
         requestId,
       );
 
-      const response = await fetch("/api/check-ip-assets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          address: trimmedAddress,
-        }),
-      });
+      // Check cache first
+      const cachedResult = ipCheckCacheRef.current.get(trimmedAddress);
+      const now = Date.now();
+      const isCacheValid =
+        cachedResult && now - cachedResult.timestamp < CACHE_TTL_MS;
 
-      console.log(
-        "[IP Check] Response status:",
-        response.status,
-        "ok:",
-        response.ok,
-        "requestId:",
-        requestId,
-      );
+      let totalCount: number;
+      let originalCount: number;
+      let remixCount: number;
 
-      let data: any;
-      try {
-        data = await response.json();
-        console.log("[IP Check] Response data:", data, "requestId:", requestId);
-      } catch (parseError) {
-        console.error(
-          "[IP Check] Failed to parse response:",
-          parseError,
+      if (isCacheValid && cachedResult) {
+        console.log(
+          "[IP Check] Using cached result for address:",
+          trimmedAddress,
           "requestId:",
           requestId,
         );
-        throw new Error("Invalid response from server");
-      }
-
-      if (!response.ok) {
-        const errorMsg = data?.error || `API Error: ${response.status}`;
-        console.error(
-          "[IP Check] API error:",
-          errorMsg,
+        totalCount = cachedResult.totalCount;
+        originalCount = cachedResult.originalCount;
+        remixCount = cachedResult.remixCount;
+      } else {
+        // Cache miss or expired, fetch from API
+        console.log(
+          "[IP Check] Cache miss or expired, fetching from API for address:",
+          trimmedAddress,
           "requestId:",
           requestId,
         );
-        throw new Error(errorMsg);
+
+        const response = await fetch("/api/check-ip-assets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            address: trimmedAddress,
+          }),
+        });
+
+        console.log(
+          "[IP Check] Response status:",
+          response.status,
+          "ok:",
+          response.ok,
+          "requestId:",
+          requestId,
+        );
+
+        let data: any;
+        try {
+          data = await response.json();
+          console.log("[IP Check] Response data:", data, "requestId:", requestId);
+        } catch (parseError) {
+          console.error(
+            "[IP Check] Failed to parse response:",
+            parseError,
+            "requestId:",
+            requestId,
+          );
+          throw new Error("Invalid response from server");
+        }
+
+        if (!response.ok) {
+          const errorMsg = data?.error || `API Error: ${response.status}`;
+          console.error(
+            "[IP Check] API error:",
+            errorMsg,
+            "requestId:",
+            requestId,
+          );
+          throw new Error(errorMsg);
+        }
+
+        totalCount = data.totalCount;
+        originalCount = data.originalCount;
+        remixCount = data.remixCount;
+
+        // Store in cache
+        ipCheckCacheRef.current.set(trimmedAddress, {
+          totalCount,
+          originalCount,
+          remixCount,
+          timestamp: now,
+        });
+
+        console.log("[IP Check] Cached result for address:", trimmedAddress);
       }
 
       console.log("[IP Check] Success:", {
-        totalCount: data.totalCount,
-        originalCount: data.originalCount,
-        remixCount: data.remixCount,
+        totalCount,
+        originalCount,
+        remixCount,
         requestId,
+        fromCache: isCacheValid,
       });
-      const { totalCount, originalCount, remixCount } = data;
 
-      // Only update the specific pending message that matches this request
+      // Update the specific pending message that matches this request
       setMessages((prev) => {
         let foundPending = false;
         const updated = prev.map((msg) => {

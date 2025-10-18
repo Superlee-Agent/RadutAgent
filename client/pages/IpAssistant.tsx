@@ -804,61 +804,23 @@ const IpAssistant = () => {
     try {
       setIpCheckLoading(loadingKey);
 
-      let allAssets: any[] = [];
-      let offset = 0;
-      let hasMore = true;
-      const limit = 100;
+      const response = await fetch("/api/check-ip-assets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: trimmedAddress,
+        }),
+      });
 
-      while (hasMore) {
-        const response = await fetch(
-          "https://api.storyapis.com/api/v4/assets",
-          {
-            method: "POST",
-            headers: {
-              "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              where: {
-                ownerAddress: trimmedAddress,
-              },
-              pagination: {
-                limit,
-                offset,
-              },
-            }),
-          },
-        );
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        const assets = Array.isArray(data) ? data : data?.data || [];
-        allAssets = allAssets.concat(assets);
-
-        const pagination = data?.pagination;
-        hasMore = pagination?.hasMore === true;
-        offset += limit;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API Error: ${response.status}`);
       }
 
-      const assets = allAssets;
-
-      // Validasi: parentsCount === 0 atau tidak ada = original (root IP)
-      // parentsCount > 0 = derivative/remix (memiliki parent IP)
-      const originalCount = assets.filter((asset: any) => {
-        const parentCount = asset.parentsCount ?? 0;
-        return parentCount === 0;
-      }).length;
-
-      const remixCount = assets.filter((asset: any) => {
-        const parentCount = asset.parentsCount ?? 0;
-        return parentCount > 0;
-      }).length;
-
-      const totalCount = assets.length;
+      const data = await response.json();
+      const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>
         prev.map((msg) =>

@@ -42,8 +42,13 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Story API Error: ${response.status} - ${errorText}`);
+        try {
+          const errorData = await response.json();
+          console.error(`Story API Error: ${response.status}`, errorData);
+        } catch {
+          const errorText = await response.text();
+          console.error(`Story API Error: ${response.status} - ${errorText}`);
+        }
         return res.status(response.status).json({
           error: `Failed to fetch IP assets: ${response.status}`,
         });

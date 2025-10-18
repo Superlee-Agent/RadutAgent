@@ -1592,7 +1592,7 @@ const IpAssistant = () => {
 
             if (msg.from === "ip-check") {
               const ipCheckMsg = msg as any;
-              const isLoading = ipCheckLoading === `ip-check-${ipCheckMsg.ts}`;
+              const isLoading = ipCheckLoading !== null && ipCheckMsg.status === "pending";
 
               if (ipCheckMsg.status === "pending") {
                 return (

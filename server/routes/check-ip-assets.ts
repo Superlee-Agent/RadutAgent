@@ -83,13 +83,17 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       offset += limit;
     }
 
+    // Filter assets by whether they have parent assets (remixes) or not (originals)
+    // parentsCount indicates number of parent IPs this asset is derived from
     const originalCount = allAssets.filter((asset: any) => {
-      const parentCount = asset.parentsCount ?? 0;
+      // Original assets have no parents (parentsCount is 0 or undefined)
+      const parentCount = typeof asset.parentsCount === "number" ? asset.parentsCount : 0;
       return parentCount === 0;
     }).length;
 
     const remixCount = allAssets.filter((asset: any) => {
-      const parentCount = asset.parentsCount ?? 0;
+      // Remix assets have at least one parent IP
+      const parentCount = typeof asset.parentsCount === "number" ? asset.parentsCount : 0;
       return parentCount > 0;
     }).length;
 

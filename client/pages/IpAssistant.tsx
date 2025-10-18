@@ -232,7 +232,7 @@ const getMessagePreview = (message: Message) => {
     if (ipMsg.error) {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
-    const eligible = ipMsg.totalCount > 20 ? " ✨ NFT OG CARD ELIGIBLE" : "";
+    const eligible = ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
     return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
@@ -1733,10 +1733,10 @@ const IpAssistant = () => {
                               <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-lg">✨</span>
-                                  <div className="font-bold text-[#FF4DA6]">NFT OG CARD ELIGIBLE</div>
+                                  <div className="font-bold text-[#FF4DA6]">STORY OG CARD NFT ELIGIBLE</div>
                                 </div>
                                 <div className="text-xs text-slate-300">
-                                  Congratulations! You have more than 20 IP assets and are eligible for an NFT OG Card.
+                                  Congratulations! You have more than 20 IP assets and are eligible for a STORY OG CARD NFT.
                                 </div>
                               </div>
                             ) : (
@@ -1746,7 +1746,7 @@ const IpAssistant = () => {
                                   <div className="font-bold text-slate-300">NOT ELIGIBLE</div>
                                 </div>
                                 <div className="text-xs text-slate-400">
-                                  You need more than 20 IP assets to be eligible for an NFT OG Card. Current assets: {ipCheckMsg.totalCount}.
+                                  You need more than 20 IP assets to be eligible for a STORY OG CARD NFT. Current assets: {ipCheckMsg.totalCount}.
                                 </div>
                               </div>
                             )}

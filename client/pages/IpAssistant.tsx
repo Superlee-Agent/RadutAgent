@@ -254,6 +254,20 @@ const IP_ASSISTANT_AVATAR =
 export const STORAGE_KEY = "radut_sessions";
 export const CURRENT_SESSION_KEY = "radut_current_session";
 
+// Clear cache on mobile app load
+if (typeof window !== "undefined") {
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(CURRENT_SESSION_KEY);
+      console.log("[Mobile] Cache cleared on app load");
+    } catch (error) {
+      console.error("Failed to clear mobile cache", error);
+    }
+  }
+}
+
 const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);
   const [input, setInput] = useState("");
@@ -1855,7 +1869,7 @@ const IpAssistant = () => {
       </div>
 
       <form
-        className="chat-input flex items-center gap-3.5 px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
+        className="chat-input flex items-center gap-3.5 px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();
@@ -1897,7 +1911,7 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button

@@ -811,10 +811,6 @@ const IpAssistant = () => {
             where: {
               ownerAddress: trimmedAddress,
             },
-            pagination: {
-              limit: 100,
-              offset: 0,
-            },
           }),
         });
 

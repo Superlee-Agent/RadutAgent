@@ -232,7 +232,7 @@ const getMessagePreview = (message: Message) => {
     if (ipMsg.error) {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
-    return `IP Assets: ${ipMsg.assetCount} (${truncateAddress(ipMsg.address)})`;
+    return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes) - ${truncateAddress(ipMsg.address)}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
     return "(Empty message)";

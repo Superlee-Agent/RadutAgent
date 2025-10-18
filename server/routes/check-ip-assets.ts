@@ -78,30 +78,44 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       let assets: any[] = [];
       let pagination: any = null;
 
+      console.log(`[IP Check] Response structure keys:`, Object.keys(data || {}).slice(0, 10));
+
       if (Array.isArray(data)) {
         assets = data;
-        // If the response is directly an array, there's no pagination info
         hasMore = false;
+        console.log(`[IP Check] Response is direct array with ${assets.length} items`);
       } else if (data?.data && Array.isArray(data.data)) {
         assets = data.data;
         pagination = data?.pagination;
+        console.log(`[IP Check] Response has .data array with ${assets.length} items, pagination:`, pagination);
       } else if (data?.pagination) {
         // Some responses might have pagination but assets elsewhere
         assets = Array.isArray(data?.assets) ? data.assets : [];
         pagination = data.pagination;
+        console.log(`[IP Check] Response has .assets array with ${assets.length} items, pagination:`, pagination);
       } else {
         // Fallback: no assets found
         assets = [];
         hasMore = false;
+        console.log(`[IP Check] No recognized asset structure in response, treating as empty`);
+      }
+
+      // Validate assets are in correct format
+      if (!Array.isArray(assets)) {
+        console.warn(`[IP Check] Assets is not an array:`, typeof assets);
+        assets = [];
       }
 
       allAssets = allAssets.concat(assets);
+      console.log(`[IP Check] Total assets collected so far: ${allAssets.length}`);
 
       if (pagination) {
         hasMore = pagination.hasMore === true;
+        console.log(`[IP Check] Pagination hasMore: ${hasMore}, offset will be: ${offset + limit}`);
       } else {
         // If no pagination info, assume no more pages
         hasMore = false;
+        console.log(`[IP Check] No pagination info, stopping pagination loop`);
       }
       offset += limit;
     }

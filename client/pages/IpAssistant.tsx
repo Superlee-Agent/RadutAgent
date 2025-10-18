@@ -1612,11 +1612,11 @@ const IpAssistant = () => {
                     }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-[0.97rem]">
-                      <div className="text-slate-100">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
+                      <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
-                      <div className="mt-3 flex gap-2">
+                      <div className="mt-2 md:mt-3 flex flex-col sm:flex-row gap-2">
                         <input
                           type="text"
                           value={ipCheckInput}
@@ -1627,7 +1627,7 @@ const IpAssistant = () => {
                             }
                           }}
                           placeholder="0x..."
-                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
                         />
                         <button
                           type="button"
@@ -1635,10 +1635,10 @@ const IpAssistant = () => {
                           disabled={
                             isLoading || ipCheckInput.trim().length === 0
                           }
-                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
                         >
                           {isLoading ? (
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center gap-1 md:gap-2">
                               <span className="dot" />
                               <span className="dot" />
                               <span className="dot" />
@@ -1670,38 +1670,38 @@ const IpAssistant = () => {
                     }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
                       {ipCheckMsg.error ? (
                         <div className="text-red-400">
-                          <div className="font-semibold mb-2">Error</div>
-                          <div className="text-sm">{ipCheckMsg.error}</div>
+                          <div className="font-semibold mb-2 text-sm md:text-base">Error</div>
+                          <div className="text-xs md:text-sm">{ipCheckMsg.error}</div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-[0.97rem] mb-3">
+                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3">
                             Address:{" "}
                             <span className="text-[#FF4DA6]">
                               {truncateAddress(ipCheckMsg.address)}
                             </span>
                           </div>
-                          <div className="space-y-3">
-                            <div className="text-lg font-bold text-[#FF4DA6]">
+                          <div className="space-y-2 md:space-y-3">
+                            <div className="text-base md:text-lg font-bold text-[#FF4DA6]">
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
-                                <div className="text-xs text-slate-400 mb-1">
+                            <div className="grid grid-cols-2 gap-2 md:gap-3">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Original
                                 </div>
-                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
                                   {ipCheckMsg.originalCount}
                                 </div>
                               </div>
-                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
-                                <div className="text-xs text-slate-400 mb-1">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Remixes
                                 </div>
-                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
                                   {ipCheckMsg.remixCount}
                                 </div>
                               </div>

@@ -1692,13 +1692,15 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-result-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
                     transition={{
-                      type: "tween",
-                      duration: 0.3,
-                      ease: [0.22, 1, 0.36, 1],
+                      type: "spring",
+                      duration: 0.6,
+                      bounce: 0.15,
+                      stiffness: 100,
+                      damping: 18,
                     }}
                     layout
                   >

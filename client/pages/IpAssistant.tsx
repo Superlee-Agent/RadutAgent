@@ -1574,7 +1574,7 @@ const IpAssistant = () => {
                           const ctx = analysisContextsRef.current.get(ctxKey);
                           const blob = ctx?.blob;
                           if (!blob)
-                            return alert("No uploaded image to register.");
+                            return alert("Image data is no longer available. Please upload the image again in a new chat to register it.");
                           const ctxKey2 = (msg as any).ctxKey as
                             | string
                             | undefined;
@@ -1659,6 +1659,13 @@ const IpAssistant = () => {
                                 registerState.error,
                             )}
                           </span>
+                        ) : null}
+                        {!analysisContextsRef.current.get(
+                          (msg as any).ctxKey || "",
+                        )?.blob ? (
+                          <div className="mt-2 text-xs text-[#FF4DA6]/70">
+                            💡 Image data not available. Upload the image again to register.
+                          </div>
                         ) : null}
                       </div>
                     </div>

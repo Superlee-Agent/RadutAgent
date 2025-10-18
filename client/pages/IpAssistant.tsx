@@ -119,7 +119,7 @@ const ANSWER_DETAILS: Record<
   "7": {
     type: "Human Generated",
     notes: "Original non-AI image; Contains famous brand/character",
-    registrationStatus: "❌ IP cannot be registered",
+    registrationStatus: "�� IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -816,6 +816,8 @@ const IpAssistant = () => {
     try {
       setIpCheckLoading(loadingKey);
 
+      console.log("[IP Check] Starting check for address:", trimmedAddress);
+
       const response = await fetch("/api/check-ip-assets", {
         method: "POST",
         headers: {
@@ -826,12 +828,24 @@ const IpAssistant = () => {
         }),
       });
 
-      const data = await response.json();
+      console.log("[IP Check] Response status:", response.status, "ok:", response.ok);
 
-      if (!response.ok) {
-        throw new Error(data.error || `API Error: ${response.status}`);
+      let data: any;
+      try {
+        data = await response.json();
+        console.log("[IP Check] Response data:", data);
+      } catch (parseError) {
+        console.error("[IP Check] Failed to parse response:", parseError);
+        throw new Error("Invalid response from server");
       }
 
+      if (!response.ok) {
+        const errorMsg = data?.error || `API Error: ${response.status}`;
+        console.error("[IP Check] API error:", errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      console.log("[IP Check] Success:", { totalCount: data.totalCount, originalCount: data.originalCount, remixCount: data.remixCount });
       const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>

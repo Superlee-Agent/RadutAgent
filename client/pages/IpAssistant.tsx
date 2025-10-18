@@ -232,7 +232,8 @@ const getMessagePreview = (message: Message) => {
     if (ipMsg.error) {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
-    const eligible = ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
+    const eligible =
+      ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
     return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
@@ -792,25 +793,26 @@ const IpAssistant = () => {
     return "(Unknown classification)";
   };
 
-  const checkIpAssets = useCallback(
-    async (address: string) => {
-      if (!address || address.trim().length === 0) {
-        return;
-      }
+  const checkIpAssets = useCallback(async (address: string) => {
+    if (!address || address.trim().length === 0) {
+      return;
+    }
 
-      const trimmedAddress = address.trim();
-      const loadingKey = `ip-check-${Date.now()}`;
+    const trimmedAddress = address.trim();
+    const loadingKey = `ip-check-${Date.now()}`;
 
-      try {
-        setIpCheckLoading(loadingKey);
+    try {
+      setIpCheckLoading(loadingKey);
 
-        let allAssets: any[] = [];
-        let offset = 0;
-        let hasMore = true;
-        const limit = 100;
+      let allAssets: any[] = [];
+      let offset = 0;
+      let hasMore = true;
+      const limit = 100;
 
-        while (hasMore) {
-          const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+      while (hasMore) {
+        const response = await fetch(
+          "https://api.storyapis.com/api/v4/assets",
+          {
             method: "POST",
             headers: {
               "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
@@ -825,73 +827,72 @@ const IpAssistant = () => {
                 offset,
               },
             }),
-          });
+          },
+        );
 
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API Error: ${response.status} - ${errorText}`);
-          }
-
-          const data = await response.json();
-          const assets = Array.isArray(data) ? data : data?.data || [];
-          allAssets = allAssets.concat(assets);
-
-          const pagination = data?.pagination;
-          hasMore = pagination?.hasMore === true;
-          offset += limit;
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
         }
 
-        const assets = allAssets;
+        const data = await response.json();
+        const assets = Array.isArray(data) ? data : data?.data || [];
+        allAssets = allAssets.concat(assets);
 
-        // Validasi: parentsCount === 0 atau tidak ada = original (root IP)
-        // parentsCount > 0 = derivative/remix (memiliki parent IP)
-        const originalCount = assets.filter((asset: any) => {
-          const parentCount = asset.parentsCount ?? 0;
-          return parentCount === 0;
-        }).length;
-
-        const remixCount = assets.filter((asset: any) => {
-          const parentCount = asset.parentsCount ?? 0;
-          return parentCount > 0;
-        }).length;
-
-        const totalCount = assets.length;
-
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.from === "ip-check" && (msg as any).status === "pending"
-              ? {
-                  ...msg,
-                  status: "complete",
-                  address: trimmedAddress,
-                  originalCount,
-                  remixCount,
-                  totalCount,
-                }
-              : msg
-          )
-        );
-        setIpCheckInput("");
-      } catch (error: any) {
-        const errorMessage = error?.message || "Failed to fetch IP assets";
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.from === "ip-check" && (msg as any).status === "pending"
-              ? {
-                  ...msg,
-                  status: "complete",
-                  address: trimmedAddress,
-                  error: errorMessage,
-                }
-              : msg
-          )
-        );
-      } finally {
-        setIpCheckLoading(null);
+        const pagination = data?.pagination;
+        hasMore = pagination?.hasMore === true;
+        offset += limit;
       }
-    },
-    []
-  );
+
+      const assets = allAssets;
+
+      // Validasi: parentsCount === 0 atau tidak ada = original (root IP)
+      // parentsCount > 0 = derivative/remix (memiliki parent IP)
+      const originalCount = assets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount === 0;
+      }).length;
+
+      const remixCount = assets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount > 0;
+      }).length;
+
+      const totalCount = assets.length;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "ip-check" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                address: trimmedAddress,
+                originalCount,
+                remixCount,
+                totalCount,
+              }
+            : msg,
+        ),
+      );
+      setIpCheckInput("");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to fetch IP assets";
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "ip-check" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                address: trimmedAddress,
+                error: errorMessage,
+              }
+            : msg,
+        ),
+      );
+    } finally {
+      setIpCheckLoading(null);
+    }
+  }, []);
 
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1629,7 +1630,8 @@ const IpAssistant = () => {
 
             if (msg.from === "ip-check") {
               const ipCheckMsg = msg as any;
-              const isLoading = ipCheckLoading !== null && ipCheckMsg.status === "pending";
+              const isLoading =
+                ipCheckLoading !== null && ipCheckMsg.status === "pending";
 
               if (ipCheckMsg.status === "pending") {
                 return (
@@ -1668,7 +1670,9 @@ const IpAssistant = () => {
                         <button
                           type="button"
                           onClick={() => checkIpAssets(ipCheckInput)}
-                          disabled={isLoading || ipCheckInput.trim().length === 0}
+                          disabled={
+                            isLoading || ipCheckInput.trim().length === 0
+                          }
                           className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
                         >
                           {isLoading ? (
@@ -1713,7 +1717,10 @@ const IpAssistant = () => {
                       ) : (
                         <div>
                           <div className="text-[0.97rem] mb-3">
-                            Address: <span className="text-[#FF4DA6]">{truncateAddress(ipCheckMsg.address)}</span>
+                            Address:{" "}
+                            <span className="text-[#FF4DA6]">
+                              {truncateAddress(ipCheckMsg.address)}
+                            </span>
                           </div>
                           <div className="space-y-3">
                             <div className="text-lg font-bold text-[#FF4DA6]">
@@ -1721,32 +1728,46 @@ const IpAssistant = () => {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
-                                <div className="text-xs text-slate-400 mb-1">Original</div>
-                                <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.originalCount}</div>
+                                <div className="text-xs text-slate-400 mb-1">
+                                  Original
+                                </div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                  {ipCheckMsg.originalCount}
+                                </div>
                               </div>
                               <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
-                                <div className="text-xs text-slate-400 mb-1">Remixes</div>
-                                <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.remixCount}</div>
+                                <div className="text-xs text-slate-400 mb-1">
+                                  Remixes
+                                </div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">
+                                  {ipCheckMsg.remixCount}
+                                </div>
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
                               <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-lg">✨</span>
-                                  <div className="font-bold text-[#FF4DA6]">STORY OG CARD NFT ELIGIBLE</div>
+                                  <div className="font-bold text-[#FF4DA6]">
+                                    STORY OG CARD NFT ELIGIBLE
+                                  </div>
                                 </div>
                                 <div className="text-xs text-slate-300">
-                                  Congratulations! You are eligible for a STORY OG CARD NFT.
+                                  Congratulations! You are eligible for a STORY
+                                  OG CARD NFT.
                                 </div>
                               </div>
                             ) : (
                               <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-lg">ℹ️</span>
-                                  <div className="font-bold text-slate-300">NOT ELIGIBLE</div>
+                                  <div className="font-bold text-slate-300">
+                                    NOT ELIGIBLE
+                                  </div>
                                 </div>
                                 <div className="text-xs text-slate-400">
-                                  You are not eligible for a STORY OG CARD NFT at this time.
+                                  You are not eligible for a STORY OG CARD NFT
+                                  at this time.
                                 </div>
                               </div>
                             )}

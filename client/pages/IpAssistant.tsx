@@ -314,6 +314,17 @@ const IpAssistant = () => {
   >({});
   const [ipCheckInput, setIpCheckInput] = useState<string>("");
   const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
+  const ipCheckCacheRef = useRef<
+    Map<
+      string,
+      {
+        totalCount: number;
+        originalCount: number;
+        remixCount: number;
+        timestamp: number;
+      }
+    >
+  >(new Map());
 
   useEffect(() => {
     if (activeDetail === null) return;

@@ -430,18 +430,23 @@ button.btn-ghost:focus-visible {
     display: flex;
     flex-direction: column;
   }
-  /* avoid chat messages being hidden behind the sticky input */
+  /* avoid chat messages being hidden behind the fixed input */
   .chat-box {
-    padding-bottom: 64px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    flex-shrink: 1;
   }
   .chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding-left: 12px;
     padding-right: 12px;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
-    background: transparent;
+    box-sizing: border-box;
+    z-index: 50;
   }
   textarea {
     min-height: 48px;

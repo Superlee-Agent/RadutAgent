@@ -147,8 +147,8 @@ export const DashboardLayout = ({
           )}
         </AnimatePresence>
 
-        <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-black">
+        <main className="flex-1 flex min-h-0 md:min-h-[100dvh]">
+          <div className="chat-wrap w-full md:h-full md:min-h-0 flex flex-col bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-black">
             <motion.header
               className="flex items-center gap-4 px-6 py-4 border-b border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 backdrop-blur-xl"
               variants={fadeUp}

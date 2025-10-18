@@ -119,7 +119,7 @@ const ANSWER_DETAILS: Record<
   "7": {
     type: "Human Generated",
     notes: "Original non-AI image; Contains famous brand/character",
-    registrationStatus: "❌ IP cannot be registered",
+    registrationStatus: "�� IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -477,9 +477,14 @@ const IpAssistant = () => {
           return;
         }
 
-        if (!response.ok) {
-          const text = await response.text().catch(() => "");
-          console.error("/api/upload failed:", response.status, text);
+        let data: any;
+        try {
+          data = await response.json();
+        } catch (e) {
+          console.error(
+            "/api/upload failed: could not parse response",
+            response.status,
+          );
           autoScrollNextRef.current = false;
           pushMessage({
             from: "bot",
@@ -490,7 +495,17 @@ const IpAssistant = () => {
           return;
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+          console.error("/api/upload failed:", response.status, data);
+          autoScrollNextRef.current = false;
+          pushMessage({
+            from: "bot",
+            text: "Image analysis failed.",
+            ts: getCurrentTimestamp(),
+          });
+          setWaiting(false);
+          return;
+        }
         let display = "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
@@ -804,6 +819,8 @@ const IpAssistant = () => {
     try {
       setIpCheckLoading(loadingKey);
 
+      console.log("[IP Check] Starting check for address:", trimmedAddress);
+
       const response = await fetch("/api/check-ip-assets", {
         method: "POST",
         headers: {
@@ -814,12 +831,33 @@ const IpAssistant = () => {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API Error: ${response.status}`);
+      console.log(
+        "[IP Check] Response status:",
+        response.status,
+        "ok:",
+        response.ok,
+      );
+
+      let data: any;
+      try {
+        data = await response.json();
+        console.log("[IP Check] Response data:", data);
+      } catch (parseError) {
+        console.error("[IP Check] Failed to parse response:", parseError);
+        throw new Error("Invalid response from server");
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMsg = data?.error || `API Error: ${response.status}`;
+        console.error("[IP Check] API error:", errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      console.log("[IP Check] Success:", {
+        totalCount: data.totalCount,
+        originalCount: data.originalCount,
+        remixCount: data.remixCount,
+      });
       const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>

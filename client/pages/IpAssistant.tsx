@@ -803,27 +803,44 @@ const IpAssistant = () => {
       try {
         setIpCheckLoading(loadingKey);
 
-        const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-          method: "POST",
-          headers: {
-            "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            where: {
-              ownerAddress: trimmedAddress,
-            },
-          }),
-        });
+        let allAssets: any[] = [];
+        let offset = 0;
+        let hasMore = true;
+        const limit = 100;
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorText}`);
+        while (hasMore) {
+          const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+            method: "POST",
+            headers: {
+              "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              where: {
+                ownerAddress: trimmedAddress,
+              },
+              pagination: {
+                limit,
+                offset,
+              },
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
+          }
+
+          const data = await response.json();
+          const assets = Array.isArray(data) ? data : data?.data || [];
+          allAssets = allAssets.concat(assets);
+
+          const pagination = data?.pagination;
+          hasMore = pagination?.hasMore === true;
+          offset += limit;
         }
 
-        const data = await response.json();
-        const assets = Array.isArray(data) ? data : data?.data || [];
-
+        const assets = allAssets;
         const originalCount = assets.filter((asset: any) => !asset.parentsCount || asset.parentsCount === 0).length;
         const remixCount = assets.filter((asset: any) => asset.parentsCount && asset.parentsCount > 0).length;
         const totalCount = assets.length;

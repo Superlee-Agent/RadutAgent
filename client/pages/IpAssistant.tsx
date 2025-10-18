@@ -819,7 +819,12 @@ const IpAssistant = () => {
     try {
       setIpCheckLoading(requestId);
 
-      console.log("[IP Check] Starting check for address:", trimmedAddress, "requestId:", requestId);
+      console.log(
+        "[IP Check] Starting check for address:",
+        trimmedAddress,
+        "requestId:",
+        requestId,
+      );
 
       const response = await fetch("/api/check-ip-assets", {
         method: "POST",
@@ -845,13 +850,23 @@ const IpAssistant = () => {
         data = await response.json();
         console.log("[IP Check] Response data:", data, "requestId:", requestId);
       } catch (parseError) {
-        console.error("[IP Check] Failed to parse response:", parseError, "requestId:", requestId);
+        console.error(
+          "[IP Check] Failed to parse response:",
+          parseError,
+          "requestId:",
+          requestId,
+        );
         throw new Error("Invalid response from server");
       }
 
       if (!response.ok) {
         const errorMsg = data?.error || `API Error: ${response.status}`;
-        console.error("[IP Check] API error:", errorMsg, "requestId:", requestId);
+        console.error(
+          "[IP Check] API error:",
+          errorMsg,
+          "requestId:",
+          requestId,
+        );
         throw new Error(errorMsg);
       }
 
@@ -867,7 +882,11 @@ const IpAssistant = () => {
       setMessages((prev) => {
         let foundPending = false;
         const updated = prev.map((msg) => {
-          if (msg.from === "ip-check" && (msg as any).status === "pending" && !foundPending) {
+          if (
+            msg.from === "ip-check" &&
+            (msg as any).status === "pending" &&
+            !foundPending
+          ) {
             foundPending = true;
             return {
               ...msg,
@@ -885,13 +904,22 @@ const IpAssistant = () => {
       setIpCheckInput("");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to fetch IP assets";
-      console.error("[IP Check] Caught error:", errorMessage, "requestId:", requestId);
+      console.error(
+        "[IP Check] Caught error:",
+        errorMessage,
+        "requestId:",
+        requestId,
+      );
 
       // Only update the specific pending message that matches this request
       setMessages((prev) => {
         let foundPending = false;
         const updated = prev.map((msg) => {
-          if (msg.from === "ip-check" && (msg as any).status === "pending" && !foundPending) {
+          if (
+            msg.from === "ip-check" &&
+            (msg as any).status === "pending" &&
+            !foundPending
+          ) {
             foundPending = true;
             return {
               ...msg,

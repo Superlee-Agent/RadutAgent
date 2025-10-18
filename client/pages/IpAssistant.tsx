@@ -87,7 +87,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Famous person's face; not fully visible (cropped)",
-    registrationStatus: "✅ IP can be registered",
+    registrationStatus: "�� IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -295,6 +295,8 @@ const IpAssistant = () => {
       }
     >
   >({});
+  const [ipCheckInput, setIpCheckInput] = useState<string>("");
+  const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeDetail === null) return;

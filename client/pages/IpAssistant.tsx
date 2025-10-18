@@ -1201,23 +1201,14 @@ const IpAssistant = () => {
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
-                <motion.div
+                <div
                   key={`user-${index}`}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.4,
-                    ease: "easeOut",
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem]">
                     {msg.text}
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1231,28 +1222,18 @@ const IpAssistant = () => {
                   ? msg.verification
                   : null;
 
+              if (index === messages.length - 1) {
+                setTimeout(() => {
+                  chatEndRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 0);
+              }
+
               return (
-                <motion.div
+                <div
                   key={`bot-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.4,
-                    ease: "easeOut",
-                  }}
-                  onAnimationComplete={() => {
-                    if (index === messages.length - 1) {
-                      setTimeout(() => {
-                        chatEndRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }, 0);
-                    }
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem]">
                     <div>{msg.text}</div>
@@ -1394,7 +1375,7 @@ const IpAssistant = () => {
                       </div>
                     ) : null}
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1405,18 +1386,9 @@ const IpAssistant = () => {
               const isManualAI =
                 GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(groupNum);
               return (
-                <motion.div
+                <div
                   key={`register-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{
-                    type: "tween",
-                    duration: 0.4,
-                    ease: "easeOut",
-                  }}
-                  layout
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
@@ -1728,7 +1700,7 @@ const IpAssistant = () => {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             }
 
@@ -1739,18 +1711,9 @@ const IpAssistant = () => {
 
               if (ipCheckMsg.status === "pending") {
                 return (
-                  <motion.div
+                  <div
                     key={`ip-check-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{
-                      type: "tween",
-                      duration: 0.4,
-                      ease: "easeOut",
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
                       <div className="text-slate-100 text-sm md:text-base">
@@ -1789,24 +1752,15 @@ const IpAssistant = () => {
                         </button>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               }
 
               if (ipCheckMsg.status === "complete") {
                 return (
-                  <motion.div
+                  <div
                     key={`ip-check-result-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{
-                      type: "tween",
-                      duration: 0.4,
-                      ease: "easeOut",
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
                       {ipCheckMsg.error ? (
@@ -1883,24 +1837,15 @@ const IpAssistant = () => {
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               }
             }
 
             return (
-              <motion.div
+              <div
                 key={`image-${index}`}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{
-                  type: "tween",
-                  duration: 0.4,
-                  ease: "easeOut",
-                }}
-                layout
               >
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
                   <img
@@ -1915,32 +1860,24 @@ const IpAssistant = () => {
                     }
                   />
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </AnimatePresence>
 
         <AnimatePresence>
           {waiting && (
-            <motion.div
+            <div
               className="flex items-start mb-2 gap-2 px-3 md:px-8"
               aria-live="polite"
               aria-label="Bot is typing"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{
-                type: "tween",
-                duration: 0.3,
-                ease: "easeOut",
-              }}
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />
                 <span className="dot" />
                 <span className="dot" />
               </div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
         <div ref={chatEndRef} />

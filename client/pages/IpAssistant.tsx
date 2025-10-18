@@ -1204,13 +1204,13 @@ const IpAssistant = () => {
                 <motion.div
                   key={`user-${index}`}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  exit={{ opacity: 0, y: 20 }}
                   transition={{
                     type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: 0.4,
+                    ease: "easeOut",
                   }}
                   layout
                 >
@@ -1235,13 +1235,13 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  exit={{ opacity: 0, y: 20 }}
                   transition={{
                     type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: 0.4,
+                    ease: "easeOut",
                   }}
                   onAnimationComplete={() => {
                     if (index === messages.length - 1) {
@@ -1408,13 +1408,13 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  exit={{ opacity: 0, y: 20 }}
                   transition={{
                     type: "tween",
-                    duration: 0.32,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: 0.4,
+                    ease: "easeOut",
                   }}
                   layout
                 >
@@ -1742,15 +1742,13 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
                     transition={{
-                      type: "spring",
-                      duration: 0.5,
-                      bounce: 0.2,
-                      stiffness: 100,
-                      damping: 15,
+                      type: "tween",
+                      duration: 0.4,
+                      ease: "easeOut",
                     }}
                     layout
                   >
@@ -1800,15 +1798,13 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-result-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
                     transition={{
-                      type: "spring",
-                      duration: 0.6,
-                      bounce: 0.15,
-                      stiffness: 100,
-                      damping: 18,
+                      type: "tween",
+                      duration: 0.4,
+                      ease: "easeOut",
                     }}
                     layout
                   >
@@ -1896,13 +1892,13 @@ const IpAssistant = () => {
               <motion.div
                 key={`image-${index}`}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={{
                   type: "tween",
-                  duration: 0.28,
-                  ease: [0.22, 1, 0.36, 1],
+                  duration: 0.4,
+                  ease: "easeOut",
                 }}
                 layout
               >
@@ -1930,9 +1926,14 @@ const IpAssistant = () => {
               className="flex items-start mb-2 gap-2 px-3 md:px-8"
               aria-live="polite"
               aria-label="Bot is typing"
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{
+                type: "tween",
+                duration: 0.3,
+                ease: "easeOut",
+              }}
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />

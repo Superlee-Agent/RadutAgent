@@ -122,22 +122,30 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
 
     // Filter assets by whether they have parent assets (remixes) or not (originals)
     // parentsCount indicates number of parent IPs this asset is derived from
+    console.log(`[IP Check] Starting asset filtering with ${allAssets.length} total assets`);
+
+    // Show sample of first asset to debug structure
+    if (allAssets.length > 0) {
+      console.log(`[IP Check] Sample asset structure:`, Object.keys(allAssets[0]).slice(0, 15));
+      console.log(`[IP Check] First asset parentsCount:`, allAssets[0]?.parentsCount, `(type: ${typeof allAssets[0]?.parentsCount})`);
+    }
+
     const originalCount = allAssets.filter((asset: any) => {
       // Original assets have no parents (parentsCount is 0 or undefined)
-      const parentCount = typeof asset.parentsCount === "number" ? asset.parentsCount : 0;
+      const parentCount = typeof asset?.parentsCount === "number" ? asset.parentsCount : 0;
       return parentCount === 0;
     }).length;
 
     const remixCount = allAssets.filter((asset: any) => {
       // Remix assets have at least one parent IP
-      const parentCount = typeof asset.parentsCount === "number" ? asset.parentsCount : 0;
+      const parentCount = typeof asset?.parentsCount === "number" ? asset.parentsCount : 0;
       return parentCount > 0;
     }).length;
 
     const totalCount = allAssets.length;
 
     // Log results for debugging
-    console.log(`IP Check - Address: ${trimmedAddress}, Total: ${totalCount}, Original: ${originalCount}, Remix: ${remixCount}`);
+    console.log(`[IP Check] FINAL RESULT - Address: ${trimmedAddress}, Total: ${totalCount}, Original: ${originalCount}, Remix: ${remixCount}`);
 
     res.json({
       address: trimmedAddress,

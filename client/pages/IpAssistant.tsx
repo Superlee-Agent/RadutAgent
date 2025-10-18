@@ -1746,7 +1746,7 @@ const IpAssistant = () => {
                                   <div className="font-bold text-slate-300">NOT ELIGIBLE</div>
                                 </div>
                                 <div className="text-xs text-slate-400">
-                                  You need more than 20 IP assets to be eligible for a STORY OG CARD NFT. Current assets: {ipCheckMsg.totalCount}.
+                                  You are not eligible for a STORY OG CARD NFT at this time.
                                 </div>
                               </div>
                             )}

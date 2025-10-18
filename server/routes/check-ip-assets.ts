@@ -50,11 +50,36 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       }
 
       const data = await response.json();
-      const assets = Array.isArray(data) ? data : data?.data || [];
+
+      // Handle different response formats from the Story API
+      let assets: any[] = [];
+      let pagination: any = null;
+
+      if (Array.isArray(data)) {
+        assets = data;
+        // If the response is directly an array, there's no pagination info
+        hasMore = false;
+      } else if (data?.data && Array.isArray(data.data)) {
+        assets = data.data;
+        pagination = data?.pagination;
+      } else if (data?.pagination) {
+        // Some responses might have pagination but assets elsewhere
+        assets = Array.isArray(data?.assets) ? data.assets : [];
+        pagination = data.pagination;
+      } else {
+        // Fallback: no assets found
+        assets = [];
+        hasMore = false;
+      }
+
       allAssets = allAssets.concat(assets);
 
-      const pagination = data?.pagination;
-      hasMore = pagination?.hasMore === true;
+      if (pagination) {
+        hasMore = pagination.hasMore === true;
+      } else {
+        // If no pagination info, assume no more pages
+        hasMore = false;
+      }
       offset += limit;
     }
 

@@ -1067,45 +1067,7 @@ const IpAssistant = () => {
         <div className="pl-10 space-y-4">
           <div>
             <div className="text-sm font-semibold text-[#FF4DA6]">
-              Current chat
-            </div>
-            <div className="mt-2 space-y-2">
-              {messages.length === 0 ? (
-                <div className="text-xs text-[#BD4385]">No messages yet</div>
-              ) : (
-                [...messages]
-                  .slice(-6)
-                  .reverse()
-                  .map((message, index) => (
-                    <div
-                      key={`current-${index}-${message.from}`}
-                      className="rounded-md border border-[#FF4DA6]/20 bg-black/40 px-3 py-2 text-xs text-slate-300"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-[#FF4DA6]">
-                          {message.from === "bot"
-                            ? "Assistant"
-                            : message.from === "user"
-                              ? "You"
-                              : "You"}
-                        </span>
-                        {message.ts ? (
-                          <span className="text-[10px] text-slate-400">
-                            {message.ts}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className="mt-1 text-slate-200">
-                        {getMessagePreview(message)}
-                      </div>
-                    </div>
-                  ))
-              )}
-            </div>
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">
-              Saved conversations
+              Sessions
             </div>
             <div className="mt-2 space-y-2">
               {sessions.length === 0 ? (

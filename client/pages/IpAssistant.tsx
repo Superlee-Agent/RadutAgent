@@ -232,7 +232,8 @@ const getMessagePreview = (message: Message) => {
     if (ipMsg.error) {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
-    return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes) - ${truncateAddress(ipMsg.address)}`;
+    const eligible = ipMsg.totalCount > 20 ? " ✨ NFT OG CARD ELIGIBLE" : "";
+    return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
     return "(Empty message)";

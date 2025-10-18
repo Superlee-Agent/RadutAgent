@@ -87,7 +87,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Famous person's face; not fully visible (cropped)",
-    registrationStatus: "�� IP can be registered",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -775,6 +775,73 @@ const IpAssistant = () => {
     if (info) return `${info.type} · ${info.notes}.`;
     return "(Unknown classification)";
   };
+
+  const checkIpAssets = useCallback(
+    async (address: string) => {
+      if (!address || address.trim().length === 0) {
+        return;
+      }
+
+      const trimmedAddress = address.trim();
+      const ctxKey = `ip-check-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      try {
+        setIpCheckLoading(ctxKey);
+
+        const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+          method: "POST",
+          headers: {
+            "X-API-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            where: {
+              owner: trimmedAddress,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        const assets = Array.isArray(data) ? data : data?.data || [];
+        const assetCount = assets.length;
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "ip-check" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  address: trimmedAddress,
+                  assetCount,
+                }
+              : msg
+          )
+        );
+      } catch (error: any) {
+        const errorMessage = error?.message || "Failed to fetch IP assets";
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "ip-check" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  address: trimmedAddress,
+                  error: errorMessage,
+                }
+              : msg
+          )
+        );
+      } finally {
+        setIpCheckLoading(null);
+      }
+    },
+    []
+  );
 
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {

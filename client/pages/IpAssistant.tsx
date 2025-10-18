@@ -1577,6 +1577,101 @@ const IpAssistant = () => {
               );
             }
 
+            if (msg.from === "ip-check") {
+              const ipCheckMsg = msg as any;
+              const isLoading = ipCheckLoading === `ip-check-${ipCheckMsg.ts}`;
+
+              if (ipCheckMsg.status === "pending") {
+                return (
+                  <motion.div
+                    key={`ip-check-${index}`}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{
+                      type: "tween",
+                      duration: 0.3,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    layout
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-[0.97rem]">
+                      <div className="text-slate-100">
+                        Please enter a wallet address to check your IP assets:
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          type="text"
+                          value={ipCheckInput}
+                          onChange={(e) => setIpCheckInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !isLoading) {
+                              checkIpAssets(ipCheckInput);
+                            }
+                          }}
+                          placeholder="0x..."
+                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => checkIpAssets(ipCheckInput)}
+                          disabled={isLoading || ipCheckInput.trim().length === 0}
+                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center gap-2">
+                              <span className="dot" />
+                              <span className="dot" />
+                              <span className="dot" />
+                            </span>
+                          ) : (
+                            "Check"
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              if (ipCheckMsg.status === "complete") {
+                return (
+                  <motion.div
+                    key={`ip-check-result-${index}`}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{
+                      type: "tween",
+                      duration: 0.3,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    layout
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
+                      {ipCheckMsg.error ? (
+                        <div className="text-red-400">
+                          <div className="font-semibold mb-2">Error</div>
+                          <div className="text-sm">{ipCheckMsg.error}</div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-[0.97rem] mb-2">
+                            Address: <span className="text-[#FF4DA6]">{truncateAddress(ipCheckMsg.address)}</span>
+                          </div>
+                          <div className="text-lg font-bold text-[#FF4DA6]">
+                            Total IP Assets: {ipCheckMsg.assetCount}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              }
+            }
+
             return (
               <motion.div
                 key={`image-${index}`}

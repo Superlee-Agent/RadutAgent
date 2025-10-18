@@ -15,15 +15,22 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
 
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {
+      console.error("[IP Check] Story API key not configured");
       return res.status(500).json({ error: "Story API key not configured" });
     }
+
+    console.log("[IP Check] Starting asset fetch for address:", trimmedAddress);
 
     let allAssets: any[] = [];
     let offset = 0;
     let hasMore = true;
     const limit = 100;
+    let requestCount = 0;
 
     while (hasMore) {
+      requestCount++;
+      console.log(`[IP Check] API request #${requestCount}, offset: ${offset}`);
+
       const response = await fetch("https://api.storyapis.com/api/v4/assets", {
         method: "POST",
         headers: {

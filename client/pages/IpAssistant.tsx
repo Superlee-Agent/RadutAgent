@@ -481,7 +481,10 @@ const IpAssistant = () => {
         try {
           data = await response.json();
         } catch (e) {
-          console.error("/api/upload failed: could not parse response", response.status);
+          console.error(
+            "/api/upload failed: could not parse response",
+            response.status,
+          );
           autoScrollNextRef.current = false;
           pushMessage({
             from: "bot",
@@ -828,7 +831,12 @@ const IpAssistant = () => {
         }),
       });
 
-      console.log("[IP Check] Response status:", response.status, "ok:", response.ok);
+      console.log(
+        "[IP Check] Response status:",
+        response.status,
+        "ok:",
+        response.ok,
+      );
 
       let data: any;
       try {
@@ -845,7 +853,11 @@ const IpAssistant = () => {
         throw new Error(errorMsg);
       }
 
-      console.log("[IP Check] Success:", { totalCount: data.totalCount, originalCount: data.originalCount, remixCount: data.remixCount });
+      console.log("[IP Check] Success:", {
+        totalCount: data.totalCount,
+        originalCount: data.originalCount,
+        remixCount: data.remixCount,
+      });
       const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>

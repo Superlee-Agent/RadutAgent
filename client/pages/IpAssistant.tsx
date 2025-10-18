@@ -804,12 +804,16 @@ const IpAssistant = () => {
         const response = await fetch("https://api.storyapis.com/api/v4/assets", {
           method: "POST",
           headers: {
-            "X-API-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
+            "X-Api-Key": "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             where: {
-              owner: trimmedAddress,
+              ownerAddress: trimmedAddress,
+            },
+            pagination: {
+              limit: 100,
+              offset: 0,
             },
           }),
         });

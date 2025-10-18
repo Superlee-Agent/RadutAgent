@@ -796,10 +796,10 @@ const IpAssistant = () => {
       }
 
       const trimmedAddress = address.trim();
-      const ctxKey = `ip-check-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const loadingKey = `ip-check-${Date.now()}`;
 
       try {
-        setIpCheckLoading(ctxKey);
+        setIpCheckLoading(loadingKey);
 
         const response = await fetch("https://api.storyapis.com/api/v4/assets", {
           method: "POST",

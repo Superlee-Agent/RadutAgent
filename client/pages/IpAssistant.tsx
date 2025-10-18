@@ -1067,9 +1067,7 @@ const IpAssistant = () => {
         </button>
         <div className="pl-10 space-y-4">
           <div>
-            <div className="text-sm font-semibold text-[#FF4DA6]">
-              Sessions
-            </div>
+            <div className="text-sm font-semibold text-[#FF4DA6]">Sessions</div>
             <div className="mt-2 space-y-2">
               {sessions.length === 0 ? (
                 <div className="text-xs text-[#BD4385]">No saved chats</div>
@@ -1574,7 +1572,9 @@ const IpAssistant = () => {
                           const ctx = analysisContextsRef.current.get(ctxKey);
                           const blob = ctx?.blob;
                           if (!blob)
-                            return alert("Image data is no longer available. Please upload the image again in a new chat to register it.");
+                            return alert(
+                              "Image data is no longer available. Please upload the image again in a new chat to register it.",
+                            );
                           const ctxKey2 = (msg as any).ctxKey as
                             | string
                             | undefined;
@@ -1664,7 +1664,8 @@ const IpAssistant = () => {
                           (msg as any).ctxKey || "",
                         )?.blob ? (
                           <div className="mt-2 text-xs text-[#FF4DA6]/70">
-                            💡 Image data not available. Upload the image again to register.
+                            💡 Image data not available. Upload the image again
+                            to register.
                           </div>
                         ) : null}
                       </div>

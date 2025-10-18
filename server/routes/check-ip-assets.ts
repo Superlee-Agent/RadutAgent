@@ -8,10 +8,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: "Address is required" });
     }
 
-    const trimmedAddress = address.trim().toLowerCase();
+    const trimmedAddress = address.trim();
 
-    // Validate Ethereum address format (0x + 40 hex characters)
-    if (!/^0x[a-f0-9]{40}$/.test(trimmedAddress)) {
+    // Validate Ethereum address format (0x + 40 hex characters) - case insensitive
+    if (!/^0x[a-fA-F0-9]{40}$/.test(trimmedAddress)) {
       console.error(
         `[IP Check] Invalid address format: "${address}" (trimmed: "${trimmedAddress}", length: ${trimmedAddress.length})`,
       );

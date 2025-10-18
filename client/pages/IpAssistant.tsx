@@ -35,7 +35,9 @@ export type Message =
       from: "ip-check";
       status: "pending" | "loading" | "complete";
       address?: string;
-      assetCount?: number;
+      originalCount?: number;
+      remixCount?: number;
+      totalCount?: number;
       error?: string;
       ts?: string;
     };

@@ -1736,7 +1736,7 @@ const IpAssistant = () => {
                                   <div className="font-bold text-[#FF4DA6]">STORY OG CARD NFT ELIGIBLE</div>
                                 </div>
                                 <div className="text-xs text-slate-300">
-                                  Congratulations! You have more than 20 IP assets and are eligible for a STORY OG CARD NFT.
+                                  Congratulations! You are eligible for a STORY OG CARD NFT.
                                 </div>
                               </div>
                             ) : (

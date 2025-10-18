@@ -672,6 +672,13 @@ const IpAssistant = () => {
         });
         setTimeout(() => uploadRef.current?.click(), 400);
       }
+    } else if (value.toLowerCase() === "check ip") {
+      autoScrollNextRef.current = false;
+      pushMessage({
+        from: "ip-check",
+        status: "pending",
+        ts: getCurrentTimestamp(),
+      });
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
     }

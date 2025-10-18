@@ -90,6 +90,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
         console.log(
           `[IP Check] API request #${requestCount} succeeded, received ${Array.isArray(data) ? data.length : data?.data?.length || 0} assets`,
         );
+        console.log(
+          `[IP Check] Raw API response:`,
+          JSON.stringify(data, null, 2).substring(0, 500),
+        );
       } catch (parseError) {
         console.error(
           `[IP Check] Failed to parse Story API response:`,

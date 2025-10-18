@@ -99,6 +99,9 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
 
     const totalCount = allAssets.length;
 
+    // Log results for debugging
+    console.log(`IP Check - Address: ${trimmedAddress}, Total: ${totalCount}, Original: ${originalCount}, Remix: ${remixCount}`);
+
     res.json({
       address: trimmedAddress,
       totalCount,

@@ -889,7 +889,12 @@ const IpAssistant = () => {
         let data: any;
         try {
           data = await response.json();
-          console.log("[IP Check] Response data:", data, "requestId:", requestId);
+          console.log(
+            "[IP Check] Response data:",
+            data,
+            "requestId:",
+            requestId,
+          );
         } catch (parseError) {
           console.error(
             "[IP Check] Failed to parse response:",

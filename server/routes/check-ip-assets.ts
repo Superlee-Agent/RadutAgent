@@ -15,12 +15,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       console.error(
         `[IP Check] Invalid address format: "${address}" (trimmed: "${trimmedAddress}", length: ${trimmedAddress.length})`,
       );
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid Ethereum address format. Expected 0x followed by 40 hexadecimal characters.",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid Ethereum address format. Expected 0x followed by 40 hexadecimal characters.",
+      });
     }
 
     const apiKey = process.env.STORY_API_KEY;

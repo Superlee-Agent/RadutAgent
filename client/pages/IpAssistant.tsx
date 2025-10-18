@@ -138,7 +138,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "✅ Allowed (user-configurable)",
+    aiTraining: "��� Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
@@ -222,13 +222,26 @@ const getMessagePreview = (message: Message) => {
   if ((message as any).from === "register") {
     return `Register IP: ${(message as any).title}`;
   }
-  if (message.text.trim().length === 0) {
+  if ((message as any).from === "ip-check") {
+    const ipMsg = message as any;
+    if (ipMsg.status === "pending") {
+      return "IP Assets Check (pending address input)";
+    }
+    if (ipMsg.error) {
+      return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
+    }
+    return `IP Assets: ${ipMsg.assetCount} (${truncateAddress(ipMsg.address)})`;
+  }
+  if ("text" in message && message.text.trim().length === 0) {
     return "(Empty message)";
   }
-  if (message.text.length <= 40) {
+  if ("text" in message && message.text.length <= 40) {
     return message.text;
   }
-  return `${message.text.slice(0, 40)}...`;
+  if ("text" in message) {
+    return `${message.text.slice(0, 40)}...`;
+  }
+  return "(Unknown message)";
 };
 
 const IP_ASSISTANT_AVATAR =

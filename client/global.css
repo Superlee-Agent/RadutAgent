@@ -417,8 +417,6 @@ button.btn-ghost:focus-visible {
     height: 100%;
     overscroll-behavior: none; /* prevent scroll chaining */
     -webkit-overflow-scrolling: touch;
-    position: fixed;
-    width: 100%;
   }
   /* lock body scroll but allow chat-box to scroll */
   body {
@@ -431,13 +429,13 @@ button.btn-ghost:focus-visible {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    width: 100%;
   }
   /* avoid chat messages being hidden behind the fixed input */
   .chat-box {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     min-height: 0;
+    flex-shrink: 1;
   }
   .chat-input {
     position: fixed;
@@ -447,14 +445,8 @@ button.btn-ghost:focus-visible {
     padding-left: 12px;
     padding-right: 12px;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    width: 100%;
     box-sizing: border-box;
-    z-index: 20;
-  }
-  .chat-input textarea,
-  .chat-input input {
-    position: relative;
-    z-index: 1;
+    z-index: 50;
   }
   textarea {
     min-height: 48px;

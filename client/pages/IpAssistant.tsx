@@ -1679,11 +1679,23 @@ const IpAssistant = () => {
                         </div>
                       ) : (
                         <div>
-                          <div className="text-[0.97rem] mb-2">
+                          <div className="text-[0.97rem] mb-3">
                             Address: <span className="text-[#FF4DA6]">{truncateAddress(ipCheckMsg.address)}</span>
                           </div>
-                          <div className="text-lg font-bold text-[#FF4DA6]">
-                            Total IP Assets: {ipCheckMsg.assetCount}
+                          <div className="space-y-2">
+                            <div className="text-lg font-bold text-[#FF4DA6]">
+                              Total IP Assets: {ipCheckMsg.totalCount}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-1">Original</div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.originalCount}</div>
+                              </div>
+                              <div className="bg-black/40 rounded-lg p-2 border border-slate-600/50">
+                                <div className="text-xs text-slate-400 mb-1">Remixes</div>
+                                <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.remixCount}</div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )}

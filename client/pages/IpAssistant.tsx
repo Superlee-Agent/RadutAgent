@@ -1710,7 +1710,7 @@ const IpAssistant = () => {
                           <div className="text-[0.97rem] mb-3">
                             Address: <span className="text-[#FF4DA6]">{truncateAddress(ipCheckMsg.address)}</span>
                           </div>
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             <div className="text-lg font-bold text-[#FF4DA6]">
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
@@ -1724,6 +1724,17 @@ const IpAssistant = () => {
                                 <div className="text-xl font-bold text-[#FF4DA6]">{ipCheckMsg.remixCount}</div>
                               </div>
                             </div>
+                            {ipCheckMsg.totalCount > 20 && (
+                              <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-lg">✨</span>
+                                  <div className="font-bold text-[#FF4DA6]">NFT OG CARD ELIGIBLE</div>
+                                </div>
+                                <div className="text-xs text-slate-300">
+                                  Congratulations! You have more than 20 IP assets and are eligible for an NFT OG Card.
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}

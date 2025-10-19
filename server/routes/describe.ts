@@ -1,4 +1,3 @@
-import type { RequestHandler, Request, Response } from "express";
 import multer from "multer";
 
 const upload = multer({

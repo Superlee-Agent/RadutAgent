@@ -661,6 +661,18 @@ const IpAssistant = () => {
       // gradut function is empty
     }
     autoScrollNextRef.current = true;
+
+    // On mobile, blur the textarea after sending so the soft keyboard hides
+    if (isMobileRef.current) {
+      try {
+        // immediate blur
+        inputRef.current?.blur?.();
+        // fallback: ensure blur after a short delay
+        setTimeout(() => inputRef.current?.blur?.(), 50);
+      } catch (e) {
+        // ignore
+      }
+    }
   }, [input, pushMessage, runDetection]);
 
   const handleKeyDown = useCallback(

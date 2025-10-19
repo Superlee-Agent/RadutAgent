@@ -93,7 +93,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Famous person's face; not fully visible (cropped)",
-    registrationStatus: "✅ IP can be registered",
+    registrationStatus: "��� IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -493,8 +493,10 @@ const IpAssistant = () => {
   const runDetection = useCallback(
     async (blob: Blob, fileName: string) => {
       // show explicit processing message
+      const processingId = `msg-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
       const processingTs = getCurrentTimestamp();
       pushMessage({
+        id: processingId,
         from: "bot",
         text: "Processing image, please wait…",
         ts: processingTs,

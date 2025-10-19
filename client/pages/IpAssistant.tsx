@@ -1782,6 +1782,22 @@ const IpAssistant = () => {
                       stiffness: 100,
                       damping: 18,
                     }}
+                    onAnimationComplete={() => {
+                      if (
+                        index === messages.length - 1 &&
+                        autoScrollNextRef.current
+                      ) {
+                        if (scrollTimeoutRef.current) {
+                          clearTimeout(scrollTimeoutRef.current);
+                        }
+                        scrollTimeoutRef.current = setTimeout(() => {
+                          chatEndRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                          scrollTimeoutRef.current = null;
+                        }, 50);
+                      }
+                    }}
                     layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">

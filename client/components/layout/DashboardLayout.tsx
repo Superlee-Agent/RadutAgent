@@ -33,10 +33,10 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderBrandHeader = () => (
-    <div className="flex w-full items-center gap-3 rounded-lg border border-[#FF4DA6]/15 px-4 py-2.5 text-sm font-medium text-slate-300">
+    <div className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-300">
       <span
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FF4DA6]/10 border border-[#FF4DA6]/20"
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FF4DA6]/10"
         style={{
           backgroundImage: `url(${BRAND_IMAGE_URL})`,
           backgroundPosition: "center",
@@ -63,9 +63,9 @@ export const DashboardLayout = ({
                   const baseClasses =
                     "flex items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition-colors";
                   const activeClasses =
-                    "bg-[#FF4DA6]/15 text-[#FF4DA6] border border-[#FF4DA6]/30";
+                    "bg-[#FF4DA6]/15 text-[#FF4DA6]";
                   const inactiveClasses =
-                    "text-slate-400 hover:text-slate-200 border border-transparent hover:bg-white/5";
+                    "text-slate-400 hover:text-slate-200 hover:bg-white/5";
                   return [
                     baseClasses,
                     isActive ? activeClasses : inactiveClasses,
@@ -98,7 +98,7 @@ export const DashboardLayout = ({
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-slate-950/80 text-slate-100 py-6 px-4 border-r border-[#FF4DA6]/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
+        <aside className="hidden md:flex w-64 flex-col bg-slate-950/80 text-slate-100 py-6 px-4 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
           {sidebar}
         </aside>
 
@@ -118,7 +118,7 @@ export const DashboardLayout = ({
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-slate-950/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-[#FF4DA6]/10"
+                className="relative w-64 bg-slate-950/90 text-slate-100 py-6 px-4 h-full overflow-y-auto"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -150,7 +150,7 @@ export const DashboardLayout = ({
         <main className="flex-1 flex min-h-0">
           <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-slate-950/40">
             <motion.header
-              className="flex items-center gap-4 px-6 py-3.5 border-b border-[#FF4DA6]/10 bg-slate-950/70"
+              className="flex items-center gap-4 px-6 py-3.5 bg-slate-950/70"
               variants={fadeUp}
               initial="initial"
               animate="animate"
@@ -180,7 +180,7 @@ export const DashboardLayout = ({
                 <img
                   src={avatarSrc}
                   alt="Dashboard avatar"
-                  className="h-8 w-8 rounded-lg object-cover border border-[#FF4DA6]/20"
+                  className="h-8 w-8 rounded-lg object-cover"
                 />
               ) : null}
               <div>

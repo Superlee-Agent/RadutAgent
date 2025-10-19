@@ -331,6 +331,11 @@ const IpAssistant = () => {
     setAiTrainingManual(true);
   }, [activeDetail, resetRegister]);
 
+  useEffect(() => {
+    setIpCheckInput("");
+    setIpCheckLoading(null);
+  }, [messages]);
+
   const primaryWalletAddress = useMemo(() => {
     if (wallets && wallets.length > 0) {
       const walletWithAddress = wallets.find((wallet) => wallet.address);

@@ -161,7 +161,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "✅ Allowed (user-configurable)",
+    aiTraining: "�� Allowed (user-configurable)",
   },
   "12": {
     type: "AI Generated (Animation)",
@@ -1112,21 +1112,22 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent">
-        <AnimatePresence initial={false}>
+      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
+        <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
                   key={`user-${index}`}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
                   transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300,
+                    mass: 0.8,
                   }}
                   layout
                 >

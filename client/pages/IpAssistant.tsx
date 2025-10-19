@@ -324,6 +324,30 @@ const IpAssistant = () => {
     lastScrollRef.current = Date.now();
   }, []);
 
+  // Common motion props for all message bubbles to ensure uniform animation and consistent scrolling behavior
+  const getBubbleMotionProps = useCallback(
+    (index: number) => ({
+      initial: { opacity: 0, x: 20, scale: 0.95 },
+      animate: { opacity: 1, x: 0, scale: 1 },
+      exit: { opacity: 0, x: 20, scale: 0.95 },
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 300,
+        mass: 0.8,
+        delay: Math.min(index * 0.03, 0.15),
+      },
+      layout: true,
+      onAnimationComplete: () => {
+        // when the animation for the last message finishes, ensure immediate scroll
+        if (index === messages.length - 1 && autoScrollNextRef.current) {
+          scrollToBottomImmediate();
+        }
+      },
+    }),
+    [messages.length, scrollToBottomImmediate],
+  );
+
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
 
@@ -1136,21 +1160,7 @@ const IpAssistant = () => {
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
-                <motion.div
-                  key={`user-${index}`}
-                  className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  layout
-                >
+                <motion.div key={`user-${index}`} {...getBubbleMotionProps(index)} className="flex justify-end mb-3 last:mb-1 px-3 md:px-8">
                   <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     {msg.text}
                   </div>
@@ -1169,29 +1179,7 @@ const IpAssistant = () => {
                   : null;
 
               return (
-                <motion.div
-                  key={`bot-${index}`}
-                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  onAnimationComplete={() => {
-                    if (
-                      index === messages.length - 1 &&
-                      autoScrollNextRef.current
-                    ) {
-                      scrollToBottomImmediate();
-                    }
-                  }}
-                  layout
-                >
+                <motion.div key={`bot-${index}`} {...getBubbleMotionProps(index)} className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8">
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     <div className="flex items-center gap-3">
                       {msg.isProcessing ? (
@@ -1382,21 +1370,7 @@ const IpAssistant = () => {
               const isManualAI =
                 GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(groupNum);
               return (
-                <motion.div
-                  key={`register-${index}`}
-                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  layout
-                >
+                <motion.div key={`register-${index}`} {...getBubbleMotionProps(index)} className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8">
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm overflow-hidden">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
                       Smart Licensing
@@ -1726,29 +1700,7 @@ const IpAssistant = () => {
 
               if (ipCheckMsg.status === "pending") {
                 return (
-                  <motion.div
-                    key={`ip-check-${index}`}
-                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                    transition={{
-                      type: "spring",
-                      damping: 20,
-                      stiffness: 300,
-                      mass: 0.8,
-                      delay: Math.min(index * 0.03, 0.15),
-                    }}
-                    onAnimationComplete={() => {
-                      if (
-                        index === messages.length - 1 &&
-                        autoScrollNextRef.current
-                      ) {
-                        scrollToBottomImmediate();
-                      }
-                    }}
-                    layout
-                  >
+                  <motion.div key={`ip-check-${index}`} {...getBubbleMotionProps(index)} className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8">
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
@@ -1799,29 +1751,7 @@ const IpAssistant = () => {
 
               if (ipCheckMsg.status === "complete") {
                 return (
-                  <motion.div
-                    key={`ip-check-result-${index}`}
-                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                    transition={{
-                      type: "spring",
-                      duration: 0.6,
-                      bounce: 0.15,
-                      stiffness: 100,
-                      damping: 18,
-                    }}
-                    onAnimationComplete={() => {
-                      if (
-                        index === messages.length - 1 &&
-                        autoScrollNextRef.current
-                      ) {
-                        scrollToBottomImmediate();
-                      }
-                    }}
-                    layout
-                  >
+                  <motion.div key={`ip-check-result-${index}`} {...getBubbleMotionProps(index)} className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8">
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
                       {ipCheckMsg.error ? (
                         <div className="text-red-400">
@@ -1903,21 +1833,7 @@ const IpAssistant = () => {
             }
 
             return (
-              <motion.div
-                key={`image-${index}`}
-                className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                transition={{
-                  type: "spring",
-                  damping: 20,
-                  stiffness: 300,
-                  mass: 0.8,
-                  delay: Math.min(index * 0.03, 0.15),
-                }}
-                layout
-              >
+              <motion.div key={`image-${index}`} {...getBubbleMotionProps(index)} className="flex justify-end mb-3 last:mb-1 px-3 md:px-8">
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
                   <img
                     src={msg.url}

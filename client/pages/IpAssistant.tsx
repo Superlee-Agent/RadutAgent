@@ -101,7 +101,7 @@ const ANSWER_DETAILS: Record<
       "AI-generated image; Regular person's face (not famous); full face visible",
     registrationStatus: "❌ Cannot be registered directly",
     action:
-      "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
+      "Take Selfie Photo �� If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
     aiTraining: "❌ Not allowed (fixed)",
@@ -136,7 +136,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated",
     notes:
       "Original non-AI image; Famous person's face; not fully visible (cropped)",
-    registrationStatus: "✅ IP can be registered",
+    registrationStatus: "�� IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -1113,7 +1113,7 @@ const IpAssistant = () => {
       sidebarExtras={sidebarExtras}
     >
       <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
-        <AnimatePresence initial={false} mode="wait">
+        <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
@@ -1128,6 +1128,7 @@ const IpAssistant = () => {
                     damping: 20,
                     stiffness: 300,
                     mass: 0.8,
+                    delay: Math.min(index * 0.03, 0.15),
                   }}
                   layout
                 >

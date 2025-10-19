@@ -141,9 +141,9 @@ function parseJsonLoose(text: string | null | undefined): any | null {
 
 export const handleUpload: any = [
   upload.single("image"),
-  (async (req, res) => {
+  (async (req: any, res: any) => {
     try {
-      const f = (req as any).file as Express.Multer.File | undefined;
+      const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
       const base64 = f.buffer.toString("base64");
       const dataUrl = `data:${f.mimetype};base64,${base64}`;

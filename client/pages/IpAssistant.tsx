@@ -288,7 +288,7 @@ const IpAssistant = () => {
   // throttled scroll helpers to avoid excessive layout work on mobile
   const lastScrollRef = useRef<number>(0);
   const scrollRafRef = useRef<number | null>(null);
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((options?: { behavior?: ScrollBehavior }) => {
     const now = Date.now();
     if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
     lastScrollRef.current = now;
@@ -296,10 +296,19 @@ const IpAssistant = () => {
       if (scrollRafRef.current)
         cancelAnimationFrame(scrollRafRef.current as any);
       scrollRafRef.current = requestAnimationFrame(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        chatEndRef.current?.scrollIntoView({ behavior: options?.behavior ?? "smooth" });
         scrollRafRef.current = null;
       });
     }
+  }, []);
+
+  // Immediate (non-smooth) scroll used when user sends a message to avoid perceived lag
+  const scrollToBottomImmediate = useCallback(() => {
+    if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
+    try {
+      chatEndRef.current?.scrollIntoView({ behavior: "auto" });
+    } catch (e) {}
+    lastScrollRef.current = Date.now();
   }, []);
 
   const { ready, authenticated, login, logout, user } = usePrivy();
@@ -648,6 +657,8 @@ const IpAssistant = () => {
     const ts = getCurrentTimestamp();
     pushMessage({ from: "user", text: value, ts });
     setInput("");
+    // ensure immediate scroll so the user sees their message without delay
+    scrollToBottomImmediate();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {

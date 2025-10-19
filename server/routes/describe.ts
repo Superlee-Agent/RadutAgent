@@ -116,5 +116,5 @@ export const handleDescribe: any = [
       console.error("describe error:", err);
       return res.status(500).json({ error: "describe_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];

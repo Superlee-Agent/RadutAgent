@@ -489,7 +489,12 @@ const IpAssistant = () => {
     async (blob: Blob, fileName: string) => {
       // show explicit processing message
       const processingTs = getCurrentTimestamp();
-      pushMessage({ from: "bot", text: "Processing image, please wait…", ts: processingTs, isProcessing: true });
+      pushMessage({
+        from: "bot",
+        text: "Processing image, please wait…",
+        ts: processingTs,
+        isProcessing: true,
+      });
       setWaiting(true);
       try {
         // First, upload and analyze the image
@@ -509,7 +514,11 @@ const IpAssistant = () => {
           setMessages((prev) =>
             prev.map((m) =>
               m.from === "bot" && m.ts === processingTs
-                ? { ...(m as BotMessage), text: "The image is too large. Please compress or resize before uploading.", isProcessing: false }
+                ? {
+                    ...(m as BotMessage),
+                    text: "The image is too large. Please compress or resize before uploading.",
+                    isProcessing: false,
+                  }
                 : m,
             ),
           );
@@ -524,7 +533,11 @@ const IpAssistant = () => {
           setMessages((prev) =>
             prev.map((m) =>
               m.from === "bot" && m.ts === processingTs
-                ? { ...(m as BotMessage), text: "Image analysis failed.", isProcessing: false }
+                ? {
+                    ...(m as BotMessage),
+                    text: "Image analysis failed.",
+                    isProcessing: false,
+                  }
                 : m,
             ),
           );
@@ -562,7 +575,11 @@ const IpAssistant = () => {
         setMessages((prev) =>
           prev.map((m) =>
             m.from === "bot" && m.ts === processingTs
-              ? { ...(m as BotMessage), text: "Analysis completed.", isProcessing: false }
+              ? {
+                  ...(m as BotMessage),
+                  text: "Analysis completed.",
+                  isProcessing: false,
+                }
               : m,
           ),
         );
@@ -1084,9 +1101,26 @@ const IpAssistant = () => {
                     <div className="flex items-center gap-3">
                       {msg.isProcessing ? (
                         <div className="flex-shrink-0 inline-flex items-center justify-center rounded-full bg-[#FF4DA6]/10 p-1">
-                          <svg className="h-4 w-4 text-[#FF4DA6] animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.15" strokeWidth="3" />
-                            <path d="M21.5 12a9.5 9.5 0 00-9.5-9.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          <svg
+                            className="h-4 w-4 text-[#FF4DA6] animate-spin"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="currentColor"
+                              strokeOpacity="0.15"
+                              strokeWidth="3"
+                            />
+                            <path
+                              d="M21.5 12a9.5 9.5 0 00-9.5-9.5"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                            />
                           </svg>
                         </div>
                       ) : null}
@@ -1857,7 +1891,7 @@ const IpAssistant = () => {
           })}
         </AnimatePresence>
 
-              <div ref={chatEndRef} />
+        <div ref={chatEndRef} />
       </div>
 
       <form

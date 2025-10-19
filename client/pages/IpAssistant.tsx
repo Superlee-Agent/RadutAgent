@@ -1155,7 +1155,10 @@ const IpAssistant = () => {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   onAnimationComplete={() => {
-                    if (index === messages.length - 1 && autoScrollNextRef.current) {
+                    if (
+                      index === messages.length - 1 &&
+                      autoScrollNextRef.current
+                    ) {
                       if (scrollTimeoutRef.current) {
                         clearTimeout(scrollTimeoutRef.current);
                       }
@@ -1679,7 +1682,11 @@ const IpAssistant = () => {
                           value={ipCheckInput}
                           onChange={(e) => setIpCheckInput(e.target.value)}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && !isLoading && isValidEthereumAddress(ipCheckInput)) {
+                            if (
+                              e.key === "Enter" &&
+                              !isLoading &&
+                              isValidEthereumAddress(ipCheckInput)
+                            ) {
                               e.preventDefault();
                               checkIpAssets(ipCheckInput);
                             }
@@ -1833,7 +1840,10 @@ const IpAssistant = () => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
                         loadedImagesRef.current.add(imgKey);
-                        if (index === messages.length - 1 && autoScrollNextRef.current) {
+                        if (
+                          index === messages.length - 1 &&
+                          autoScrollNextRef.current
+                        ) {
                           if (scrollTimeoutRef.current) {
                             clearTimeout(scrollTimeoutRef.current);
                           }
@@ -1850,7 +1860,10 @@ const IpAssistant = () => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
                         loadedImagesRef.current.add(imgKey);
-                        if (index === messages.length - 1 && autoScrollNextRef.current) {
+                        if (
+                          index === messages.length - 1 &&
+                          autoScrollNextRef.current
+                        ) {
                           if (scrollTimeoutRef.current) {
                             clearTimeout(scrollTimeoutRef.current);
                           }

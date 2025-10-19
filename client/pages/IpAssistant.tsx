@@ -1113,7 +1113,7 @@ const IpAssistant = () => {
       sidebarExtras={sidebarExtras}
     >
       <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
-        <AnimatePresence initial={false} mode="popLayout">
+        <AnimatePresence initial={false} mode="wait">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (

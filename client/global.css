@@ -539,9 +539,9 @@ button.btn-ghost:focus-visible {
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
     background: transparent;
   }
-  /* reduce focus outlines and rings on mobile to avoid flicker when keyboard shows */
-  .chat-input textarea:focus,
-  .chat-input button:focus {
+  /* For touch devices, suppress focus visuals for non-keyboard interactions but keep focus-visible for keyboard users */
+  .chat-input textarea:focus:not(:focus-visible),
+  .chat-input button:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
   }
@@ -553,13 +553,18 @@ button.btn-ghost:focus-visible {
     height: 100dvh;
   }
 
-  /* Disable hover and focus visual effects on touch devices to avoid flicker/lines */
+  /* Disable hover and active visual effects on touch devices to avoid flicker/lines, but keep keyboard focus-visible for accessibility */
   .chat-box *:hover,
-  .chat-box *:focus,
-  .chat-box *:active,
-  .chat-box *:focus-within {
+  .chat-box *:active {
     outline: none !important;
     box-shadow: none !important;
     border-color: transparent !important;
+  }
+
+  /* Preserve focus-visible (keyboard) outlines for accessibility on mobile */
+  .chat-box *:focus-visible {
+    outline: 3px solid rgba(255,77,166,0.18) !important;
+    box-shadow: 0 0 0 6px rgba(255,77,166,0.06) !important;
+    border-color: rgba(255,77,166,0.25) !important;
   }
 }

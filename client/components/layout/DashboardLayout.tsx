@@ -33,10 +33,10 @@ export const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderBrandHeader = () => (
-    <div className="flex w-full items-center gap-3 rounded-xl border border-[#FF4DA6]/15 px-4 py-3 text-sm font-medium text-slate-300 bg-gradient-to-r from-[#FF4DA6]/5 to-transparent backdrop-blur-sm hover:border-[#FF4DA6]/25 hover:bg-gradient-to-r hover:from-[#FF4DA6]/10 hover:to-transparent transition-all duration-300">
+    <div className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-300">
       <span
         aria-hidden
-        className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/5 border border-[#FF4DA6]/20"
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FF4DA6]/10"
         style={{
           backgroundImage: `url(${BRAND_IMAGE_URL})`,
           backgroundPosition: "center",
@@ -44,9 +44,7 @@ export const DashboardLayout = ({
           backgroundSize: "cover",
         }}
       />
-      <div className="text-base font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2]">
-        {BRAND_NAME}
-      </div>
+      <div className="text-base font-bold text-[#FF4DA6]">{BRAND_NAME}</div>
     </div>
   );
 
@@ -61,11 +59,10 @@ export const DashboardLayout = ({
                 to={item.to}
                 className={({ isActive }) => {
                   const baseClasses =
-                    "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300";
-                  const activeClasses =
-                    "bg-gradient-to-r from-[#FF4DA6]/20 to-[#FF4DA6]/5 text-[#FF4DA6] border border-[#FF4DA6]/40 shadow-[0_8px_24px_rgba(255,77,166,0.15)]";
+                    "flex items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition-colors";
+                  const activeClasses = "bg-[#FF4DA6]/15 text-[#FF4DA6]";
                   const inactiveClasses =
-                    "text-slate-400 hover:text-slate-200 border border-transparent hover:bg-white/5 hover:border-[#FF4DA6]/20";
+                    "text-slate-400 hover:text-slate-200 hover:bg-white/5";
                   return [
                     baseClasses,
                     isActive ? activeClasses : inactiveClasses,
@@ -73,7 +70,7 @@ export const DashboardLayout = ({
                 }}
                 onClick={() => closeSidebar?.()}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-500 transition-all duration-300 group-hover:bg-slate-700/60 group-hover:text-slate-300">
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-800/50 text-slate-500">
                   <ItemIcon className="h-4 w-4" />
                 </span>
                 <span>{item.label}</span>
@@ -98,7 +95,7 @@ export const DashboardLayout = ({
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100">
       <div className="flex min-h-[100dvh] w-full md:overflow-hidden">
-        <aside className="hidden md:flex w-64 flex-col bg-gradient-to-b from-slate-950/90 via-slate-950/70 to-black/80 text-slate-100 py-6 px-4 border-r border-[#FF4DA6]/10 sticky top-0 max-h-screen min-h-screen overflow-y-auto backdrop-blur-xl">
+        <aside className="hidden md:flex w-64 flex-col bg-slate-950/80 text-slate-100 py-6 px-4 sticky top-0 max-h-screen min-h-screen overflow-y-auto">
           {sidebar}
         </aside>
 
@@ -118,7 +115,7 @@ export const DashboardLayout = ({
                 exit={{ opacity: 0 }}
               />
               <motion.aside
-                className="relative w-64 bg-gradient-to-b from-slate-950/95 via-slate-950/85 to-black/90 text-slate-100 py-6 px-4 h-full overflow-y-auto border-r border-[#FF4DA6]/10 backdrop-blur-xl"
+                className="relative w-64 bg-slate-950/90 text-slate-100 py-6 px-4 h-full overflow-y-auto"
                 initial={{ x: -24, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
@@ -148,9 +145,9 @@ export const DashboardLayout = ({
         </AnimatePresence>
 
         <main className="flex-1 flex min-h-0">
-          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-black">
+          <div className="chat-wrap w-full h-full min-h-0 flex flex-col bg-slate-950/40">
             <motion.header
-              className="flex items-center gap-4 px-6 py-4 border-b border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 backdrop-blur-xl"
+              className="flex items-center gap-4 px-6 py-3.5 bg-slate-950/70"
               variants={fadeUp}
               initial="initial"
               animate="animate"
@@ -180,13 +177,11 @@ export const DashboardLayout = ({
                 <img
                   src={avatarSrc}
                   alt="Dashboard avatar"
-                  className="h-8 w-8 md:h-10 md:w-10 rounded-lg object-cover border border-[#FF4DA6]/20 ring-2 ring-[#FF4DA6]/10"
+                  className="h-8 w-8 rounded-lg object-cover"
                 />
               ) : null}
               <div>
-                <h1 className="text-lg font-bold tracking-wider bg-gradient-to-r from-[#FF4DA6] to-[#ff77c2] bg-clip-text text-transparent">
-                  {title}
-                </h1>
+                <h1 className="text-lg font-bold text-[#FF4DA6]">{title}</h1>
               </div>
               <div className="ml-auto flex items-center gap-3">{actions}</div>
             </motion.header>

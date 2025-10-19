@@ -1053,7 +1053,7 @@ const IpAssistant = () => {
                   .map((message, index) => (
                     <div
                       key={`current-${index}-${message.from}`}
-                      className="rounded-md border border-[#FF4DA6]/20 bg-black/40 px-3 py-2 text-xs text-slate-300"
+                      className="rounded-md bg-black/40 px-3 py-2 text-xs text-slate-300"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-semibold text-[#FF4DA6]">
@@ -1143,10 +1143,10 @@ const IpAssistant = () => {
           aria-pressed={guestMode}
           onClick={() => setGuestMode((v) => !v)}
           className={
-            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 border " +
+            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 " +
             (guestMode
-              ? "bg-[#FF4DA6] text-white border-[#FF4DA6] hover:bg-[#ff77c2]"
-              : "text-[#FF4DA6] border-[#FF4DA6]/50 hover:bg-[#FF4DA6]/15")
+              ? "bg-[#FF4DA6] text-white hover:bg-[#ff77c2]"
+              : "text-[#FF4DA6] hover:bg-[#FF4DA6]/15")
           }
         >
           Guest
@@ -1155,7 +1155,7 @@ const IpAssistant = () => {
           type="button"
           onClick={handleWalletButtonClick}
           disabled={walletButtonDisabled}
-          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {walletButtonText}
         </button>
@@ -1178,9 +1178,9 @@ const IpAssistant = () => {
                 <motion.div
                   key={`user-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
+                  className="flex justify-end mb-2 px-2 md:px-4"
                 >
-                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
+                  <div className="bg-[#ff4da6] text-white px-4 py-2 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-[0.95rem]">
                     {msg.text}
                   </div>
                 </motion.div>
@@ -1201,9 +1201,9 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
                 >
-                  <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
+                  <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
                     <div className="flex items-center gap-3">
                       {msg.isProcessing ? (
                         <div className="flex-shrink-0 inline-flex items-center justify-center rounded-full bg-[#FF4DA6]/10 p-1">
@@ -1396,9 +1396,9 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
                 >
-                  <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm overflow-hidden">
+                  <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
                       Smart Licensing
                     </div>
@@ -1433,7 +1433,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="min-w-0 flex-1 rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    className="min-w-0 flex-1 rounded-md bg-black/30 p-2 text-slate-100"
                                   />
                                   <button
                                     type="button"
@@ -1504,7 +1504,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100 resize-none"
+                                    className="w-full rounded-md bg-black/30 p-2 text-slate-100 resize-none"
                                     rows={3}
                                   />
                                   <button
@@ -1573,7 +1573,7 @@ const IpAssistant = () => {
                             const v = e.target.value;
                             setMintingFee(v === "" ? "" : Number(v));
                           }}
-                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                          className="mt-1 w-full rounded-md bg-black/30 p-2 text-slate-100"
                         />
                       </label>
                       <label className="text-sm text-slate-300">
@@ -1591,7 +1591,7 @@ const IpAssistant = () => {
                               Math.min(100, Math.max(0, isNaN(n) ? 0 : n)),
                             );
                           }}
-                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                          className="mt-1 w-full rounded-md bg-black/30 p-2 text-slate-100"
                         />
                       </label>
                       <label className="text-sm text-slate-300 flex items-center gap-2 sm:col-span-1">
@@ -1677,7 +1677,7 @@ const IpAssistant = () => {
                             ? "Connect wallet or enable guest mode to register"
                             : ""
                         }
-                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
                           ? "Registering…"
@@ -1732,7 +1732,7 @@ const IpAssistant = () => {
                     {...getBubbleMotionProps(index)}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem] overflow-hidden">
+                    <div className="bg-slate-900/70 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
@@ -1752,7 +1752,7 @@ const IpAssistant = () => {
                             }
                           }}
                           placeholder="0x..."
-                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                          className="flex-1 rounded-lg bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/30"
                           aria-label="Wallet address input"
                         />
                         <button
@@ -1761,7 +1761,7 @@ const IpAssistant = () => {
                           disabled={
                             isLoading || !isValidEthereumAddress(ipCheckInput)
                           }
-                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                          className="rounded-lg bg-[#FF4DA6]/20 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
                           aria-label="Check IP assets for wallet address"
                         >
                           {isLoading ? (
@@ -1810,7 +1810,7 @@ const IpAssistant = () => {
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
                             <div className="grid grid-cols-2 gap-2 md:gap-3">
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
                                 <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Original
                                 </div>
@@ -1818,7 +1818,7 @@ const IpAssistant = () => {
                                   {ipCheckMsg.originalCount}
                                 </div>
                               </div>
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
                                 <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Remixes
                                 </div>
@@ -1828,7 +1828,7 @@ const IpAssistant = () => {
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
-                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-[#FF4DA6]/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
                                     ✨
@@ -1843,7 +1843,7 @@ const IpAssistant = () => {
                                 </div>
                               </div>
                             ) : (
-                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-slate-700/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
                                     ℹ️
@@ -1879,7 +1879,7 @@ const IpAssistant = () => {
                     alt="Uploaded"
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
+                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
@@ -1926,7 +1926,7 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+          className="p-2 rounded-lg bg-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           onClick={() => uploadRef.current?.click()}
           onPointerDown={(e) => e.preventDefault()}
           aria-label="Attach image"
@@ -1960,13 +1960,13 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-white/15 md:border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 md:focus-visible:ring-[#FF4DA6]/50 focus-visible:border-white/30 md:focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl bg-slate-900/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 transition-all duration-300 font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button
           type="submit"
           disabled={waiting || !input.trim()}
-          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+          className="p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           aria-label="Send message"
           onPointerDown={(e) => e.preventDefault()}
         >
@@ -2008,7 +2008,7 @@ const IpAssistant = () => {
               transition={{ duration: 0.18 }}
             />
             <motion.div
-              className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl"
+              className="relative z-10 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}

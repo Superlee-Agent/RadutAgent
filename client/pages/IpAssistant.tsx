@@ -1053,7 +1053,7 @@ const IpAssistant = () => {
                   .map((message, index) => (
                     <div
                       key={`current-${index}-${message.from}`}
-                      className="rounded-md border border-[#FF4DA6]/20 bg-black/40 px-3 py-2 text-xs text-slate-300"
+                      className="rounded-md bg-black/40 px-3 py-2 text-xs text-slate-300"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-semibold text-[#FF4DA6]">
@@ -1143,10 +1143,10 @@ const IpAssistant = () => {
           aria-pressed={guestMode}
           onClick={() => setGuestMode((v) => !v)}
           className={
-            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 border " +
+            "inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 " +
             (guestMode
-              ? "bg-[#FF4DA6] text-white border-[#FF4DA6] hover:bg-[#ff77c2]"
-              : "text-[#FF4DA6] border-[#FF4DA6]/50 hover:bg-[#FF4DA6]/15")
+              ? "bg-[#FF4DA6] text-white hover:bg-[#ff77c2]"
+              : "text-[#FF4DA6] hover:bg-[#FF4DA6]/15")
           }
         >
           Guest
@@ -1155,7 +1155,7 @@ const IpAssistant = () => {
           type="button"
           onClick={handleWalletButtonClick}
           disabled={walletButtonDisabled}
-          className="inline-flex items-center rounded-lg border border-[#FF4DA6]/50 px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-[#FF4DA6] transition-colors duration-200 hover:bg-[#FF4DA6]/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/40 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {walletButtonText}
         </button>
@@ -1926,7 +1926,7 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+          className="p-2 rounded-lg bg-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           onClick={() => uploadRef.current?.click()}
           onPointerDown={(e) => e.preventDefault()}
           aria-label="Attach image"
@@ -1960,13 +1960,13 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-white/15 md:border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 md:focus-visible:ring-[#FF4DA6]/50 focus-visible:border-white/30 md:focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl bg-slate-900/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 transition-all duration-300 font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button
           type="submit"
           disabled={waiting || !input.trim()}
-          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+          className="p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           aria-label="Send message"
           onPointerDown={(e) => e.preventDefault()}
         >

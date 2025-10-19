@@ -474,8 +474,23 @@ const IpAssistant = () => {
       (msg as any).id ||
       `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const msgWithId = { ...(msg as any), id } as Message;
-    setMessages((prev) => [...prev, msgWithId]);
-  }, []);
+    setMessages((prev) => {
+      const next = [...prev, msgWithId];
+      // If the message is from the user (text or image), ensure immediate scroll so UI feels responsive
+      if ((msgWithId as any).from === "user" || (msgWithId as any).from === "user-image") {
+        // allow DOM to update then scroll immediately
+        requestAnimationFrame(() => {
+          try {
+            // small timeout to ensure layout is ready
+            setTimeout(() => {
+              if (autoScrollNextRef.current) scrollToBottomImmediate();
+            }, 0);
+          } catch (e) {}
+        });
+      }
+      return next;
+    });
+  }, [scrollToBottomImmediate]);
 
   const saveSession = useCallback((history: Message[]) => {
     if (history.length <= 1) return;

@@ -1810,7 +1810,7 @@ const IpAssistant = () => {
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
                             <div className="grid grid-cols-2 gap-2 md:gap-3">
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
                                 <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Original
                                 </div>
@@ -1818,7 +1818,7 @@ const IpAssistant = () => {
                                   {ipCheckMsg.originalCount}
                                 </div>
                               </div>
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2 border border-slate-600/50">
+                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
                                 <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
                                   Remixes
                                 </div>
@@ -1828,7 +1828,7 @@ const IpAssistant = () => {
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
-                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-[#FF4DA6]/20 to-[#ff77c2]/20 border border-[#FF4DA6]/50">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-[#FF4DA6]/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
                                     ✨
@@ -1843,7 +1843,7 @@ const IpAssistant = () => {
                                 </div>
                               </div>
                             ) : (
-                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-gradient-to-r from-slate-700/20 to-slate-600/20 border border-slate-500/50">
+                              <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-slate-700/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
                                     ℹ️

@@ -1215,7 +1215,18 @@ const IpAssistant = () => {
                           const canRegister =
                             canRegisterByText || canRegisterByGroup;
                           const isAuthEnabled = guestMode || authenticated;
-                          if (!canRegister || !isAuthEnabled) return null;
+                          if (!canRegister) return null;
+                          if (!isAuthEnabled) {
+                            return (
+                              <>
+                                {" "}
+                                <span className="mx-1 text-slate-400">•</span>
+                                <span className="text-[#FF4DA6]/60 text-xs">
+                                  (Connect wallet or use guest mode to register)
+                                </span>
+                              </>
+                            );
+                          }
                           return (
                             <>
                               {" "}

@@ -285,6 +285,22 @@ const IpAssistant = () => {
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadedImagesRef = useRef<Set<string>>(new Set());
 
+  // throttled scroll helpers to avoid excessive layout work on mobile
+  const lastScrollRef = useRef<number>(0);
+  const scrollRafRef = useRef<number | null>(null);
+  const scrollToBottom = useCallback(() => {
+    const now = Date.now();
+    if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
+    lastScrollRef.current = now;
+    if (typeof window !== "undefined") {
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
+      scrollRafRef.current = requestAnimationFrame(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        scrollRafRef.current = null;
+      });
+    }
+  }, []);
+
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
 
@@ -296,13 +312,8 @@ const IpAssistant = () => {
 
   useEffect(() => {
     if (autoScrollNextRef.current) {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      scrollTimeoutRef.current = setTimeout(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        scrollTimeoutRef.current = null;
-      }, 100);
+      // use throttled scroll helper instead of raw timeouts
+      scrollToBottom();
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
@@ -312,6 +323,9 @@ const IpAssistant = () => {
     return () => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
+      }
+      if (scrollRafRef.current) {
+        cancelAnimationFrame(scrollRafRef.current as any);
       }
     };
   }, []);
@@ -1883,15 +1897,8 @@ const IpAssistant = () => {
                           index === messages.length - 1 &&
                           autoScrollNextRef.current
                         ) {
-                          if (scrollTimeoutRef.current) {
-                            clearTimeout(scrollTimeoutRef.current);
-                          }
-                          scrollTimeoutRef.current = setTimeout(() => {
-                            chatEndRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                            scrollTimeoutRef.current = null;
-                          }, 100);
+                          // throttle scrolling for performance
+                          scrollToBottom();
                         }
                       }
                     }}
@@ -1903,15 +1910,8 @@ const IpAssistant = () => {
                           index === messages.length - 1 &&
                           autoScrollNextRef.current
                         ) {
-                          if (scrollTimeoutRef.current) {
-                            clearTimeout(scrollTimeoutRef.current);
-                          }
-                          scrollTimeoutRef.current = setTimeout(() => {
-                            chatEndRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                            scrollTimeoutRef.current = null;
-                          }, 100);
+                          // throttle scrolling for performance
+                          scrollToBottom();
                         }
                       }
                     }}

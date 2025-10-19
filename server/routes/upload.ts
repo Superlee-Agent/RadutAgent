@@ -138,21 +138,43 @@ function parseJsonLoose(text: string | null | undefined): any | null {
   }
 }
 
+const IDP_STORE = new Map<string, { status: number; body: any; ts: number }>();
+
 export const handleUpload: any = [
   upload.single("image"),
   (async (req: any, res: any) => {
     try {
+      // Idempotency support: if client supplies Idempotency-Key header, return cached response
+      const idempotencyKey = (req.get("Idempotency-Key") ||
+        req.get("Idempotency-Key")) as string | undefined;
+      if (idempotencyKey && IDP_STORE.has(idempotencyKey)) {
+        const cached = IDP_STORE.get(idempotencyKey)!;
+        // If cached item is older than 60s, fallthrough and compute again
+        if (Date.now() - cached.ts < 60_000) {
+          res.status(cached.status).json({ ok: true, ...cached.body });
+          return;
+        } else {
+          IDP_STORE.delete(idempotencyKey);
+        }
+      }
+
       const f = (req as any).file as any;
-      if (!f) return res.status(400).json({ error: "no_file" });
+      if (!f)
+        return res
+          .status(400)
+          .json({ ok: false, error: "no_file", message: "No file uploaded" });
       const base64 = f.buffer.toString("base64");
       const dataUrl = `data:${f.mimetype};base64,${base64}`;
 
       if (!process.env.OPENAI_API_KEY) {
         console.error("OPENAI_API_KEY is not configured on the server");
-        return res.status(503).json({
-          error: "openai_api_key_missing",
-          message: "OpenAI API key not configured on the server",
-        });
+        return res
+          .status(503)
+          .json({
+            ok: false,
+            error: "openai_api_key_missing",
+            message: "OpenAI API key not configured on the server",
+          });
       }
 
       const { default: OpenAI } = await import("openai");
@@ -201,7 +223,10 @@ export const handleUpload: any = [
       const parsed = parseJsonLoose(text);
 
       if (!parsed || typeof parsed !== "object") {
-        return res.status(422).json({ error: "parse_failed", raw: text });
+        const body = { ok: false, error: "parse_failed", raw: text };
+        if (idempotencyKey)
+          IDP_STORE.set(idempotencyKey, { status: 422, body, ts: Date.now() });
+        return res.status(422).json(body);
       }
 
       const flags: AnalysisFlags = {
@@ -392,7 +417,7 @@ export const handleUpload: any = [
 
       const display = `This is ${classification}. ${verdict}`;
 
-      return res.status(200).json({
+      const body = {
         group,
         details: flags,
         title,
@@ -400,10 +425,23 @@ export const handleUpload: any = [
         display,
         canRegister,
         isManualAI,
-      });
+      };
+      if (idempotencyKey)
+        IDP_STORE.set(idempotencyKey, { status: 200, body, ts: Date.now() });
+      return res.status(200).json(body);
     } catch (err) {
       console.error("upload error:", err);
-      return res.status(500).json({ error: "analysis_failed" });
+      const body = {
+        ok: false,
+        error: "analysis_failed",
+        message: String(err?.message || "Analysis failed"),
+      };
+      if (req.get("Idempotency-Key") || req.get("Idempotency-Key")) {
+        const key = (req.get("Idempotency-Key") ||
+          req.get("Idempotency-Key")) as string;
+        IDP_STORE.set(key, { status: 500, body, ts: Date.now() });
+      }
+      return res.status(500).json(body);
     }
   }) as any,
 ];

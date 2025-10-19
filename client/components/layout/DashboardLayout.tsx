@@ -180,7 +180,7 @@ export const DashboardLayout = ({
                 <img
                   src={avatarSrc}
                   alt="Dashboard avatar"
-                  className="h-10 w-10 rounded-lg object-cover border border-[#FF4DA6]/20 ring-2 ring-[#FF4DA6]/10"
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-lg object-cover border border-[#FF4DA6]/20 ring-2 ring-[#FF4DA6]/10"
                 />
               ) : null}
               <div>

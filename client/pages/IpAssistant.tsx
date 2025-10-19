@@ -12,18 +12,21 @@ import {
 } from "@/lib/groupLicense";
 
 type BotMessage = {
+  id?: string;
   from: "bot";
   text: string;
   ts?: string;
   verification?: { label: string; code: string } | string | null;
   ctxKey?: string;
+  isProcessing?: boolean;
 };
 
 export type Message =
-  | { from: "user"; text: string; ts?: string }
+  | { id?: string; from: "user"; text: string; ts?: string }
   | BotMessage
-  | { from: "user-image"; url: string; ts?: string }
+  | { id?: string; from: "user-image"; url: string; ts?: string }
   | {
+      id?: string;
       from: "register";
       group: number;
       title: string;
@@ -32,6 +35,7 @@ export type Message =
       ts?: string;
     }
   | {
+      id?: string;
       from: "ip-check";
       status: "pending" | "loading" | "complete";
       address?: string;
@@ -212,6 +216,7 @@ const getCurrentTimestamp = () =>
   });
 
 const getInitialBotMessage = (): BotMessage => ({
+  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   from: "bot",
   text: "Hello, I am Radut Agent. Attach an image and I'll analyze it automatically.",
   ts: getCurrentTimestamp(),
@@ -441,7 +446,11 @@ const IpAssistant = () => {
       : null;
 
   const pushMessage = useCallback((msg: Message) => {
-    setMessages((prev) => [...prev, msg]);
+    const id =
+      (msg as any).id ||
+      `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const msgWithId = { ...(msg as any), id } as Message;
+    setMessages((prev) => [...prev, msgWithId]);
   }, []);
 
   const saveSession = useCallback((history: Message[]) => {
@@ -486,6 +495,16 @@ const IpAssistant = () => {
 
   const runDetection = useCallback(
     async (blob: Blob, fileName: string) => {
+      // show explicit processing message
+      const processingId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const processingTs = getCurrentTimestamp();
+      pushMessage({
+        id: processingId,
+        from: "bot",
+        text: "Processing image, please wait…",
+        ts: processingTs,
+        isProcessing: true,
+      });
       setWaiting(true);
       try {
         // First, upload and analyze the image
@@ -501,11 +520,18 @@ const IpAssistant = () => {
 
         if (response.status === 413) {
           autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "The image is too large. Please compress or resize before uploading.",
-            ts: getCurrentTimestamp(),
-          });
+          // update processing message to error
+          setMessages((prev) =>
+            prev.map((m) =>
+              (m as any).id === processingId
+                ? {
+                    ...(m as BotMessage),
+                    text: "The image is too large. Please compress or resize before uploading.",
+                    isProcessing: false,
+                  }
+                : m,
+            ),
+          );
           setWaiting(false);
           return;
         }
@@ -514,11 +540,17 @@ const IpAssistant = () => {
           const text = await response.text().catch(() => "");
           console.error("/api/upload failed:", response.status, text);
           autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "Image analysis failed.",
-            ts: getCurrentTimestamp(),
-          });
+          setMessages((prev) =>
+            prev.map((m) =>
+              (m as any).id === processingId
+                ? {
+                    ...(m as BotMessage),
+                    text: "Image analysis failed.",
+                    isProcessing: false,
+                  }
+                : m,
+            ),
+          );
           setWaiting(false);
           return;
         }
@@ -548,6 +580,24 @@ const IpAssistant = () => {
             facts: lastAnalysisFactsRef.current || null,
           });
         }
+
+        // update processing message to indicate completion
+        setMessages((prev) =>
+          prev.map((m) =>
+            (m as any).id === processingId
+              ? {
+                  ...(m as BotMessage),
+                  text: "Analysis completed.",
+                  isProcessing: false,
+                }
+              : m,
+          ),
+        );
+
+        // small delay so user sees the 'completed' state before the result bubble
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
+        // push actual result bubble
         pushMessage({
           from: "bot",
           text: display,
@@ -561,11 +611,14 @@ const IpAssistant = () => {
         const message = error?.message
           ? `Image analysis failed: ${error.message}`
           : "Image analysis failed.";
-        pushMessage({
-          from: "bot",
-          text: message,
-          ts: getCurrentTimestamp(),
-        });
+        // update the processing message to show the error
+        setMessages((prev) =>
+          prev.map((m) =>
+            (m as any).id === processingId
+              ? { ...(m as BotMessage), text: message, isProcessing: false }
+              : m,
+          ),
+        );
         autoScrollNextRef.current = true;
       } finally {
         setWaiting(false);
@@ -608,6 +661,27 @@ const IpAssistant = () => {
       // gradut function is empty
     }
     autoScrollNextRef.current = true;
+
+    // On mobile, blur the textarea after sending so the soft keyboard hides
+    if (isMobileRef.current) {
+      try {
+        // immediate blur
+        inputRef.current?.blur?.();
+        // also blur any active element (buttons) to avoid focus rings
+        try {
+          (document.activeElement as HTMLElement | null)?.blur?.();
+        } catch (e) {}
+        // fallback: ensure blur after a short delay
+        setTimeout(() => {
+          inputRef.current?.blur?.();
+          try {
+            (document.activeElement as HTMLElement | null)?.blur?.();
+          } catch (e) {}
+        }, 50);
+      } catch (e) {
+        // ignore
+      }
+    }
   }, [input, pushMessage, runDetection]);
 
   const handleKeyDown = useCallback(
@@ -985,7 +1059,7 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
+      <div className="chat-box px-3 sm:px-4 md:px-12 pt-4 pb-2 md:pb-6 flex-1 overflow-y-auto bg-transparent scroll-smooth">
         <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
@@ -1055,7 +1129,34 @@ const IpAssistant = () => {
                   layout
                 >
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
-                    <div>{msg.text}</div>
+                    <div className="flex items-center gap-3">
+                      {msg.isProcessing ? (
+                        <div className="flex-shrink-0 inline-flex items-center justify-center rounded-full bg-[#FF4DA6]/10 p-1">
+                          <svg
+                            className="h-4 w-4 text-[#FF4DA6] animate-spin"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="currentColor"
+                              strokeOpacity="0.15"
+                              strokeWidth="3"
+                            />
+                            <path
+                              d="M21.5 12a9.5 9.5 0 00-9.5-9.5"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
+                      ) : null}
+                      <div>{msg.text}</div>
+                    </div>
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
                         Final verification:{" "}
@@ -1773,7 +1874,7 @@ const IpAssistant = () => {
                   <img
                     src={msg.url}
                     alt="Uploaded"
-                    className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
+                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
@@ -1821,36 +1922,11 @@ const IpAssistant = () => {
           })}
         </AnimatePresence>
 
-        <AnimatePresence>
-          {waiting && (
-            <motion.div
-              className="flex items-start mb-2 gap-2 px-3 md:px-8"
-              aria-live="polite"
-              aria-label="Bot is typing"
-              initial={{ opacity: 0, x: -20, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -20, scale: 0.95 }}
-              transition={{
-                type: "spring",
-                damping: 20,
-                stiffness: 300,
-                mass: 0.8,
-              }}
-              layout
-            >
-              <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
-                <span className="dot" />
-                <span className="dot" />
-                <span className="dot" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
         <div ref={chatEndRef} />
       </div>
 
       <form
-        className="chat-input flex items-center gap-3.5 px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
+        className="chat-input flex items-center gap-3 px-3 sm:px-[1.45rem] py-3.5 border-t border-white/5 md:border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();
@@ -1859,8 +1935,9 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300"
+          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           onClick={() => uploadRef.current?.click()}
+          onPointerDown={(e) => e.preventDefault()}
           aria-label="Attach image"
         >
           <svg
@@ -1892,14 +1969,15 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50 focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button
           type="submit"
           disabled={waiting || !input.trim()}
-          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300"
+          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           aria-label="Send message"
+          onPointerDown={(e) => e.preventDefault()}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

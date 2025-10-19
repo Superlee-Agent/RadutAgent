@@ -23,12 +23,32 @@ function parseJsonLoose(text: string | null | undefined): any | null {
   }
 }
 
+const IDP_DESCRIBE = new Map<
+  string,
+  { status: number; body: any; ts: number }
+>();
+
 export const handleDescribe: any = [
   upload.single("image"),
   (async (req: any, res: any) => {
     try {
+      const idempotencyKey = (req.get("Idempotency-Key") ||
+        req.get("Idempotency-Key")) as string | undefined;
+      if (idempotencyKey && IDP_DESCRIBE.has(idempotencyKey)) {
+        const cached = IDP_DESCRIBE.get(idempotencyKey)!;
+        if (Date.now() - cached.ts < 60_000) {
+          res.status(cached.status).json({ ok: true, ...cached.body });
+          return;
+        } else {
+          IDP_DESCRIBE.delete(idempotencyKey);
+        }
+      }
+
       const f = (req as any).file as any;
-      if (!f) return res.status(400).json({ error: "no_file" });
+      if (!f)
+        return res
+          .status(400)
+          .json({ ok: false, error: "no_file", message: "No file uploaded" });
       const base64 = f.buffer.toString("base64");
       const dataUrl = `data:${f.mimetype};base64,${base64}`;
 
@@ -36,10 +56,13 @@ export const handleDescribe: any = [
         console.error(
           "OPENAI_API_KEY is not configured on the server (describe)",
         );
-        return res.status(503).json({
-          error: "openai_api_key_missing",
-          message: "OpenAI API key not configured on the server",
-        });
+        return res
+          .status(503)
+          .json({
+            ok: false,
+            error: "openai_api_key_missing",
+            message: "OpenAI API key not configured on the server",
+          });
       }
 
       const { default: OpenAI } = await import("openai");
@@ -110,10 +133,13 @@ export const handleDescribe: any = [
       title = clip(title, 50);
       description = clip(description, 120);
 
-      return res.status(200).json({ title, description, brand, character });
+      const body = { title, description, brand, character };
+      if (idempotencyKey)
+        IDP_DESCRIBE.set(idempotencyKey, { status: 200, body, ts: Date.now() });
+      return res.status(200).json({ ok: true, ...body });
     } catch (err) {
       console.error("describe error:", err);
-      return res.status(500).json({ error: "describe_failed" });
+      return res.status(500).json({ ok: false, error: "describe_failed" });
     }
   }) as any,
 ];

@@ -611,7 +611,7 @@ const IpAssistant = () => {
         // update the processing message to show the error
         setMessages((prev) =>
           prev.map((m) =>
-            m.from === "bot" && m.ts === processingTs
+            (m as any).id === processingId
               ? { ...(m as BotMessage), text: message, isProcessing: false }
               : m,
           ),

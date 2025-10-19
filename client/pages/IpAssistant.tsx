@@ -216,6 +216,7 @@ const getCurrentTimestamp = () =>
   });
 
 const getInitialBotMessage = (): BotMessage => ({
+  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
   from: "bot",
   text: "Hello, I am Radut Agent. Attach an image and I'll analyze it automatically.",
   ts: getCurrentTimestamp(),

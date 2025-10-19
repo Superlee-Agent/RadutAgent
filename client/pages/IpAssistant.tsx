@@ -293,7 +293,8 @@ const IpAssistant = () => {
     if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
     lastScrollRef.current = now;
     if (typeof window !== "undefined") {
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
+      if (scrollRafRef.current)
+        cancelAnimationFrame(scrollRafRef.current as any);
       scrollRafRef.current = requestAnimationFrame(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
         scrollRafRef.current = null;

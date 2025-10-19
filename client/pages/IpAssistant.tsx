@@ -1821,12 +1821,40 @@ const IpAssistant = () => {
                     src={msg.url}
                     alt="Uploaded"
                     className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
-                    onLoad={() =>
-                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }
-                    onError={() =>
-                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }
+                    onLoad={() => {
+                      const imgKey = `img-${index}-${msg.url}`;
+                      if (!loadedImagesRef.current.has(imgKey)) {
+                        loadedImagesRef.current.add(imgKey);
+                        if (index === messages.length - 1 && autoScrollNextRef.current) {
+                          if (scrollTimeoutRef.current) {
+                            clearTimeout(scrollTimeoutRef.current);
+                          }
+                          scrollTimeoutRef.current = setTimeout(() => {
+                            chatEndRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                            scrollTimeoutRef.current = null;
+                          }, 100);
+                        }
+                      }
+                    }}
+                    onError={() => {
+                      const imgKey = `img-${index}-${msg.url}`;
+                      if (!loadedImagesRef.current.has(imgKey)) {
+                        loadedImagesRef.current.add(imgKey);
+                        if (index === messages.length - 1 && autoScrollNextRef.current) {
+                          if (scrollTimeoutRef.current) {
+                            clearTimeout(scrollTimeoutRef.current);
+                          }
+                          scrollTimeoutRef.current = setTimeout(() => {
+                            chatEndRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                            scrollTimeoutRef.current = null;
+                          }, 100);
+                        }
+                      }
+                    }}
                   />
                 </div>
               </motion.div>

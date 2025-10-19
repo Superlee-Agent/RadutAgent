@@ -486,6 +486,9 @@ const IpAssistant = () => {
 
   const runDetection = useCallback(
     async (blob: Blob, fileName: string) => {
+      // show explicit processing message
+      const processingTs = getCurrentTimestamp();
+      pushMessage({ from: "bot", text: "Processing image, please wait…", ts: processingTs });
       setWaiting(true);
       try {
         // First, upload and analyze the image
@@ -501,11 +504,14 @@ const IpAssistant = () => {
 
         if (response.status === 413) {
           autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "The image is too large. Please compress or resize before uploading.",
-            ts: getCurrentTimestamp(),
-          });
+          // update processing message to error
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.from === "bot" && m.ts === processingTs
+                ? { ...(m as BotMessage), text: "The image is too large. Please compress or resize before uploading." }
+                : m,
+            ),
+          );
           setWaiting(false);
           return;
         }
@@ -514,11 +520,13 @@ const IpAssistant = () => {
           const text = await response.text().catch(() => "");
           console.error("/api/upload failed:", response.status, text);
           autoScrollNextRef.current = false;
-          pushMessage({
-            from: "bot",
-            text: "Image analysis failed.",
-            ts: getCurrentTimestamp(),
-          });
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.from === "bot" && m.ts === processingTs
+                ? { ...(m as BotMessage), text: "Image analysis failed." }
+                : m,
+            ),
+          );
           setWaiting(false);
           return;
         }
@@ -548,6 +556,20 @@ const IpAssistant = () => {
             facts: lastAnalysisFactsRef.current || null,
           });
         }
+
+        // update processing message to indicate completion
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.from === "bot" && m.ts === processingTs
+              ? { ...(m as BotMessage), text: "Analysis completed." }
+              : m,
+          ),
+        );
+
+        // small delay so user sees the 'completed' state before the result bubble
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
+        // push actual result bubble
         pushMessage({
           from: "bot",
           text: display,
@@ -561,11 +583,14 @@ const IpAssistant = () => {
         const message = error?.message
           ? `Image analysis failed: ${error.message}`
           : "Image analysis failed.";
-        pushMessage({
-          from: "bot",
-          text: message,
-          ts: getCurrentTimestamp(),
-        });
+        // update the processing message to show the error
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.from === "bot" && m.ts === processingTs
+              ? { ...(m as BotMessage), text: message }
+              : m,
+          ),
+        );
         autoScrollNextRef.current = true;
       } finally {
         setWaiting(false);

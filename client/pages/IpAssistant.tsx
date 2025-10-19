@@ -581,7 +581,7 @@ const IpAssistant = () => {
         // update processing message to indicate completion
         setMessages((prev) =>
           prev.map((m) =>
-            m.from === "bot" && m.ts === processingTs
+            (m as any).id === processingId
               ? {
                   ...(m as BotMessage),
                   text: "Analysis completed.",

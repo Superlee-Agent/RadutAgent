@@ -1203,7 +1203,7 @@ const IpAssistant = () => {
                   {...getBubbleMotionProps(index)}
                   className="flex items-start mb-2 gap-2 px-2 md:px-4"
                 >
-                  <div className="bg-slate-900/70 border border-[#FF4DA6]/20 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
+                  <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
                     <div className="flex items-center gap-3">
                       {msg.isProcessing ? (
                         <div className="flex-shrink-0 inline-flex items-center justify-center rounded-full bg-[#FF4DA6]/10 p-1">
@@ -1398,7 +1398,7 @@ const IpAssistant = () => {
                   {...getBubbleMotionProps(index)}
                   className="flex items-start mb-2 gap-2 px-2 md:px-4"
                 >
-                  <div className="bg-slate-900/70 border border-[#FF4DA6]/30 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
+                  <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
                       Smart Licensing
                     </div>

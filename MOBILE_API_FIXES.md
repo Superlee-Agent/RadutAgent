@@ -3,24 +3,28 @@
 ## Problems Fixed
 
 ### 1. Server Timeout Issues
+
 - **Before**: 20-second timeout was too short for mobile networks
 - **After**: Increased to 45 seconds to accommodate slow mobile connections and wallets with many IP assets
 - **File**: `server/routes/check-ip-assets.ts`
 
 ### 2. Memory Optimization
+
 - **Before**: Server collected all IP assets in memory before counting (could cause slowdowns with large portfolios)
 - **After**: Count assets on-the-fly during pagination, reducing memory usage
 - **File**: `server/routes/check-ip-assets.ts`
 
 ### 3. Client-Side Timeout & Retry
+
 - **Before**: No client-side timeout; mobile users waited indefinitely with no feedback
-- **After**: 
+- **After**:
   - 60-second client timeout with AbortController
   - Automatic retry (up to 2 retries) for timeout and server errors
   - Better error messages for mobile users
 - **File**: `client/pages/IpAssistant.tsx`
 
 ### 4. Error Handling Improvements
+
 - Better error messages for 504 timeouts
 - Exponential backoff between retries
 - Specific guidance for mobile network issues
@@ -45,16 +49,19 @@
 ## Deployment Notes
 
 ### Netlify
+
 - Free tier: 10-second function timeout (may still cause issues)
 - Pro tier: 26-second function timeout (better but still tight)
 - Business tier: 60-second function timeout (recommended for this use case)
 
 If using Netlify Free tier and experiencing timeouts, consider:
+
 1. Reducing `maxIterations` from 10 to 5 in `server/routes/check-ip-assets.ts`
 2. Upgrading to Pro tier for longer function timeouts
 3. Using a different hosting platform (Vercel, Railway, Render) with longer timeouts
 
 ### Alternative Hosting
+
 - Vercel: 10s (Hobby), 60s (Pro)
 - Railway/Render: No function timeout limits (long-running processes OK)
 

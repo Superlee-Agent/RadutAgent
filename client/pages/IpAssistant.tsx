@@ -233,7 +233,7 @@ const getMessagePreview = (message: Message) => {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
     const eligible =
-      ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
+      ipMsg.totalCount > 20 ? " �� STORY OG CARD NFT ELIGIBLE" : "";
     return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
@@ -1132,7 +1132,7 @@ const IpAssistant = () => {
                   }}
                   layout
                 >
-                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem]">
+                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     {msg.text}
                   </div>
                 </motion.div>

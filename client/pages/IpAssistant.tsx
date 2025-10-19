@@ -476,9 +476,14 @@ const IpAssistant = () => {
     const msgWithId = { ...(msg as any), id } as Message;
     setMessages((prev) => {
       const next = [...prev, msgWithId];
-      // If the message is from the user (text or image) or from the bot, ensure immediate scroll so UI feels responsive
+      // If the message is from the user (text or image), bot, or an ip-check bubble, ensure immediate scroll so UI feels responsive
       const from = (msgWithId as any).from;
-      if (from === "user" || from === "user-image" || from === "bot") {
+      if (
+        from === "user" ||
+        from === "user-image" ||
+        from === "bot" ||
+        from === "ip-check"
+      ) {
         // allow DOM to update then scroll immediately
         requestAnimationFrame(() => {
           try {
@@ -881,6 +886,12 @@ const IpAssistant = () => {
             : msg,
         ),
       );
+      // ensure the UI scrolls to show the completed ip-check result immediately
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
       setIpCheckInput("");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to fetch IP assets";
@@ -898,6 +909,12 @@ const IpAssistant = () => {
             : msg,
         ),
       );
+      // ensure the UI scrolls to show the error result immediately
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
     } finally {
       setIpCheckLoading(null);
     }

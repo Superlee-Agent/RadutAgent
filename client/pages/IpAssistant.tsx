@@ -343,7 +343,7 @@ const IpAssistant = () => {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(CURRENT_SESSION_KEY);
+      const raw = sessionStorage.getItem(CURRENT_SESSION_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Message[];
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -357,7 +357,7 @@ const IpAssistant = () => {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as ChatSession[];
         if (Array.isArray(parsed)) {
@@ -371,7 +371,7 @@ const IpAssistant = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
     } catch (error) {
       console.error("Failed to persist sessions", error);
     }
@@ -379,7 +379,7 @@ const IpAssistant = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(CURRENT_SESSION_KEY, JSON.stringify(messages));
+      sessionStorage.setItem(CURRENT_SESSION_KEY, JSON.stringify(messages));
     } catch (error) {
       console.error("Failed to persist current session", error);
     }

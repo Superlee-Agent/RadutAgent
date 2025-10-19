@@ -1011,7 +1011,7 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
+      <div className="chat-box px-3 sm:px-4 md:px-12 pt-4 pb-2 md:pb-6 flex-1 overflow-y-auto bg-transparent scroll-smooth">
         <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
@@ -1809,7 +1809,7 @@ const IpAssistant = () => {
                   <img
                     src={msg.url}
                     alt="Uploaded"
-                    className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
+                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
@@ -1861,7 +1861,7 @@ const IpAssistant = () => {
       </div>
 
       <form
-        className="chat-input flex items-center gap-3.5 px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
+        className="chat-input flex items-center gap-3 px-3 sm:px-[1.45rem] py-3.5 border-t border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();

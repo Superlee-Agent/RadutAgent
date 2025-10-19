@@ -1214,7 +1214,8 @@ const IpAssistant = () => {
                             !!getLicenseSettingsByGroup(Number(codeStr));
                           const canRegister =
                             canRegisterByText || canRegisterByGroup;
-                          if (!canRegister) return null;
+                          const isAuthEnabled = guestMode || authenticated;
+                          if (!canRegister || !isAuthEnabled) return null;
                           return (
                             <>
                               {" "}

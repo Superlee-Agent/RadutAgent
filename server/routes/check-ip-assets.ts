@@ -15,7 +15,11 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
 
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "Story API key not configured" });
+      console.error("STORY_API_KEY environment variable not configured");
+      return res.status(500).json({
+        error: "Server configuration error: STORY_API_KEY not set. Please contact the administrator.",
+        details: "The STORY_API_KEY environment variable is missing. On Vercel, add it to your project settings under Environment Variables.",
+      });
     }
 
     let allAssets: any[] = [];
@@ -24,38 +28,74 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     const limit = 100;
 
     while (hasMore) {
-      const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-        method: "POST",
-        headers: {
-          "X-Api-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          where: {
-            ownerAddress: trimmedAddress,
+      try {
+        const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+          method: "POST",
+          headers: {
+            "X-Api-Key": apiKey,
+            "Content-Type": "application/json",
           },
-          pagination: {
-            limit,
-            offset,
-          },
-        }),
-      });
+          body: JSON.stringify({
+            where: {
+              ownerAddress: trimmedAddress,
+            },
+            pagination: {
+              limit,
+              offset,
+            },
+          }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Story API Error: ${response.status} - ${errorText}`);
-        return res.status(response.status).json({
-          error: `Failed to fetch IP assets: ${response.status}`,
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            `Story API Error: ${response.status} - ${errorText}`,
+            { address: trimmedAddress, offset }
+          );
+
+          let errorDetail = errorText;
+          try {
+            const errorJson = JSON.parse(errorText);
+            errorDetail = errorJson.message || errorJson.error || errorText;
+          } catch {
+            // Keep the raw text if not JSON
+          }
+
+          return res.status(response.status).json({
+            error: `Failed to fetch IP assets from Story API`,
+            details: errorDetail,
+            status: response.status,
+          });
+        }
+
+        const data = await response.json();
+        const assets = Array.isArray(data) ? data : data?.data || [];
+
+        if (!Array.isArray(assets)) {
+          console.warn("Unexpected response format from Story API", {
+            address: trimmedAddress,
+            offset,
+            dataKeys: Object.keys(data),
+          });
+          allAssets = allAssets.concat([]);
+        } else {
+          allAssets = allAssets.concat(assets);
+        }
+
+        const pagination = data?.pagination;
+        hasMore = pagination?.hasMore === true;
+        offset += limit;
+      } catch (fetchError: any) {
+        console.error("Fetch request failed for Story API", {
+          address: trimmedAddress,
+          offset,
+          error: fetchError?.message,
+        });
+        return res.status(500).json({
+          error: "Network error while fetching IP assets",
+          details: fetchError?.message || "Unable to connect to Story API",
         });
       }
-
-      const data = await response.json();
-      const assets = Array.isArray(data) ? data : data?.data || [];
-      allAssets = allAssets.concat(assets);
-
-      const pagination = data?.pagination;
-      hasMore = pagination?.hasMore === true;
-      offset += limit;
     }
 
     const originalCount = allAssets.filter((asset: any) => {
@@ -80,6 +120,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     console.error("Check IP Assets Error:", error);
     res.status(500).json({
       error: error?.message || "Internal server error",
+      details:
+        process.env.NODE_ENV !== "production"
+          ? error?.stack
+          : "An unexpected error occurred",
     });
   }
 };

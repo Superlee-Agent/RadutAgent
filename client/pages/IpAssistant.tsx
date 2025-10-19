@@ -254,6 +254,11 @@ const IP_ASSISTANT_AVATAR =
 export const STORAGE_KEY = "radut_sessions";
 export const CURRENT_SESSION_KEY = "radut_current_session";
 
+const isValidEthereumAddress = (address: string): boolean => {
+  const trimmed = address.trim();
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
+};
+
 const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);
   const [input, setInput] = useState("");
@@ -272,6 +277,8 @@ const IpAssistant = () => {
   const analysisContextsRef = useRef<
     Map<string, { blob: Blob; name: string; facts: Record<string, any> | null }>
   >(new Map());
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadedImagesRef = useRef<Set<string>>(new Set());
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -284,13 +291,25 @@ const IpAssistant = () => {
 
   useEffect(() => {
     if (autoScrollNextRef.current) {
-      setTimeout(() => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
+        scrollTimeoutRef.current = null;
+      }, 100);
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const { registerState, executeRegister, resetRegister } =
     useIPRegistrationAgent();
@@ -334,6 +353,15 @@ const IpAssistant = () => {
   useEffect(() => {
     setIpCheckInput("");
     setIpCheckLoading(null);
+    // Clean up old blobs from analysisContextsRef to prevent memory leak
+    // Keep only the last 10 contexts, remove older ones
+    const contexts = Array.from(analysisContextsRef.current.entries());
+    if (contexts.length > 10) {
+      const toRemove = contexts.slice(0, contexts.length - 10);
+      toRemove.forEach(([key]) => {
+        analysisContextsRef.current.delete(key);
+      });
+    }
   }, [messages]);
 
   const primaryWalletAddress = useMemo(() => {
@@ -1127,12 +1155,19 @@ const IpAssistant = () => {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   onAnimationComplete={() => {
-                    if (index === messages.length - 1) {
-                      setTimeout(() => {
+                    if (
+                      index === messages.length - 1 &&
+                      autoScrollNextRef.current
+                    ) {
+                      if (scrollTimeoutRef.current) {
+                        clearTimeout(scrollTimeoutRef.current);
+                      }
+                      scrollTimeoutRef.current = setTimeout(() => {
                         chatEndRef.current?.scrollIntoView({
                           behavior: "smooth",
                         });
-                      }, 0);
+                        scrollTimeoutRef.current = null;
+                      }, 50);
                     }
                   }}
                   layout
@@ -1637,7 +1672,7 @@ const IpAssistant = () => {
                     }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
@@ -1647,20 +1682,27 @@ const IpAssistant = () => {
                           value={ipCheckInput}
                           onChange={(e) => setIpCheckInput(e.target.value)}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && !isLoading) {
+                            if (
+                              e.key === "Enter" &&
+                              !isLoading &&
+                              isValidEthereumAddress(ipCheckInput)
+                            ) {
+                              e.preventDefault();
                               checkIpAssets(ipCheckInput);
                             }
                           }}
                           placeholder="0x..."
                           className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                          aria-label="Wallet address input"
                         />
                         <button
                           type="button"
                           onClick={() => checkIpAssets(ipCheckInput)}
                           disabled={
-                            isLoading || ipCheckInput.trim().length === 0
+                            isLoading || !isValidEthereumAddress(ipCheckInput)
                           }
                           className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                          aria-label="Check IP assets for wallet address"
                         >
                           {isLoading ? (
                             <span className="flex items-center gap-1 md:gap-2">
@@ -1695,7 +1737,7 @@ const IpAssistant = () => {
                     }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[90vw] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
                       {ipCheckMsg.error ? (
                         <div className="text-red-400">
                           <div className="font-semibold mb-2 text-sm md:text-base">
@@ -1707,9 +1749,9 @@ const IpAssistant = () => {
                         </div>
                       ) : (
                         <div>
-                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3">
+                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3 break-all">
                             Address:{" "}
-                            <span className="text-[#FF4DA6]">
+                            <span className="text-[#FF4DA6] font-mono text-[0.85rem] md:text-[0.97rem]">
                               {truncateAddress(ipCheckMsg.address)}
                             </span>
                           </div>
@@ -1794,12 +1836,46 @@ const IpAssistant = () => {
                     src={msg.url}
                     alt="Uploaded"
                     className="w-full h-auto max-w-[360px] max-h-[300px] object-contain block rounded-md border border-[#FF4DA6]"
-                    onLoad={() =>
-                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }
-                    onError={() =>
-                      chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }
+                    onLoad={() => {
+                      const imgKey = `img-${index}-${msg.url}`;
+                      if (!loadedImagesRef.current.has(imgKey)) {
+                        loadedImagesRef.current.add(imgKey);
+                        if (
+                          index === messages.length - 1 &&
+                          autoScrollNextRef.current
+                        ) {
+                          if (scrollTimeoutRef.current) {
+                            clearTimeout(scrollTimeoutRef.current);
+                          }
+                          scrollTimeoutRef.current = setTimeout(() => {
+                            chatEndRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                            scrollTimeoutRef.current = null;
+                          }, 100);
+                        }
+                      }
+                    }}
+                    onError={() => {
+                      const imgKey = `img-${index}-${msg.url}`;
+                      if (!loadedImagesRef.current.has(imgKey)) {
+                        loadedImagesRef.current.add(imgKey);
+                        if (
+                          index === messages.length - 1 &&
+                          autoScrollNextRef.current
+                        ) {
+                          if (scrollTimeoutRef.current) {
+                            clearTimeout(scrollTimeoutRef.current);
+                          }
+                          scrollTimeoutRef.current = setTimeout(() => {
+                            chatEndRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                            scrollTimeoutRef.current = null;
+                          }, 100);
+                        }
+                      }
+                    }}
                   />
                 </div>
               </motion.div>

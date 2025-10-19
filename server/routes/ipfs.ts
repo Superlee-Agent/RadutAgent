@@ -11,7 +11,7 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY; // e.g. mysubdomain.mypinata.
 async function pinFileToPinata(name: string, buffer: Buffer, mimetype: string) {
   if (!PINATA_JWT) throw new Error("PINATA_JWT not set");
   const form = new FormData();
-  const blob = new Blob([buffer], {
+  const blob = new Blob([new Uint8Array(buffer)], {
     type: mimetype || "application/octet-stream",
   });
   form.append("file", blob, name || "file");

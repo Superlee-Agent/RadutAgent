@@ -1504,7 +1504,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100 resize-none"
+                                    className="w-full rounded-md bg-black/30 p-2 text-slate-100 resize-none"
                                     rows={3}
                                   />
                                   <button
@@ -1573,7 +1573,7 @@ const IpAssistant = () => {
                             const v = e.target.value;
                             setMintingFee(v === "" ? "" : Number(v));
                           }}
-                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                          className="mt-1 w-full rounded-md bg-black/30 p-2 text-slate-100"
                         />
                       </label>
                       <label className="text-sm text-slate-300">
@@ -1591,7 +1591,7 @@ const IpAssistant = () => {
                               Math.min(100, Math.max(0, isNaN(n) ? 0 : n)),
                             );
                           }}
-                          className="mt-1 w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                          className="mt-1 w-full rounded-md bg-black/30 p-2 text-slate-100"
                         />
                       </label>
                       <label className="text-sm text-slate-300 flex items-center gap-2 sm:col-span-1">
@@ -1761,7 +1761,7 @@ const IpAssistant = () => {
                           disabled={
                             isLoading || !isValidEthereumAddress(ipCheckInput)
                           }
-                          className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                          className="rounded-lg bg-[#FF4DA6]/20 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
                           aria-label="Check IP assets for wallet address"
                         >
                           {isLoading ? (

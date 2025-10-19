@@ -1810,6 +1810,33 @@ const IpAssistant = () => {
                           )}
                         </button>
                       </div>
+                      {isLoading && (
+                        <div className="mt-3 p-2 rounded-lg bg-[#FF4DA6]/10 text-xs text-slate-300">
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="h-3 w-3 text-[#FF4DA6] animate-spin flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                                stroke="currentColor"
+                                strokeOpacity="0.15"
+                                strokeWidth="3"
+                              />
+                              <path
+                                d="M21.5 12a9.5 9.5 0 00-9.5-9.5"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            <span>Checking IP assets... This may take up to 60 seconds for wallets with many assets or on slow networks.</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 );

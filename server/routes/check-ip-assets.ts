@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 
-export const handleCheckIpAssets: RequestHandler = async (req, res) => {
+export const handleCheckIpAssets: any = async (req: any, res: any) => {
   try {
     const { address } = req.body;
 

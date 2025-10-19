@@ -157,7 +157,7 @@ const ANSWER_DETAILS: Record<
     type: "Human Generated",
     notes:
       "Original non-AI image; Regular person's face (not famous); not fully visible (cropped)",
-    registrationStatus: "��� IP can be registered",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -1742,9 +1742,9 @@ const IpAssistant = () => {
                         </div>
                       ) : (
                         <div>
-                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3">
+                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3 break-all">
                             Address:{" "}
-                            <span className="text-[#FF4DA6]">
+                            <span className="text-[#FF4DA6] font-mono text-[0.85rem] md:text-[0.97rem]">
                               {truncateAddress(ipCheckMsg.address)}
                             </span>
                           </div>

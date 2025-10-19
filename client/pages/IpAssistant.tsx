@@ -1150,12 +1150,16 @@ const IpAssistant = () => {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   onAnimationComplete={() => {
-                    if (index === messages.length - 1) {
-                      setTimeout(() => {
+                    if (index === messages.length - 1 && autoScrollNextRef.current) {
+                      if (scrollTimeoutRef.current) {
+                        clearTimeout(scrollTimeoutRef.current);
+                      }
+                      scrollTimeoutRef.current = setTimeout(() => {
                         chatEndRef.current?.scrollIntoView({
                           behavior: "smooth",
                         });
-                      }, 0);
+                        scrollTimeoutRef.current = null;
+                      }, 50);
                     }
                   }}
                   layout

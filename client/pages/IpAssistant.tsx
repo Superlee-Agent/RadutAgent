@@ -667,8 +667,17 @@ const IpAssistant = () => {
       try {
         // immediate blur
         inputRef.current?.blur?.();
+        // also blur any active element (buttons) to avoid focus rings
+        try {
+          (document.activeElement as HTMLElement | null)?.blur?.();
+        } catch (e) {}
         // fallback: ensure blur after a short delay
-        setTimeout(() => inputRef.current?.blur?.(), 50);
+        setTimeout(() => {
+          inputRef.current?.blur?.();
+          try {
+            (document.activeElement as HTMLElement | null)?.blur?.();
+          } catch (e) {}
+        }, 50);
       } catch (e) {
         // ignore
       }
@@ -1926,8 +1935,9 @@ const IpAssistant = () => {
       >
         <button
           type="button"
-          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300"
+          className="p-2 rounded-lg border border-[#FF4DA6]/30 bg-gradient-to-br from-[#FF4DA6]/10 to-[#FF4DA6]/5 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/20 hover:to-[#FF4DA6]/10 hover:border-[#FF4DA6]/50 hover:shadow-[0_8px_20px_rgba(255,77,166,0.15)] active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           onClick={() => uploadRef.current?.click()}
+          onPointerDown={(e) => e.preventDefault()}
           aria-label="Attach image"
         >
           <svg
@@ -1959,14 +1969,15 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50 focus:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50 focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button
           type="submit"
           disabled={waiting || !input.trim()}
-          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300"
+          className="p-2 rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] hover:shadow-[0_8px_24px_rgba(255,77,166,0.25)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           aria-label="Send message"
+          onPointerDown={(e) => e.preventDefault()}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

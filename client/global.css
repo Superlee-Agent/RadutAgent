@@ -242,6 +242,25 @@ html {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: transparent;
   flex: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Reduce tap highlight and focus flicker on mobile for interactive elements */
+.chat-input * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chat-input textarea,
+.chat-input button {
+  -webkit-appearance: none;
+  -webkit-user-select: text;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 /* prevent pink outline/border artifacts when focusing input */
@@ -496,11 +515,27 @@ button.btn-ghost:focus-visible {
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
     background: transparent;
   }
+  /* reduce focus outlines and rings on mobile to avoid flicker when keyboard shows */
+  .chat-input textarea:focus,
+  .chat-input button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
   textarea {
     min-height: 48px;
   }
   /* make sure mobile aside overlay uses full height */
   .fixed.inset-0.z-50.md\:hidden {
     height: 100dvh;
+  }
+
+  /* Disable hover and focus visual effects on touch devices to avoid flicker/lines */
+  .chat-box *:hover,
+  .chat-box *:focus,
+  .chat-box *:active,
+  .chat-box *:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
   }
 }

@@ -1633,11 +1633,18 @@ const IpAssistant = () => {
                           )?.blob ||
                           (!guestMode && !authenticated)
                         }
-                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50"
+                        title={
+                          !guestMode && !authenticated
+                            ? "Connect wallet or enable guest mode to register"
+                            : ""
+                        }
+                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
                           ? "Registering…"
-                          : "Register IP"}
+                          : !guestMode && !authenticated
+                            ? "Register IP (requires auth)"
+                            : "Register IP"}
                       </button>
                       <div className="text-xs text-slate-400">
                         Status: {registerState.status}{" "}

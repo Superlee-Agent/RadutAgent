@@ -667,8 +667,13 @@ const IpAssistant = () => {
       try {
         // immediate blur
         inputRef.current?.blur?.();
+        // also blur any active element (buttons) to avoid focus rings
+        try { (document.activeElement as HTMLElement | null)?.blur?.(); } catch (e) {}
         // fallback: ensure blur after a short delay
-        setTimeout(() => inputRef.current?.blur?.(), 50);
+        setTimeout(() => {
+          inputRef.current?.blur?.();
+          try { (document.activeElement as HTMLElement | null)?.blur?.(); } catch (e) {}
+        }, 50);
       } catch (e) {
         // ignore
       }

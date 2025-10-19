@@ -28,144 +28,168 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
     let offset = 0;
     let hasMore = true;
     const limit = 100;
-    const maxIterations = 50;
+    const maxIterations = 10;
     let iterations = 0;
 
-    while (hasMore && iterations < maxIterations) {
-      iterations += 1;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-      try {
-        const response = await fetch(
-          "https://api.storyapis.com/api/v4/assets",
-          {
-            method: "POST",
-            headers: {
-              "X-Api-Key": apiKey,
-              "Content-Type": "application/json",
+    try {
+      while (hasMore && iterations < maxIterations) {
+        iterations += 1;
+
+        try {
+          const response = await fetch(
+            "https://api.storyapis.com/api/v4/assets",
+            {
+              method: "POST",
+              headers: {
+                "X-Api-Key": apiKey,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                where: {
+                  ownerAddress: trimmedAddress,
+                },
+                pagination: {
+                  limit,
+                  offset,
+                },
+              }),
+              signal: controller.signal,
             },
-            body: JSON.stringify({
-              where: {
-                ownerAddress: trimmedAddress,
-              },
-              pagination: {
-                limit,
-                offset,
-              },
-            }),
-          },
-        );
+          );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Story API Error: ${response.status} - ${errorText}`, {
-            address: trimmedAddress,
-            offset,
-            iteration: iterations,
-          });
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Story API Error: ${response.status} - ${errorText}`, {
+              address: trimmedAddress,
+              offset,
+              iteration: iterations,
+            });
 
-          let errorDetail = errorText;
-          try {
-            const errorJson = JSON.parse(errorText);
-            errorDetail = errorJson.message || errorJson.error || errorText;
-          } catch {
-            // Keep the raw text if not JSON
+            let errorDetail = errorText;
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorDetail = errorJson.message || errorJson.error || errorText;
+            } catch {
+              // Keep the raw text if not JSON
+            }
+
+            clearTimeout(timeoutId);
+            return res.status(response.status).json({
+              error: `Failed to fetch IP assets from Story API`,
+              details: errorDetail,
+              status: response.status,
+            });
           }
 
-          return res.status(response.status).json({
-            error: `Failed to fetch IP assets from Story API`,
-            details: errorDetail,
-            status: response.status,
-          });
-        }
+          const data = await response.json();
 
-        const data = await response.json();
-
-        // Validate response structure
-        if (!data) {
-          console.error("Empty response from Story API", {
-            address: trimmedAddress,
-            offset,
-            iteration: iterations,
-          });
-          break;
-        }
-
-        const assets = Array.isArray(data) ? data : data?.data || [];
-
-        if (!Array.isArray(assets)) {
-          console.warn("Unexpected response format from Story API", {
-            address: trimmedAddress,
-            offset,
-            iteration: iterations,
-            dataKeys: Object.keys(data || {}),
-            dataType: typeof data,
-          });
-          break;
-        }
-
-        // Validate asset structure
-        const validAssets = assets.filter((asset: any) => {
-          if (!asset || typeof asset !== "object") {
-            console.warn("Invalid asset object", { asset });
-            return false;
+          if (!data) {
+            console.error("Empty response from Story API", {
+              address: trimmedAddress,
+              offset,
+              iteration: iterations,
+            });
+            break;
           }
-          return true;
-        });
 
-        allAssets = allAssets.concat(validAssets);
+          const assets = Array.isArray(data) ? data : data?.data || [];
 
-        const pagination = data?.pagination;
-        hasMore = pagination?.hasMore === true && validAssets.length > 0;
-        offset += limit;
+          if (!Array.isArray(assets)) {
+            console.warn("Unexpected response format from Story API", {
+              address: trimmedAddress,
+              offset,
+              iteration: iterations,
+              dataKeys: Object.keys(data || {}),
+              dataType: typeof data,
+            });
+            break;
+          }
 
-        // Safety check: stop if pagination indicates no more data
-        if (
-          pagination?.hasMore === false ||
-          !pagination ||
-          validAssets.length === 0
-        ) {
-          hasMore = false;
+          const validAssets = assets.filter((asset: any) => {
+            if (!asset || typeof asset !== "object") {
+              console.warn("Invalid asset object", { asset });
+              return false;
+            }
+            return true;
+          });
+
+          allAssets = allAssets.concat(validAssets);
+
+          const pagination = data?.pagination;
+          hasMore = pagination?.hasMore === true && validAssets.length > 0;
+          offset += limit;
+
+          if (
+            pagination?.hasMore === false ||
+            !pagination ||
+            validAssets.length === 0
+          ) {
+            hasMore = false;
+          }
+        } catch (fetchError: any) {
+          if (fetchError.name === "AbortError") {
+            console.error("Request timeout while fetching IP assets", {
+              address: trimmedAddress,
+              offset,
+              iteration: iterations,
+            });
+            clearTimeout(timeoutId);
+            return res.status(504).json({
+              error: "Request timeout - took too long to fetch IP assets",
+              details:
+                "The Story API is responding slowly. Please try again in a moment.",
+            });
+          }
+
+          console.error("Fetch request failed for Story API", {
+            address: trimmedAddress,
+            offset,
+            iteration: iterations,
+            error: fetchError?.message,
+            errorType: fetchError?.name,
+          });
+          clearTimeout(timeoutId);
+          return res.status(500).json({
+            error: "Network error while fetching IP assets",
+            details: fetchError?.message || "Unable to connect to Story API",
+          });
         }
-      } catch (fetchError: any) {
-        console.error("Fetch request failed for Story API", {
+      }
+
+      clearTimeout(timeoutId);
+
+      if (iterations >= maxIterations) {
+        console.warn("Max iterations reached when fetching IP assets", {
           address: trimmedAddress,
-          offset,
-          iteration: iterations,
-          error: fetchError?.message,
-          errorType: fetchError?.name,
-        });
-        return res.status(500).json({
-          error: "Network error while fetching IP assets",
-          details: fetchError?.message || "Unable to connect to Story API",
+          assetsCollected: allAssets.length,
         });
       }
-    }
 
-    if (iterations >= maxIterations) {
-      console.warn("Max iterations reached when fetching IP assets", {
+      const originalCount = allAssets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount === 0;
+      }).length;
+
+      const remixCount = allAssets.filter((asset: any) => {
+        const parentCount = asset.parentsCount ?? 0;
+        return parentCount > 0;
+      }).length;
+
+      const totalCount = allAssets.length;
+
+      res.json({
         address: trimmedAddress,
-        assetsCollected: allAssets.length,
+        totalCount,
+        originalCount,
+        remixCount,
       });
+    } catch (innerError: any) {
+      clearTimeout(timeoutId);
+      throw innerError;
     }
-
-    const originalCount = allAssets.filter((asset: any) => {
-      const parentCount = asset.parentsCount ?? 0;
-      return parentCount === 0;
-    }).length;
-
-    const remixCount = allAssets.filter((asset: any) => {
-      const parentCount = asset.parentsCount ?? 0;
-      return parentCount > 0;
-    }).length;
-
-    const totalCount = allAssets.length;
-
-    res.json({
-      address: trimmedAddress,
-      totalCount,
-      originalCount,
-      remixCount,
-    });
   } catch (error: any) {
     console.error("Check IP Assets Error:", error);
     res.status(500).json({

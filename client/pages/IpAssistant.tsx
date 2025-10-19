@@ -820,8 +820,26 @@ const IpAssistant = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API Error: ${response.status}`);
+        let errorMessage = `API Error: ${response.status}`;
+        let errorDetails = "";
+
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+          errorDetails = errorData.details || "";
+        } catch {
+          // Failed to parse error response, use status-based message
+          if (response.status === 400) {
+            errorMessage = "Invalid Ethereum address format";
+          } else if (response.status === 500) {
+            errorMessage = "Server error - unable to fetch IP assets";
+          }
+        }
+
+        const fullError = errorDetails
+          ? `${errorMessage}: ${errorDetails}`
+          : errorMessage;
+        throw new Error(fullError);
       }
 
       const data = await response.json();
@@ -844,6 +862,8 @@ const IpAssistant = () => {
       setIpCheckInput("");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to fetch IP assets";
+      console.error("IP Assets Check Error:", error);
+
       setMessages((prev) =>
         prev.map((msg) =>
           msg.from === "ip-check" && (msg as any).status === "pending"

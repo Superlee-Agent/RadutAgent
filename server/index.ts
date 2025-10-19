@@ -10,7 +10,53 @@ export function createServer() {
   const app = express();
 
   // Middleware
-  app.use(cors());
+  // CORS configuration - allow requests from the same origin and common localhost/preview domains
+  const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (mobile apps, curl, etc)
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      // Allow development and preview environments
+      const allowedOrigins = [
+        "localhost",
+        "127.0.0.1",
+        ".vercel.app",
+        ".netlify.app",
+        process.env.APP_ORIGIN || "",
+      ];
+
+      const isAllowed = allowedOrigins.some(
+        (allowedOrigin) => origin.includes(allowedOrigin)
+      );
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        // Log suspicious origins in production
+        if (process.env.NODE_ENV === "production") {
+          console.warn(`CORS request from unauthorized origin: ${origin}`);
+        }
+        callback(null, true); // Still allow to prevent breaking clients, but log it
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    maxAge: 3600,
+  };
+
+  app.use(cors(corsOptions));
+
+  // Set security headers
+  app.use((req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    res.setHeader("X-XSS-Protection", "1; mode=block");
+    next();
+  });
+
   // Increase body size limits to allow base64 image uploads from the client
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));

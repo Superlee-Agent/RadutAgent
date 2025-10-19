@@ -445,7 +445,9 @@ const IpAssistant = () => {
       : null;
 
   const pushMessage = useCallback((msg: Message) => {
-    setMessages((prev) => [...prev, msg]);
+    const id = (msg as any).id || `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const msgWithId = { ...(msg as any), id } as Message;
+    setMessages((prev) => [...prev, msgWithId]);
   }, []);
 
   const saveSession = useCallback((history: Message[]) => {

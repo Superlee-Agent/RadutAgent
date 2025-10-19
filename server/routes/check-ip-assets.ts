@@ -26,8 +26,12 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     let offset = 0;
     let hasMore = true;
     const limit = 100;
+    const maxIterations = 50;
+    let iterations = 0;
 
-    while (hasMore) {
+    while (hasMore && iterations < maxIterations) {
+      iterations += 1;
+
       try {
         const response = await fetch("https://api.storyapis.com/api/v4/assets", {
           method: "POST",
@@ -50,7 +54,7 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
           const errorText = await response.text();
           console.error(
             `Story API Error: ${response.status} - ${errorText}`,
-            { address: trimmedAddress, offset }
+            { address: trimmedAddress, offset, iteration: iterations }
           );
 
           let errorDetail = errorText;
@@ -69,33 +73,73 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
         }
 
         const data = await response.json();
+
+        // Validate response structure
+        if (!data) {
+          console.error("Empty response from Story API", {
+            address: trimmedAddress,
+            offset,
+            iteration: iterations,
+          });
+          break;
+        }
+
         const assets = Array.isArray(data) ? data : data?.data || [];
 
         if (!Array.isArray(assets)) {
           console.warn("Unexpected response format from Story API", {
             address: trimmedAddress,
             offset,
-            dataKeys: Object.keys(data),
+            iteration: iterations,
+            dataKeys: Object.keys(data || {}),
+            dataType: typeof data,
           });
-          allAssets = allAssets.concat([]);
-        } else {
-          allAssets = allAssets.concat(assets);
+          break;
         }
 
+        // Validate asset structure
+        const validAssets = assets.filter((asset: any) => {
+          if (!asset || typeof asset !== "object") {
+            console.warn("Invalid asset object", { asset });
+            return false;
+          }
+          return true;
+        });
+
+        allAssets = allAssets.concat(validAssets);
+
         const pagination = data?.pagination;
-        hasMore = pagination?.hasMore === true;
+        hasMore = pagination?.hasMore === true && validAssets.length > 0;
         offset += limit;
+
+        // Safety check: stop if pagination indicates no more data
+        if (
+          pagination?.hasMore === false ||
+          !pagination ||
+          validAssets.length === 0
+        ) {
+          hasMore = false;
+        }
       } catch (fetchError: any) {
         console.error("Fetch request failed for Story API", {
           address: trimmedAddress,
           offset,
+          iteration: iterations,
           error: fetchError?.message,
+          errorType: fetchError?.name,
         });
         return res.status(500).json({
           error: "Network error while fetching IP assets",
           details: fetchError?.message || "Unable to connect to Story API",
         });
       }
+    }
+
+    if (iterations >= maxIterations) {
+      console.warn("Max iterations reached when fetching IP assets", {
+        address: trimmedAddress,
+        assetsCollected: allAssets.length,
+      });
     }
 
     const originalCount = allAssets.filter((asset: any) => {

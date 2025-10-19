@@ -564,8 +564,8 @@ button.btn-ghost:focus-visible {
 
   /* Preserve focus-visible (keyboard) outlines for accessibility on mobile */
   .chat-box *:focus-visible {
-    outline: 3px solid rgba(255,77,166,0.18) !important;
-    box-shadow: 0 0 0 6px rgba(255,77,166,0.06) !important;
-    border-color: rgba(255,77,166,0.25) !important;
+    outline: 3px solid rgba(255, 77, 166, 0.18) !important;
+    box-shadow: 0 0 0 6px rgba(255, 77, 166, 0.06) !important;
+    border-color: rgba(255, 77, 166, 0.25) !important;
   }
 }

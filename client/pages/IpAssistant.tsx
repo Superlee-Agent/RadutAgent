@@ -1465,7 +1465,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100 resize-none"
                                     rows={3}
                                   />
                                   <button

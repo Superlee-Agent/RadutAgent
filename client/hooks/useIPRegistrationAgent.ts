@@ -166,8 +166,6 @@ export function useIPRegistrationAgent() {
           mediaUrl: imageGateway,
           mediaHash: imageHash,
           mediaType: compressedFile.type || "image/jpeg",
-          external_url:
-            typeof window !== "undefined" ? window.location.origin : undefined,
           creators: creatorAddr
             ? [
                 {

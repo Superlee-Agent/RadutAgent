@@ -38,7 +38,7 @@ const History = () => {
 
   useEffect(() => {
     try {
-      const rawSessions = localStorage.getItem(STORAGE_KEY);
+      const rawSessions = sessionStorage.getItem(STORAGE_KEY);
       if (rawSessions) {
         const parsed = JSON.parse(rawSessions) as ChatSession[];
         if (Array.isArray(parsed)) {
@@ -50,7 +50,7 @@ const History = () => {
     }
 
     try {
-      const rawCurrent = localStorage.getItem(CURRENT_SESSION_KEY);
+      const rawCurrent = sessionStorage.getItem(CURRENT_SESSION_KEY);
       if (rawCurrent) {
         const parsed = JSON.parse(rawCurrent) as Message[];
         if (Array.isArray(parsed)) {
@@ -64,7 +64,7 @@ const History = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
     } catch (error) {
       console.error("Failed to persist sessions", error);
     }
@@ -132,7 +132,7 @@ const History = () => {
   const handleClearHistory = () => {
     setSessions([]);
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error("Failed to clear history", error);
     }

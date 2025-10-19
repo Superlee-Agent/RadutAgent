@@ -476,8 +476,9 @@ const IpAssistant = () => {
     const msgWithId = { ...(msg as any), id } as Message;
     setMessages((prev) => {
       const next = [...prev, msgWithId];
-      // If the message is from the user (text or image), ensure immediate scroll so UI feels responsive
-      if ((msgWithId as any).from === "user" || (msgWithId as any).from === "user-image") {
+      // If the message is from the user (text or image) or from the bot, ensure immediate scroll so UI feels responsive
+      const from = (msgWithId as any).from;
+      if (from === "user" || from === "user-image" || from === "bot") {
         // allow DOM to update then scroll immediately
         requestAnimationFrame(() => {
           try {

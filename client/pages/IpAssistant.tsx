@@ -286,13 +286,25 @@ const IpAssistant = () => {
 
   useEffect(() => {
     if (autoScrollNextRef.current) {
-      setTimeout(() => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
+        scrollTimeoutRef.current = null;
+      }, 100);
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
   }, [messages, waiting]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const { registerState, executeRegister, resetRegister } =
     useIPRegistrationAgent();

@@ -1911,6 +1911,7 @@ const IpAssistant = () => {
                 stiffness: 300,
                 mass: 0.8,
               }}
+              layout
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />

@@ -110,6 +110,7 @@ html {
     @apply bg-background text-foreground;
     margin: 0;
     background: linear-gradient(135deg, #05070f 0%, #0a0e1f 50%, #05070f 100%);
+    background-color: #05070f;
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -238,9 +239,16 @@ html {
   display: flex;
   gap: 12px;
   padding: 12px 16px;
-  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: transparent;
   flex: none;
+}
+
+/* prevent pink outline/border artifacts when focusing input */
+.chat-input:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 input[type="text"],
 input[type="search"],

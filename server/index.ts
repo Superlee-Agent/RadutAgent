@@ -12,7 +12,10 @@ export function createServer() {
   // Middleware
   // CORS configuration - allow requests from the same origin and common localhost/preview domains
   const corsOptions = {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       // Allow requests with no origin (mobile apps, curl, etc)
       if (!origin) {
         callback(null, true);
@@ -28,8 +31,8 @@ export function createServer() {
         process.env.APP_ORIGIN || "",
       ];
 
-      const isAllowed = allowedOrigins.some(
-        (allowedOrigin) => origin.includes(allowedOrigin)
+      const isAllowed = allowedOrigins.some((allowedOrigin) =>
+        origin.includes(allowedOrigin),
       );
 
       if (isAllowed) {

@@ -17,8 +17,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     if (!apiKey) {
       console.error("STORY_API_KEY environment variable not configured");
       return res.status(500).json({
-        error: "Server configuration error: STORY_API_KEY not set. Please contact the administrator.",
-        details: "The STORY_API_KEY environment variable is missing. On Vercel, add it to your project settings under Environment Variables.",
+        error:
+          "Server configuration error: STORY_API_KEY not set. Please contact the administrator.",
+        details:
+          "The STORY_API_KEY environment variable is missing. On Vercel, add it to your project settings under Environment Variables.",
       });
     }
 
@@ -33,29 +35,33 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
       iterations += 1;
 
       try {
-        const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-          method: "POST",
-          headers: {
-            "X-Api-Key": apiKey,
-            "Content-Type": "application/json",
+        const response = await fetch(
+          "https://api.storyapis.com/api/v4/assets",
+          {
+            method: "POST",
+            headers: {
+              "X-Api-Key": apiKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              where: {
+                ownerAddress: trimmedAddress,
+              },
+              pagination: {
+                limit,
+                offset,
+              },
+            }),
           },
-          body: JSON.stringify({
-            where: {
-              ownerAddress: trimmedAddress,
-            },
-            pagination: {
-              limit,
-              offset,
-            },
-          }),
-        });
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(
-            `Story API Error: ${response.status} - ${errorText}`,
-            { address: trimmedAddress, offset, iteration: iterations }
-          );
+          console.error(`Story API Error: ${response.status} - ${errorText}`, {
+            address: trimmedAddress,
+            offset,
+            iteration: iterations,
+          });
 
           let errorDetail = errorText;
           try {

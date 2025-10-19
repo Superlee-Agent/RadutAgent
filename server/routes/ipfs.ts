@@ -1,6 +1,4 @@
-import type { RequestHandler } from "express";
 import multer from "multer";
-import type { Request, Response } from "express";
 
 const upload = multer({
   storage: multer.memoryStorage(),

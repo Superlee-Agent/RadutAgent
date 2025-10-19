@@ -1,4 +1,3 @@
-import type { RequestHandler } from "express";
 import multer from "multer";
 
 const upload = multer({
@@ -141,21 +140,19 @@ function parseJsonLoose(text: string | null | undefined): any | null {
 
 export const handleUpload: any = [
   upload.single("image"),
-  (async (req, res) => {
+  (async (req: any, res: any) => {
     try {
-      const f = (req as any).file as Express.Multer.File | undefined;
+      const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
       const base64 = f.buffer.toString("base64");
       const dataUrl = `data:${f.mimetype};base64,${base64}`;
 
       if (!process.env.OPENAI_API_KEY) {
         console.error("OPENAI_API_KEY is not configured on the server");
-        return res
-          .status(503)
-          .json({
-            error: "openai_api_key_missing",
-            message: "OpenAI API key not configured on the server",
-          });
+        return res.status(503).json({
+          error: "openai_api_key_missing",
+          message: "OpenAI API key not configured on the server",
+        });
       }
 
       const { default: OpenAI } = await import("openai");
@@ -237,5 +234,5 @@ export const handleUpload: any = [
       console.error("upload error:", err);
       return res.status(500).json({ error: "analysis_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];

@@ -1,4 +1,3 @@
-import type { RequestHandler, Request, Response } from "express";
 import multer from "multer";
 
 const upload = multer({
@@ -26,7 +25,7 @@ function parseJsonLoose(text: string | null | undefined): any | null {
 
 export const handleDescribe: any = [
   upload.single("image"),
-  (async (req: Request, res: Response) => {
+  (async (req: any, res: any) => {
     try {
       const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
@@ -116,5 +115,5 @@ export const handleDescribe: any = [
       console.error("describe error:", err);
       return res.status(500).json({ error: "describe_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];

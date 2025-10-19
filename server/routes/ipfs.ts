@@ -1,6 +1,4 @@
-import type { RequestHandler } from "express";
 import multer from "multer";
-import type { Request, Response } from "express";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -13,7 +11,7 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY; // e.g. mysubdomain.mypinata.
 async function pinFileToPinata(name: string, buffer: Buffer, mimetype: string) {
   if (!PINATA_JWT) throw new Error("PINATA_JWT not set");
   const form = new FormData();
-  const blob = new Blob([buffer], {
+  const blob = new Blob([new Uint8Array(buffer)], {
     type: mimetype || "application/octet-stream",
   });
   form.append("file", blob, name || "file");
@@ -48,7 +46,7 @@ async function pinJsonToPinata(json: unknown) {
 
 export const handleIpfsUpload: any = [
   upload.single("file"),
-  (async (req: Request, res: Response) => {
+  (async (req: any, res: any) => {
     try {
       const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
@@ -65,10 +63,10 @@ export const handleIpfsUpload: any = [
       console.error("ipfs upload error:", err);
       return res.status(500).json({ error: "ipfs_upload_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];
 
-export const handleIpfsUploadJson: RequestHandler = async (req, res) => {
+export const handleIpfsUploadJson: any = async (req: any, res: any) => {
   try {
     const data = req.body?.data ?? req.body;
     const cid = await pinJsonToPinata(data);

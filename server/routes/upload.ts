@@ -245,17 +245,20 @@ export const handleUpload: any = [
         },
         "4": {
           type: "AI Generated",
-          notes: "AI-generated image; Famous person's face; not fully visible (cropped)",
+          notes:
+            "AI-generated image; Famous person's face; not fully visible (cropped)",
           registrationStatus: "✅ IP can be registered",
         },
         "5": {
           type: "AI Generated",
-          notes: "AI-generated image; Human face visible; not famous; full face visible",
+          notes:
+            "AI-generated image; Human face visible; not famous; full face visible",
           registrationStatus: "✅ IP can be registered",
         },
         "6": {
           type: "AI Generated",
-          notes: "AI-generated image; Human face visible; not famous; not fully visible",
+          notes:
+            "AI-generated image; Human face visible; not famous; not fully visible",
           registrationStatus: "✅ IP can be registered",
         },
         "7": {
@@ -265,22 +268,26 @@ export const handleUpload: any = [
         },
         "8": {
           type: "Non-AI Image",
-          notes: "Photograph/realistic; Famous person's face; full face visible",
+          notes:
+            "Photograph/realistic; Famous person's face; full face visible",
           registrationStatus: "❌ IP cannot be registered",
         },
         "9": {
           type: "Non-AI Image",
-          notes: "Photograph/realistic; Famous person's face; not fully visible",
+          notes:
+            "Photograph/realistic; Famous person's face; not fully visible",
           registrationStatus: "✅ IP can be registered",
         },
         "10": {
           type: "Non-AI Image",
-          notes: "Photograph/realistic; Human face visible; not famous; full face visible",
+          notes:
+            "Photograph/realistic; Human face visible; not famous; full face visible",
           registrationStatus: "✅ IP can be registered",
         },
         "11": {
           type: "Non-AI Image",
-          notes: "Photograph/realistic; Human face visible; not famous; not fully visible",
+          notes:
+            "Photograph/realistic; Human face visible; not famous; not fully visible",
           registrationStatus: "✅ IP can be registered",
         },
         "12": {
@@ -290,7 +297,8 @@ export const handleUpload: any = [
         },
         "13": {
           type: "AI Animation",
-          notes: "AI-generated animation/cartoon; Contains famous brand/character",
+          notes:
+            "AI-generated animation/cartoon; Contains famous brand/character",
           registrationStatus: "❌ IP cannot be registered",
         },
         "14": {
@@ -309,11 +317,9 @@ export const handleUpload: any = [
         DIRECT_REGISTER_MANUAL_AI: [1, 4, 5, 6, 9, 10, 11, 12, 14],
       };
 
-      const isManualAI =
-        GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(group);
+      const isManualAI = GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(group);
       const info = ANSWER_DETAILS[String(group)];
-      const canRegisterByText =
-        info && info.registrationStatus.includes("✅");
+      const canRegisterByText = info && info.registrationStatus.includes("✅");
       const canRegister = canRegisterByText;
 
       const brandGroups = [2, 7, 13, 15];
@@ -369,8 +375,7 @@ export const handleUpload: any = [
           verdict =
             "This IP can be registered because it doesn't show faces/brands.";
         } else {
-          verdict =
-            "This IP can be registered as it meets policy criteria.";
+          verdict = "This IP can be registered as it meets policy criteria.";
         }
       } else {
         if (isBrandGroup) {
@@ -387,17 +392,15 @@ export const handleUpload: any = [
 
       const display = `This is ${classification}. ${verdict}`;
 
-      return res
-        .status(200)
-        .json({
-          group,
-          details: flags,
-          title,
-          description,
-          display,
-          canRegister,
-          isManualAI,
-        });
+      return res.status(200).json({
+        group,
+        details: flags,
+        title,
+        description,
+        display,
+        canRegister,
+        isManualAI,
+      });
     } catch (err) {
       console.error("upload error:", err);
       return res.status(500).json({ error: "analysis_failed" });

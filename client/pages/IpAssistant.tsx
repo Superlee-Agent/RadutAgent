@@ -527,7 +527,10 @@ const IpAssistant = () => {
         let display = (data as any)?.display || "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
-        if (typeof (data as any)?.group === "number" && (data as any)?.details) {
+        if (
+          typeof (data as any)?.group === "number" &&
+          (data as any)?.details
+        ) {
           const g = (data as any).group as number;
           const d = (data as any).details as Record<string, any>;
           lastAnalysisFactsRef.current = d;

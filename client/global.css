@@ -520,4 +520,17 @@ button.btn-ghost:focus-visible {
   .fixed.inset-0.z-50.md\:hidden {
     height: 100dvh;
   }
+
+  /* Disable hover and focus visual effects on touch devices to avoid flicker/lines */
+  .chat-box *:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+  .chat-box *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+
 }

@@ -323,7 +323,7 @@ const IpAssistant = () => {
   useEffect(() => {
     if (autoScrollNextRef.current) {
       // use throttled scroll helper instead of raw timeouts
-      scrollToBottom();
+      scrollToBottomImmediate();
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
@@ -1174,7 +1174,7 @@ const IpAssistant = () => {
                       index === messages.length - 1 &&
                       autoScrollNextRef.current
                     ) {
-                      scrollToBottom();
+                      scrollToBottomImmediate();
                     }
                   }}
                   layout
@@ -1731,7 +1731,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        scrollToBottom();
+                        scrollToBottomImmediate();
                       }
                     }}
                     layout
@@ -1804,7 +1804,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        scrollToBottom();
+                        scrollToBottomImmediate();
                       }
                     }}
                     layout
@@ -1921,7 +1921,7 @@ const IpAssistant = () => {
                           autoScrollNextRef.current
                         ) {
                           // throttle scrolling for performance
-                          scrollToBottom();
+                          scrollToBottomImmediate();
                         }
                       }
                     }}
@@ -1934,7 +1934,7 @@ const IpAssistant = () => {
                           autoScrollNextRef.current
                         ) {
                           // throttle scrolling for performance
-                          scrollToBottom();
+                          scrollToBottomImmediate();
                         }
                       }
                     }}

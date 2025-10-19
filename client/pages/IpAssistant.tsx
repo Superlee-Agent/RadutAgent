@@ -348,6 +348,15 @@ const IpAssistant = () => {
   useEffect(() => {
     setIpCheckInput("");
     setIpCheckLoading(null);
+    // Clean up old blobs from analysisContextsRef to prevent memory leak
+    // Keep only the last 10 contexts, remove older ones
+    const contexts = Array.from(analysisContextsRef.current.entries());
+    if (contexts.length > 10) {
+      const toRemove = contexts.slice(0, contexts.length - 10);
+      toRemove.forEach(([key]) => {
+        analysisContextsRef.current.delete(key);
+      });
+    }
   }, [messages]);
 
   const primaryWalletAddress = useMemo(() => {

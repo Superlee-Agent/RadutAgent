@@ -4,7 +4,8 @@ const IDP_CHECK = new Map<string, { status: number; body: any; ts: number }>();
 
 export const handleCheckIpAssets: any = async (req: any, res: any) => {
   try {
-    const idempotencyKey = (req.get("Idempotency-Key") || req.get("Idempotency-Key")) as string | undefined;
+    const idempotencyKey = (req.get("Idempotency-Key") ||
+      req.get("Idempotency-Key")) as string | undefined;
     if (idempotencyKey && IDP_CHECK.has(idempotencyKey)) {
       const cached = IDP_CHECK.get(idempotencyKey)!;
       if (Date.now() - cached.ts < 60_000) {
@@ -18,18 +19,36 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
     const { address } = req.body;
 
     if (!address || typeof address !== "string") {
-      return res.status(400).json({ ok: false, error: "address_required", message: "Address is required" });
+      return res
+        .status(400)
+        .json({
+          ok: false,
+          error: "address_required",
+          message: "Address is required",
+        });
     }
 
     const trimmedAddress = address.trim();
     if (!/^0x[a-fA-F0-9]{40}$/.test(trimmedAddress)) {
-      return res.status(400).json({ ok: false, error: "invalid_address", message: "Invalid Ethereum address format" });
+      return res
+        .status(400)
+        .json({
+          ok: false,
+          error: "invalid_address",
+          message: "Invalid Ethereum address format",
+        });
     }
 
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {
       console.error("STORY_API_KEY environment variable not configured");
-      return res.status(500).json({ ok: false, error: "server_config_missing", message: "Server configuration error: STORY_API_KEY not set" });
+      return res
+        .status(500)
+        .json({
+          ok: false,
+          error: "server_config_missing",
+          message: "Server configuration error: STORY_API_KEY not set",
+        });
     }
 
     let allAssets: any[] = [];
@@ -88,7 +107,14 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
             }
 
             clearTimeout(timeoutId);
-            return res.status(response.status).json({ ok: false, error: `story_api_error`, details: errorDetail, status: response.status });
+            return res
+              .status(response.status)
+              .json({
+                ok: false,
+                error: `story_api_error`,
+                details: errorDetail,
+                status: response.status,
+              });
           }
 
           const data = await response.json();
@@ -144,7 +170,14 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
               iteration: iterations,
             });
             clearTimeout(timeoutId);
-            return res.status(504).json({ ok: false, error: "timeout", details: "The Story API is responding slowly. Please try again in a moment." });
+            return res
+              .status(504)
+              .json({
+                ok: false,
+                error: "timeout",
+                details:
+                  "The Story API is responding slowly. Please try again in a moment.",
+              });
           }
 
           console.error("Fetch request failed for Story API", {
@@ -155,7 +188,13 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
             errorType: fetchError?.name,
           });
           clearTimeout(timeoutId);
-          return res.status(500).json({ ok: false, error: "network_error", details: fetchError?.message || "Unable to connect to Story API" });
+          return res
+            .status(500)
+            .json({
+              ok: false,
+              error: "network_error",
+              details: fetchError?.message || "Unable to connect to Story API",
+            });
         }
       }
 
@@ -180,8 +219,14 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
 
       const totalCount = allAssets.length;
 
-      const body = { address: trimmedAddress, totalCount, originalCount, remixCount };
-      if (idempotencyKey) IDP_CHECK.set(idempotencyKey, { status: 200, body, ts: Date.now() });
+      const body = {
+        address: trimmedAddress,
+        totalCount,
+        originalCount,
+        remixCount,
+      };
+      if (idempotencyKey)
+        IDP_CHECK.set(idempotencyKey, { status: 200, body, ts: Date.now() });
       res.json({ ok: true, ...body });
     } catch (innerError: any) {
       clearTimeout(timeoutId);
@@ -189,6 +234,15 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
     }
   } catch (error: any) {
     console.error("Check IP Assets Error:", error);
-    res.status(500).json({ ok: false, error: error?.message || "Internal server error", details: process.env.NODE_ENV !== "production" ? error?.stack : "An unexpected error occurred" });
+    res
+      .status(500)
+      .json({
+        ok: false,
+        error: error?.message || "Internal server error",
+        details:
+          process.env.NODE_ENV !== "production"
+            ? error?.stack
+            : "An unexpected error occurred",
+      });
   }
 };

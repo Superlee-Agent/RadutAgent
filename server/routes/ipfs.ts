@@ -68,7 +68,7 @@ export const handleIpfsUpload: any = [
   }) as any,
 ];
 
-export const handleIpfsUploadJson: RequestHandler = async (req, res) => {
+export const handleIpfsUploadJson: any = async (req: any, res: any) => {
   try {
     const data = req.body?.data ?? req.body;
     const cid = await pinJsonToPinata(data);

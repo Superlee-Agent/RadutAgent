@@ -1879,7 +1879,7 @@ const IpAssistant = () => {
                     alt="Uploaded"
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
+                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;
                       if (!loadedImagesRef.current.has(imgKey)) {
@@ -2008,7 +2008,7 @@ const IpAssistant = () => {
               transition={{ duration: 0.18 }}
             />
             <motion.div
-              className="relative z-10 w-full max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-xl"
+              className="relative z-10 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}

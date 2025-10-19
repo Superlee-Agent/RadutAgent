@@ -1896,9 +1896,15 @@ const IpAssistant = () => {
               className="flex items-start mb-2 gap-2 px-3 md:px-8"
               aria-live="polite"
               aria-label="Bot is typing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, x: -20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -20, scale: 0.95 }}
+              transition={{
+                type: "spring",
+                damping: 20,
+                stiffness: 300,
+                mass: 0.8,
+              }}
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />

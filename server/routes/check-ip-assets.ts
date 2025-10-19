@@ -62,11 +62,14 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.error(`Story API Error: ${response.status} - ${errorText}`, {
-              address: trimmedAddress,
-              offset,
-              iteration: iterations,
-            });
+            console.error(
+              `Story API Error: ${response.status} - ${errorText}`,
+              {
+                address: trimmedAddress,
+                offset,
+                iteration: iterations,
+              },
+            );
 
             let errorDetail = errorText;
             try {

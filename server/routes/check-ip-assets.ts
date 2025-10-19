@@ -15,47 +15,137 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
 
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "Story API key not configured" });
+      console.error("STORY_API_KEY environment variable not configured");
+      return res.status(500).json({
+        error:
+          "Server configuration error: STORY_API_KEY not set. Please contact the administrator.",
+        details:
+          "The STORY_API_KEY environment variable is missing. On Vercel, add it to your project settings under Environment Variables.",
+      });
     }
 
     let allAssets: any[] = [];
     let offset = 0;
     let hasMore = true;
     const limit = 100;
+    const maxIterations = 50;
+    let iterations = 0;
 
-    while (hasMore) {
-      const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-        method: "POST",
-        headers: {
-          "X-Api-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          where: {
-            ownerAddress: trimmedAddress,
+    while (hasMore && iterations < maxIterations) {
+      iterations += 1;
+
+      try {
+        const response = await fetch(
+          "https://api.storyapis.com/api/v4/assets",
+          {
+            method: "POST",
+            headers: {
+              "X-Api-Key": apiKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              where: {
+                ownerAddress: trimmedAddress,
+              },
+              pagination: {
+                limit,
+                offset,
+              },
+            }),
           },
-          pagination: {
-            limit,
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Story API Error: ${response.status} - ${errorText}`, {
+            address: trimmedAddress,
             offset,
-          },
-        }),
-      });
+            iteration: iterations,
+          });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Story API Error: ${response.status} - ${errorText}`);
-        return res.status(response.status).json({
-          error: `Failed to fetch IP assets: ${response.status}`,
+          let errorDetail = errorText;
+          try {
+            const errorJson = JSON.parse(errorText);
+            errorDetail = errorJson.message || errorJson.error || errorText;
+          } catch {
+            // Keep the raw text if not JSON
+          }
+
+          return res.status(response.status).json({
+            error: `Failed to fetch IP assets from Story API`,
+            details: errorDetail,
+            status: response.status,
+          });
+        }
+
+        const data = await response.json();
+
+        // Validate response structure
+        if (!data) {
+          console.error("Empty response from Story API", {
+            address: trimmedAddress,
+            offset,
+            iteration: iterations,
+          });
+          break;
+        }
+
+        const assets = Array.isArray(data) ? data : data?.data || [];
+
+        if (!Array.isArray(assets)) {
+          console.warn("Unexpected response format from Story API", {
+            address: trimmedAddress,
+            offset,
+            iteration: iterations,
+            dataKeys: Object.keys(data || {}),
+            dataType: typeof data,
+          });
+          break;
+        }
+
+        // Validate asset structure
+        const validAssets = assets.filter((asset: any) => {
+          if (!asset || typeof asset !== "object") {
+            console.warn("Invalid asset object", { asset });
+            return false;
+          }
+          return true;
+        });
+
+        allAssets = allAssets.concat(validAssets);
+
+        const pagination = data?.pagination;
+        hasMore = pagination?.hasMore === true && validAssets.length > 0;
+        offset += limit;
+
+        // Safety check: stop if pagination indicates no more data
+        if (
+          pagination?.hasMore === false ||
+          !pagination ||
+          validAssets.length === 0
+        ) {
+          hasMore = false;
+        }
+      } catch (fetchError: any) {
+        console.error("Fetch request failed for Story API", {
+          address: trimmedAddress,
+          offset,
+          iteration: iterations,
+          error: fetchError?.message,
+          errorType: fetchError?.name,
+        });
+        return res.status(500).json({
+          error: "Network error while fetching IP assets",
+          details: fetchError?.message || "Unable to connect to Story API",
         });
       }
+    }
 
-      const data = await response.json();
-      const assets = Array.isArray(data) ? data : data?.data || [];
-      allAssets = allAssets.concat(assets);
-
-      const pagination = data?.pagination;
-      hasMore = pagination?.hasMore === true;
-      offset += limit;
+    if (iterations >= maxIterations) {
+      console.warn("Max iterations reached when fetching IP assets", {
+        address: trimmedAddress,
+        assetsCollected: allAssets.length,
+      });
     }
 
     const originalCount = allAssets.filter((asset: any) => {
@@ -80,6 +170,10 @@ export const handleCheckIpAssets: RequestHandler = async (req, res) => {
     console.error("Check IP Assets Error:", error);
     res.status(500).json({
       error: error?.message || "Internal server error",
+      details:
+        process.env.NODE_ENV !== "production"
+          ? error?.stack
+          : "An unexpected error occurred",
     });
   }
 };

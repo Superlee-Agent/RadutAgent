@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -451,9 +449,11 @@ button.btn-ghost:focus-visible {
     background: #ff4da6;
   }
 }
-:::selection {
+
+::selection {
   background: rgba(255, 77, 166, 0.18);
 }
+
 @media (max-width: 500px) {
   .chat-wrap {
     max-width: 100vw;
@@ -495,6 +495,7 @@ button.btn-ghost:focus-visible {
 /* Pink/red theme overrides */
 /* color overrides removed for minimalist theme */
 /* removed duplicate keyframes to keep single animation */
+
 ::selection {
   background: rgba(255, 77, 166, 0.18);
 }
@@ -539,9 +540,9 @@ button.btn-ghost:focus-visible {
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
     background: transparent;
   }
-  /* reduce focus outlines and rings on mobile to avoid flicker when keyboard shows */
-  .chat-input textarea:focus,
-  .chat-input button:focus {
+  /* For touch devices, suppress focus visuals for non-keyboard interactions but keep focus-visible for keyboard users */
+  .chat-input textarea:focus:not(:focus-visible),
+  .chat-input button:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
   }
@@ -553,13 +554,18 @@ button.btn-ghost:focus-visible {
     height: 100dvh;
   }
 
-  /* Disable hover and focus visual effects on touch devices to avoid flicker/lines */
+  /* Disable hover and active visual effects on touch devices to avoid flicker/lines */
   .chat-box *:hover,
-  .chat-box *:focus,
-  .chat-box *:active,
-  .chat-box *:focus-within {
+  .chat-box *:active {
     outline: none !important;
     box-shadow: none !important;
     border-color: transparent !important;
+  }
+
+  /* Preserve focus-visible (keyboard) outlines for accessibility on mobile */
+  .chat-box *:focus-visible {
+    outline: 3px solid rgba(255, 77, 166, 0.18) !important;
+    box-shadow: 0 0 0 6px rgba(255, 77, 166, 0.06) !important;
+    border-color: rgba(255, 77, 166, 0.25) !important;
   }
 }

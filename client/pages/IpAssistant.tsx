@@ -288,19 +288,77 @@ const IpAssistant = () => {
   // throttled scroll helpers to avoid excessive layout work on mobile
   const lastScrollRef = useRef<number>(0);
   const scrollRafRef = useRef<number | null>(null);
-  const scrollToBottom = useCallback(() => {
-    const now = Date.now();
-    if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
-    lastScrollRef.current = now;
-    if (typeof window !== "undefined") {
-      if (scrollRafRef.current)
-        cancelAnimationFrame(scrollRafRef.current as any);
-      scrollRafRef.current = requestAnimationFrame(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        scrollRafRef.current = null;
+  const scrollToBottom = useCallback(
+    (options?: { behavior?: ScrollBehavior }) => {
+      const now = Date.now();
+      if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
+      lastScrollRef.current = now;
+      if (typeof window !== "undefined") {
+        if (scrollRafRef.current)
+          cancelAnimationFrame(scrollRafRef.current as any);
+        scrollRafRef.current = requestAnimationFrame(() => {
+          try {
+            chatEndRef.current?.scrollIntoView({
+              behavior: options?.behavior ?? "smooth",
+              block: "end",
+              inline: "nearest",
+            });
+          } catch (e) {}
+          scrollRafRef.current = null;
+        });
+      }
+    },
+    [],
+  );
+
+  // Immediate (non-smooth) scroll used when user sends a message to avoid perceived lag
+  const scrollToBottomImmediate = useCallback(() => {
+    if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
+    try {
+      chatEndRef.current?.scrollIntoView({
+        behavior: "auto",
+        block: "end",
+        inline: "nearest",
       });
-    }
+      // ensure the scrollable container is fully scrolled to bottom as a fallback
+      const el = chatEndRef.current;
+      if (el) {
+        const parent = el.parentElement as HTMLElement | null;
+        if (parent && parent.scrollTo) {
+          parent.scrollTo({
+            top: parent.scrollHeight,
+            left: 0,
+            behavior: "auto",
+          });
+        }
+      }
+    } catch (e) {}
+    lastScrollRef.current = Date.now();
   }, []);
+
+  // Common motion props for all message bubbles to ensure uniform animation and consistent scrolling behavior
+  const getBubbleMotionProps = useCallback(
+    (index: number) => ({
+      initial: { opacity: 0, x: 20, scale: 0.95 },
+      animate: { opacity: 1, x: 0, scale: 1 },
+      exit: { opacity: 0, x: 20, scale: 0.95 },
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 300,
+        mass: 0.8,
+        delay: Math.min(index * 0.03, 0.15),
+      },
+      layout: true,
+      onAnimationComplete: () => {
+        // when the animation for the last message finishes, ensure immediate scroll
+        if (index === messages.length - 1 && autoScrollNextRef.current) {
+          scrollToBottomImmediate();
+        }
+      },
+    }),
+    [messages.length, scrollToBottomImmediate],
+  );
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -314,7 +372,7 @@ const IpAssistant = () => {
   useEffect(() => {
     if (autoScrollNextRef.current) {
       // use throttled scroll helper instead of raw timeouts
-      scrollToBottom();
+      scrollToBottomImmediate();
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
@@ -460,13 +518,37 @@ const IpAssistant = () => {
       ? truncateAddress(primaryWalletAddress)
       : null;
 
-  const pushMessage = useCallback((msg: Message) => {
-    const id =
-      (msg as any).id ||
-      `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const msgWithId = { ...(msg as any), id } as Message;
-    setMessages((prev) => [...prev, msgWithId]);
-  }, []);
+  const pushMessage = useCallback(
+    (msg: Message) => {
+      const id =
+        (msg as any).id ||
+        `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const msgWithId = { ...(msg as any), id } as Message;
+      setMessages((prev) => {
+        const next = [...prev, msgWithId];
+        // If the message is from the user (text or image), bot, or an ip-check bubble, ensure immediate scroll so UI feels responsive
+        const from = (msgWithId as any).from;
+        if (
+          from === "user" ||
+          from === "user-image" ||
+          from === "bot" ||
+          from === "ip-check"
+        ) {
+          // allow DOM to update then scroll immediately
+          requestAnimationFrame(() => {
+            try {
+              // small timeout to ensure layout is ready
+              setTimeout(() => {
+                if (autoScrollNextRef.current) scrollToBottomImmediate();
+              }, 0);
+            } catch (e) {}
+          });
+        }
+        return next;
+      });
+    },
+    [scrollToBottomImmediate],
+  );
 
   const saveSession = useCallback((history: Message[]) => {
     if (history.length <= 1) return;
@@ -648,6 +730,8 @@ const IpAssistant = () => {
     const ts = getCurrentTimestamp();
     pushMessage({ from: "user", text: value, ts });
     setInput("");
+    // ensure immediate scroll so the user sees their message without delay
+    scrollToBottomImmediate();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
@@ -854,6 +938,12 @@ const IpAssistant = () => {
             : msg,
         ),
       );
+      // ensure the UI scrolls to show the completed ip-check result immediately
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
       setIpCheckInput("");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to fetch IP assets";
@@ -871,6 +961,12 @@ const IpAssistant = () => {
             : msg,
         ),
       );
+      // ensure the UI scrolls to show the error result immediately
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
     } finally {
       setIpCheckLoading(null);
     }
@@ -1074,25 +1170,15 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-3 sm:px-4 md:px-12 pt-4 pb-2 md:pb-6 flex-1 overflow-y-auto bg-transparent scroll-smooth">
+      <div className="chat-box px-3 sm:px-4 md:px-12 pt-4 pb-24 flex-1 overflow-y-auto bg-transparent scroll-smooth">
         <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
                   key={`user-${index}`}
+                  {...getBubbleMotionProps(index)}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     {msg.text}
@@ -1114,26 +1200,8 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`bot-${index}`}
+                  {...getBubbleMotionProps(index)}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  onAnimationComplete={() => {
-                    if (
-                      index === messages.length - 1 &&
-                      autoScrollNextRef.current
-                    ) {
-                      scrollToBottom();
-                    }
-                  }}
-                  layout
                 >
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     <div className="flex items-center gap-3">
@@ -1327,18 +1395,8 @@ const IpAssistant = () => {
               return (
                 <motion.div
                   key={`register-${index}`}
+                  {...getBubbleMotionProps(index)}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 300,
-                    mass: 0.8,
-                    delay: Math.min(index * 0.03, 0.15),
-                  }}
-                  layout
                 >
                   <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm overflow-hidden">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
@@ -1671,26 +1729,8 @@ const IpAssistant = () => {
                 return (
                   <motion.div
                     key={`ip-check-${index}`}
+                    {...getBubbleMotionProps(index)}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                    transition={{
-                      type: "spring",
-                      damping: 20,
-                      stiffness: 300,
-                      mass: 0.8,
-                      delay: Math.min(index * 0.03, 0.15),
-                    }}
-                    onAnimationComplete={() => {
-                      if (
-                        index === messages.length - 1 &&
-                        autoScrollNextRef.current
-                      ) {
-                        scrollToBottom();
-                      }
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
@@ -1744,26 +1784,8 @@ const IpAssistant = () => {
                 return (
                   <motion.div
                     key={`ip-check-result-${index}`}
+                    {...getBubbleMotionProps(index)}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                    transition={{
-                      type: "spring",
-                      duration: 0.6,
-                      bounce: 0.15,
-                      stiffness: 100,
-                      damping: 18,
-                    }}
-                    onAnimationComplete={() => {
-                      if (
-                        index === messages.length - 1 &&
-                        autoScrollNextRef.current
-                      ) {
-                        scrollToBottom();
-                      }
-                    }}
-                    layout
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
                       {ipCheckMsg.error ? (
@@ -1848,18 +1870,8 @@ const IpAssistant = () => {
             return (
               <motion.div
                 key={`image-${index}`}
+                {...getBubbleMotionProps(index)}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                transition={{
-                  type: "spring",
-                  damping: 20,
-                  stiffness: 300,
-                  mass: 0.8,
-                  delay: Math.min(index * 0.03, 0.15),
-                }}
-                layout
               >
                 <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
                   <img
@@ -1877,7 +1889,7 @@ const IpAssistant = () => {
                           autoScrollNextRef.current
                         ) {
                           // throttle scrolling for performance
-                          scrollToBottom();
+                          scrollToBottomImmediate();
                         }
                       }
                     }}
@@ -1890,7 +1902,7 @@ const IpAssistant = () => {
                           autoScrollNextRef.current
                         ) {
                           // throttle scrolling for performance
-                          scrollToBottom();
+                          scrollToBottomImmediate();
                         }
                       }
                     }}

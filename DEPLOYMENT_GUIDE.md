@@ -96,12 +96,41 @@ STORY_API_KEY=your_actual_api_key_here
 - Always use Vercel's environment variable system for production secrets
 - API keys should only be used server-side (in the `/api` directory or serverless functions)
 
+## Known Improvements in This Version
+
+### Enhanced Error Handling
+- Detailed error messages from Story API are now propagated to the client
+- Specific error codes and messages help identify configuration issues
+- Console logging includes context (address, offset, iteration count)
+
+### API Response Validation
+- Strict validation of asset objects to prevent processing malformed data
+- Pagination logic includes safety checks and iteration limits
+- Empty response handling prevents infinite loops
+
+### Security Enhancements
+- CORS configuration with origin whitelisting (development and preview domains)
+- Security headers added (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
+- Environment variable validation with meaningful error messages
+
+### Pagination Robustness
+- Maximum iteration limit (50) prevents accidental infinite loops
+- Empty asset response detection stops pagination gracefully
+- Detailed logging for debugging pagination issues
+
 ## Support
 
 For issues with Story Protocol API:
 - Contact Story Protocol support
 - Check Story API documentation at https://api.storyapis.com
+- Verify API key is valid and has proper permissions
 
 For Vercel deployment issues:
 - Check Vercel documentation: https://vercel.com/docs
 - Use Vercel Support for account/deployment issues
+- Review build logs in Vercel dashboard
+
+For IP Assistant specific issues:
+- Check DEPLOYMENT_GUIDE.md (this file) for configuration
+- Review server logs: `vercel logs`
+- Check browser console for client-side errors

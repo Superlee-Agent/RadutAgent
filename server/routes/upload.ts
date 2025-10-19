@@ -406,18 +406,17 @@ export const handleUpload: any = [
 
       const display = `This is ${classification}. ${verdict}`;
 
-      return res.status(200).json({
-        group,
-        details: flags,
-        title,
-        description,
-        display,
-        canRegister,
-        isManualAI,
-      });
+      const body = { group, details: flags, title, description, display, canRegister, isManualAI };
+      if (idempotencyKey) IDP_STORE.set(idempotencyKey, { status: 200, body, ts: Date.now() });
+      return res.status(200).json(body);
     } catch (err) {
       console.error("upload error:", err);
-      return res.status(500).json({ error: "analysis_failed" });
+      const body = { ok: false, error: "analysis_failed", message: String(err?.message || "Analysis failed") };
+      if ((req.get("Idempotency-Key") || req.get("Idempotency-Key"))) {
+        const key = (req.get("Idempotency-Key") || req.get("Idempotency-Key")) as string;
+        IDP_STORE.set(key, { status: 500, body, ts: Date.now() });
+      }
+      return res.status(500).json(body);
     }
   }) as any,
 ];

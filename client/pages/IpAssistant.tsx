@@ -927,7 +927,7 @@ const IpAssistant = () => {
           const url = URL.createObjectURL(f);
           pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
         }
-        autoScrollNextRef.current = true;
+        autoScrollNextRef.current = false;
 
         // Compress and store the first image for later detection
         let compressedBlob: Blob | null = null;

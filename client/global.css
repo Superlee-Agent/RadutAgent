@@ -507,6 +507,12 @@ button.btn-ghost:focus-visible {
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
     background: transparent;
   }
+  /* reduce focus outlines and rings on mobile to avoid flicker when keyboard shows */
+  .chat-input textarea:focus,
+  .chat-input button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
   textarea {
     min-height: 48px;
   }

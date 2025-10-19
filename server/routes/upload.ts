@@ -237,5 +237,5 @@ export const handleUpload: any = [
       console.error("upload error:", err);
       return res.status(500).json({ error: "analysis_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];

@@ -227,9 +227,177 @@ export const handleUpload: any = [
 
       const group = determineGroup(flags);
 
+      const ANSWER_DETAILS: Record<string, any> = {
+        "1": {
+          type: "AI Generated",
+          notes: "AI-generated image; No human face; No famous brand/character",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "2": {
+          type: "AI Generated",
+          notes: "AI-generated image; Contains famous brand/character",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+        "3": {
+          type: "AI Generated",
+          notes: "AI-generated image; Famous person's face; full face visible",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+        "4": {
+          type: "AI Generated",
+          notes: "AI-generated image; Famous person's face; not fully visible (cropped)",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "5": {
+          type: "AI Generated",
+          notes: "AI-generated image; Human face visible; not famous; full face visible",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "6": {
+          type: "AI Generated",
+          notes: "AI-generated image; Human face visible; not famous; not fully visible",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "7": {
+          type: "Non-AI Image",
+          notes: "Photograph/realistic; Contains famous brand or character",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+        "8": {
+          type: "Non-AI Image",
+          notes: "Photograph/realistic; Famous person's face; full face visible",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+        "9": {
+          type: "Non-AI Image",
+          notes: "Photograph/realistic; Famous person's face; not fully visible",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "10": {
+          type: "Non-AI Image",
+          notes: "Photograph/realistic; Human face visible; not famous; full face visible",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "11": {
+          type: "Non-AI Image",
+          notes: "Photograph/realistic; Human face visible; not famous; not fully visible",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "12": {
+          type: "AI Animation",
+          notes: "AI-generated animation/cartoon; No famous brand/character",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "13": {
+          type: "AI Animation",
+          notes: "AI-generated animation/cartoon; Contains famous brand/character",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+        "14": {
+          type: "Non-AI Animation",
+          notes: "Non-AI animation/cartoon; No famous brand/character",
+          registrationStatus: "✅ IP can be registered",
+        },
+        "15": {
+          type: "Non-AI Animation",
+          notes: "Non-AI animation/cartoon; Contains famous brand/character",
+          registrationStatus: "❌ IP cannot be registered",
+        },
+      };
+
+      const GROUPS = {
+        DIRECT_REGISTER_MANUAL_AI: [1, 4, 5, 6, 9, 10, 11, 12, 14],
+      };
+
+      const isManualAI =
+        GROUPS.DIRECT_REGISTER_MANUAL_AI.includes(group);
+      const info = ANSWER_DETAILS[String(group)];
+      const canRegisterByText =
+        info && info.registrationStatus.includes("✅");
+      const canRegister = canRegisterByText;
+
+      const brandGroups = [2, 7, 13, 15];
+      const famousFullGroups = [3, 8];
+      const famousNotFullGroups = [4, 9];
+      const ordinaryFullGroups = [5, 10];
+      const ordinaryNotFullGroups = [6, 11];
+      const animationGroups = [12, 13, 14, 15];
+      const aiGroups = [1, 2, 3, 4, 5, 6, 12, 13];
+
+      const isAnimGroup = animationGroups.includes(group);
+      const isAIGroup = aiGroups.includes(group);
+      const isBrandGroup = brandGroups.includes(group);
+
+      let classification = isAnimGroup
+        ? isAIGroup
+          ? "AI Animation"
+          : "Non-AI Animation"
+        : isAIGroup
+          ? "AI Image"
+          : "Non-AI Image";
+
+      if (isBrandGroup) {
+        classification += ` with a famous brand/character`;
+      } else if (famousFullGroups.includes(group)) {
+        classification += " with full public figure face";
+      } else if (famousNotFullGroups.includes(group)) {
+        classification += " with public figure not fully visible";
+      } else if (ordinaryFullGroups.includes(group)) {
+        classification += " with full regular person face";
+      } else if (ordinaryNotFullGroups.includes(group)) {
+        classification += " with regular person not fully visible";
+      } else {
+        classification += " without faces/brands";
+      }
+
+      let verdict = "";
+      if (canRegister) {
+        if (famousNotFullGroups.includes(group)) {
+          verdict =
+            "This IP can be registered because the public figure is not fully visible.";
+        } else if (ordinaryNotFullGroups.includes(group)) {
+          verdict =
+            "This IP can be registered because the face is not fully visible.";
+        } else if (isAnimGroup && !isBrandGroup) {
+          verdict =
+            "This IP can be registered because it's an animation without brand/character.";
+        } else if (
+          !isBrandGroup &&
+          !famousFullGroups.includes(group) &&
+          !ordinaryFullGroups.includes(group)
+        ) {
+          verdict =
+            "This IP can be registered because it doesn't show faces/brands.";
+        } else {
+          verdict =
+            "This IP can be registered as it meets policy criteria.";
+        }
+      } else {
+        if (isBrandGroup) {
+          verdict = `This IP cannot be registered directly because it contains a famous brand/character.`;
+        } else if (famousFullGroups.includes(group)) {
+          verdict =
+            "This IP cannot be registered directly because it shows a public figure's full face.";
+        } else if (group === 0) {
+          verdict = "Analysis inconclusive; please submit for review.";
+        } else {
+          verdict = "This IP cannot be registered.";
+        }
+      }
+
+      const display = `This is ${classification}. ${verdict}`;
+
       return res
         .status(200)
-        .json({ group, details: flags, title, description });
+        .json({
+          group,
+          details: flags,
+          title,
+          description,
+          display,
+          canRegister,
+          isManualAI,
+        });
     } catch (err) {
       console.error("upload error:", err);
       return res.status(500).json({ error: "analysis_failed" });

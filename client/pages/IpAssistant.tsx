@@ -93,7 +93,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Famous person's face; not fully visible (cropped)",
-    registrationStatus: "��� IP can be registered",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -520,7 +520,7 @@ const IpAssistant = () => {
           // update processing message to error
           setMessages((prev) =>
             prev.map((m) =>
-              m.from === "bot" && m.ts === processingTs
+              (m as any).id === processingId
                 ? {
                     ...(m as BotMessage),
                     text: "The image is too large. Please compress or resize before uploading.",

@@ -7,6 +7,9 @@
 [functions]
   external_node_modules = ["express"]
   node_bundler = "esbuild"
+  # Increase function timeout for IP asset checks (max 26s on free tier, 60s on paid)
+  # This helps with mobile networks and wallets with many IP assets
+  included_files = ["dist/server/**/*"]
   
 [[redirects]]
   force = true

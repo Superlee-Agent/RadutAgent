@@ -216,7 +216,7 @@ const getCurrentTimestamp = () =>
   });
 
 const getInitialBotMessage = (): BotMessage => ({
-  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   from: "bot",
   text: "Hello, I am Radut Agent. Attach an image and I'll analyze it automatically.",
   ts: getCurrentTimestamp(),
@@ -446,7 +446,9 @@ const IpAssistant = () => {
       : null;
 
   const pushMessage = useCallback((msg: Message) => {
-    const id = (msg as any).id || `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id =
+      (msg as any).id ||
+      `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const msgWithId = { ...(msg as any), id } as Message;
     setMessages((prev) => [...prev, msgWithId]);
   }, []);
@@ -494,7 +496,7 @@ const IpAssistant = () => {
   const runDetection = useCallback(
     async (blob: Blob, fileName: string) => {
       // show explicit processing message
-      const processingId = `msg-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+      const processingId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const processingTs = getCurrentTimestamp();
       pushMessage({
         id: processingId,

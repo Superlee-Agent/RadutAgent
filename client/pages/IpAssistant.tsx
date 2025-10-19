@@ -17,6 +17,7 @@ type BotMessage = {
   ts?: string;
   verification?: { label: string; code: string } | string | null;
   ctxKey?: string;
+  isProcessing?: boolean;
 };
 
 export type Message =
@@ -488,7 +489,7 @@ const IpAssistant = () => {
     async (blob: Blob, fileName: string) => {
       // show explicit processing message
       const processingTs = getCurrentTimestamp();
-      pushMessage({ from: "bot", text: "Processing image, please wait…", ts: processingTs });
+      pushMessage({ from: "bot", text: "Processing image, please wait…", ts: processingTs, isProcessing: true });
       setWaiting(true);
       try {
         // First, upload and analyze the image
@@ -508,7 +509,7 @@ const IpAssistant = () => {
           setMessages((prev) =>
             prev.map((m) =>
               m.from === "bot" && m.ts === processingTs
-                ? { ...(m as BotMessage), text: "The image is too large. Please compress or resize before uploading." }
+                ? { ...(m as BotMessage), text: "The image is too large. Please compress or resize before uploading.", isProcessing: false }
                 : m,
             ),
           );
@@ -523,7 +524,7 @@ const IpAssistant = () => {
           setMessages((prev) =>
             prev.map((m) =>
               m.from === "bot" && m.ts === processingTs
-                ? { ...(m as BotMessage), text: "Image analysis failed." }
+                ? { ...(m as BotMessage), text: "Image analysis failed.", isProcessing: false }
                 : m,
             ),
           );
@@ -561,7 +562,7 @@ const IpAssistant = () => {
         setMessages((prev) =>
           prev.map((m) =>
             m.from === "bot" && m.ts === processingTs
-              ? { ...(m as BotMessage), text: "Analysis completed." }
+              ? { ...(m as BotMessage), text: "Analysis completed.", isProcessing: false }
               : m,
           ),
         );
@@ -587,7 +588,7 @@ const IpAssistant = () => {
         setMessages((prev) =>
           prev.map((m) =>
             m.from === "bot" && m.ts === processingTs
-              ? { ...(m as BotMessage), text: message }
+              ? { ...(m as BotMessage), text: message, isProcessing: false }
               : m,
           ),
         );
@@ -1080,7 +1081,17 @@ const IpAssistant = () => {
                   layout
                 >
                   <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
-                    <div>{msg.text}</div>
+                    <div className="flex items-center gap-3">
+                      {msg.isProcessing ? (
+                        <div className="flex-shrink-0 inline-flex items-center justify-center rounded-full bg-[#FF4DA6]/10 p-2">
+                          <svg className="h-5 w-5 text-[#FF4DA6] animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.15" strokeWidth="4" />
+                            <path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                      ) : null}
+                      <div>{msg.text}</div>
+                    </div>
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
                         Final verification:{" "}

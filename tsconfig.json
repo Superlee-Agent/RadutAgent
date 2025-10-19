@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
+    
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
@@ -16,8 +16,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
 
-    /* Linting */
+    
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -25,7 +27,7 @@
     "noFallthroughCasesInSwitch": false,
     "strictNullChecks": false,
 
-    /* Path mapping */
+    
     "baseUrl": ".",
     "paths": {
       "@/*": ["./client/*"],

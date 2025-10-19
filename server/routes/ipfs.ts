@@ -48,9 +48,9 @@ async function pinJsonToPinata(json: unknown) {
 
 export const handleIpfsUpload: any = [
   upload.single("file"),
-  (async (req, res) => {
+  (async (req: Request, res: Response) => {
     try {
-      const f = (req as any).file as Express.Multer.File | undefined;
+      const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
       const cid = await pinFileToPinata(
         f.originalname || "file",

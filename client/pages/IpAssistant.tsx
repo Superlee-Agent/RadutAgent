@@ -272,6 +272,8 @@ const IpAssistant = () => {
   const analysisContextsRef = useRef<
     Map<string, { blob: Blob; name: string; facts: Record<string, any> | null }>
   >(new Map());
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadedImagesRef = useRef<Set<string>>(new Set());
 
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();

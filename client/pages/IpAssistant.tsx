@@ -688,12 +688,12 @@ const IpAssistant = () => {
         const message = error?.message
           ? `Image analysis failed: ${error.message}`
           : "Image analysis failed.";
-        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: message,
           ts: getCurrentTimestamp(),
         });
+        autoScrollNextRef.current = true;
       } finally {
         setWaiting(false);
       }

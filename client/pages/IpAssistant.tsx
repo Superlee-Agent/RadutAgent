@@ -1888,6 +1888,8 @@ const IpAssistant = () => {
                   <img
                     src={msg.url}
                     alt="Uploaded"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;

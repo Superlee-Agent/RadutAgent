@@ -161,7 +161,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "�� Allowed (user-configurable)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "12": {
     type: "AI Generated (Animation)",
@@ -1152,13 +1152,14 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
                   transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300,
+                    mass: 0.8,
                   }}
                   onAnimationComplete={() => {
                     if (

@@ -1129,15 +1129,7 @@ const IpAssistant = () => {
                       index === messages.length - 1 &&
                       autoScrollNextRef.current
                     ) {
-                      if (scrollTimeoutRef.current) {
-                        clearTimeout(scrollTimeoutRef.current);
-                      }
-                      scrollTimeoutRef.current = setTimeout(() => {
-                        chatEndRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                        scrollTimeoutRef.current = null;
-                      }, 50);
+                      scrollToBottom();
                     }
                   }}
                   layout
@@ -1694,15 +1686,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        if (scrollTimeoutRef.current) {
-                          clearTimeout(scrollTimeoutRef.current);
-                        }
-                        scrollTimeoutRef.current = setTimeout(() => {
-                          chatEndRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          scrollTimeoutRef.current = null;
-                        }, 50);
+                        scrollToBottom();
                       }
                     }}
                     layout
@@ -1775,15 +1759,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        if (scrollTimeoutRef.current) {
-                          clearTimeout(scrollTimeoutRef.current);
-                        }
-                        scrollTimeoutRef.current = setTimeout(() => {
-                          chatEndRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          scrollTimeoutRef.current = null;
-                        }, 50);
+                        scrollToBottom();
                       }
                     }}
                     layout

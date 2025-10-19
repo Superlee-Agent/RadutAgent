@@ -233,7 +233,7 @@ const getMessagePreview = (message: Message) => {
       return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
     }
     const eligible =
-      ipMsg.totalCount > 20 ? " ✨ STORY OG CARD NFT ELIGIBLE" : "";
+      ipMsg.totalCount > 20 ? " �� STORY OG CARD NFT ELIGIBLE" : "";
     return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
   }
   if ("text" in message && message.text.trim().length === 0) {
@@ -524,7 +524,7 @@ const IpAssistant = () => {
         }
 
         const data = await response.json();
-        let display = "(No analysis result)";
+        let display = (data as any)?.display || "(No analysis result)";
         let verification: { label: string; code: number } | string | undefined;
 
         if (
@@ -535,139 +535,11 @@ const IpAssistant = () => {
           const d = (data as any).details as Record<string, any>;
           lastAnalysisFactsRef.current = d;
           verification = { label: `Detail`, code: String(g) as any };
-          let caption = "";
-          let detectedBrand = "";
-          let detectedCharacter = "";
-          try {
-            if (blob) {
-              const descForm = new FormData();
-              descForm.append("image", blob, fileName);
-              if (lastAnalysisFactsRef.current) {
-                descForm.append(
-                  "facts",
-                  JSON.stringify(lastAnalysisFactsRef.current),
-                );
-              }
-              const res = await fetch("/api/describe", {
-                method: "POST",
-                body: descForm,
-              });
-              if (res.ok) {
-                const j = await res.json();
-                const t = typeof j.title === "string" ? j.title : "";
-                const dsc =
-                  typeof j.description === "string" ? j.description : "";
-                detectedBrand =
-                  typeof j.brand === "string" ? (j.brand || "").trim() : "";
-                detectedCharacter =
-                  typeof j.character === "string"
-                    ? (j.character || "").trim()
-                    : "";
-                const br = detectedBrand ? ` — Brand: ${detectedBrand}` : "";
-                const ch = detectedCharacter
-                  ? ` — Character: ${detectedCharacter}`
-                  : "";
-                caption = [t, dsc].filter(Boolean).join(" — ") + (br || ch);
-              }
-            }
-          } catch {}
-          if (!caption) {
-            const info =
-              ANSWER_DETAILS[String(g) as keyof typeof ANSWER_DETAILS];
-            caption = [info?.type, info?.notes].filter(Boolean).join(" — ");
-          }
-          if (caption && caption.length > 140) {
-            caption = caption.slice(0, 139) + "…";
-          }
-          const facts = d || {};
-          const licenseSettings = getLicenseSettingsByGroup(g);
-
-          const brandGroups = [2, 7, 13, 15];
-          const famousFullGroups = [3, 8];
-          const famousNotFullGroups = [4, 9];
-          const ordinaryFullGroups = [5, 10];
-          const ordinaryNotFullGroups = [6, 11];
-          const animationGroups = [12, 13, 14, 15];
-          const aiGroups = [1, 2, 3, 4, 5, 6, 12, 13];
-
-          const isAnimGroup = animationGroups.includes(g);
-          const isAIGroup = aiGroups.includes(g);
-          const isBrandGroup = brandGroups.includes(g);
-
-          const brandName = isBrandGroup
-            ? (detectedBrand || detectedCharacter || "").trim()
-            : "";
-
-          let classification = isAnimGroup
-            ? isAIGroup
-              ? "AI Animation"
-              : "Non-AI Animation"
-            : isAIGroup
-              ? "AI Image"
-              : "Non-AI Image";
-
-          if (isBrandGroup) {
-            classification += ` with ${brandName ? (detectedBrand ? "brand " + brandName : "character " + brandName) : "a famous brand/character"}`;
-          } else if (famousFullGroups.includes(g)) {
-            classification += " with full public figure face";
-          } else if (famousNotFullGroups.includes(g)) {
-            classification += " with public figure not fully visible";
-          } else if (ordinaryFullGroups.includes(g)) {
-            classification += " with full regular person face";
-          } else if (ordinaryNotFullGroups.includes(g)) {
-            classification += " with regular person not fully visible";
-          } else {
-            classification += " without faces/brands";
-          }
-
-          let verdict = "";
-          if (licenseSettings) {
-            if (famousNotFullGroups.includes(g)) {
-              verdict =
-                "This IP can be registered because the public figure is not fully visible.";
-            } else if (ordinaryNotFullGroups.includes(g)) {
-              verdict =
-                "This IP can be registered because the face is not fully visible.";
-            } else if (isAnimGroup && !isBrandGroup) {
-              verdict =
-                "This IP can be registered because it's an animation without brand/character.";
-            } else if (
-              !isBrandGroup &&
-              !famousFullGroups.includes(g) &&
-              !ordinaryFullGroups.includes(g)
-            ) {
-              verdict =
-                "This IP can be registered because it doesn't show faces/brands.";
-            } else {
-              verdict =
-                "This IP can be registered as it meets policy criteria.";
-            }
-          } else if (requiresSelfieVerification(g)) {
-            verdict =
-              "This IP cannot be registered directly because selfie verification is required (regular person's full face).";
-          } else if (requiresSubmitReview(g)) {
-            if (isBrandGroup) {
-              verdict = `This IP cannot be registered directly because ${brandName ? `${detectedBrand ? "it contains the brand" : "it contains the character"} ${brandName}` : "it contains a famous brand/character"}.`;
-            } else if (famousFullGroups.includes(g)) {
-              verdict =
-                "This IP cannot be registered directly because it shows a public figure's full face.";
-            } else {
-              verdict =
-                "This IP cannot be registered directly and needs review.";
-            }
-          } else if (g === 0) {
-            verdict = "Analysis inconclusive; please submit for review.";
-          } else {
-            verdict = "This IP cannot be registered.";
-          }
-
-          display = `This is ${classification}. ${verdict}`;
         } else {
           const rawText = data?.raw ? String(data.raw).trim() : "";
           display = rawText || "(No analysis result)";
         }
 
-        autoScrollNextRef.current = false;
         const ctxKey = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         if (lastUploadBlobRef.current) {
           analysisContextsRef.current.set(ctxKey, {
@@ -683,17 +555,18 @@ const IpAssistant = () => {
           ts: getCurrentTimestamp(),
           ctxKey,
         });
+        autoScrollNextRef.current = true;
       } catch (error: any) {
         console.error("runDetection error", error);
         const message = error?.message
           ? `Image analysis failed: ${error.message}`
           : "Image analysis failed.";
-        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: message,
           ts: getCurrentTimestamp(),
         });
+        autoScrollNextRef.current = true;
       } finally {
         setWaiting(false);
       }
@@ -927,7 +800,7 @@ const IpAssistant = () => {
           const url = URL.createObjectURL(f);
           pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
         }
-        autoScrollNextRef.current = true;
+        autoScrollNextRef.current = false;
 
         // Compress and store the first image for later detection
         let compressedBlob: Blob | null = null;
@@ -1112,25 +985,27 @@ const IpAssistant = () => {
       actions={headerActions}
       sidebarExtras={sidebarExtras}
     >
-      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent">
-        <AnimatePresence initial={false}>
+      <div className="chat-box px-4 md:px-12 pt-4 pb-2 flex-1 overflow-y-auto bg-transparent scroll-smooth">
+        <AnimatePresence initial={false} mode="popLayout">
           {messages.map((msg, index) => {
             if (msg.from === "user") {
               return (
                 <motion.div
                   key={`user-${index}`}
                   className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
                   transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300,
+                    mass: 0.8,
+                    delay: Math.min(index * 0.03, 0.15),
                   }}
                   layout
                 >
-                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem]">
+                  <div className="bg-gradient-to-r from-[#FF4DA6] via-[#ff77c2] to-[#FF4DA6] text-white px-[1.2rem] py-2.5 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(255,77,166,0.25)] hover:shadow-[0_16px_40px_rgba(255,77,166,0.35)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     {msg.text}
                   </div>
                 </motion.div>
@@ -1151,13 +1026,15 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
                   transition={{
-                    type: "tween",
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1],
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300,
+                    mass: 0.8,
+                    delay: Math.min(index * 0.03, 0.15),
                   }}
                   onAnimationComplete={() => {
                     if (
@@ -1177,7 +1054,7 @@ const IpAssistant = () => {
                   }}
                   layout
                 >
-                  <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem]">
+                  <div className="bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-[#FF4DA6]/25 px-[1.2rem] py-3 rounded-3xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 hover:shadow-[0_16px_40px_rgba(255,77,166,0.1)] transition-all duration-300 font-medium text-[0.97rem] overflow-hidden">
                     <div>{msg.text}</div>
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
@@ -1210,7 +1087,19 @@ const IpAssistant = () => {
                             !!getLicenseSettingsByGroup(Number(codeStr));
                           const canRegister =
                             canRegisterByText || canRegisterByGroup;
+                          const isAuthEnabled = guestMode || authenticated;
                           if (!canRegister) return null;
+                          if (!isAuthEnabled) {
+                            return (
+                              <>
+                                {" "}
+                                <span className="mx-1 text-slate-400">•</span>
+                                <span className="text-[#FF4DA6]/60 text-xs">
+                                  (Connect wallet or use guest mode to register)
+                                </span>
+                              </>
+                            );
+                          }
                           return (
                             <>
                               {" "}
@@ -1331,17 +1220,19 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -20, scale: 0.95 }}
                   transition={{
-                    type: "tween",
-                    duration: 0.32,
-                    ease: [0.22, 1, 0.36, 1],
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300,
+                    mass: 0.8,
+                    delay: Math.min(index * 0.03, 0.15),
                   }}
                   layout
                 >
-                  <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm w-full">
+                  <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[88%] md:max-w-[70%] break-words shadow-[0_18px_34px_rgba(0,0,0,0.4)] text-slate-100 backdrop-blur-sm overflow-hidden">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
                       Smart Licensing
                     </div>
@@ -1447,7 +1338,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    className="w-full rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100 resize-none"
                                     rows={3}
                                   />
                                   <button
@@ -1612,13 +1503,21 @@ const IpAssistant = () => {
                           registerState.status === "minting" ||
                           !analysisContextsRef.current.get(
                             (msg as any).ctxKey || "",
-                          )?.blob
+                          )?.blob ||
+                          (!guestMode && !authenticated)
                         }
-                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50"
+                        title={
+                          !guestMode && !authenticated
+                            ? "Connect wallet or enable guest mode to register"
+                            : ""
+                        }
+                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
                           ? "Registering…"
-                          : "Register IP"}
+                          : !guestMode && !authenticated
+                            ? "Register IP (requires auth)"
+                            : "Register IP"}
                       </button>
                       <div className="text-xs text-slate-400">
                         Status: {registerState.status}{" "}
@@ -1665,19 +1564,35 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-${index}`}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -20, scale: 0.95 }}
                     transition={{
                       type: "spring",
-                      duration: 0.5,
-                      bounce: 0.2,
-                      stiffness: 100,
-                      damping: 15,
+                      damping: 20,
+                      stiffness: 300,
+                      mass: 0.8,
+                      delay: Math.min(index * 0.03, 0.15),
+                    }}
+                    onAnimationComplete={() => {
+                      if (
+                        index === messages.length - 1 &&
+                        autoScrollNextRef.current
+                      ) {
+                        if (scrollTimeoutRef.current) {
+                          clearTimeout(scrollTimeoutRef.current);
+                        }
+                        scrollTimeoutRef.current = setTimeout(() => {
+                          chatEndRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                          scrollTimeoutRef.current = null;
+                        }, 50);
+                      }
                     }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem]">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
@@ -1740,9 +1655,25 @@ const IpAssistant = () => {
                       stiffness: 100,
                       damping: 18,
                     }}
+                    onAnimationComplete={() => {
+                      if (
+                        index === messages.length - 1 &&
+                        autoScrollNextRef.current
+                      ) {
+                        if (scrollTimeoutRef.current) {
+                          clearTimeout(scrollTimeoutRef.current);
+                        }
+                        scrollTimeoutRef.current = setTimeout(() => {
+                          chatEndRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                          scrollTimeoutRef.current = null;
+                        }, 50);
+                      }
+                    }}
                     layout
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
                       {ipCheckMsg.error ? (
                         <div className="text-red-400">
                           <div className="font-semibold mb-2 text-sm md:text-base">
@@ -1826,13 +1757,15 @@ const IpAssistant = () => {
               <motion.div
                 key={`image-${index}`}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 20, scale: 0.95 }}
                 transition={{
-                  type: "tween",
-                  duration: 0.28,
-                  ease: [0.22, 1, 0.36, 1],
+                  type: "spring",
+                  damping: 20,
+                  stiffness: 300,
+                  mass: 0.8,
+                  delay: Math.min(index * 0.03, 0.15),
                 }}
                 layout
               >
@@ -1894,9 +1827,16 @@ const IpAssistant = () => {
               className="flex items-start mb-2 gap-2 px-3 md:px-8"
               aria-live="polite"
               aria-label="Bot is typing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, x: -20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -20, scale: 0.95 }}
+              transition={{
+                type: "spring",
+                damping: 20,
+                stiffness: 300,
+                mass: 0.8,
+              }}
+              layout
             >
               <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-3 py-2 rounded-lg text-[#FF4DA6] shadow-[0_18px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm">
                 <span className="dot" />

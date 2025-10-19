@@ -1827,13 +1827,14 @@ const IpAssistant = () => {
               <motion.div
                 key={`image-${index}`}
                 className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 20, scale: 0.95 }}
                 transition={{
-                  type: "tween",
-                  duration: 0.28,
-                  ease: [0.22, 1, 0.36, 1],
+                  type: "spring",
+                  damping: 20,
+                  stiffness: 300,
+                  mass: 0.8,
                 }}
                 layout
               >

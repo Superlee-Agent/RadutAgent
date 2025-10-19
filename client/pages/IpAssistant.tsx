@@ -837,6 +837,8 @@ const IpAssistant = () => {
     try {
       setIpCheckLoading(loadingKey);
 
+      console.log("[IP Check] Sending address:", trimmedAddress);
+
       const response = await fetch("/api/check-ip-assets", {
         method: "POST",
         headers: {
@@ -846,6 +848,8 @@ const IpAssistant = () => {
           address: trimmedAddress,
         }),
       });
+
+      console.log("[IP Check] Response status:", response.status);
 
       if (!response.ok) {
         let errorMessage = `API Error: ${response.status}`;
@@ -871,6 +875,7 @@ const IpAssistant = () => {
       }
 
       const data = await response.json();
+      console.log("[IP Check] Response data:", data);
       const { totalCount, originalCount, remixCount } = data;
 
       setMessages((prev) =>

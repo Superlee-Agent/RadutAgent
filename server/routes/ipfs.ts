@@ -48,7 +48,7 @@ async function pinJsonToPinata(json: unknown) {
 
 export const handleIpfsUpload: any = [
   upload.single("file"),
-  (async (req: Request, res: Response) => {
+  (async (req: any, res: any) => {
     try {
       const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });
@@ -65,7 +65,7 @@ export const handleIpfsUpload: any = [
       console.error("ipfs upload error:", err);
       return res.status(500).json({ error: "ipfs_upload_failed" });
     }
-  }) as RequestHandler,
+  }) as any,
 ];
 
 export const handleIpfsUploadJson: RequestHandler = async (req, res) => {

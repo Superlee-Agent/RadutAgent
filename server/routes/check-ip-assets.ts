@@ -51,15 +51,19 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
         });
     }
 
-    let allAssets: any[] = [];
+    // Track counts on-the-fly to reduce memory usage
+    let originalCount = 0;
+    let remixCount = 0;
+    let totalCount = 0;
     let offset = 0;
     let hasMore = true;
     const limit = 100;
     const maxIterations = 10;
     let iterations = 0;
 
+    // Increase timeout to 45s for mobile/slow networks
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000);
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
 
     try {
       while (hasMore && iterations < maxIterations) {
@@ -149,7 +153,16 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
             return true;
           });
 
-          allAssets = allAssets.concat(validAssets);
+          // Count on-the-fly instead of storing all assets
+          validAssets.forEach((asset: any) => {
+            const parentCount = asset.parentsCount ?? 0;
+            if (parentCount === 0) {
+              originalCount++;
+            } else {
+              remixCount++;
+            }
+            totalCount++;
+          });
 
           const pagination = data?.pagination;
           hasMore = pagination?.hasMore === true && validAssets.length > 0;
@@ -203,21 +216,9 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
       if (iterations >= maxIterations) {
         console.warn("Max iterations reached when fetching IP assets", {
           address: trimmedAddress,
-          assetsCollected: allAssets.length,
+          assetsCollected: totalCount,
         });
       }
-
-      const originalCount = allAssets.filter((asset: any) => {
-        const parentCount = asset.parentsCount ?? 0;
-        return parentCount === 0;
-      }).length;
-
-      const remixCount = allAssets.filter((asset: any) => {
-        const parentCount = asset.parentsCount ?? 0;
-        return parentCount > 0;
-      }).length;
-
-      const totalCount = allAssets.length;
 
       const body = {
         address: trimmedAddress,

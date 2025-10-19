@@ -1433,7 +1433,7 @@ const IpAssistant = () => {
                                         },
                                       }));
                                     }}
-                                    className="min-w-0 flex-1 rounded-md border border-slate-600 bg-black/30 p-2 text-slate-100"
+                                    className="min-w-0 flex-1 rounded-md bg-black/30 p-2 text-slate-100"
                                   />
                                   <button
                                     type="button"
@@ -1677,7 +1677,7 @@ const IpAssistant = () => {
                             ? "Connect wallet or enable guest mode to register"
                             : ""
                         }
-                        className="rounded-md border border-[#FF4DA6] px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
                           ? "Registering…"
@@ -1732,7 +1732,7 @@ const IpAssistant = () => {
                     {...getBubbleMotionProps(index)}
                     className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg hover:border-[#FF4DA6]/40 transition-all duration-300 font-medium text-sm md:text-[0.97rem] overflow-hidden">
+                    <div className="bg-slate-900/70 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
@@ -1752,7 +1752,7 @@ const IpAssistant = () => {
                             }
                           }}
                           placeholder="0x..."
-                          className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                          className="flex-1 rounded-lg bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/30"
                           aria-label="Wallet address input"
                         />
                         <button

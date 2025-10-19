@@ -1343,6 +1343,7 @@ const IpAssistant = () => {
                     damping: 20,
                     stiffness: 300,
                     mass: 0.8,
+                    delay: Math.min(index * 0.03, 0.15),
                   }}
                   layout
                 >

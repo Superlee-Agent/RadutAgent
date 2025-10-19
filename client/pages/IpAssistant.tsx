@@ -22,10 +22,11 @@ type BotMessage = {
 };
 
 export type Message =
-  | { from: "user"; text: string; ts?: string }
+  | { id?: string; from: "user"; text: string; ts?: string }
   | BotMessage
-  | { from: "user-image"; url: string; ts?: string }
+  | { id?: string; from: "user-image"; url: string; ts?: string }
   | {
+      id?: string;
       from: "register";
       group: number;
       title: string;
@@ -34,6 +35,7 @@ export type Message =
       ts?: string;
     }
   | {
+      id?: string;
       from: "ip-check";
       status: "pending" | "loading" | "complete";
       address?: string;

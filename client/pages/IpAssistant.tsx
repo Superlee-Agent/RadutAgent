@@ -285,6 +285,23 @@ const IpAssistant = () => {
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadedImagesRef = useRef<Set<string>>(new Set());
 
+  // throttled scroll helpers to avoid excessive layout work on mobile
+  const lastScrollRef = useRef<number>(0);
+  const scrollRafRef = useRef<number | null>(null);
+  const scrollToBottom = useCallback(() => {
+    const now = Date.now();
+    if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
+    lastScrollRef.current = now;
+    if (typeof window !== "undefined") {
+      if (scrollRafRef.current)
+        cancelAnimationFrame(scrollRafRef.current as any);
+      scrollRafRef.current = requestAnimationFrame(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        scrollRafRef.current = null;
+      });
+    }
+  }, []);
+
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
 
@@ -296,13 +313,8 @@ const IpAssistant = () => {
 
   useEffect(() => {
     if (autoScrollNextRef.current) {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      scrollTimeoutRef.current = setTimeout(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        scrollTimeoutRef.current = null;
-      }, 100);
+      // use throttled scroll helper instead of raw timeouts
+      scrollToBottom();
     }
     autoScrollNextRef.current = true;
     if (!waiting && !isMobileRef.current) inputRef.current?.focus?.();
@@ -312,6 +324,9 @@ const IpAssistant = () => {
     return () => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
+      }
+      if (scrollRafRef.current) {
+        cancelAnimationFrame(scrollRafRef.current as any);
       }
     };
   }, []);
@@ -1115,15 +1130,7 @@ const IpAssistant = () => {
                       index === messages.length - 1 &&
                       autoScrollNextRef.current
                     ) {
-                      if (scrollTimeoutRef.current) {
-                        clearTimeout(scrollTimeoutRef.current);
-                      }
-                      scrollTimeoutRef.current = setTimeout(() => {
-                        chatEndRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                        scrollTimeoutRef.current = null;
-                      }, 50);
+                      scrollToBottom();
                     }
                   }}
                   layout
@@ -1680,15 +1687,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        if (scrollTimeoutRef.current) {
-                          clearTimeout(scrollTimeoutRef.current);
-                        }
-                        scrollTimeoutRef.current = setTimeout(() => {
-                          chatEndRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          scrollTimeoutRef.current = null;
-                        }, 50);
+                        scrollToBottom();
                       }
                     }}
                     layout
@@ -1761,15 +1760,7 @@ const IpAssistant = () => {
                         index === messages.length - 1 &&
                         autoScrollNextRef.current
                       ) {
-                        if (scrollTimeoutRef.current) {
-                          clearTimeout(scrollTimeoutRef.current);
-                        }
-                        scrollTimeoutRef.current = setTimeout(() => {
-                          chatEndRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          scrollTimeoutRef.current = null;
-                        }, 50);
+                        scrollToBottom();
                       }
                     }}
                     layout
@@ -1874,6 +1865,8 @@ const IpAssistant = () => {
                   <img
                     src={msg.url}
                     alt="Uploaded"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md border border-[#FF4DA6]"
                     onLoad={() => {
                       const imgKey = `img-${index}-${msg.url}`;
@@ -1883,15 +1876,8 @@ const IpAssistant = () => {
                           index === messages.length - 1 &&
                           autoScrollNextRef.current
                         ) {
-                          if (scrollTimeoutRef.current) {
-                            clearTimeout(scrollTimeoutRef.current);
-                          }
-                          scrollTimeoutRef.current = setTimeout(() => {
-                            chatEndRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                            scrollTimeoutRef.current = null;
-                          }, 100);
+                          // throttle scrolling for performance
+                          scrollToBottom();
                         }
                       }
                     }}
@@ -1903,15 +1889,8 @@ const IpAssistant = () => {
                           index === messages.length - 1 &&
                           autoScrollNextRef.current
                         ) {
-                          if (scrollTimeoutRef.current) {
-                            clearTimeout(scrollTimeoutRef.current);
-                          }
-                          scrollTimeoutRef.current = setTimeout(() => {
-                            chatEndRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                            scrollTimeoutRef.current = null;
-                          }, 100);
+                          // throttle scrolling for performance
+                          scrollToBottom();
                         }
                       }
                     }}
@@ -1926,7 +1905,7 @@ const IpAssistant = () => {
       </div>
 
       <form
-        className="chat-input flex items-center gap-3 px-3 sm:px-[1.45rem] py-3.5 border-t border-white/5 md:border-[#FF4DA6]/10 bg-gradient-to-r from-slate-950/60 via-[#FF4DA6]/5 to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
+        className="chat-input flex items-center gap-3 px-3 sm:px-[1.45rem] py-3.5 border-t-0 md:border-t md:border-[#FF4DA6]/10 bg-slate-950/60 md:bg-gradient-to-r md:from-slate-950/60 md:via-[#FF4DA6]/5 md:to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();
@@ -1969,7 +1948,7 @@ const IpAssistant = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message…"
           disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50 focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
+          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl border border-white/15 md:border-[#FF4DA6]/25 bg-gradient-to-br from-slate-900/60 to-slate-950/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 md:focus-visible:ring-[#FF4DA6]/50 focus-visible:border-white/30 md:focus-visible:border-[#FF4DA6]/60 transition-all duration-300 backdrop-blur-lg font-medium text-[0.97rem] disabled:opacity-50"
         />
 
         <button

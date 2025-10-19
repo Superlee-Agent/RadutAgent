@@ -462,6 +462,30 @@ button.btn-ghost:focus-visible {
     padding: 10px 2px 2px;
   }
 }
+
+/* Mobile performance: reduce heavy visuals and transitions */
+@media (max-width: 767px) {
+  .chat-wrap,
+  .chat-box,
+  .chat-input,
+  .bubble,
+  .bot,
+  .user,
+  .user-img,
+  .rounded-md {
+    box-shadow: none !important;
+  }
+  .chat-wrap,
+  .chat-box,
+  .chat-input {
+    backdrop-filter: none !important;
+  }
+  .chat-box,
+  .bubble,
+  .chat-input {
+    transition: none !important;
+  }
+}
 .bubble:after {
   content: "";
   display: block;

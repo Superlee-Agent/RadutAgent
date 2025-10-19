@@ -151,7 +151,7 @@ const ANSWER_DETAILS: Record<
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
-    aiTraining: "✅ Allowed (user-configurable)",
+    aiTraining: "��� Allowed (user-configurable)",
   },
   "11": {
     type: "Human Generated",
@@ -253,6 +253,11 @@ const IP_ASSISTANT_AVATAR =
 
 export const STORAGE_KEY = "radut_sessions";
 export const CURRENT_SESSION_KEY = "radut_current_session";
+
+const isValidEthereumAddress = (address: string): boolean => {
+  const trimmed = address.trim();
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
+};
 
 const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);

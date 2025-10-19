@@ -553,10 +553,17 @@ button.btn-ghost:focus-visible {
     height: 100dvh;
   }
 
-  /* Disable hover and focus visual effects on touch devices to avoid flicker/lines */
+  /* Inverted logic for touch devices: make touch act like hover (show outline/shadow),
+     and suppress focus outlines to avoid duplicate visuals when keyboard is not used */
   .chat-box *:hover,
+  .chat-box *:active {
+    outline: 3px solid rgba(255,77,166,0.18) !important;
+    box-shadow: 0 8px 24px rgba(255,77,166,0.12) !important;
+    border-color: rgba(255,77,166,0.35) !important;
+  }
+
+  /* Keep keyboard focus visuals suppressed on touch devices to avoid flicker when keyboard opens */
   .chat-box *:focus,
-  .chat-box *:active,
   .chat-box *:focus-within {
     outline: none !important;
     box-shadow: none !important;

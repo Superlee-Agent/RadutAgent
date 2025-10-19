@@ -872,105 +872,159 @@ const IpAssistant = () => {
     return "(Unknown classification)";
   };
 
-  const checkIpAssets = useCallback(async (address: string) => {
-    if (!address || address.trim().length === 0) {
-      return;
-    }
-
-    const trimmedAddress = address.trim();
-    const loadingKey = `ip-check-${Date.now()}`;
-
-    try {
-      setIpCheckLoading(loadingKey);
-
-      console.log("[IP Check] Sending address:", trimmedAddress);
-
-      const response = await fetch("/api/check-ip-assets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          address: trimmedAddress,
-        }),
-      });
-
-      console.log("[IP Check] Response status:", response.status);
-
-      if (!response.ok) {
-        let errorMessage = `API Error: ${response.status}`;
-        let errorDetails = "";
-
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-          errorDetails = errorData.details || "";
-        } catch {
-          // Failed to parse error response, use status-based message
-          if (response.status === 400) {
-            errorMessage = "Invalid Ethereum address format";
-          } else if (response.status === 500) {
-            errorMessage = "Server error - unable to fetch IP assets";
-          }
-        }
-
-        const fullError = errorDetails
-          ? `${errorMessage}: ${errorDetails}`
-          : errorMessage;
-        throw new Error(fullError);
+  const checkIpAssets = useCallback(
+    async (address: string, retryCount = 0) => {
+      if (!address || address.trim().length === 0) {
+        return;
       }
 
-      const data = await response.json();
-      console.log("[IP Check] Response data:", data);
-      const { totalCount, originalCount, remixCount } = data;
+      const trimmedAddress = address.trim();
+      const loadingKey = `ip-check-${Date.now()}`;
+      const maxRetries = 2;
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "ip-check" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                address: trimmedAddress,
-                originalCount,
-                remixCount,
-                totalCount,
-              }
-            : msg,
-        ),
-      );
-      // ensure the UI scrolls to show the completed ip-check result immediately
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (autoScrollNextRef.current) scrollToBottomImmediate();
-        }, 0);
-      });
-      setIpCheckInput("");
-    } catch (error: any) {
-      const errorMessage = error?.message || "Failed to fetch IP assets";
-      console.error("IP Assets Check Error:", error);
+      try {
+        setIpCheckLoading(loadingKey);
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "ip-check" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                address: trimmedAddress,
-                error: errorMessage,
+        console.log(
+          "[IP Check] Sending address:",
+          trimmedAddress,
+          retryCount > 0 ? `(retry ${retryCount}/${maxRetries})` : "",
+        );
+
+        // Add client-side timeout (60s) with AbortController for mobile networks
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+        try {
+          const response = await fetch("/api/check-ip-assets", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              address: trimmedAddress,
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          console.log("[IP Check] Response status:", response.status);
+
+          if (!response.ok) {
+            let errorMessage = `API Error: ${response.status}`;
+            let errorDetails = "";
+
+            try {
+              const errorData = await response.json();
+              errorMessage = errorData.error || errorMessage;
+              errorDetails = errorData.details || "";
+            } catch {
+              // Failed to parse error response, use status-based message
+              if (response.status === 400) {
+                errorMessage = "Invalid Ethereum address format";
+              } else if (response.status === 500) {
+                errorMessage = "Server error - unable to fetch IP assets";
+              } else if (response.status === 504) {
+                errorMessage = "Request timeout - please try again";
+                errorDetails =
+                  "The server took too long to respond. This can happen with slow networks or wallets with many IP assets.";
               }
-            : msg,
-        ),
-      );
-      // ensure the UI scrolls to show the error result immediately
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (autoScrollNextRef.current) scrollToBottomImmediate();
-        }, 0);
-      });
-    } finally {
-      setIpCheckLoading(null);
-    }
-  }, []);
+            }
+
+            // Retry on 504 timeout or 500 errors (network/server issues)
+            if (
+              (response.status === 504 || response.status === 500) &&
+              retryCount < maxRetries
+            ) {
+              console.log(
+                `[IP Check] Retrying after error ${response.status}...`,
+              );
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1000 * (retryCount + 1)),
+              );
+              return checkIpAssets(address, retryCount + 1);
+            }
+
+            const fullError = errorDetails
+              ? `${errorMessage}: ${errorDetails}`
+              : errorMessage;
+            throw new Error(fullError);
+          }
+
+          const data = await response.json();
+          console.log("[IP Check] Response data:", data);
+          const { totalCount, originalCount, remixCount } = data;
+
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.from === "ip-check" && (msg as any).status === "pending"
+                ? {
+                    ...msg,
+                    status: "complete",
+                    address: trimmedAddress,
+                    originalCount,
+                    remixCount,
+                    totalCount,
+                  }
+                : msg,
+            ),
+          );
+          // ensure the UI scrolls to show the completed ip-check result immediately
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              if (autoScrollNextRef.current) scrollToBottomImmediate();
+            }, 0);
+          });
+          setIpCheckInput("");
+        } catch (fetchError: any) {
+          clearTimeout(timeoutId);
+
+          // Handle AbortController timeout
+          if (fetchError.name === "AbortError") {
+            // Retry on timeout for mobile networks
+            if (retryCount < maxRetries) {
+              console.log("[IP Check] Request timeout, retrying...");
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1500 * (retryCount + 1)),
+              );
+              return checkIpAssets(address, retryCount + 1);
+            }
+            throw new Error(
+              "Request timeout after multiple attempts. Please check your internet connection and try again.",
+            );
+          }
+
+          throw fetchError;
+        }
+      } catch (error: any) {
+        const errorMessage = error?.message || "Failed to fetch IP assets";
+        console.error("IP Assets Check Error:", error);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "ip-check" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  address: trimmedAddress,
+                  error: errorMessage,
+                }
+              : msg,
+          ),
+        );
+        // ensure the UI scrolls to show the error result immediately
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } finally {
+        setIpCheckLoading(null);
+      }
+    },
+    [scrollToBottomImmediate],
+  );
 
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1775,6 +1829,37 @@ const IpAssistant = () => {
                           )}
                         </button>
                       </div>
+                      {isLoading && (
+                        <div className="mt-3 p-2 rounded-lg bg-[#FF4DA6]/10 text-xs text-slate-300">
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="h-3 w-3 text-[#FF4DA6] animate-spin flex-shrink-0"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                                stroke="currentColor"
+                                strokeOpacity="0.15"
+                                strokeWidth="3"
+                              />
+                              <path
+                                d="M21.5 12a9.5 9.5 0 00-9.5-9.5"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            <span>
+                              Checking IP assets... This may take up to 60
+                              seconds for wallets with many assets or on slow
+                              networks.
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 );

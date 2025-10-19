@@ -12,6 +12,7 @@ import {
 } from "@/lib/groupLicense";
 
 type BotMessage = {
+  id?: string;
   from: "bot";
   text: string;
   ts?: string;

@@ -667,7 +667,6 @@ const IpAssistant = () => {
           display = rawText || "(No analysis result)";
         }
 
-        autoScrollNextRef.current = false;
         const ctxKey = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         if (lastUploadBlobRef.current) {
           analysisContextsRef.current.set(ctxKey, {
@@ -683,6 +682,7 @@ const IpAssistant = () => {
           ts: getCurrentTimestamp(),
           ctxKey,
         });
+        autoScrollNextRef.current = true;
       } catch (error: any) {
         console.error("runDetection error", error);
         const message = error?.message

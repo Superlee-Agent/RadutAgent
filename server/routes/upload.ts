@@ -149,12 +149,10 @@ export const handleUpload: any = [
 
       if (!process.env.OPENAI_API_KEY) {
         console.error("OPENAI_API_KEY is not configured on the server");
-        return res
-          .status(503)
-          .json({
-            error: "openai_api_key_missing",
-            message: "OpenAI API key not configured on the server",
-          });
+        return res.status(503).json({
+          error: "openai_api_key_missing",
+          message: "OpenAI API key not configured on the server",
+        });
       }
 
       const { default: OpenAI } = await import("openai");

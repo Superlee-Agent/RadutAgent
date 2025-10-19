@@ -26,7 +26,7 @@ function parseJsonLoose(text: string | null | undefined): any | null {
 
 export const handleDescribe: any = [
   upload.single("image"),
-  (async (req: Request, res: Response) => {
+  (async (req: any, res: any) => {
     try {
       const f = (req as any).file as any;
       if (!f) return res.status(400).json({ error: "no_file" });

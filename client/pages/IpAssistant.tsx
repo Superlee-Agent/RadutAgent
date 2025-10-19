@@ -293,10 +293,15 @@ const IpAssistant = () => {
     if (now - lastScrollRef.current < 150) return; // throttle to ~150ms
     lastScrollRef.current = now;
     if (typeof window !== "undefined") {
-      if (scrollRafRef.current)
-        cancelAnimationFrame(scrollRafRef.current as any);
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
       scrollRafRef.current = requestAnimationFrame(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: options?.behavior ?? "smooth" });
+        try {
+          chatEndRef.current?.scrollIntoView({
+            behavior: options?.behavior ?? "smooth",
+            block: "end",
+            inline: "nearest",
+          });
+        } catch (e) {}
         scrollRafRef.current = null;
       });
     }
@@ -306,7 +311,15 @@ const IpAssistant = () => {
   const scrollToBottomImmediate = useCallback(() => {
     if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current as any);
     try {
-      chatEndRef.current?.scrollIntoView({ behavior: "auto" });
+      chatEndRef.current?.scrollIntoView({ behavior: "auto", block: "end", inline: "nearest" });
+      // ensure the scrollable container is fully scrolled to bottom as a fallback
+      const el = chatEndRef.current;
+      if (el) {
+        const parent = el.parentElement as HTMLElement | null;
+        if (parent && parent.scrollTo) {
+          parent.scrollTo({ top: parent.scrollHeight, left: 0, behavior: "auto" });
+        }
+      }
     } catch (e) {}
     lastScrollRef.current = Date.now();
   }, []);

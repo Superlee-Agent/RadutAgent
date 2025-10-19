@@ -151,7 +151,7 @@ const ANSWER_DETAILS: Record<
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
-    aiTraining: "��� Allowed (user-configurable)",
+    aiTraining: "✅ Allowed (user-configurable)",
   },
   "11": {
     type: "Human Generated",
@@ -1679,20 +1679,23 @@ const IpAssistant = () => {
                           value={ipCheckInput}
                           onChange={(e) => setIpCheckInput(e.target.value)}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && !isLoading) {
+                            if (e.key === "Enter" && !isLoading && isValidEthereumAddress(ipCheckInput)) {
+                              e.preventDefault();
                               checkIpAssets(ipCheckInput);
                             }
                           }}
                           placeholder="0x..."
                           className="flex-1 rounded-lg border border-slate-600 bg-black/30 px-2 md:px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/50"
+                          aria-label="Wallet address input"
                         />
                         <button
                           type="button"
                           onClick={() => checkIpAssets(ipCheckInput)}
                           disabled={
-                            isLoading || ipCheckInput.trim().length === 0
+                            isLoading || !isValidEthereumAddress(ipCheckInput)
                           }
                           className="rounded-lg border border-[#FF4DA6]/60 bg-gradient-to-br from-[#FF4DA6]/20 to-[#FF4DA6]/10 px-3 md:px-4 py-2 text-xs md:text-sm font-semibold text-[#FF4DA6] whitespace-nowrap hover:bg-gradient-to-br hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/15 hover:border-[#FF4DA6] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+                          aria-label="Check IP assets for wallet address"
                         >
                           {isLoading ? (
                             <span className="flex items-center gap-1 md:gap-2">

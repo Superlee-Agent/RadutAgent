@@ -539,7 +539,7 @@ const IpAssistant = () => {
           autoScrollNextRef.current = false;
           setMessages((prev) =>
             prev.map((m) =>
-              m.from === "bot" && m.ts === processingTs
+              (m as any).id === processingId
                 ? {
                     ...(m as BotMessage),
                     text: "Image analysis failed.",

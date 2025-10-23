@@ -2180,7 +2180,7 @@ const IpAssistant = () => {
                   </dl>
                 </>
               ) : (
-                <p className="mt-4 text-sm text-slate-500">
+                <p className="mt-4 text-sm text-slate-400">
                   Detail data not found.
                 </p>
               )}

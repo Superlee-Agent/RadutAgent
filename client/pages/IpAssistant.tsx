@@ -987,41 +987,29 @@ const IpAssistant = () => {
         if (inputEl) inputEl.value = "";
         if (files.length === 0) return;
 
-        // Show image previews
-        for (const f of files) {
-          const url = URL.createObjectURL(f);
-          pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
-        }
-        autoScrollNextRef.current = false;
-
-        // Compress and store the first image for later detection
-        let compressedBlob: Blob | null = null;
-        let fileName: string = "image.jpg";
-        for (const f of files) {
-          let blob: Blob;
-          try {
-            blob = await compressAndEnsureSize(f, 250 * 1024);
-          } catch (error) {
-            console.error("Compression failed, sending original file", error);
-            blob = f;
-          }
-          lastUploadBlobRef.current = blob;
-          lastUploadNameRef.current = f.name || "image.jpg";
-          compressedBlob = blob;
-          fileName = f.name || "image.jpg";
+        const f = files[0];
+        let blob: Blob;
+        try {
+          blob = await compressAndEnsureSize(f, 250 * 1024);
+        } catch (error) {
+          console.error("Compression failed, sending original file", error);
+          blob = f;
         }
 
-        // Automatically run detection on the uploaded image
-        if (compressedBlob) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          await runDetection(compressedBlob, fileName);
-        }
+        const url = URL.createObjectURL(blob);
+        lastUploadBlobRef.current = blob;
+        lastUploadNameRef.current = f.name || "image.jpg";
+
+        setPreviewImage({
+          blob,
+          name: f.name || "image.jpg",
+          url,
+        });
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
           ? `Image upload failed: ${error.message}`
           : "Image upload failed.";
-        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: message,
@@ -1029,7 +1017,7 @@ const IpAssistant = () => {
         });
       }
     },
-    [compressAndEnsureSize, pushMessage, runDetection],
+    [compressAndEnsureSize, pushMessage],
   );
 
   const sidebarExtras = useCallback(

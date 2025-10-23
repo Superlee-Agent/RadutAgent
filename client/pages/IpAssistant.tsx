@@ -399,6 +399,7 @@ const IpAssistant = () => {
     null,
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
+  const [toolsOpen, setToolsOpen] = useState<boolean>(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,

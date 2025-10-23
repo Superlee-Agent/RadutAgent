@@ -5,6 +5,11 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
   getLicenseSettingsByGroup,
   GROUPS,
   requiresSelfieVerification,
@@ -398,6 +403,12 @@ const IpAssistant = () => {
     null,
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
+  const [toolsOpen, setToolsOpen] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<{
+    blob: Blob;
+    name: string;
+    url: string;
+  } | null>(null);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,
@@ -726,16 +737,32 @@ const IpAssistant = () => {
 
   const handleSend = useCallback(async () => {
     const value = input.trim();
-    if (!value) return;
+    const hasPreview = previewImage !== null;
+
+    if (!value && !hasPreview) return;
+
     const ts = getCurrentTimestamp();
-    pushMessage({ from: "user", text: value, ts });
+
+    if (hasPreview) {
+      pushMessage({
+        from: "user-image",
+        url: previewImage.url,
+        ts,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      await runDetection(previewImage.blob, previewImage.name);
+      setPreviewImage(null);
+    }
+
+    if (value) {
+      pushMessage({ from: "user", text: value, ts });
+    }
+
     setInput("");
-    // ensure immediate scroll so the user sees their message without delay
     scrollToBottomImmediate();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      // Run detection on the last uploaded image, or open file picker if none uploaded
       if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
@@ -761,16 +788,12 @@ const IpAssistant = () => {
     }
     autoScrollNextRef.current = true;
 
-    // On mobile, blur the textarea after sending so the soft keyboard hides
     if (isMobileRef.current) {
       try {
-        // immediate blur
         inputRef.current?.blur?.();
-        // also blur any active element (buttons) to avoid focus rings
         try {
           (document.activeElement as HTMLElement | null)?.blur?.();
         } catch (e) {}
-        // fallback: ensure blur after a short delay
         setTimeout(() => {
           inputRef.current?.blur?.();
           try {
@@ -781,7 +804,7 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, pushMessage, runDetection]);
+  }, [input, previewImage, pushMessage, runDetection]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -980,41 +1003,29 @@ const IpAssistant = () => {
         if (inputEl) inputEl.value = "";
         if (files.length === 0) return;
 
-        // Show image previews
-        for (const f of files) {
-          const url = URL.createObjectURL(f);
-          pushMessage({ from: "user-image", url, ts: getCurrentTimestamp() });
-        }
-        autoScrollNextRef.current = false;
-
-        // Compress and store the first image for later detection
-        let compressedBlob: Blob | null = null;
-        let fileName: string = "image.jpg";
-        for (const f of files) {
-          let blob: Blob;
-          try {
-            blob = await compressAndEnsureSize(f, 250 * 1024);
-          } catch (error) {
-            console.error("Compression failed, sending original file", error);
-            blob = f;
-          }
-          lastUploadBlobRef.current = blob;
-          lastUploadNameRef.current = f.name || "image.jpg";
-          compressedBlob = blob;
-          fileName = f.name || "image.jpg";
+        const f = files[0];
+        let blob: Blob;
+        try {
+          blob = await compressAndEnsureSize(f, 250 * 1024);
+        } catch (error) {
+          console.error("Compression failed, sending original file", error);
+          blob = f;
         }
 
-        // Automatically run detection on the uploaded image
-        if (compressedBlob) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          await runDetection(compressedBlob, fileName);
-        }
+        const url = URL.createObjectURL(blob);
+        lastUploadBlobRef.current = blob;
+        lastUploadNameRef.current = f.name || "image.jpg";
+
+        setPreviewImage({
+          blob,
+          name: f.name || "image.jpg",
+          url,
+        });
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
           ? `Image upload failed: ${error.message}`
           : "Image upload failed.";
-        autoScrollNextRef.current = false;
         pushMessage({
           from: "bot",
           text: message,
@@ -1022,7 +1033,7 @@ const IpAssistant = () => {
         });
       }
     },
-    [compressAndEnsureSize, pushMessage, runDetection],
+    [compressAndEnsureSize, pushMessage],
   );
 
   const sidebarExtras = useCallback(
@@ -1917,56 +1928,131 @@ const IpAssistant = () => {
       </div>
 
       <form
-        className="chat-input flex items-center gap-3 px-3 sm:px-[1.45rem] py-3.5 border-t-0 md:border-t md:border-[#FF4DA6]/10 bg-slate-950/60 md:bg-gradient-to-r md:from-slate-950/60 md:via-[#FF4DA6]/5 md:to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
+        className="chat-input flex items-center gap-2 px-3 sm:px-[1.45rem] py-3.5 border-t-0 md:border-t md:border-[#FF4DA6]/10 bg-slate-950/60 md:bg-gradient-to-r md:from-slate-950/60 md:via-[#FF4DA6]/5 md:to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
         onSubmit={(event) => {
           event.preventDefault();
           void handleSend();
         }}
         autoComplete="off"
       >
-        <button
-          type="button"
-          className="p-2 rounded-lg bg-[#FF4DA6]/10 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-          onClick={() => uploadRef.current?.click()}
-          onPointerDown={(e) => e.preventDefault()}
-          aria-label="Attach image"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828L21 9.828V7h-5.828z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h7"
-            />
-          </svg>
-        </button>
+        <div className="flex-1 flex flex-col gap-2 bg-slate-900/60 rounded-2xl pl-2 pr-4 py-2 focus-within:ring-2 focus-within:ring-[#FF4DA6]/30 transition-all duration-300">
+          {previewImage && (
+            <div className="flex items-center gap-2 bg-slate-900/40 rounded-lg p-2">
+              <img
+                src={previewImage.url}
+                alt="Preview"
+                className="h-16 w-16 object-cover rounded-lg flex-shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-slate-300 truncate">
+                  {previewImage.name}
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">Ready to send</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="flex-shrink-0 p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400 rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/30"
+                aria-label="Remove preview"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M18.3 5.71a.996.996 0 00-1.41 0L12 10.59 7.11 5.7A.996.996 0 105.7 7.11L10.59 12 5.7 16.89a.996.996 0 101.41 1.41L12 13.41l4.89 4.89a.996.996 0 101.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+                </svg>
+              </button>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+              onClick={() => uploadRef.current?.click()}
+              onPointerDown={(e) => e.preventDefault()}
+              aria-label="Add attachment"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
 
-        <textarea
-          ref={inputRef as any}
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type a message…"
-          disabled={waiting}
-          className="flex-1 resize-none px-[0.95rem] py-2 rounded-2xl bg-slate-900/60 text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 transition-all duration-300 font-medium text-[0.97rem] disabled:opacity-50"
-        />
+            <Popover open={toolsOpen} onOpenChange={setToolsOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Tools menu"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="top"
+                align="start"
+                className="w-48 p-0 bg-slate-900/95 border border-[#FF4DA6]/20 rounded-lg backdrop-blur-sm"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setToolsOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-[#FF4DA6]/20 first:rounded-t-lg transition-colors"
+                >
+                  IP Assistant
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-400 hover:bg-[#FF4DA6]/20 last:rounded-b-lg transition-colors cursor-not-allowed opacity-60"
+                >
+                  IPFI (coming soon)
+                </button>
+              </PopoverContent>
+            </Popover>
+
+            <textarea
+              ref={inputRef as any}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message…"
+              disabled={waiting}
+              className="flex-1 resize-none px-4 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
+            />
+          </div>
+        </div>
 
         <button
           type="submit"
-          disabled={waiting || !input.trim()}
-          className="p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+          disabled={waiting || (!input.trim() && !previewImage)}
+          className="flex-shrink-0 p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
           aria-label="Send message"
           onPointerDown={(e) => e.preventDefault()}
         >

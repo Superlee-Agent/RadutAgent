@@ -4,6 +4,7 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import {
   getLicenseSettingsByGroup,
   GROUPS,

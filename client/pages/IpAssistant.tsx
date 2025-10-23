@@ -1950,33 +1950,38 @@ const IpAssistant = () => {
             </svg>
           </button>
 
-          <div className="relative group">
-            <button
-              type="button"
-              className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-              aria-label="Tools menu"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <Popover open={toolsOpen} onOpenChange={setToolsOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                aria-label="Tools menu"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                />
-              </svg>
-            </button>
-
-            <div className="absolute left-0 mt-2 w-48 bg-slate-900/95 border border-[#FF4DA6]/20 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20 backdrop-blur-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="start"
+              className="w-48 p-0 bg-slate-900/95 border border-[#FF4DA6]/20 rounded-lg backdrop-blur-sm"
+            >
               <button
                 type="button"
                 onClick={() => {
-                  // Action for IP Assistant
+                  setToolsOpen(false);
                 }}
                 className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-[#FF4DA6]/20 first:rounded-t-lg transition-colors"
               >
@@ -1989,8 +1994,8 @@ const IpAssistant = () => {
               >
                 IPFI (coming soon)
               </button>
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
 
           <textarea
             ref={inputRef as any}

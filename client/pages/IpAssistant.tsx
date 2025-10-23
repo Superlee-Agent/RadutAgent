@@ -72,7 +72,7 @@ const ANSWER_DETAILS: Record<
   "1": {
     type: "AI Generated",
     notes: "AI-generated image; No human face; No famous brand/character",
-    registrationStatus: "��� IP can be registered",
+    registrationStatus: "✅ IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -2128,52 +2128,52 @@ const IpAssistant = () => {
 
               {ANSWER_DETAILS[activeDetail] ? (
                 <>
-                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-700">
+                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm text-slate-300">
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         Image Type
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.type}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         Additional Notes
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.notes}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         Registration Status
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.registrationStatus}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         User Action
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.action}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         Smart Licensing (Recommendation)
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.smartLicensing}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]/70">
                         AI Training
                       </dt>
-                      <dd className="mt-1 text-slate-800">
+                      <dd className="mt-1 text-slate-200">
                         {ANSWER_DETAILS[activeDetail ?? ""]?.aiTraining}
                       </dd>
                     </div>

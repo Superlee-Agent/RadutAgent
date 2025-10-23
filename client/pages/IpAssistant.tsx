@@ -4,7 +4,11 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import {
   getLicenseSettingsByGroup,
   GROUPS,
@@ -1963,85 +1967,85 @@ const IpAssistant = () => {
             </div>
           )}
           <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-            onClick={() => uploadRef.current?.click()}
-            onPointerDown={(e) => e.preventDefault()}
-            aria-label="Add attachment"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <button
+              type="button"
+              className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+              onClick={() => uploadRef.current?.click()}
+              onPointerDown={(e) => e.preventDefault()}
+              aria-label="Add attachment"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
-
-          <Popover open={toolsOpen} onOpenChange={setToolsOpen}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                aria-label="Tools menu"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+
+            <Popover open={toolsOpen} onOpenChange={setToolsOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Tools menu"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
-                </svg>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              side="top"
-              align="start"
-              className="w-48 p-0 bg-slate-900/95 border border-[#FF4DA6]/20 rounded-lg backdrop-blur-sm"
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  setToolsOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-[#FF4DA6]/20 first:rounded-t-lg transition-colors"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="top"
+                align="start"
+                className="w-48 p-0 bg-slate-900/95 border border-[#FF4DA6]/20 rounded-lg backdrop-blur-sm"
               >
-                IP Assistant
-              </button>
-              <button
-                type="button"
-                disabled
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-400 hover:bg-[#FF4DA6]/20 last:rounded-b-lg transition-colors cursor-not-allowed opacity-60"
-              >
-                IPFI (coming soon)
-              </button>
-            </PopoverContent>
-          </Popover>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setToolsOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-[#FF4DA6]/20 first:rounded-t-lg transition-colors"
+                >
+                  IP Assistant
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-400 hover:bg-[#FF4DA6]/20 last:rounded-b-lg transition-colors cursor-not-allowed opacity-60"
+                >
+                  IPFI (coming soon)
+                </button>
+              </PopoverContent>
+            </Popover>
 
-          <textarea
-            ref={inputRef as any}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message…"
-            disabled={waiting}
-            className="flex-1 resize-none px-4 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
-          />
+            <textarea
+              ref={inputRef as any}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message…"
+              disabled={waiting}
+              className="flex-1 resize-none px-4 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
+            />
           </div>
         </div>
 

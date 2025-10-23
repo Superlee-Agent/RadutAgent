@@ -400,6 +400,11 @@ const IpAssistant = () => {
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
   const [toolsOpen, setToolsOpen] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<{
+    blob: Blob;
+    name: string;
+    url: string;
+  } | null>(null);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,

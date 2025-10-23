@@ -1924,10 +1924,10 @@ const IpAssistant = () => {
         }}
         autoComplete="off"
       >
-        <div className="flex-1 flex items-center bg-slate-900/60 rounded-2xl px-4 py-2 focus-within:ring-2 focus-within:ring-[#FF4DA6]/30 transition-all duration-300">
+        <div className="flex-1 flex items-center bg-slate-900/60 rounded-2xl pr-4 py-2 focus-within:ring-2 focus-within:ring-[#FF4DA6]/30 transition-all duration-300">
           <button
             type="button"
-            className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+            className="flex-shrink-0 p-1.5 text-[#FF4DA6] hover:bg-[#FF4DA6]/20 rounded-lg active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30 ml-0"
             onClick={() => uploadRef.current?.click()}
             onPointerDown={(e) => e.preventDefault()}
             aria-label="Add attachment"
@@ -1997,7 +1997,7 @@ const IpAssistant = () => {
             onKeyDown={handleKeyDown}
             placeholder="Type a message…"
             disabled={waiting}
-            className="flex-1 resize-none px-2 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
+            className="flex-1 resize-none px-4 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
           />
         </div>
 

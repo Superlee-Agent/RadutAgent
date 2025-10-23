@@ -733,16 +733,32 @@ const IpAssistant = () => {
 
   const handleSend = useCallback(async () => {
     const value = input.trim();
-    if (!value) return;
+    const hasPreview = previewImage !== null;
+
+    if (!value && !hasPreview) return;
+
     const ts = getCurrentTimestamp();
-    pushMessage({ from: "user", text: value, ts });
+
+    if (hasPreview) {
+      pushMessage({
+        from: "user-image",
+        url: previewImage.url,
+        ts,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      await runDetection(previewImage.blob, previewImage.name);
+      setPreviewImage(null);
+    }
+
+    if (value) {
+      pushMessage({ from: "user", text: value, ts });
+    }
+
     setInput("");
-    // ensure immediate scroll so the user sees their message without delay
     scrollToBottomImmediate();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      // Run detection on the last uploaded image, or open file picker if none uploaded
       if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
@@ -768,16 +784,12 @@ const IpAssistant = () => {
     }
     autoScrollNextRef.current = true;
 
-    // On mobile, blur the textarea after sending so the soft keyboard hides
     if (isMobileRef.current) {
       try {
-        // immediate blur
         inputRef.current?.blur?.();
-        // also blur any active element (buttons) to avoid focus rings
         try {
           (document.activeElement as HTMLElement | null)?.blur?.();
         } catch (e) {}
-        // fallback: ensure blur after a short delay
         setTimeout(() => {
           inputRef.current?.blur?.();
           try {
@@ -788,7 +800,7 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, pushMessage, runDetection]);
+  }, [input, previewImage, pushMessage, runDetection]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {

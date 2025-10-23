@@ -743,17 +743,6 @@ const IpAssistant = () => {
 
     const ts = getCurrentTimestamp();
 
-    if (hasPreview) {
-      pushMessage({
-        from: "user-image",
-        url: previewImage.url,
-        ts,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      await runDetection(previewImage.blob, previewImage.name);
-      setPreviewImage(null);
-    }
-
     if (value) {
       pushMessage({ from: "user", text: value, ts });
     }
@@ -763,7 +752,16 @@ const IpAssistant = () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      if (lastUploadBlobRef.current) {
+      if (hasPreview) {
+        pushMessage({
+          from: "user-image",
+          url: previewImage.url,
+          ts,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        await runDetection(previewImage.blob, previewImage.name);
+        setPreviewImage(null);
+      } else if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
           lastUploadNameRef.current || "image.jpg",
@@ -785,6 +783,12 @@ const IpAssistant = () => {
       });
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
+    } else if (hasPreview) {
+      pushMessage({
+        from: "bot",
+        text: "To analyze this image, please type 'Register' and send.",
+        ts: getCurrentTimestamp(),
+      });
     }
     autoScrollNextRef.current = true;
 

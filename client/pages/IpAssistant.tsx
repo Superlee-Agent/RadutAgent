@@ -72,7 +72,7 @@ const ANSWER_DETAILS: Record<
   "1": {
     type: "AI Generated",
     notes: "AI-generated image; No human face; No famous brand/character",
-    registrationStatus: "✅ IP can be registered",
+    registrationStatus: "��� IP can be registered",
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
@@ -2100,7 +2100,7 @@ const IpAssistant = () => {
               transition={{ duration: 0.18 }}
             />
             <motion.div
-              className="relative z-10 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
+              className="relative z-10 w-full max-w-2xl rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-[#FF4DA6]/20 p-6 shadow-xl"
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -2108,10 +2108,10 @@ const IpAssistant = () => {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]">
                     Group {activeDetail}
                   </p>
-                  <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                  <h2 className="mt-1 text-lg font-semibold text-slate-100">
                     {ANSWER_DETAILS[activeDetail ?? ""]?.type ??
                       "Group details"}
                   </h2>
@@ -2119,7 +2119,7 @@ const IpAssistant = () => {
                 <button
                   type="button"
                   onClick={() => setActiveDetail(null)}
-                  className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
                   aria-label="Close detail modal"
                 >
                   ✕

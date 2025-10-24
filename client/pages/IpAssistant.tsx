@@ -2629,6 +2629,90 @@ const IpAssistant = () => {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {expandedAsset && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setExpandedAsset(null)}
+            aria-hidden="true"
+          />
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="relative z-10 bg-slate-900 rounded-xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden"
+          >
+            <button
+              onClick={() => setExpandedAsset(null)}
+              className="absolute top-4 right-4 z-20 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {expandedAsset.mediaType?.startsWith("video") ? (
+              <video
+                src={expandedAsset.mediaUrl}
+                poster={expandedAsset.thumbnailUrl}
+                className="w-full h-auto max-h-[70vh] object-contain"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : expandedAsset.mediaType?.startsWith("audio") ? (
+              <div className="w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-slate-900 gap-4">
+                <svg className="w-24 h-24 text-purple-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+                <audio src={expandedAsset.mediaUrl} controls className="w-full max-w-md px-4" />
+              </div>
+            ) : (
+              <img
+                src={expandedAsset.mediaUrl}
+                alt={expandedAsset.title}
+                className="w-full h-auto max-h-[70vh] object-contain"
+              />
+            )}
+
+            <div className="p-6 bg-slate-800/50 border-t border-slate-700">
+              <h3 className="text-lg font-semibold text-slate-100 mb-2">
+                {expandedAsset.title || "Untitled"}
+              </h3>
+              {expandedAsset.description && (
+                <p className="text-sm text-slate-300 mb-4">
+                  {expandedAsset.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+                <span className="px-2 py-1 bg-slate-700 rounded">
+                  {expandedAsset.mediaType?.replace("video/", "").replace("audio/", "").replace("image/", "").toUpperCase() || "Media"}
+                </span>
+                {expandedAsset.ownerAddress && (
+                  <span className="px-2 py-1 bg-slate-700 rounded font-mono">
+                    {expandedAsset.ownerAddress.slice(0, 6)}...{expandedAsset.ownerAddress.slice(-4)}
+                  </span>
+                )}
+                {expandedAsset.score !== undefined && (
+                  <span className="px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded">
+                    {(expandedAsset.score * 100).toFixed(0)}% Match
+                  </span>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </DashboardLayout>
   );
 };

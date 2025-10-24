@@ -913,6 +913,7 @@ const IpAssistant = () => {
 
         if (parseData.ok && parseData.isSearchIntent && parseData.searchQuery) {
           const query = parseData.searchQuery;
+          const mediaType = parseData.mediaType || null;
           autoScrollNextRef.current = false;
           pushMessage({
             from: "search-ip",
@@ -921,7 +922,7 @@ const IpAssistant = () => {
             ts: getCurrentTimestamp(),
           });
           await new Promise((resolve) => setTimeout(resolve, 300));
-          await searchIP(query);
+          await searchIP(query, mediaType);
         } else {
           // Not a search intent, treat as normal message
           await runDetection(value, previewImage);
@@ -2011,7 +2012,7 @@ const IpAssistant = () => {
                               <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-slate-700/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
-                                    ℹ️
+                                    ℹ��
                                   </span>
                                   <div className="font-bold text-slate-300 text-xs md:text-sm">
                                     NOT ELIGIBLE

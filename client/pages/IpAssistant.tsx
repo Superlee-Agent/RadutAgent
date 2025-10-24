@@ -169,7 +169,7 @@ const ANSWER_DETAILS: Record<
     action:
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+      "Commercial Remix License (manual minting fee & revenue share)  ��� if verification succeeds",
     aiTraining: "✅ Allowed (user-configurable)",
   },
   "11": {
@@ -868,6 +868,102 @@ const IpAssistant = () => {
                   ...msg,
                   status: "complete",
                   query: trimmedQuery,
+                  error: errorMessage,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } finally {
+        setWaiting(false);
+      }
+    },
+    [scrollToBottomImmediate],
+  );
+
+  const searchByOwner = useCallback(
+    async (ownerAddress: string) => {
+      if (!ownerAddress || ownerAddress.trim().length === 0) {
+        return;
+      }
+
+      const trimmedAddress = ownerAddress.trim().toLowerCase();
+
+      try {
+        setWaiting(true);
+
+        console.log("[Search By Owner] Searching for assets by owner:", trimmedAddress);
+
+        const response = await fetch("/api/search-by-owner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ownerAddress: trimmedAddress,
+          }),
+        });
+
+        console.log("[Search By Owner] Response status:", response.status);
+
+        if (!response.ok) {
+          let errorMessage = `API Error: ${response.status}`;
+
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            if (response.status === 400) {
+              errorMessage = "Invalid owner address format";
+            } else if (response.status === 500) {
+              errorMessage = "Server error - unable to search IP assets";
+            }
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log("[Search By Owner] Response data:", data);
+        const { results = [], message = "" } = data;
+
+        setSearchResults(results);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedAddress,
+                  results,
+                  resultCount: results.length,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } catch (error: any) {
+        const errorMessage = error?.message || "Failed to search IP assets by owner";
+        console.error("Search By Owner Error:", error);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedAddress,
                   error: errorMessage,
                 }
               : msg,
@@ -1902,7 +1998,7 @@ const IpAssistant = () => {
                         registerState.ipId ? (
                           <>
                             {" "}
-                            <span className="mx-1 text-slate-500">•</span>
+                            <span className="mx-1 text-slate-500">���</span>
                             <a
                               href={`https://aeneid.explorer.story.foundation/ipa/${registerState.ipId}`}
                               target="_blank"

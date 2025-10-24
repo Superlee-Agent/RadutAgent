@@ -2105,9 +2105,9 @@ const IpAssistant = () => {
                   <motion.div
                     key={`search-ip-result-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-3 md:px-6"
                   >
-                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
                       {searchMsg.error ? (
                         <div className="text-red-400">
                           <div className="font-semibold mb-2 text-sm md:text-base">

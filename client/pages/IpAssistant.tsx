@@ -1076,7 +1076,7 @@ const IpAssistant = () => {
 
               const resolveData = await resolveResponse.json();
 
-              if (resolveData.ok && resolveData.address) {
+              if (resolveResponse.ok && resolveData.ok && resolveData.address) {
                 const resolvedAddress = resolveData.address;
                 console.log(
                   `[IP Assistant] Resolved ${ipName} to ${resolvedAddress}`,
@@ -1090,9 +1090,11 @@ const IpAssistant = () => {
                 await new Promise((resolve) => setTimeout(resolve, 300));
                 await searchByOwner(resolvedAddress, ipName);
               } else {
+                const errorMsg = resolveData.message || "Resolution failed";
+                console.warn(`[IP Assistant] Failed to resolve ${ipName}:`, errorMsg);
                 pushMessage({
                   from: "bot",
-                  text: `Could not resolve "${ipName}": ${resolveData.message || "Resolution failed"}`,
+                  text: `Could not resolve "${ipName}": ${errorMsg}`,
                   ts: getCurrentTimestamp(),
                 });
               }

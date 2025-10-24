@@ -2464,7 +2464,7 @@ const IpAssistant = () => {
                     className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors"
                   >
                     {asset.imageUrl && (
-                      <div className="relative w-full h-40 bg-slate-900 overflow-hidden">
+                      <div className="relative w-full bg-slate-900 overflow-hidden aspect-square">
                         <img
                           src={asset.imageUrl}
                           alt={asset.title || "IP Asset"}

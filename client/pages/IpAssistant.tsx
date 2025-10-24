@@ -159,7 +159,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "��� Allowed (user-configurable)",
+    aiTraining: "���� Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
@@ -960,13 +960,19 @@ const IpAssistant = () => {
           await new Promise((resolve) => setTimeout(resolve, 300));
           await searchIP(query, mediaType);
         } else {
-          // Not a search intent, treat as normal message
-          await runDetection(value, previewImage);
+          // Not a search intent - only process image if there's a preview
+          if (hasPreview) {
+            await runDetection(previewImage.blob, previewImage.name);
+            setPreviewImage(null);
+          }
         }
       } catch (error) {
         console.error("Failed to parse search intent", error);
-        // Fallback to normal message
-        await runDetection(value, previewImage);
+        // Only process image if there's a preview
+        if (hasPreview) {
+          await runDetection(previewImage.blob, previewImage.name);
+          setPreviewImage(null);
+        }
       }
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty

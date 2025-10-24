@@ -748,7 +748,7 @@ const IpAssistant = () => {
   );
 
   const searchIP = useCallback(
-    async (query: string) => {
+    async (query: string, mediaType?: string | null) => {
       if (!query || query.trim().length === 0) {
         return;
       }
@@ -759,16 +759,22 @@ const IpAssistant = () => {
       try {
         setWaiting(true);
 
-        console.log("[Search IP] Searching for:", trimmedQuery);
+        console.log("[Search IP] Searching for:", trimmedQuery, { mediaType });
+
+        const requestBody: any = {
+          query: trimmedQuery,
+        };
+
+        if (mediaType) {
+          requestBody.mediaType = mediaType;
+        }
 
         const response = await fetch("/api/search-ip-assets", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            query: trimmedQuery,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         console.log("[Search IP] Response status:", response.status);

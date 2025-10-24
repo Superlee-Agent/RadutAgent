@@ -793,6 +793,17 @@ const IpAssistant = () => {
         status: "pending",
         ts: getCurrentTimestamp(),
       });
+    } else if (value.toLowerCase().startsWith("search ip ")) {
+      const query = value.slice(10).trim();
+      autoScrollNextRef.current = false;
+      pushMessage({
+        from: "search-ip",
+        status: "pending",
+        query,
+        ts: getCurrentTimestamp(),
+      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      await searchIP(query);
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
     } else if (hasPreview) {

@@ -33,6 +33,18 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
     try {
       console.log("[Search IP] Searching for:", query);
 
+      const searchBody: any = {
+        query: query.trim(),
+        pagination: {
+          limit: 50,
+          offset: 0,
+        },
+      };
+
+      if (finalMediaType) {
+        searchBody.mediaType = finalMediaType;
+      }
+
       const response = await fetch(
         "https://api.storyapis.com/api/v4/search",
         {
@@ -41,13 +53,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
             "X-Api-Key": apiKey,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            query: query.trim(),
-            pagination: {
-              limit: 50,
-              offset: 0,
-            },
-          }),
+          body: JSON.stringify(searchBody),
           signal: controller.signal,
         },
       );

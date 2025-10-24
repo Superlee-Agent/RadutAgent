@@ -18,13 +18,14 @@ export const handleGetSuggestions: RequestHandler = async (req, res) => {
     }
 
     // Build context from previous messages
-    const contextStr = context
-      ?.slice(-3)
-      ?.map(
-        (msg: any) =>
-          `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`,
-      )
-      .join("\n") || "";
+    const contextStr =
+      context
+        ?.slice(-3)
+        ?.map(
+          (msg: any) =>
+            `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`,
+        )
+        .join("\n") || "";
 
     const suggestionPrompt = `You are a helpful AI assistant for searching and exploring IP (Intellectual Property) assets on Story Protocol.
 
@@ -62,14 +63,15 @@ Example format:
       timeout: 5000,
     });
 
-    const responseText =
-      response.choices[0]?.message?.content?.trim() || "[]";
+    const responseText = response.choices[0]?.message?.content?.trim() || "[]";
 
     // Parse the JSON response
     let suggestions: string[] = [];
     try {
       const parsed = JSON.parse(responseText);
-      suggestions = Array.isArray(parsed) ? parsed.filter((s: any) => typeof s === "string").slice(0, 3) : [];
+      suggestions = Array.isArray(parsed)
+        ? parsed.filter((s: any) => typeof s === "string").slice(0, 3)
+        : [];
     } catch (parseError) {
       // If parsing fails, try to extract suggestions from the response
       console.warn("Failed to parse suggestions response:", responseText);

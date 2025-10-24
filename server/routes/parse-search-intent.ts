@@ -29,7 +29,7 @@ export const handleParseSearchIntent: RequestHandler = async (req, res) => {
         ok: true,
         isSearchIntent: true,
         searchType: "owner",
-        ownerAddress: ownerAddressMatch[1].toLowerCase(),
+        ownerAddress: ownerAddressMatch[1],
         mediaType: null,
       });
     }

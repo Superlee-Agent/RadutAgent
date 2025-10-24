@@ -108,6 +108,9 @@ export function createServer() {
   // Parse search intent endpoint (POST /api/parse-search-intent)
   app.post("/api/parse-search-intent", handleParseSearchIntent);
 
+  // Resolve IP name endpoint (POST /api/resolve-ip-name)
+  app.post("/api/resolve-ip-name", handleResolveIpName);
+
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);
 

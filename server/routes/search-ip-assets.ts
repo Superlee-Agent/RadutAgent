@@ -162,9 +162,11 @@ You are an IP asset matcher. Given a search query and a list of IP assets (with 
 
 Search Query: "${query}"
 
+Be flexible with matching - include partial matches, related concepts, similar themes, and variations.
+
 IP Assets:
 ${allAssets
-  .slice(0, 30)
+  .slice(0, 100)
   .map(
     (asset: any, idx: number) => `
 ${idx + 1}. ID: ${asset.ipId}
@@ -177,7 +179,7 @@ ${idx + 1}. ID: ${asset.ipId}
   )
   .join("\n")}
 
-Return a JSON array with top 5 matching assets. Return ONLY valid JSON in this format:
+Return a JSON array with top 10 matching assets (or fewer if not enough matches). Be inclusive and match broadly. Return ONLY valid JSON in this format:
 [
   {
     "ipId": "0x...",
@@ -186,7 +188,7 @@ Return a JSON array with top 5 matching assets. Return ONLY valid JSON in this f
   ...
 ]
 
-If no matches found, return empty array [].
+If absolutely no reasonable matches found, return empty array [].
 `;
 
       const completion = await openai.chat.completions.create({

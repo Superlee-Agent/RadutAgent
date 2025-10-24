@@ -432,6 +432,8 @@ const IpAssistant = () => {
   >({});
   const [ipCheckInput, setIpCheckInput] = useState<string>("");
   const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeDetail === null) return;

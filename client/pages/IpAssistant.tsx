@@ -2471,9 +2471,9 @@ const IpAssistant = () => {
                             src={asset.mediaUrl}
                             poster={asset.thumbnailUrl}
                             className="w-full h-full object-cover"
-                            controls={false}
-                            muted
-                            preload="none"
+                            controls
+                            preload="metadata"
+                            playsInline
                             onError={(e) => {
                               const video = e.target as HTMLVideoElement;
                               const parent = video.parentElement;

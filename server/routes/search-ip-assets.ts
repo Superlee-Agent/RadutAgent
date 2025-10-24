@@ -4,12 +4,20 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
 
 function convertIpfsUriToHttp(uri: string): string {
   if (!uri) return uri;
+
+  // Extract CID from various IPFS formats
+  let cid = uri;
   if (uri.startsWith("ipfs://")) {
-    const cid = uri.replace("ipfs://", "");
-    return PINATA_GATEWAY
-      ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
-      : `https://ipfs.io/ipfs/${cid}`;
+    cid = uri.replace("ipfs://", "");
+  } else if (uri.includes("/ipfs/")) {
+    cid = uri.split("/ipfs/")[1];
   }
+
+  // Always use Pinata gateway if available for better performance
+  if (PINATA_GATEWAY && (uri.startsWith("ipfs://") || uri.includes("/ipfs/"))) {
+    return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
+  }
+
   return uri;
 }
 

@@ -2481,7 +2481,11 @@ const IpAssistant = () => {
                               controls
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover/video:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-opacity">
-                              <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                              <svg
+                                className="w-12 h-12 text-white drop-shadow-lg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
                                 <path d="M3 3v18h18V3H3zm9 14V7l5 5-5 5z" />
                               </svg>
                             </div>
@@ -2656,8 +2660,18 @@ const IpAssistant = () => {
               className="absolute top-4 right-4 z-20 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
               aria-label="Close"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
 
@@ -2672,10 +2686,18 @@ const IpAssistant = () => {
               />
             ) : expandedAsset.mediaType?.startsWith("audio") ? (
               <div className="w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-slate-900 gap-4">
-                <svg className="w-24 h-24 text-purple-300" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-24 h-24 text-purple-300"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                 </svg>
-                <audio src={expandedAsset.mediaUrl} controls className="w-full max-w-md px-4" />
+                <audio
+                  src={expandedAsset.mediaUrl}
+                  controls
+                  className="w-full max-w-md px-4"
+                />
               </div>
             ) : (
               <img
@@ -2696,11 +2718,16 @@ const IpAssistant = () => {
               )}
               <div className="flex flex-wrap gap-2 text-xs text-slate-400">
                 <span className="px-2 py-1 bg-slate-700 rounded">
-                  {expandedAsset.mediaType?.replace("video/", "").replace("audio/", "").replace("image/", "").toUpperCase() || "Media"}
+                  {expandedAsset.mediaType
+                    ?.replace("video/", "")
+                    .replace("audio/", "")
+                    .replace("image/", "")
+                    .toUpperCase() || "Media"}
                 </span>
                 {expandedAsset.ownerAddress && (
                   <span className="px-2 py-1 bg-slate-700 rounded font-mono">
-                    {expandedAsset.ownerAddress.slice(0, 6)}...{expandedAsset.ownerAddress.slice(-4)}
+                    {expandedAsset.ownerAddress.slice(0, 6)}...
+                    {expandedAsset.ownerAddress.slice(-4)}
                   </span>
                 )}
                 {expandedAsset.score !== undefined && (

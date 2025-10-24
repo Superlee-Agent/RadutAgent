@@ -49,6 +49,16 @@ export type Message =
       totalCount?: number;
       error?: string;
       ts?: string;
+    }
+  | {
+      id?: string;
+      from: "search-ip";
+      status: "pending" | "complete";
+      query?: string;
+      results?: any[];
+      resultCount?: number;
+      error?: string;
+      ts?: string;
     };
 
 export type ChatSession = {

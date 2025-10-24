@@ -402,8 +402,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
       res.json({
         ok: true,
         results: enrichedResults,
-        totalSearched: data?.pagination?.total || enrichedResults.length,
-        pagination: data?.pagination,
+        totalSearched: enrichedResults.length,
         message: `Found ${enrichedResults.length} IP assets owned by ${ownerAddress}`,
       });
     } catch (fetchError: any) {

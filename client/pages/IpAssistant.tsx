@@ -2477,84 +2477,70 @@ const IpAssistant = () => {
                       </div>
                     )}
 
-                    <div className="flex-1 p-4 space-y-2 min-w-0">
-                      <div>
-                        <h3 className="text-sm font-semibold text-[#FF4DA6] break-all">
+                    <div className="flex-1 py-3 pr-4 space-y-2 flex flex-col justify-between">
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-semibold text-[#FF4DA6] truncate">
                           {asset.title || "Untitled"}
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1 font-mono break-all">
-                          ID: {asset.ipId}
+                        <p className="text-xs text-slate-400 mt-0.5 font-mono truncate">
+                          {asset.ipId}
                         </p>
-                      </div>
-
-                      {asset.description && (
-                        <p className="text-xs text-slate-300 break-words">
-                          {asset.description}
-                        </p>
-                      )}
-
-                      <div className="flex flex-wrap gap-2 text-xs text-slate-400">
-                        {asset.ownerAddress && (
-                          <span className="px-2 py-1 bg-slate-700/50 rounded font-mono">
-                            {asset.ownerAddress.slice(0, 6)}...
-                            {asset.ownerAddress.slice(-4)}
-                          </span>
-                        )}
-                        {asset.mediaType && (
-                          <span className="px-2 py-1 bg-slate-700/50 rounded capitalize">
-                            {asset.mediaType}
-                          </span>
-                        )}
-                        {asset.score !== undefined && (
-                          <span className="px-2 py-1 bg-[#FF4DA6]/10 text-[#FF4DA6] rounded">
-                            Match: {(asset.score * 100).toFixed(0)}%
-                          </span>
+                        {asset.description && (
+                          <p className="text-xs text-slate-300 mt-1 line-clamp-2">
+                            {asset.description}
+                          </p>
                         )}
                       </div>
 
-                      {asset.matchReason && (
-                        <p className="text-xs text-[#FF4DA6]/80 italic">
-                          Match: {asset.matchReason}
-                        </p>
-                      )}
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap gap-1 text-xs text-slate-400">
+                          {asset.ownerAddress && (
+                            <span className="px-1.5 py-0.5 bg-slate-700/50 rounded text-xs font-mono">
+                              {asset.ownerAddress.slice(0, 4)}...
+                            </span>
+                          )}
+                          {asset.mediaType && (
+                            <span className="px-1.5 py-0.5 bg-slate-700/50 rounded capitalize text-xs">
+                              {asset.mediaType}
+                            </span>
+                          )}
+                          {asset.score !== undefined && (
+                            <span className="px-1.5 py-0.5 bg-[#FF4DA6]/10 text-[#FF4DA6] rounded text-xs">
+                              {(asset.score * 100).toFixed(0)}%
+                            </span>
+                          )}
+                        </div>
 
-                      <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-700/50">
-                        <button
-                          type="button"
-                          className="text-xs px-3 py-1.5 rounded bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 transition-colors"
-                        >
-                          View License
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-3 py-1.5 rounded bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          title={
-                            !authenticated
-                              ? "Connect wallet to buy license"
-                              : ""
-                          }
-                        >
-                          Buy License
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-3 py-1.5 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          title={
-                            !authenticated
-                              ? "Connect wallet to create remix"
-                              : ""
-                          }
-                        >
-                          Create Remix
-                        </button>
-                        <button
-                          type="button"
-                          className="text-xs px-3 py-1.5 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition-colors"
-                        >
-                          Raise Dispute
-                        </button>
+                        <div className="flex flex-wrap gap-1">
+                          <button
+                            type="button"
+                            className="text-xs px-2 py-1 rounded bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 transition-colors"
+                          >
+                            License
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!authenticated}
+                            className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            title={!authenticated ? "Connect wallet" : ""}
+                          >
+                            Buy
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!authenticated}
+                            className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            title={!authenticated ? "Connect wallet" : ""}
+                          >
+                            Remix
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs px-2 py-1 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition-colors"
+                          >
+                            Dispute
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

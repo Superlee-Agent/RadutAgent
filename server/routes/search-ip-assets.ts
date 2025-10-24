@@ -2,6 +2,17 @@ import { RequestHandler } from "express";
 
 const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
 
+function convertIpfsUriToHttp(uri: string): string {
+  if (!uri) return uri;
+  if (uri.startsWith("ipfs://")) {
+    const cid = uri.replace("ipfs://", "");
+    return PINATA_GATEWAY
+      ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
+      : `https://ipfs.io/ipfs/${cid}`;
+  }
+  return uri;
+}
+
 async function fetchIpaMetadata(ipaMetadataUri: string): Promise<any> {
   if (!ipaMetadataUri) return null;
 

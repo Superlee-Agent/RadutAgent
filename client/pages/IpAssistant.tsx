@@ -2463,19 +2463,40 @@ const IpAssistant = () => {
                     key={asset.ipId || idx}
                     className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors flex gap-4"
                   >
-                    {asset.imageUrl && (
-                      <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden">
+                    <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden flex items-center justify-center">
+                      {asset.imageUrl ? (
                         <img
                           src={asset.imageUrl}
                           alt={asset.title || "IP Asset"}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display =
-                              "none";
+                            const parent = (e.target as HTMLImageElement)
+                              .parentElement;
+                            if (parent) {
+                              (e.target as HTMLImageElement).style.display =
+                                "none";
+                            }
                           }}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-1 text-slate-400">
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span className="text-xs">No image</span>
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex-1 py-3 pr-4 space-y-2 flex flex-col justify-between">
                       <div className="min-w-0">

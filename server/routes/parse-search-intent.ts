@@ -34,6 +34,20 @@ export const handleParseSearchIntent: RequestHandler = async (req, res) => {
       });
     }
 
+    // Check for .ip name pattern: "search/find asset(s) by myname.ip" or just "myname.ip"
+    const ipNameMatch = message.match(/([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.ip)/i);
+
+    if (ipNameMatch && ipNameMatch[1]) {
+      const ipName = ipNameMatch[1];
+      return res.json({
+        ok: true,
+        isSearchIntent: true,
+        searchType: "ip-name",
+        searchQuery: ipName,
+        mediaType: null,
+      });
+    }
+
     // Quick regex checks for common patterns
     const hasSearchKeyword = /\b(search|find|cari|mencari|lookup)\b/.test(
       messageLower,

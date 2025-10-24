@@ -522,6 +522,39 @@ const IpAssistant = () => {
     }
   }, [messages]);
 
+  // Get typing suggestions from the agent
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!input.trim() || input.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+
+      try {
+        setSuggestionsLoading(true);
+        const response = await fetch("/api/get-suggestions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input: input.trim(),
+            context: messages.slice(-5), // Last 5 messages for context
+          }),
+        });
+
+        if (response.ok) {
+          const data = (await response.json()) as { suggestions: string[] };
+          setSuggestions(data.suggestions.slice(0, 3)); // Show max 3 suggestions
+        }
+      } catch (error) {
+        console.error("Failed to get suggestions:", error);
+      } finally {
+        setSuggestionsLoading(false);
+      }
+    }, 800); // Debounce by 800ms
+
+    return () => clearTimeout(timer);
+  }, [input, messages]);
+
   const handleWalletButtonClick = useCallback(() => {
     if (!ready) return;
     if (authenticated) {

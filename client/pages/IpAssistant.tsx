@@ -146,7 +146,7 @@ const ANSWER_DETAILS: Record<
   "8": {
     type: "Human Generated",
     notes: "Original non-AI image; Famous person's face; full face visible",
-    registrationStatus: "❌ IP cannot be registered",
+    registrationStatus: "�� IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -621,7 +621,7 @@ const IpAssistant = () => {
       pushMessage({
         id: processingId,
         from: "bot",
-        text: "Processing image, please wait��",
+        text: "Processing image, please wait…",
         ts: processingTs,
         isProcessing: true,
       });
@@ -2461,9 +2461,23 @@ const IpAssistant = () => {
                 {searchResults.map((asset: any, idx: number) => (
                   <div
                     key={asset.ipId || idx}
-                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 p-4 hover:border-[#FF4DA6]/40 transition-colors"
+                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors"
                   >
-                    <div className="space-y-3">
+                    {asset.imageUrl && (
+                      <div className="relative w-full h-40 bg-slate-900 overflow-hidden">
+                        <img
+                          src={asset.imageUrl}
+                          alt={asset.title || "IP Asset"}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                              "none";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <div className="p-4 space-y-3">
                       <div>
                         <h3 className="text-sm font-semibold text-[#FF4DA6] break-all">
                           {asset.title || "Untitled"}

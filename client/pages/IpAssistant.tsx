@@ -1386,7 +1386,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`user-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex justify-end mb-3 px-3 md:px-6 last:mb-1"
+                  className="flex justify-end mb-3 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-[#ff4da6] text-white px-4 py-2 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-[0.95rem]">
                     {msg.text}
@@ -1409,7 +1409,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-3 gap-2 px-3 md:px-6 last:mb-1"
+                  className="flex items-start mb-3 gap-2 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
                     <div className="flex items-center gap-3">
@@ -1604,7 +1604,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-3 gap-2 px-3 md:px-6 last:mb-1"
+                  className="flex items-start mb-3 gap-2 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
@@ -1938,7 +1938,7 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-3 last:mb-1 gap-2 px-3 md:px-6"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
                   >
                     <div className="bg-slate-900/70 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
@@ -2084,7 +2084,7 @@ const IpAssistant = () => {
                   <motion.div
                     key={`search-ip-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-3 last:mb-1 gap-2 px-3 md:px-6"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
                   >
                     <div className="bg-slate-900/70 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
@@ -2105,7 +2105,7 @@ const IpAssistant = () => {
                   <motion.div
                     key={`search-ip-result-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-3 last:mb-1 gap-2 px-3 md:px-6"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
                   >
                     <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
                       {searchMsg.error ? (

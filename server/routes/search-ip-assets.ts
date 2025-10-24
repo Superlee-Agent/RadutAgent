@@ -95,14 +95,88 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
         });
       }
 
-      const results = Array.isArray(data.data) ? data.data : [];
+      const searchResults = Array.isArray(data.data) ? data.data : [];
+
+      // Fetch detailed metadata for search results to get image URLs
+      let enrichedResults = searchResults;
+
+      if (searchResults.length > 0) {
+        try {
+          const ipIds = searchResults
+            .slice(0, 20)
+            .map((r: any) => r.ipId)
+            .filter(Boolean);
+
+          if (ipIds.length > 0) {
+            const metadataResponse = await fetch(
+              "https://api.storyapis.com/api/v4/ip-assets",
+              {
+                method: "POST",
+                headers: {
+                  "X-Api-Key": apiKey,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  where: {
+                    ipIds,
+                  },
+                  pagination: {
+                    limit: 20,
+                    offset: 0,
+                  },
+                }),
+                signal: controller.signal,
+              },
+            );
+
+            if (metadataResponse.ok) {
+              const metadataData = await metadataResponse.json();
+              const metadataMap = new Map();
+
+              if (Array.isArray(metadataData.data)) {
+                metadataData.data.forEach((asset: any) => {
+                  metadataMap.set(asset.ipId, asset);
+                });
+              }
+
+              enrichedResults = searchResults.map((result: any) => {
+                const metadata = metadataMap.get(result.ipId);
+                return {
+                  ...result,
+                  imageUrl:
+                    metadata?.image?.cachedUrl ||
+                    metadata?.image?.pngUrl ||
+                    metadata?.image?.thumbnailUrl ||
+                    metadata?.nftMetadata?.animation?.cachedUrl ||
+                    metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl,
+                  ipaMetadataUri: metadata?.ipaMetadataUri,
+                  ownerAddress: metadata?.ownerAddress,
+                };
+              });
+
+              console.log(
+                `[Search IP] Enriched ${enrichedResults.length} results with metadata`,
+              );
+            } else {
+              console.warn(
+                "[Search IP] Failed to fetch enriched metadata, using search results only",
+              );
+            }
+          }
+        } catch (metadataError) {
+          console.warn(
+            "[Search IP] Error fetching metadata, using search results only:",
+            metadataError,
+          );
+        }
+      }
 
       res.json({
         ok: true,
-        results: results,
-        totalSearched: data?.pagination?.total || results.length,
+        results: enrichedResults,
+        totalSearched: data?.pagination?.total || enrichedResults.length,
         pagination: data?.pagination,
-        message: `Found ${results.length} IP assets matching "${query}"`,
+        message: `Found ${enrichedResults.length} IP assets matching "${query}"`,
       });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);

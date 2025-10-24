@@ -1999,6 +1999,83 @@ const IpAssistant = () => {
               }
             }
 
+            if (msg.from === "search-ip") {
+              const searchMsg = msg as any;
+              const isLoading = waiting && searchMsg.status === "pending";
+
+              if (searchMsg.status === "pending") {
+                return (
+                  <motion.div
+                    key={`search-ip-${index}`}
+                    {...getBubbleMotionProps(index)}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                  >
+                    <div className="bg-slate-900/70 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
+                      <div className="text-slate-100 text-sm md:text-base">
+                        Searching for IP assets matching "{searchMsg.query}"...
+                      </div>
+                      <div className="mt-2 md:mt-3 flex items-center gap-2">
+                        <span className="dot" />
+                        <span className="dot" />
+                        <span className="dot" />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              if (searchMsg.status === "complete") {
+                return (
+                  <motion.div
+                    key={`search-ip-result-${index}`}
+                    {...getBubbleMotionProps(index)}
+                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
+                      {searchMsg.error ? (
+                        <div className="text-red-400">
+                          <div className="font-semibold mb-2 text-sm md:text-base">
+                            Search Error
+                          </div>
+                          <div className="text-xs md:text-sm">
+                            {searchMsg.error}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3">
+                            Found{" "}
+                            <span className="text-[#FF4DA6] font-bold">
+                              {searchMsg.resultCount}
+                            </span>{" "}
+                            IP assets matching "{searchMsg.query}"
+                          </div>
+                          {searchMsg.resultCount > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSearchResults(
+                                  searchMsg.results || [],
+                                );
+                                setShowSearchModal(true);
+                              }}
+                              className="mt-2 px-3 py-1.5 bg-[#FF4DA6]/20 text-[#FF4DA6] text-xs md:text-sm font-semibold rounded-lg hover:bg-[#FF4DA6]/30 transition-all duration-300"
+                            >
+                              View More
+                            </button>
+                          ) : (
+                            <div className="text-xs text-slate-400 mt-2">
+                              No matching assets found.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              }
+            }
+
             return (
               <motion.div
                 key={`image-${index}`}

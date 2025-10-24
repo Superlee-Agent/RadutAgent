@@ -49,6 +49,16 @@ export type Message =
       totalCount?: number;
       error?: string;
       ts?: string;
+    }
+  | {
+      id?: string;
+      from: "search-ip";
+      status: "pending" | "complete";
+      query?: string;
+      results?: any[];
+      resultCount?: number;
+      error?: string;
+      ts?: string;
     };
 
 export type ChatSession = {
@@ -108,7 +118,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Regular person's face (not famous); full face visible",
-    registrationStatus: "❌ Cannot be registered directly",
+    registrationStatus: "��� Cannot be registered directly",
     action:
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
@@ -149,7 +159,7 @@ const ANSWER_DETAILS: Record<
     action: "-",
     smartLicensing:
       "Commercial Remix License (manual minting fee & revenue share)",
-    aiTraining: "��� Allowed (user-configurable)",
+    aiTraining: "���� Allowed (user-configurable)",
   },
   "10": {
     type: "Human Generated",
@@ -422,6 +432,11 @@ const IpAssistant = () => {
   >({});
   const [ipCheckInput, setIpCheckInput] = useState<string>("");
   const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
+  const [expandedAsset, setExpandedAsset] = useState<any>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -506,6 +521,39 @@ const IpAssistant = () => {
       console.error("Failed to persist current session", error);
     }
   }, [messages]);
+
+  // Get typing suggestions from the agent
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!input.trim() || input.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+
+      try {
+        setSuggestionsLoading(true);
+        const response = await fetch("/api/get-suggestions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input: input.trim(),
+            context: messages.slice(-5), // Last 5 messages for context
+          }),
+        });
+
+        if (response.ok) {
+          const data = (await response.json()) as { suggestions: string[] };
+          setSuggestions(data.suggestions.slice(0, 3)); // Show max 3 suggestions
+        }
+      } catch (error) {
+        console.error("Failed to get suggestions:", error);
+      } finally {
+        setSuggestionsLoading(false);
+      }
+    }, 800); // Debounce by 800ms
+
+    return () => clearTimeout(timer);
+  }, [input, messages]);
 
   const handleWalletButtonClick = useCallback(() => {
     if (!ready) return;
@@ -735,6 +783,109 @@ const IpAssistant = () => {
     [pushMessage],
   );
 
+  const searchIP = useCallback(
+    async (query: string, mediaType?: string | null) => {
+      if (!query || query.trim().length === 0) {
+        return;
+      }
+
+      const trimmedQuery = query.trim();
+      const searchKey = `search-${Date.now()}`;
+
+      try {
+        setWaiting(true);
+
+        console.log("[Search IP] Searching for:", trimmedQuery, { mediaType });
+
+        const requestBody: any = {
+          query: trimmedQuery,
+        };
+
+        if (mediaType) {
+          requestBody.mediaType = mediaType;
+        }
+
+        const response = await fetch("/api/search-ip-assets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        console.log("[Search IP] Response status:", response.status);
+
+        if (!response.ok) {
+          let errorMessage = `API Error: ${response.status}`;
+
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            if (response.status === 400) {
+              errorMessage = "Invalid search query";
+            } else if (response.status === 500) {
+              errorMessage = "Server error - unable to search IP assets";
+            }
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log("[Search IP] Response data:", data);
+        const { results = [], message = "" } = data;
+
+        setSearchResults(results);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedQuery,
+                  results,
+                  resultCount: results.length,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } catch (error: any) {
+        const errorMessage = error?.message || "Failed to search IP assets";
+        console.error("Search IP Error:", error);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedQuery,
+                  error: errorMessage,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } finally {
+        setWaiting(false);
+      }
+    },
+    [scrollToBottomImmediate],
+  );
+
   const handleSend = useCallback(async () => {
     const value = input.trim();
     const hasPreview = previewImage !== null;
@@ -781,6 +932,48 @@ const IpAssistant = () => {
         status: "pending",
         ts: getCurrentTimestamp(),
       });
+    } else if (
+      value.toLowerCase().includes("search") ||
+      value.toLowerCase().includes("find") ||
+      value.toLowerCase().includes("cari")
+    ) {
+      // Try to parse search intent using LLM
+      try {
+        const parseResponse = await fetch("/api/parse-search-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: value }),
+        });
+
+        const parseData = await parseResponse.json();
+
+        if (parseData.ok && parseData.isSearchIntent && parseData.searchQuery) {
+          const query = parseData.searchQuery;
+          const mediaType = parseData.mediaType || null;
+          autoScrollNextRef.current = false;
+          pushMessage({
+            from: "search-ip",
+            status: "pending",
+            query,
+            ts: getCurrentTimestamp(),
+          });
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          await searchIP(query, mediaType);
+        } else {
+          // Not a search intent - only process image if there's a preview
+          if (hasPreview) {
+            await runDetection(previewImage.blob, previewImage.name);
+            setPreviewImage(null);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse search intent", error);
+        // Only process image if there's a preview
+        if (hasPreview) {
+          await runDetection(previewImage.blob, previewImage.name);
+          setPreviewImage(null);
+        }
+      }
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
     } else if (hasPreview) {
@@ -1193,7 +1386,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`user-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex justify-end mb-2 px-2 md:px-4"
+                  className="flex justify-end mb-3 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-[#ff4da6] text-white px-4 py-2 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-[0.95rem]">
                     {msg.text}
@@ -1216,7 +1409,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
+                  className="flex items-start mb-3 gap-2 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
                     <div className="flex items-center gap-3">
@@ -1411,7 +1604,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
+                  className="flex items-start mb-3 gap-2 px-1 md:px-2 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
                     <div className="text-sm font-semibold text-[#FF4DA6]">
@@ -1745,9 +1938,9 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
                   >
-                    <div className="bg-slate-900/70 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
+                    <div className="bg-slate-900/70 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">
                         Please enter a wallet address to check your IP assets:
                       </div>
@@ -1874,6 +2067,81 @@ const IpAssistant = () => {
                               </div>
                             )}
                           </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              }
+            }
+
+            if (msg.from === "search-ip") {
+              const searchMsg = msg as any;
+              const isLoading = waiting && searchMsg.status === "pending";
+
+              if (searchMsg.status === "pending") {
+                return (
+                  <motion.div
+                    key={`search-ip-${index}`}
+                    {...getBubbleMotionProps(index)}
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
+                  >
+                    <div className="bg-slate-900/70 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
+                      <div className="text-slate-100 text-sm md:text-base">
+                        Searching for IP assets matching "{searchMsg.query}"...
+                      </div>
+                      <div className="mt-2 md:mt-3 flex items-center gap-2">
+                        <span className="dot" />
+                        <span className="dot" />
+                        <span className="dot" />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              if (searchMsg.status === "complete") {
+                return (
+                  <motion.div
+                    key={`search-ip-result-${index}`}
+                    {...getBubbleMotionProps(index)}
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-1 md:px-2"
+                  >
+                    <div className="bg-slate-900/70 border border-[#FF4DA6]/40 px-4 py-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words shadow-[0_12px_32px_rgba(0,0,0,0.3)] text-slate-100 backdrop-blur-lg transition-all duration-300 font-medium overflow-hidden">
+                      {searchMsg.error ? (
+                        <div className="text-red-400">
+                          <div className="font-semibold mb-2 text-sm md:text-base">
+                            Search Error
+                          </div>
+                          <div className="text-xs md:text-sm">
+                            {searchMsg.error}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-xs md:text-[0.97rem] mb-2 md:mb-3">
+                            Found{" "}
+                            <span className="text-[#FF4DA6] font-bold">
+                              {searchMsg.resultCount}
+                            </span>{" "}
+                            IP assets matching "{searchMsg.query}"
+                          </div>
+                          {searchMsg.resultCount > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSearchResults(searchMsg.results || []);
+                                setShowSearchModal(true);
+                              }}
+                              className="mt-2 px-3 py-1.5 bg-[#FF4DA6]/20 text-[#FF4DA6] text-xs md:text-sm font-semibold rounded-lg hover:bg-[#FF4DA6]/30 transition-all duration-300"
+                            >
+                              View More
+                            </button>
+                          ) : (
+                            <div className="text-xs text-slate-400 mt-2">
+                              No matching assets found.
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -2053,6 +2321,36 @@ const IpAssistant = () => {
               className="flex-1 resize-none px-4 py-0 bg-transparent text-white placeholder:text-slate-400 min-h-[40px] max-h-32 overflow-y-auto focus:outline-none font-medium text-[0.97rem] disabled:opacity-50"
             />
           </div>
+
+          {suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="flex flex-col gap-1.5 px-4 py-2 border-t border-slate-700/50"
+            >
+              <p className="text-xs text-slate-400 font-medium">Suggestions:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.map((suggestion, idx) => (
+                  <motion.button
+                    key={idx}
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.05 }}
+                    onClick={() => {
+                      setInput(suggestion);
+                      setSuggestions([]);
+                      inputRef.current?.focus();
+                    }}
+                    className="px-3 py-1.5 text-xs bg-gradient-to-r from-[#FF4DA6]/20 to-[#FF4DA6]/10 text-[#FF4DA6] rounded-lg hover:from-[#FF4DA6]/30 hover:to-[#FF4DA6]/20 transition-all duration-200 hover:scale-105 cursor-pointer font-medium border border-[#FF4DA6]/20 hover:border-[#FF4DA6]/40"
+                  >
+                    {suggestion}
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
 
         <button
@@ -2187,7 +2485,332 @@ const IpAssistant = () => {
             </motion.div>
           </motion.div>
         ) : null}
+
+        {showSearchModal && searchResults.length > 0 ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+              onClick={() => setShowSearchModal(false)}
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-3xl max-h-[80vh] rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-[#FF4DA6]/20 p-6 shadow-xl overflow-y-auto"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-start justify-between gap-4 mb-6 sticky top-0 bg-slate-900/80 -mx-6 px-6 py-4 border-b border-[#FF4DA6]/10">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]">
+                    IP Assets
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-slate-100">
+                    Search Results ({searchResults.length})
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSearchModal(false)}
+                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close search modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {searchResults.map((asset: any, idx: number) => (
+                  <div
+                    key={asset.ipId || idx}
+                    className="group cursor-pointer flex flex-col h-full"
+                  >
+                    <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:ring-2 ring-[#FF4DA6]/50 flex-shrink-0">
+                      {asset.mediaUrl ? (
+                        asset.mediaType?.startsWith("video") ? (
+                          <div
+                            className="w-full h-full cursor-pointer relative group/video"
+                            onClick={() => setExpandedAsset(asset)}
+                          >
+                            <video
+                              key={asset.ipId}
+                              src={asset.mediaUrl}
+                              poster={asset.thumbnailUrl}
+                              className="w-full h-full object-cover"
+                              preload="metadata"
+                              playsInline
+                              controls
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover/video:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-opacity">
+                              <svg
+                                className="w-12 h-12 text-white drop-shadow-lg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M3 3v18h18V3H3zm9 14V7l5 5-5 5z" />
+                              </svg>
+                            </div>
+                          </div>
+                        ) : asset.mediaType?.startsWith("audio") ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900">
+                            <svg
+                              className="w-12 h-12 text-purple-300"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                            </svg>
+                            <span className="text-xs text-purple-200 font-medium">
+                              Audio
+                            </span>
+                          </div>
+                        ) : (
+                          <img
+                            src={asset.mediaUrl}
+                            alt={asset.title || "IP Asset"}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const img = e.target as HTMLImageElement;
+                              const parent = img.parentElement;
+                              if (
+                                parent &&
+                                parent.querySelector("img") === img
+                              ) {
+                                img.replaceWith(
+                                  Object.assign(document.createElement("div"), {
+                                    className:
+                                      "w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800",
+                                    innerHTML: `
+                                      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                      </svg>
+                                      <span class="text-xs">Failed to load</span>
+                                    `,
+                                  }),
+                                );
+                              }
+                            }}
+                          />
+                        )
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800">
+                          <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span className="text-xs">No media</span>
+                        </div>
+                      )}
+
+                      {asset.mediaType?.startsWith("video") && (
+                        <div className="absolute bottom-2 right-2 bg-black/80 px-1.5 py-0.5 rounded text-xs font-semibold text-white">
+                          VIDEO
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-3 space-y-2 flex flex-col flex-grow">
+                      <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors">
+                        {asset.title || "Untitled"}
+                      </h3>
+
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          className={`text-xs px-2 py-1 rounded font-semibold whitespace-nowrap ${
+                            asset.isDerivative
+                              ? "bg-blue-500/20 text-blue-300"
+                              : "bg-green-500/20 text-green-300"
+                          }`}
+                        >
+                          {asset.isDerivative ? "Derivative" : "Original"}
+                        </span>
+                        {asset.score !== undefined && (
+                          <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">
+                            {(asset.score * 100).toFixed(0)}%
+                          </span>
+                        )}
+                      </div>
+
+                      {asset.description && (
+                        <p className="text-xs text-slate-400 line-clamp-1">
+                          {asset.description}
+                        </p>
+                      )}
+
+                      <div className="text-xs text-slate-500 space-y-1">
+                        {asset.ownerAddress && (
+                          <p className="font-mono text-xs">
+                            {asset.ownerAddress.slice(0, 6)}...
+                            {asset.ownerAddress.slice(-4)}
+                          </p>
+                        )}
+                        {asset.mediaType && (
+                          <p className="capitalize text-xs">
+                            {asset.mediaType
+                              .replace("video/", "")
+                              .replace("audio/", "")
+                              .replace("image/", "")
+                              .toUpperCase()}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 pt-3 mt-auto">
+                        <button
+                          type="button"
+                          className="text-xs px-2 py-1.5 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                        >
+                          License
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-2 py-1.5 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                        >
+                          Buy
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                        >
+                          Remix
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
+
+      {expandedAsset && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setExpandedAsset(null)}
+            aria-hidden="true"
+          />
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="relative z-10 bg-slate-900 rounded-xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden"
+          >
+            <button
+              onClick={() => setExpandedAsset(null)}
+              className="absolute top-4 right-4 z-20 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
+              aria-label="Close"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {expandedAsset.mediaType?.startsWith("video") ? (
+              <video
+                src={expandedAsset.mediaUrl}
+                poster={expandedAsset.thumbnailUrl}
+                className="w-full h-auto max-h-[70vh] object-contain"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : expandedAsset.mediaType?.startsWith("audio") ? (
+              <div className="w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-slate-900 gap-4">
+                <svg
+                  className="w-24 h-24 text-purple-300"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+                <audio
+                  src={expandedAsset.mediaUrl}
+                  controls
+                  className="w-full max-w-md px-4"
+                />
+              </div>
+            ) : (
+              <img
+                src={expandedAsset.mediaUrl}
+                alt={expandedAsset.title}
+                className="w-full h-auto max-h-[70vh] object-contain"
+              />
+            )}
+
+            <div className="p-6 bg-slate-800/50 border-t border-slate-700">
+              <h3 className="text-lg font-semibold text-slate-100 mb-2">
+                {expandedAsset.title || "Untitled"}
+              </h3>
+              {expandedAsset.description && (
+                <p className="text-sm text-slate-300 mb-4">
+                  {expandedAsset.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+                <span className="px-2 py-1 bg-slate-700 rounded">
+                  {expandedAsset.mediaType
+                    ?.replace("video/", "")
+                    .replace("audio/", "")
+                    .replace("image/", "")
+                    .toUpperCase() || "Media"}
+                </span>
+                {expandedAsset.ownerAddress && (
+                  <span className="px-2 py-1 bg-slate-700 rounded font-mono">
+                    {expandedAsset.ownerAddress.slice(0, 6)}...
+                    {expandedAsset.ownerAddress.slice(-4)}
+                  </span>
+                )}
+                {expandedAsset.score !== undefined && (
+                  <span className="px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded">
+                    {(expandedAsset.score * 100).toFixed(0)}% Match
+                  </span>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </DashboardLayout>
   );
 };

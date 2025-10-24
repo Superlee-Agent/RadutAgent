@@ -5,6 +5,9 @@ import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
 import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
+import { handleSearchIpAssets } from "./routes/search-ip-assets.js";
+import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
+import { handleGetSuggestions } from "./routes/get-suggestions.js";
 
 export function createServer() {
   const app = express();
@@ -93,6 +96,15 @@ export function createServer() {
 
   // Check IP Assets endpoint (POST /api/check-ip-assets)
   app.post("/api/check-ip-assets", handleCheckIpAssets);
+
+  // Search IP Assets endpoint (POST /api/search-ip-assets)
+  app.post("/api/search-ip-assets", handleSearchIpAssets);
+
+  // Parse search intent endpoint (POST /api/parse-search-intent)
+  app.post("/api/parse-search-intent", handleParseSearchIntent);
+
+  // Get typing suggestions endpoint (POST /api/get-suggestions)
+  app.post("/api/get-suggestions", handleGetSuggestions);
 
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>

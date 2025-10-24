@@ -142,8 +142,10 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
               enrichedResults = searchResults.map((result: any) => {
                 const metadata = metadataMap.get(result.ipId);
 
-                // Priority order for image URL
+                // Priority order for image URL - try multiple sources
                 let imageUrl = null;
+
+                // Try image object first (highest priority)
                 if (metadata?.image?.cachedUrl) {
                   imageUrl = metadata.image.cachedUrl;
                 } else if (metadata?.image?.pngUrl) {
@@ -152,18 +154,32 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   imageUrl = metadata.image.thumbnailUrl;
                 } else if (metadata?.image?.originalUrl) {
                   imageUrl = metadata.image.originalUrl;
-                } else if (metadata?.nftMetadata?.animation?.cachedUrl) {
-                  imageUrl = metadata.nftMetadata.animation.cachedUrl;
-                } else if (
-                  metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
-                ) {
-                  imageUrl =
-                    metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                }
+
+                // Try NFT metadata sources
+                if (!imageUrl) {
+                  if (metadata?.nftMetadata?.image?.cachedUrl) {
+                    imageUrl = metadata.nftMetadata.image.cachedUrl;
+                  } else if (metadata?.nftMetadata?.image?.pngUrl) {
+                    imageUrl = metadata.nftMetadata.image.pngUrl;
+                  } else if (
+                    metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
+                  ) {
+                    imageUrl =
+                      metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                  } else if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                    imageUrl = metadata.nftMetadata.animation.cachedUrl;
+                  }
+                }
+
+                // Try raw metadata if available
+                if (!imageUrl && metadata?.nftMetadata?.raw?.image) {
+                  imageUrl = metadata.nftMetadata.raw.image;
                 }
 
                 return {
                   ...result,
-                  imageUrl,
+                  imageUrl: imageUrl || null,
                   ipaMetadataUri: metadata?.ipaMetadataUri,
                   ownerAddress: metadata?.ownerAddress,
                   lastUpdatedAt: metadata?.lastUpdatedAt,

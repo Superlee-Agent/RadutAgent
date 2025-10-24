@@ -1116,7 +1116,7 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, previewImage, pushMessage, runDetection]);
+  }, [input, previewImage, pushMessage, runDetection, searchIP, searchByOwner]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {

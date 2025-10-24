@@ -435,6 +435,8 @@ const IpAssistant = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   useEffect(() => {
     if (activeDetail === null) return;

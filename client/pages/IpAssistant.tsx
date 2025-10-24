@@ -1022,99 +1022,102 @@ const IpAssistant = () => {
     }
   }, []);
 
-  const searchIP = useCallback(async (query: string) => {
-    if (!query || query.trim().length === 0) {
-      return;
-    }
-
-    const trimmedQuery = query.trim();
-    const searchKey = `search-${Date.now()}`;
-
-    try {
-      setWaiting(true);
-
-      console.log("[Search IP] Searching for:", trimmedQuery);
-
-      const response = await fetch("/api/search-ip-assets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: trimmedQuery,
-        }),
-      });
-
-      console.log("[Search IP] Response status:", response.status);
-
-      if (!response.ok) {
-        let errorMessage = `API Error: ${response.status}`;
-
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch {
-          if (response.status === 400) {
-            errorMessage = "Invalid search query";
-          } else if (response.status === 500) {
-            errorMessage = "Server error - unable to search IP assets";
-          }
-        }
-
-        throw new Error(errorMessage);
+  const searchIP = useCallback(
+    async (query: string) => {
+      if (!query || query.trim().length === 0) {
+        return;
       }
 
-      const data = await response.json();
-      console.log("[Search IP] Response data:", data);
-      const { results = [], message = "" } = data;
+      const trimmedQuery = query.trim();
+      const searchKey = `search-${Date.now()}`;
 
-      setSearchResults(results);
+      try {
+        setWaiting(true);
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "search-ip" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                query: trimmedQuery,
-                results,
-                resultCount: results.length,
-              }
-            : msg,
-        ),
-      );
+        console.log("[Search IP] Searching for:", trimmedQuery);
 
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (autoScrollNextRef.current) scrollToBottomImmediate();
-        }, 0);
-      });
-    } catch (error: any) {
-      const errorMessage = error?.message || "Failed to search IP assets";
-      console.error("Search IP Error:", error);
+        const response = await fetch("/api/search-ip-assets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: trimmedQuery,
+          }),
+        });
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.from === "search-ip" && (msg as any).status === "pending"
-            ? {
-                ...msg,
-                status: "complete",
-                query: trimmedQuery,
-                error: errorMessage,
-              }
-            : msg,
-        ),
-      );
+        console.log("[Search IP] Response status:", response.status);
 
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (autoScrollNextRef.current) scrollToBottomImmediate();
-        }, 0);
-      });
-    } finally {
-      setWaiting(false);
-    }
-  }, [scrollToBottomImmediate]);
+        if (!response.ok) {
+          let errorMessage = `API Error: ${response.status}`;
+
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            if (response.status === 400) {
+              errorMessage = "Invalid search query";
+            } else if (response.status === 500) {
+              errorMessage = "Server error - unable to search IP assets";
+            }
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log("[Search IP] Response data:", data);
+        const { results = [], message = "" } = data;
+
+        setSearchResults(results);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedQuery,
+                  results,
+                  resultCount: results.length,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } catch (error: any) {
+        const errorMessage = error?.message || "Failed to search IP assets";
+        console.error("Search IP Error:", error);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: trimmedQuery,
+                  error: errorMessage,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } finally {
+        setWaiting(false);
+      }
+    },
+    [scrollToBottomImmediate],
+  );
 
   const handleImage = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -2054,9 +2057,7 @@ const IpAssistant = () => {
                             <button
                               type="button"
                               onClick={() => {
-                                setSearchResults(
-                                  searchMsg.results || [],
-                                );
+                                setSearchResults(searchMsg.results || []);
                                 setShowSearchModal(true);
                               }}
                               className="mt-2 px-3 py-1.5 bg-[#FF4DA6]/20 text-[#FF4DA6] text-xs md:text-sm font-semibold rounded-lg hover:bg-[#FF4DA6]/30 transition-all duration-300"
@@ -2481,7 +2482,11 @@ const IpAssistant = () => {
                           type="button"
                           disabled={!authenticated}
                           className="text-xs px-3 py-1.5 rounded bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          title={!authenticated ? "Connect wallet to buy license" : ""}
+                          title={
+                            !authenticated
+                              ? "Connect wallet to buy license"
+                              : ""
+                          }
                         >
                           Buy License
                         </button>
@@ -2489,7 +2494,11 @@ const IpAssistant = () => {
                           type="button"
                           disabled={!authenticated}
                           className="text-xs px-3 py-1.5 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          title={!authenticated ? "Connect wallet to create remix" : ""}
+                          title={
+                            !authenticated
+                              ? "Connect wallet to create remix"
+                              : ""
+                          }
                         >
                           Create Remix
                         </button>

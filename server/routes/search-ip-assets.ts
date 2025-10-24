@@ -203,8 +203,7 @@ If no matches found, return empty array [].
 
       let matchedIds: any[] = [];
       try {
-        const responseText =
-          completion.choices[0]?.message?.content || "[]";
+        const responseText = completion.choices[0]?.message?.content || "[]";
         const jsonMatch = responseText.match(/\[[\s\S]*\]/);
         if (jsonMatch) {
           matchedIds = JSON.parse(jsonMatch[0]);
@@ -216,12 +215,9 @@ If no matches found, return empty array [].
       const matchedAssets = matchedIds
         .map((match: any) => {
           const asset = allAssets.find(
-            (a: any) =>
-              a.ipId?.toLowerCase() === match.ipId?.toLowerCase(),
+            (a: any) => a.ipId?.toLowerCase() === match.ipId?.toLowerCase(),
           );
-          return asset
-            ? { ...asset, matchReason: match.matchReason }
-            : null;
+          return asset ? { ...asset, matchReason: match.matchReason } : null;
         })
         .filter(Boolean);
 

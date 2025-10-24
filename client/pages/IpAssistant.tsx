@@ -1386,7 +1386,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`user-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex justify-end mb-2 px-2 md:px-4"
+                  className="flex justify-end mb-3 px-3 md:px-6 last:mb-1"
                 >
                   <div className="bg-[#ff4da6] text-white px-4 py-2 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-[0.95rem]">
                     {msg.text}
@@ -1409,7 +1409,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`bot-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
+                  className="flex items-start mb-3 gap-2 px-3 md:px-6 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100 text-[0.95rem]">
                     <div className="flex items-center gap-3">

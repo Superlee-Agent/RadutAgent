@@ -158,13 +158,15 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
           const data = await response.json();
 
-          console.log("[Search By Owner] Raw response:", {
+          console.log("[Search By Owner] Raw API response:", {
             ownerAddress,
             offset,
             iteration: iterations,
+            status: response.status,
             dataType: typeof data,
             dataKeys: Object.keys(data || {}),
-            dataLength: Array.isArray(data) ? data.length : Array.isArray(data?.data) ? data.data.length : "N/A",
+            dataArray: Array.isArray(data) ? `Array of ${data.length}` : Array.isArray(data?.data) ? `data array of ${data.data.length}` : "not array",
+            paginationInfo: data?.pagination,
           });
 
           if (!data) {

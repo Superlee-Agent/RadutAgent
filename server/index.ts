@@ -9,6 +9,7 @@ import { handleSearchIpAssets } from "./routes/search-ip-assets.js";
 import { handleSearchByOwner } from "./routes/search-by-owner.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
+import { handleResolveIpName } from "./routes/resolve-ip-name.js";
 
 export function createServer() {
   const app = express();

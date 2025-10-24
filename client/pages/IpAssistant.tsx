@@ -1091,7 +1091,10 @@ const IpAssistant = () => {
                 await searchByOwner(resolvedAddress, ipName);
               } else {
                 const errorMsg = resolveData.message || "Resolution failed";
-                console.warn(`[IP Assistant] Failed to resolve ${ipName}:`, errorMsg);
+                console.warn(
+                  `[IP Assistant] Failed to resolve ${ipName}:`,
+                  errorMsg,
+                );
                 pushMessage({
                   from: "bot",
                   text: `Could not resolve "${ipName}": ${errorMsg}`,

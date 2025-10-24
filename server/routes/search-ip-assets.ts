@@ -1,5 +1,36 @@
 import { RequestHandler } from "express";
 
+const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
+
+async function fetchIpaMetadata(ipaMetadataUri: string): Promise<any> {
+  if (!ipaMetadataUri) return null;
+
+  try {
+    let url = ipaMetadataUri;
+
+    // Convert ipfs:// URIs to HTTP gateways
+    if (url.startsWith("ipfs://")) {
+      const cid = url.replace("ipfs://", "");
+      // Try Pinata gateway first if available, then fall back to ipfs.io
+      url = PINATA_GATEWAY
+        ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
+        : `https://ipfs.io/ipfs/${cid}`;
+    }
+
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) {
+      console.warn(`Failed to fetch IPA metadata from ${url}: ${response.status}`);
+      return null;
+    }
+
+    const metadata = await response.json();
+    return metadata;
+  } catch (error) {
+    console.warn(`Error fetching IPA metadata from ${ipaMetadataUri}:`, error);
+    return null;
+  }
+}
+
 export const handleSearchIpAssets: RequestHandler = async (req, res) => {
   try {
     const { query, mediaType } = req.body;

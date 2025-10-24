@@ -2467,14 +2467,25 @@ const IpAssistant = () => {
                     <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:ring-2 ring-[#FF4DA6]/50 flex-shrink-0">
                       {asset.mediaUrl ? (
                         asset.mediaType?.startsWith("video") ? (
-                          <video
-                            key={asset.ipId}
-                            src={asset.mediaUrl}
-                            poster={asset.thumbnailUrl}
-                            className="w-full h-full object-cover"
-                            preload="none"
-                            playsInline
-                          />
+                          <div
+                            className="w-full h-full cursor-pointer relative group/video"
+                            onClick={() => setExpandedAsset(asset)}
+                          >
+                            <video
+                              key={asset.ipId}
+                              src={asset.mediaUrl}
+                              poster={asset.thumbnailUrl}
+                              className="w-full h-full object-cover"
+                              preload="metadata"
+                              playsInline
+                              controls
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover/video:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-opacity">
+                              <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 3v18h18V3H3zm9 14V7l5 5-5 5z" />
+                              </svg>
+                            </div>
+                          </div>
                         ) : asset.mediaType?.startsWith("audio") ? (
                           <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900">
                             <svg

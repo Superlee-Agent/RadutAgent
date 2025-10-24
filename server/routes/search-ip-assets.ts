@@ -170,89 +170,117 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                 });
               }
 
-              enrichedResults = searchResults.map((result: any) => {
-                const metadata = metadataMap.get(result.ipId);
+              enrichedResults = await Promise.all(
+                searchResults.map(async (result: any) => {
+                  const metadata = metadataMap.get(result.ipId);
 
-                // Determine media type from result or metadata
-                const mediaType = result?.mediaType || metadata?.mediaType || "image";
+                  // Determine media type from result or metadata
+                  const mediaType = result?.mediaType || metadata?.mediaType || "image";
 
-                // Get media URL - try multiple sources based on media type
-                let mediaUrl = null;
-                let thumbnailUrl = null;
+                  // Get media URL - try multiple sources based on media type
+                  let mediaUrl = null;
+                  let thumbnailUrl = null;
 
-                if (mediaType === "image" || mediaType === "animation") {
-                  // Try image object first (highest priority)
-                  if (metadata?.image?.cachedUrl) {
-                    mediaUrl = metadata.image.cachedUrl;
-                  } else if (metadata?.image?.pngUrl) {
-                    mediaUrl = metadata.image.pngUrl;
-                  } else if (metadata?.image?.thumbnailUrl) {
-                    mediaUrl = metadata.image.thumbnailUrl;
-                  } else if (metadata?.image?.originalUrl) {
-                    mediaUrl = metadata.image.originalUrl;
-                  }
+                  if (mediaType === "image" || mediaType === "animation") {
+                    // Try image object first (highest priority)
+                    if (metadata?.image?.cachedUrl) {
+                      mediaUrl = metadata.image.cachedUrl;
+                    } else if (metadata?.image?.pngUrl) {
+                      mediaUrl = metadata.image.pngUrl;
+                    } else if (metadata?.image?.thumbnailUrl) {
+                      mediaUrl = metadata.image.thumbnailUrl;
+                    } else if (metadata?.image?.originalUrl) {
+                      mediaUrl = metadata.image.originalUrl;
+                    }
 
-                  // Try NFT metadata sources
-                  if (!mediaUrl) {
-                    if (metadata?.nftMetadata?.image?.cachedUrl) {
-                      mediaUrl = metadata.nftMetadata.image.cachedUrl;
-                    } else if (metadata?.nftMetadata?.image?.pngUrl) {
-                      mediaUrl = metadata.nftMetadata.image.pngUrl;
-                    } else if (
-                      metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
-                    ) {
-                      mediaUrl =
-                        metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                    // Try NFT metadata sources
+                    if (!mediaUrl) {
+                      if (metadata?.nftMetadata?.image?.cachedUrl) {
+                        mediaUrl = metadata.nftMetadata.image.cachedUrl;
+                      } else if (metadata?.nftMetadata?.image?.pngUrl) {
+                        mediaUrl = metadata.nftMetadata.image.pngUrl;
+                      } else if (
+                        metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
+                      ) {
+                        mediaUrl =
+                          metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                      }
+                    }
+                  } else if (mediaType === "video") {
+                    // Try video/animation URLs
+                    if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                      mediaUrl = metadata.nftMetadata.animation.cachedUrl;
+                    } else if (metadata?.nftMetadata?.animation?.originalUrl) {
+                      mediaUrl = metadata.nftMetadata.animation.originalUrl;
+                    } else if (metadata?.image?.cachedUrl) {
+                      // Fallback to image if no video
+                      mediaUrl = metadata.image.cachedUrl;
+                    }
+                    // Get thumbnail for video
+                    if (metadata?.image?.cachedUrl) {
+                      thumbnailUrl = metadata.image.cachedUrl;
+                    } else if (metadata?.image?.thumbnailUrl) {
+                      thumbnailUrl = metadata.image.thumbnailUrl;
+                    }
+                  } else if (mediaType === "audio") {
+                    // Try audio URLs
+                    if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                      mediaUrl = metadata.nftMetadata.animation.cachedUrl;
+                    } else if (metadata?.nftMetadata?.animation?.originalUrl) {
+                      mediaUrl = metadata.nftMetadata.animation.originalUrl;
+                    }
+                    // Get thumbnail for audio
+                    if (metadata?.image?.cachedUrl) {
+                      thumbnailUrl = metadata.image.cachedUrl;
+                    } else if (metadata?.image?.thumbnailUrl) {
+                      thumbnailUrl = metadata.image.thumbnailUrl;
                     }
                   }
-                } else if (mediaType === "video") {
-                  // Try video/animation URLs
-                  if (metadata?.nftMetadata?.animation?.cachedUrl) {
-                    mediaUrl = metadata.nftMetadata.animation.cachedUrl;
-                  } else if (metadata?.nftMetadata?.animation?.originalUrl) {
-                    mediaUrl = metadata.nftMetadata.animation.originalUrl;
-                  } else if (metadata?.image?.cachedUrl) {
-                    // Fallback to image if no video
-                    mediaUrl = metadata.image.cachedUrl;
-                  }
-                  // Get thumbnail for video
-                  if (metadata?.image?.cachedUrl) {
-                    thumbnailUrl = metadata.image.cachedUrl;
-                  } else if (metadata?.image?.thumbnailUrl) {
-                    thumbnailUrl = metadata.image.thumbnailUrl;
-                  }
-                } else if (mediaType === "audio") {
-                  // Try audio URLs
-                  if (metadata?.nftMetadata?.animation?.cachedUrl) {
-                    mediaUrl = metadata.nftMetadata.animation.cachedUrl;
-                  } else if (metadata?.nftMetadata?.animation?.originalUrl) {
-                    mediaUrl = metadata.nftMetadata.animation.originalUrl;
-                  }
-                  // Get thumbnail for audio
-                  if (metadata?.image?.cachedUrl) {
-                    thumbnailUrl = metadata.image.cachedUrl;
-                  } else if (metadata?.image?.thumbnailUrl) {
-                    thumbnailUrl = metadata.image.thumbnailUrl;
-                  }
-                }
 
-                // Try raw metadata if available
-                if (!mediaUrl && metadata?.nftMetadata?.raw?.image) {
-                  mediaUrl = metadata.nftMetadata.raw.image;
-                }
+                  // Try raw metadata if available
+                  if (!mediaUrl && metadata?.nftMetadata?.raw?.image) {
+                    mediaUrl = metadata.nftMetadata.raw.image;
+                  }
 
-                return {
-                  ...result,
-                  mediaUrl: mediaUrl || null,
-                  mediaType: mediaType,
-                  thumbnailUrl: thumbnailUrl,
-                  ipaMetadataUri: metadata?.ipaMetadataUri,
-                  ownerAddress: metadata?.ownerAddress,
-                  lastUpdatedAt: metadata?.lastUpdatedAt,
-                  isDerivative:
-                    metadata?.isDerivative || result.isDerivative || false,
-                };
-              });
+                  // If still no media URL, try fetching from IPA metadata URI
+                  if (!mediaUrl && metadata?.ipaMetadataUri) {
+                    const ipaMetadata = await fetchIpaMetadata(metadata.ipaMetadataUri);
+                    if (ipaMetadata) {
+                      // Try to extract media URL from IPA metadata
+                      if (ipaMetadata.mediaUrl) {
+                        mediaUrl = ipaMetadata.mediaUrl;
+                      } else if (ipaMetadata.animationUrl) {
+                        mediaUrl = ipaMetadata.animationUrl;
+                      } else if (ipaMetadata.image) {
+                        mediaUrl = ipaMetadata.image;
+                      } else if (ipaMetadata.media && Array.isArray(ipaMetadata.media) && ipaMetadata.media.length > 0) {
+                        mediaUrl = ipaMetadata.media[0];
+                      }
+
+                      // Try to get thumbnail from IPA metadata
+                      if (!thumbnailUrl) {
+                        if (ipaMetadata.thumbnailUrl) {
+                          thumbnailUrl = ipaMetadata.thumbnailUrl;
+                        } else if (ipaMetadata.image && mediaType !== "image") {
+                          thumbnailUrl = ipaMetadata.image;
+                        }
+                      }
+                    }
+                  }
+
+                  return {
+                    ...result,
+                    mediaUrl: mediaUrl || null,
+                    mediaType: mediaType,
+                    thumbnailUrl: thumbnailUrl,
+                    ipaMetadataUri: metadata?.ipaMetadataUri,
+                    ownerAddress: metadata?.ownerAddress,
+                    lastUpdatedAt: metadata?.lastUpdatedAt,
+                    isDerivative:
+                      metadata?.isDerivative || result.isDerivative || false,
+                  };
+                })
+              );
 
               console.log(
                 `[Search IP] Enriched ${enrichedResults.length} results with metadata (${enrichedResults.filter((r: any) => r.imageUrl).length} with images)`,

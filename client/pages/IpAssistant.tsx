@@ -1938,7 +1938,7 @@ const IpAssistant = () => {
                   <motion.div
                     key={`ip-check-${index}`}
                     {...getBubbleMotionProps(index)}
-                    className="flex items-start mb-2 last:mb-1 gap-2 px-3 md:px-8"
+                    className="flex items-start mb-3 last:mb-1 gap-2 px-3 md:px-6"
                   >
                     <div className="bg-slate-900/70 px-2 sm:px-3 md:px-[1.2rem] py-2 md:py-3 rounded-2xl md:rounded-3xl w-[calc(100vw-3rem)] sm:w-full sm:max-w-[85%] md:max-w-[70%] break-words text-slate-100 font-medium text-sm md:text-[0.97rem] overflow-hidden">
                       <div className="text-slate-100 text-sm md:text-base">

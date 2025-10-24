@@ -890,17 +890,41 @@ const IpAssistant = () => {
         status: "pending",
         ts: getCurrentTimestamp(),
       });
-    } else if (value.toLowerCase().startsWith("search ip ")) {
-      const query = value.slice(10).trim();
-      autoScrollNextRef.current = false;
-      pushMessage({
-        from: "search-ip",
-        status: "pending",
-        query,
-        ts: getCurrentTimestamp(),
-      });
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      await searchIP(query);
+    } else if (
+      value.toLowerCase().includes("search") ||
+      value.toLowerCase().includes("find") ||
+      value.toLowerCase().includes("cari")
+    ) {
+      // Try to parse search intent using LLM
+      try {
+        const parseResponse = await fetch("/api/parse-search-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: value }),
+        });
+
+        const parseData = await parseResponse.json();
+
+        if (parseData.ok && parseData.isSearchIntent && parseData.searchQuery) {
+          const query = parseData.searchQuery;
+          autoScrollNextRef.current = false;
+          pushMessage({
+            from: "search-ip",
+            status: "pending",
+            query,
+            ts: getCurrentTimestamp(),
+          });
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          await searchIP(query);
+        } else {
+          // Not a search intent, treat as normal message
+          await runDetection(value, previewImage);
+        }
+      } catch (error) {
+        console.error("Failed to parse search intent", error);
+        // Fallback to normal message
+        await runDetection(value, previewImage);
+      }
     } else if (value.toLowerCase() === "gradut") {
       // gradut function is empty
     } else if (hasPreview) {

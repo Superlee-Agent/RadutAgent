@@ -146,7 +146,7 @@ const ANSWER_DETAILS: Record<
   "8": {
     type: "Human Generated",
     notes: "Original non-AI image; Famous person's face; full face visible",
-    registrationStatus: "�� IP cannot be registered",
+    registrationStatus: "❌ IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -2495,17 +2495,19 @@ const IpAssistant = () => {
 
                       <div className="flex flex-wrap gap-2 text-xs text-slate-400">
                         {asset.ownerAddress && (
-                          <span className="px-2 py-1 bg-slate-700/50 rounded">
-                            Owner: {asset.ownerAddress.slice(0, 6)}...
+                          <span className="px-2 py-1 bg-slate-700/50 rounded font-mono">
+                            {asset.ownerAddress.slice(0, 6)}...
                             {asset.ownerAddress.slice(-4)}
                           </span>
                         )}
-                        <span className="px-2 py-1 bg-slate-700/50 rounded">
-                          {asset.isDerivative ? "Derivative" : "Original"}
-                        </span>
-                        {asset.createdAt && (
-                          <span className="px-2 py-1 bg-slate-700/50 rounded">
-                            {new Date(asset.createdAt).toLocaleDateString()}
+                        {asset.mediaType && (
+                          <span className="px-2 py-1 bg-slate-700/50 rounded capitalize">
+                            {asset.mediaType}
+                          </span>
+                        )}
+                        {asset.score !== undefined && (
+                          <span className="px-2 py-1 bg-[#FF4DA6]/10 text-[#FF4DA6] rounded">
+                            Match: {(asset.score * 100).toFixed(0)}%
                           </span>
                         )}
                       </div>

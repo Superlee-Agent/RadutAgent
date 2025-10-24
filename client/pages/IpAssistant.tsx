@@ -2461,10 +2461,10 @@ const IpAssistant = () => {
                 {searchResults.map((asset: any, idx: number) => (
                   <div
                     key={asset.ipId || idx}
-                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors"
+                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors flex gap-4"
                   >
                     {asset.imageUrl && (
-                      <div className="relative w-full bg-slate-900 overflow-hidden aspect-square">
+                      <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden">
                         <img
                           src={asset.imageUrl}
                           alt={asset.title || "IP Asset"}
@@ -2477,7 +2477,7 @@ const IpAssistant = () => {
                       </div>
                     )}
 
-                    <div className="p-4 space-y-3">
+                    <div className="flex-1 p-4 space-y-2 min-w-0">
                       <div>
                         <h3 className="text-sm font-semibold text-[#FF4DA6] break-all">
                           {asset.title || "Untitled"}

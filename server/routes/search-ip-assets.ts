@@ -109,7 +109,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
 
           if (ipIds.length > 0) {
             const metadataResponse = await fetch(
-              "https://api.storyapis.com/api/v4/ip-assets",
+              "https://api.storyapis.com/api/v4/assets",
               {
                 method: "POST",
                 headers: {

@@ -1059,6 +1059,53 @@ const IpAssistant = () => {
             });
             await new Promise((resolve) => setTimeout(resolve, 300));
             await searchByOwner(ownerAddress);
+          } else if (parseData.searchType === "ip-name" && parseData.searchQuery) {
+            const ipName = parseData.searchQuery;
+            autoScrollNextRef.current = false;
+            pushMessage({
+              from: "bot",
+              text: `Resolving ${ipName}...`,
+              ts: getCurrentTimestamp(),
+            });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            try {
+              const resolveResponse = await fetch("/api/resolve-ip-name", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ipName }),
+              });
+
+              const resolveData = await resolveResponse.json();
+
+              if (resolveData.ok && resolveData.address) {
+                const resolvedAddress = resolveData.address;
+                console.log(
+                  `[IP Assistant] Resolved ${ipName} to ${resolvedAddress}`,
+                );
+                pushMessage({
+                  from: "search-ip",
+                  status: "pending",
+                  query: resolvedAddress,
+                  ts: getCurrentTimestamp(),
+                });
+                await new Promise((resolve) => setTimeout(resolve, 300));
+                await searchByOwner(resolvedAddress);
+              } else {
+                pushMessage({
+                  from: "bot",
+                  text: `Could not resolve "${ipName}": ${resolveData.message || "Resolution failed"}`,
+                  ts: getCurrentTimestamp(),
+                });
+              }
+            } catch (resolveError) {
+              console.error("Failed to resolve IP name:", resolveError);
+              pushMessage({
+                from: "bot",
+                text: `Error resolving "${ipName}". Please try again.`,
+                ts: getCurrentTimestamp(),
+              });
+            }
           } else if (parseData.searchQuery) {
             const query = parseData.searchQuery;
             const mediaType = parseData.mediaType || null;

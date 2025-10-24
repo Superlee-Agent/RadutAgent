@@ -27,28 +27,45 @@ export const handleGetSuggestions: RequestHandler = async (req, res) => {
         )
         .join("\n") || "";
 
-    const suggestionPrompt = `You are a helpful AI assistant for searching and exploring IP (Intellectual Property) assets on Story Protocol.
+    // Check if "ip" or "asset" is in the input
+    const hasIpKeyword = /\b(ip|asset|nft|search|find|cari)\b/i.test(input);
 
-Current conversation context:
-${contextStr}
+    let suggestionPrompt = "";
+    if (!hasIpKeyword) {
+      // If no IP keyword, suggest adding it
+      suggestionPrompt = `You are a helpful AI assistant for searching IP (Intellectual Property) assets on Story Protocol.
 
 User is typing: "${input}"
 
-Based on the context and what the user is typing, provide 3 helpful suggestions to complete or improve their message. 
-Suggestions could be:
-- Completing their search query (e.g., "search ip mushroom" → "search ip mushroom artwork")
-- Asking clarifying questions (e.g., "looking for" → "looking for video content")
-- Related searches (e.g., "dragon" → "dragon artwork", "dragon animation", "dragon NFT")
-- Helpful tips (e.g., "can you" → "can you show me trending IPs?")
+The user hasn't mentioned IP/assets yet. Provide 3 suggestions that add "ip" or "search ip" to their message to make it an IP asset search.
 
 Rules:
-- Each suggestion should be SHORT (max 8 words)
-- Suggestions should be natural and helpful
-- They should relate to IP assets, media types (image, video, audio), or Story Protocol
+- Each suggestion should be SHORT (max 10 words)
+- ALWAYS include "ip" or "search ip" in the suggestions
+- Make them natural and relevant to the input
+- Return ONLY a JSON array of 3 strings, nothing else
+
+Example: User types "dragon" → ["search ip dragon", "find ip dragon artwork", "show me ip dragon"]`;
+    } else {
+      // If IP keyword exists, help complete the query
+      suggestionPrompt = `You are a helpful AI assistant for searching IP assets on Story Protocol.
+
+User is typing: "${input}"
+
+Provide 3 helpful suggestions to complete or improve their IP asset search message.
+Suggestions could be:
+- Completing their search (e.g., "search ip dragon" → "search ip dragon artwork")
+- Adding media type filters (e.g., "search dragon" → "search ip dragon video", "search ip dragon image")
+- Related searches (e.g., "dragon" → "dragon NFT", "dragon animation")
+
+Rules:
+- Each suggestion should be SHORT (max 10 words)
+- Try to include media types (image, video, audio) when relevant
 - Return ONLY a JSON array of 3 strings, nothing else
 
 Example format:
-["search ip dragon artwork", "show me video NFTs", "find trending IP assets"]`;
+["search ip dragon image", "find ip dragon video", "search ip dragon artwork"]`;
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -60,7 +77,6 @@ Example format:
       ],
       temperature: 0.7,
       max_tokens: 200,
-      timeout: 5000,
     });
 
     const responseText = response.choices[0]?.message?.content?.trim() || "[]";

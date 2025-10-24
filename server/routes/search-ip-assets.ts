@@ -5,8 +5,9 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
 function convertIpfsUriToHttp(uri: string): string {
   if (!uri) return uri;
 
-  // Use Cloudflare IPFS gateway for public files (better performance than ipfs.io)
-  const PUBLIC_GATEWAY = "cloudflare-ipfs.com";
+  // Use dweb.link (reliable public IPFS gateway) instead of private Pinata
+  // Private Pinata gateway returns 403 for files not pinned on that account
+  const PUBLIC_GATEWAY = "dweb.link";
 
   // Extract CID from various IPFS formats
   if (uri.startsWith("ipfs://")) {
@@ -14,13 +15,18 @@ function convertIpfsUriToHttp(uri: string): string {
     return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;
   }
 
-  // Replace ipfs.io with Cloudflare gateway for better performance
+  // Replace ipfs.io with dweb.link for better reliability
   if (uri.includes("ipfs.io/ipfs/")) {
     const cid = uri.split("/ipfs/")[1];
     return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;
   }
 
-  // Replace any other IPFS gateway with Cloudflare
+  // Don't convert Pinata URLs that are already there (they may work)
+  if (uri.includes("mypinata.cloud")) {
+    return uri;
+  }
+
+  // Replace any other IPFS gateway with dweb.link
   if (uri.includes("/ipfs/") && !uri.includes(PUBLIC_GATEWAY)) {
     const cid = uri.split("/ipfs/")[1];
     return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;

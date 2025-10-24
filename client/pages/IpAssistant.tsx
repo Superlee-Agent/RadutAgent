@@ -2479,9 +2479,20 @@ const IpAssistant = () => {
 
                     <div className="flex-1 py-3 pr-4 space-y-2 flex flex-col justify-between">
                       <div className="min-w-0">
-                        <h3 className="text-sm font-semibold text-[#FF4DA6] truncate">
-                          {asset.title || "Untitled"}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-[#FF4DA6] truncate flex-1">
+                            {asset.title || "Untitled"}
+                          </h3>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded font-semibold whitespace-nowrap flex-shrink-0 ${
+                              asset.isDerivative
+                                ? "bg-blue-500/20 text-blue-300"
+                                : "bg-green-500/20 text-green-300"
+                            }`}
+                          >
+                            {asset.isDerivative ? "Derivative" : "Original"}
+                          </span>
+                        </div>
                         <p className="text-xs text-slate-400 mt-0.5 font-mono truncate">
                           {asset.ipId}
                         </p>

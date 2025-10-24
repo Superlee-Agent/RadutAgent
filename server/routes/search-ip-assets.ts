@@ -167,6 +167,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   ipaMetadataUri: metadata?.ipaMetadataUri,
                   ownerAddress: metadata?.ownerAddress,
                   lastUpdatedAt: metadata?.lastUpdatedAt,
+                  isDerivative: metadata?.isDerivative || result.isDerivative || false,
                 };
               });
 

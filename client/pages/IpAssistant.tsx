@@ -887,12 +887,13 @@ const IpAssistant = () => {
   );
 
   const searchByOwner = useCallback(
-    async (ownerAddress: string) => {
+    async (ownerAddress: string, displayQuery?: string) => {
       if (!ownerAddress || ownerAddress.trim().length === 0) {
         return;
       }
 
       const trimmedAddress = ownerAddress.trim();
+      const displayValue = displayQuery || trimmedAddress;
 
       try {
         setWaiting(true);
@@ -943,7 +944,7 @@ const IpAssistant = () => {
               ? {
                   ...msg,
                   status: "complete",
-                  query: trimmedAddress,
+                  query: displayValue,
                   results,
                   resultCount: results.length,
                 }
@@ -967,7 +968,7 @@ const IpAssistant = () => {
               ? {
                   ...msg,
                   status: "complete",
-                  query: trimmedAddress,
+                  query: displayValue,
                   error: errorMessage,
                 }
               : msg,

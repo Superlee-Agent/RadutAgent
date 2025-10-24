@@ -1081,11 +1081,11 @@ const IpAssistant = () => {
                 pushMessage({
                   from: "search-ip",
                   status: "pending",
-                  query: resolvedAddress,
+                  query: ipName,
                   ts: getCurrentTimestamp(),
                 });
                 await new Promise((resolve) => setTimeout(resolve, 300));
-                await searchByOwner(resolvedAddress);
+                await searchByOwner(resolvedAddress, ipName);
               } else {
                 pushMessage({
                   from: "bot",

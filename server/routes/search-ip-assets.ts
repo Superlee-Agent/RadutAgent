@@ -214,7 +214,7 @@ If absolutely no reasonable matches found, return empty array [].
         console.error("Failed to parse LLM response", parseError);
       }
 
-      const matchedAssets = matchedIds
+      let matchedAssets = matchedIds
         .map((match: any) => {
           const asset = allAssets.find(
             (a: any) => a.ipId?.toLowerCase() === match.ipId?.toLowerCase(),
@@ -222,6 +222,35 @@ If absolutely no reasonable matches found, return empty array [].
           return asset ? { ...asset, matchReason: match.matchReason } : null;
         })
         .filter(Boolean);
+
+      // Fallback: if LLM found nothing, do basic keyword matching
+      if (matchedAssets.length === 0 && allAssets.length > 0) {
+        const queryLower = query.toLowerCase();
+        const keywordMatches = allAssets
+          .filter((asset: any) => {
+            const title = (asset.title || "").toLowerCase();
+            const description = (asset.description || "").toLowerCase();
+            return (
+              title.includes(queryLower) || description.includes(queryLower)
+            );
+          })
+          .slice(0, 10)
+          .map((asset: any) => ({
+            ...asset,
+            matchReason: "Contains search keyword",
+          }));
+
+        if (keywordMatches.length > 0) {
+          matchedAssets = keywordMatches;
+          console.log(
+            `[Search IP] Fallback keyword matching found ${keywordMatches.length} results for "${query}"`,
+          );
+        } else {
+          console.log(
+            `[Search IP] No keyword matches found for "${query}" in ${allAssets.length} assets`,
+          );
+        }
+      }
 
       res.json({
         ok: true,

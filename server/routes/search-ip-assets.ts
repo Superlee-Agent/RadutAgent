@@ -268,9 +268,13 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                       if (mediaType === "video") {
                         // For videos, try animation-related fields first
                         if (ipaMetadata.animation) {
-                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animation);
+                          mediaUrl = convertIpfsUriToHttp(
+                            ipaMetadata.animation,
+                          );
                         } else if (ipaMetadata.animationUrl) {
-                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                          mediaUrl = convertIpfsUriToHttp(
+                            ipaMetadata.animationUrl,
+                          );
                         } else if (ipaMetadata.video) {
                           mediaUrl = convertIpfsUriToHttp(ipaMetadata.video);
                         } else if (ipaMetadata.videoUrl) {
@@ -291,9 +295,13 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                         } else if (ipaMetadata.audioUrl) {
                           mediaUrl = convertIpfsUriToHttp(ipaMetadata.audioUrl);
                         } else if (ipaMetadata.animation) {
-                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animation);
+                          mediaUrl = convertIpfsUriToHttp(
+                            ipaMetadata.animation,
+                          );
                         } else if (ipaMetadata.animationUrl) {
-                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                          mediaUrl = convertIpfsUriToHttp(
+                            ipaMetadata.animationUrl,
+                          );
                         } else if (ipaMetadata.mediaUrl) {
                           mediaUrl = convertIpfsUriToHttp(ipaMetadata.mediaUrl);
                         } else if (
@@ -310,7 +318,9 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                         } else if (ipaMetadata.image) {
                           mediaUrl = convertIpfsUriToHttp(ipaMetadata.image);
                         } else if (ipaMetadata.animationUrl) {
-                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                          mediaUrl = convertIpfsUriToHttp(
+                            ipaMetadata.animationUrl,
+                          );
                         } else if (
                           ipaMetadata.media &&
                           Array.isArray(ipaMetadata.media) &&
@@ -323,11 +333,17 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                       // Try to get thumbnail from IPA metadata
                       if (!thumbnailUrl) {
                         if (ipaMetadata.thumbnailUrl) {
-                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.thumbnailUrl);
+                          thumbnailUrl = convertIpfsUriToHttp(
+                            ipaMetadata.thumbnailUrl,
+                          );
                         } else if (ipaMetadata.image) {
-                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.image);
+                          thumbnailUrl = convertIpfsUriToHttp(
+                            ipaMetadata.image,
+                          );
                         } else if (ipaMetadata.thumbnail) {
-                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.thumbnail);
+                          thumbnailUrl = convertIpfsUriToHttp(
+                            ipaMetadata.thumbnail,
+                          );
                         }
                       }
 

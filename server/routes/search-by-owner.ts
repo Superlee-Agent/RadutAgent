@@ -122,7 +122,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
                 offset,
               },
               where: {
-                ownerAddress: ownerAddress.toLowerCase(),
+                ownerAddress: ownerAddress,
               },
             }),
             signal: controller.signal,

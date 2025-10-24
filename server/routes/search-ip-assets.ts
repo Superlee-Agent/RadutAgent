@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 
 export const handleSearchIpAssets: RequestHandler = async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query, mediaType } = req.body;
 
     if (!query || typeof query !== "string") {
       return res.status(400).json({
@@ -11,6 +11,11 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
         message: "Search query is required",
       });
     }
+
+    // Validate mediaType if provided
+    const validMediaTypes = ["image", "video", "audio"];
+    const finalMediaType =
+      mediaType && validMediaTypes.includes(mediaType) ? mediaType : null;
 
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {

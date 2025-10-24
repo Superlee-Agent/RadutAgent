@@ -118,7 +118,7 @@ const ANSWER_DETAILS: Record<
     type: "AI Generated",
     notes:
       "AI-generated image; Regular person's face (not famous); full face visible",
-    registrationStatus: "❌ Cannot be registered directly",
+    registrationStatus: "��� Cannot be registered directly",
     action:
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
@@ -2467,12 +2467,31 @@ const IpAssistant = () => {
                       {asset.mediaUrl ? (
                         asset.mediaType === "video" ? (
                           <video
+                            key={asset.ipId}
                             src={asset.mediaUrl}
                             poster={asset.thumbnailUrl}
                             className="w-full h-full object-cover"
                             controls={false}
                             muted
                             preload="none"
+                            onError={(e) => {
+                              const video = e.target as HTMLVideoElement;
+                              const parent = video.parentElement;
+                              if (parent && parent.querySelector('video') === video) {
+                                video.replaceWith(
+                                  Object.assign(document.createElement('div'), {
+                                    className: 'w-full h-full flex flex-col items-center justify-center gap-1 text-slate-400 bg-slate-800',
+                                    innerHTML: `
+                                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                      </svg>
+                                      <span class="text-xs">Video failed</span>
+                                    `
+                                  })
+                                );
+                              }
+                            }}
                           />
                         ) : asset.mediaType === "audio" ? (
                           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple-900 to-slate-900">

@@ -95,6 +95,9 @@ export function createServer() {
   // Check IP Assets endpoint (POST /api/check-ip-assets)
   app.post("/api/check-ip-assets", handleCheckIpAssets);
 
+  // Search IP Assets endpoint (POST /api/search-ip-assets)
+  app.post("/api/search-ip-assets", handleSearchIpAssets);
+
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>
     res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),

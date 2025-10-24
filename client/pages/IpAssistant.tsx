@@ -2461,9 +2461,9 @@ const IpAssistant = () => {
                 {searchResults.map((asset: any, idx: number) => (
                   <div
                     key={asset.ipId || idx}
-                    className="group cursor-pointer"
+                    className="group cursor-pointer flex flex-col h-full"
                   >
-                    <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:ring-2 ring-[#FF4DA6]/50">
+                    <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:ring-2 ring-[#FF4DA6]/50 flex-shrink-0">
                       {asset.mediaUrl ? (
                         asset.mediaType?.startsWith("video") ? (
                           <video
@@ -2539,14 +2539,14 @@ const IpAssistant = () => {
                       )}
                     </div>
 
-                    <div className="pt-3 space-y-2">
+                    <div className="pt-3 space-y-2 flex flex-col flex-grow">
                       <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors">
                         {asset.title || "Untitled"}
                       </h3>
 
                       <div className="flex items-center justify-between gap-2">
                         <span
-                          className={`text-xs px-2 py-1 rounded font-semibold ${
+                          className={`text-xs px-2 py-1 rounded font-semibold whitespace-nowrap ${
                             asset.isDerivative
                               ? "bg-blue-500/20 text-blue-300"
                               : "bg-green-500/20 text-green-300"
@@ -2555,7 +2555,7 @@ const IpAssistant = () => {
                           {asset.isDerivative ? "Derivative" : "Original"}
                         </span>
                         {asset.score !== undefined && (
-                          <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold">
+                          <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">
                             {(asset.score * 100).toFixed(0)}%
                           </span>
                         )}
@@ -2569,18 +2569,18 @@ const IpAssistant = () => {
 
                       <div className="text-xs text-slate-500 space-y-1">
                         {asset.ownerAddress && (
-                          <p className="font-mono">
+                          <p className="font-mono text-xs">
                             {asset.ownerAddress.slice(0, 6)}...{asset.ownerAddress.slice(-4)}
                           </p>
                         )}
                         {asset.mediaType && (
-                          <p className="capitalize">
+                          <p className="capitalize text-xs">
                             {asset.mediaType.replace("video/", "").replace("audio/", "").replace("image/", "").toUpperCase()}
                           </p>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5 pt-2">
+                      <div className="flex flex-wrap gap-1.5 pt-3 mt-auto">
                         <button
                           type="button"
                           className="text-xs px-2 py-1.5 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"

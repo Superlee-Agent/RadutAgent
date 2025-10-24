@@ -1043,18 +1043,37 @@ const IpAssistant = () => {
 
         const parseData = await parseResponse.json();
 
-        if (parseData.ok && parseData.isSearchIntent && parseData.searchQuery) {
-          const query = parseData.searchQuery;
-          const mediaType = parseData.mediaType || null;
-          autoScrollNextRef.current = false;
-          pushMessage({
-            from: "search-ip",
-            status: "pending",
-            query,
-            ts: getCurrentTimestamp(),
-          });
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          await searchIP(query, mediaType);
+        if (parseData.ok && parseData.isSearchIntent) {
+          if (parseData.searchType === "owner" && parseData.ownerAddress) {
+            const ownerAddress = parseData.ownerAddress;
+            autoScrollNextRef.current = false;
+            pushMessage({
+              from: "search-ip",
+              status: "pending",
+              query: ownerAddress,
+              ts: getCurrentTimestamp(),
+            });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            await searchByOwner(ownerAddress);
+          } else if (parseData.searchQuery) {
+            const query = parseData.searchQuery;
+            const mediaType = parseData.mediaType || null;
+            autoScrollNextRef.current = false;
+            pushMessage({
+              from: "search-ip",
+              status: "pending",
+              query,
+              ts: getCurrentTimestamp(),
+            });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            await searchIP(query, mediaType);
+          } else {
+            // Search intent detected but no query extracted - only process image if there's a preview
+            if (hasPreview) {
+              await runDetection(previewImage.blob, previewImage.name);
+              setPreviewImage(null);
+            }
+          }
         } else {
           // Not a search intent - only process image if there's a preview
           if (hasPreview) {

@@ -335,8 +335,8 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                         `[Search IP] Extracted from IPA metadata for ${result.ipId}:`,
                         {
                           mediaType,
-                          mediaUrl: mediaUrl ? "found" : "not found",
-                          thumbnailUrl: thumbnailUrl ? "found" : "not found",
+                          mediaUrl: mediaUrl || "not found",
+                          thumbnailUrl: thumbnailUrl || "not found",
                         },
                       );
                     }

@@ -158,6 +158,15 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
           const data = await response.json();
 
+          console.log("[Search By Owner] Raw response:", {
+            ownerAddress,
+            offset,
+            iteration: iterations,
+            dataType: typeof data,
+            dataKeys: Object.keys(data || {}),
+            dataLength: Array.isArray(data) ? data.length : Array.isArray(data?.data) ? data.data.length : "N/A",
+          });
+
           if (!data) {
             console.error("Empty response from Story API", {
               ownerAddress,

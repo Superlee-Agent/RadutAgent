@@ -2381,6 +2381,132 @@ const IpAssistant = () => {
             </motion.div>
           </motion.div>
         ) : null}
+
+        {showSearchModal && searchResults.length > 0 ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+              onClick={() => setShowSearchModal(false)}
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-3xl max-h-[80vh] rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-[#FF4DA6]/20 p-6 shadow-xl overflow-y-auto"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-start justify-between gap-4 mb-6 sticky top-0 bg-slate-900/80 -mx-6 px-6 py-4 border-b border-[#FF4DA6]/10">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]">
+                    IP Assets
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-slate-100">
+                    Search Results ({searchResults.length})
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSearchModal(false)}
+                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close search modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid gap-4">
+                {searchResults.map((asset: any, idx: number) => (
+                  <div
+                    key={asset.ipId || idx}
+                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 p-4 hover:border-[#FF4DA6]/40 transition-colors"
+                  >
+                    <div className="space-y-3">
+                      <div>
+                        <h3 className="text-sm font-semibold text-[#FF4DA6] break-all">
+                          {asset.title || "Untitled"}
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-1 font-mono break-all">
+                          ID: {asset.ipId}
+                        </p>
+                      </div>
+
+                      {asset.description && (
+                        <p className="text-xs text-slate-300 break-words">
+                          {asset.description}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+                        {asset.ownerAddress && (
+                          <span className="px-2 py-1 bg-slate-700/50 rounded">
+                            Owner: {asset.ownerAddress.slice(0, 6)}...
+                            {asset.ownerAddress.slice(-4)}
+                          </span>
+                        )}
+                        <span className="px-2 py-1 bg-slate-700/50 rounded">
+                          {asset.isDerivative ? "Derivative" : "Original"}
+                        </span>
+                        {asset.createdAt && (
+                          <span className="px-2 py-1 bg-slate-700/50 rounded">
+                            {new Date(asset.createdAt).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+
+                      {asset.matchReason && (
+                        <p className="text-xs text-[#FF4DA6]/80 italic">
+                          Match: {asset.matchReason}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-700/50">
+                        <button
+                          type="button"
+                          className="text-xs px-3 py-1.5 rounded bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 transition-colors"
+                        >
+                          View License
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-3 py-1.5 rounded bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          title={!authenticated ? "Connect wallet to buy license" : ""}
+                        >
+                          Buy License
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-3 py-1.5 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          title={!authenticated ? "Connect wallet to create remix" : ""}
+                        >
+                          Create Remix
+                        </button>
+                        <button
+                          type="button"
+                          className="text-xs px-3 py-1.5 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition-colors"
+                        >
+                          Raise Dispute
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </DashboardLayout>
   );

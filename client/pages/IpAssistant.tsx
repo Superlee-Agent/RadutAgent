@@ -169,7 +169,7 @@ const ANSWER_DETAILS: Record<
     action:
       "Take Selfie Photo → If selfie verification succeeds: IP can be registered; if it fails: Submit Review",
     smartLicensing:
-      "Commercial Remix License (manual minting fee & revenue share)  — if verification succeeds",
+      "Commercial Remix License (manual minting fee & revenue share)  ��� if verification succeeds",
     aiTraining: "✅ Allowed (user-configurable)",
   },
   "11": {
@@ -886,6 +886,107 @@ const IpAssistant = () => {
     [scrollToBottomImmediate],
   );
 
+  const searchByOwner = useCallback(
+    async (ownerAddress: string, displayQuery?: string) => {
+      if (!ownerAddress || ownerAddress.trim().length === 0) {
+        return;
+      }
+
+      const trimmedAddress = ownerAddress.trim();
+      const displayValue = displayQuery || trimmedAddress;
+
+      try {
+        setWaiting(true);
+
+        console.log(
+          "[Search By Owner] Searching for assets by owner:",
+          trimmedAddress,
+        );
+
+        const response = await fetch("/api/search-by-owner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ownerAddress: trimmedAddress,
+          }),
+        });
+
+        console.log("[Search By Owner] Response status:", response.status);
+
+        if (!response.ok) {
+          let errorMessage = `API Error: ${response.status}`;
+
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            if (response.status === 400) {
+              errorMessage = "Invalid owner address format";
+            } else if (response.status === 500) {
+              errorMessage = "Server error - unable to search IP assets";
+            }
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log("[Search By Owner] Response data:", data);
+        const { results = [], message = "" } = data;
+
+        setSearchResults(results);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: displayValue,
+                  results,
+                  resultCount: results.length,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } catch (error: any) {
+        const errorMessage =
+          error?.message || "Failed to search IP assets by owner";
+        console.error("Search By Owner Error:", error);
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.from === "search-ip" && (msg as any).status === "pending"
+              ? {
+                  ...msg,
+                  status: "complete",
+                  query: displayValue,
+                  error: errorMessage,
+                }
+              : msg,
+          ),
+        );
+
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (autoScrollNextRef.current) scrollToBottomImmediate();
+          }, 0);
+        });
+      } finally {
+        setWaiting(false);
+      }
+    },
+    [scrollToBottomImmediate],
+  );
+
   const handleSend = useCallback(async () => {
     const value = input.trim();
     const hasPreview = previewImage !== null;
@@ -947,18 +1048,86 @@ const IpAssistant = () => {
 
         const parseData = await parseResponse.json();
 
-        if (parseData.ok && parseData.isSearchIntent && parseData.searchQuery) {
-          const query = parseData.searchQuery;
-          const mediaType = parseData.mediaType || null;
-          autoScrollNextRef.current = false;
-          pushMessage({
-            from: "search-ip",
-            status: "pending",
-            query,
-            ts: getCurrentTimestamp(),
-          });
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          await searchIP(query, mediaType);
+        if (parseData.ok && parseData.isSearchIntent) {
+          if (parseData.searchType === "owner" && parseData.ownerAddress) {
+            const ownerAddress = parseData.ownerAddress;
+            autoScrollNextRef.current = false;
+            pushMessage({
+              from: "search-ip",
+              status: "pending",
+              query: ownerAddress,
+              ts: getCurrentTimestamp(),
+            });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            await searchByOwner(ownerAddress);
+          } else if (
+            parseData.searchType === "ip-name" &&
+            parseData.searchQuery
+          ) {
+            const ipName = parseData.searchQuery;
+            autoScrollNextRef.current = false;
+
+            try {
+              const resolveResponse = await fetch("/api/resolve-ip-name", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ipName }),
+              });
+
+              const resolveData = await resolveResponse.json();
+
+              if (resolveResponse.ok && resolveData.ok && resolveData.address) {
+                const resolvedAddress = resolveData.address;
+                console.log(
+                  `[IP Assistant] Resolved ${ipName} to ${resolvedAddress}`,
+                );
+                pushMessage({
+                  from: "search-ip",
+                  status: "pending",
+                  query: ipName,
+                  ts: getCurrentTimestamp(),
+                });
+                await new Promise((resolve) => setTimeout(resolve, 300));
+                await searchByOwner(resolvedAddress, ipName);
+              } else {
+                const errorMsg = resolveData.message || "Resolution failed";
+                console.warn(
+                  `[IP Assistant] Failed to resolve ${ipName}:`,
+                  errorMsg,
+                );
+                pushMessage({
+                  from: "bot",
+                  text: `Could not resolve "${ipName}": ${errorMsg}`,
+                  ts: getCurrentTimestamp(),
+                });
+              }
+            } catch (resolveError) {
+              console.error("Failed to resolve IP name:", resolveError);
+              pushMessage({
+                from: "bot",
+                text: `Error resolving "${ipName}". Please try again.`,
+                ts: getCurrentTimestamp(),
+              });
+            }
+          } else if (parseData.searchQuery) {
+            const query = parseData.searchQuery;
+            const mediaType = parseData.mediaType || null;
+            autoScrollNextRef.current = false;
+            pushMessage({
+              from: "search-ip",
+              status: "pending",
+              query,
+              ts: getCurrentTimestamp(),
+            });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            await searchIP(query, mediaType);
+          } else {
+            // Search intent detected but no query extracted - only process image if there's a preview
+            if (hasPreview) {
+              await runDetection(previewImage.blob, previewImage.name);
+              setPreviewImage(null);
+            }
+          }
         } else {
           // Not a search intent - only process image if there's a preview
           if (hasPreview) {
@@ -1001,7 +1170,7 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, previewImage, pushMessage, runDetection]);
+  }, [input, previewImage, pushMessage, runDetection, searchIP, searchByOwner]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -1902,7 +2071,7 @@ const IpAssistant = () => {
                         registerState.ipId ? (
                           <>
                             {" "}
-                            <span className="mx-1 text-slate-500">•</span>
+                            <span className="mx-1 text-slate-500">���</span>
                             <a
                               href={`https://aeneid.explorer.story.foundation/ipa/${registerState.ipId}`}
                               target="_blank"
@@ -2525,7 +2694,7 @@ const IpAssistant = () => {
                   className="rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
                   aria-label="Close search modal"
                 >
-                  ✕
+                  ��
                 </button>
               </div>
 

@@ -84,7 +84,14 @@ Example format:
     // Parse the JSON response
     let suggestions: string[] = [];
     try {
-      const parsed = JSON.parse(responseText);
+      // Extract JSON from markdown-formatted responses (e.g., ```json [...] ```)
+      let jsonText = responseText;
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch && jsonMatch[1]) {
+        jsonText = jsonMatch[1].trim();
+      }
+
+      const parsed = JSON.parse(jsonText);
       suggestions = Array.isArray(parsed)
         ? parsed.filter((s: any) => typeof s === "string").slice(0, 3)
         : [];

@@ -19,8 +19,39 @@ export const handleParseSearchIntent: RequestHandler = async (req, res) => {
 
     const messageLower = message.toLowerCase().trim();
 
+    // Check for owner address pattern: "search/find asset(s) by 0x..."
+    const ownerAddressMatch = message.match(
+      /(?:search|find|cari|mencari)\s+(?:for\s+)?(?:assets?|aset)\s+by\s+(0x[a-fA-F0-9]{40})/i,
+    );
+
+    if (ownerAddressMatch && ownerAddressMatch[1]) {
+      return res.json({
+        ok: true,
+        isSearchIntent: true,
+        searchType: "owner",
+        ownerAddress: ownerAddressMatch[1],
+        mediaType: null,
+      });
+    }
+
+    // Check for .ip name pattern: "search/find asset(s) by myname.ip" or just "myname.ip"
+    const ipNameMatch = message.match(
+      /([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.ip)/i,
+    );
+
+    if (ipNameMatch && ipNameMatch[1]) {
+      const ipName = ipNameMatch[1];
+      return res.json({
+        ok: true,
+        isSearchIntent: true,
+        searchType: "ip-name",
+        searchQuery: ipName,
+        mediaType: null,
+      });
+    }
+
     // Quick regex checks for common patterns
-    const hasSearchKeyword = /\b(search|find|cari|mencari|lookup|find)\b/.test(
+    const hasSearchKeyword = /\b(search|find|cari|mencari|lookup)\b/.test(
       messageLower,
     );
     const hasIpKeyword = /\b(ip|asset|aset|nft)\b/.test(messageLower);
@@ -95,6 +126,7 @@ Be flexible and smart about extracting the actual search term from rambling or n
     res.json({
       ok: true,
       ...parsedIntent,
+      searchType: "query",
     });
   } catch (error: any) {
     console.error("Parse Search Intent Error:", error);

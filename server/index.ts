@@ -6,8 +6,10 @@ import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
 import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
 import { handleSearchIpAssets } from "./routes/search-ip-assets.js";
+import { handleSearchByOwner } from "./routes/search-by-owner.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
+import { handleResolveIpName } from "./routes/resolve-ip-name.js";
 
 export function createServer() {
   const app = express();
@@ -100,8 +102,14 @@ export function createServer() {
   // Search IP Assets endpoint (POST /api/search-ip-assets)
   app.post("/api/search-ip-assets", handleSearchIpAssets);
 
+  // Search IP Assets by Owner endpoint (POST /api/search-by-owner)
+  app.post("/api/search-by-owner", handleSearchByOwner);
+
   // Parse search intent endpoint (POST /api/parse-search-intent)
   app.post("/api/parse-search-intent", handleParseSearchIntent);
+
+  // Resolve IP name endpoint (POST /api/resolve-ip-name)
+  app.post("/api/resolve-ip-name", handleResolveIpName);
 
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);

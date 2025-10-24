@@ -2495,17 +2495,21 @@ const IpAssistant = () => {
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               const parent = img.parentElement;
-                              if (parent && parent.querySelector('img') === img) {
+                              if (
+                                parent &&
+                                parent.querySelector("img") === img
+                              ) {
                                 img.replaceWith(
-                                  Object.assign(document.createElement('div'), {
-                                    className: 'w-full h-full flex flex-col items-center justify-center gap-1 text-slate-400 bg-slate-800',
+                                  Object.assign(document.createElement("div"), {
+                                    className:
+                                      "w-full h-full flex flex-col items-center justify-center gap-1 text-slate-400 bg-slate-800",
                                     innerHTML: `
                                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                       </svg>
                                       <span class="text-xs">Failed to load</span>
-                                    `
-                                  })
+                                    `,
+                                  }),
                                 );
                               }
                             }}

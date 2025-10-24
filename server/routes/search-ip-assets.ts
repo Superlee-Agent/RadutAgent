@@ -19,7 +19,9 @@ async function fetchIpaMetadata(ipaMetadataUri: string): Promise<any> {
 
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!response.ok) {
-      console.warn(`Failed to fetch IPA metadata from ${url}: ${response.status}`);
+      console.warn(
+        `Failed to fetch IPA metadata from ${url}: ${response.status}`,
+      );
       return null;
     }
 
@@ -175,7 +177,8 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   const metadata = metadataMap.get(result.ipId);
 
                   // Determine media type from result or metadata
-                  const mediaType = result?.mediaType || metadata?.mediaType || "image";
+                  const mediaType =
+                    result?.mediaType || metadata?.mediaType || "image";
 
                   // Get media URL - try multiple sources based on media type
                   let mediaUrl = null;
@@ -200,10 +203,12 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                       } else if (metadata?.nftMetadata?.image?.pngUrl) {
                         mediaUrl = metadata.nftMetadata.image.pngUrl;
                       } else if (
-                        metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
+                        metadata?.nftMetadata?.contract?.openSeaMetadata
+                          ?.imageUrl
                       ) {
                         mediaUrl =
-                          metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                          metadata.nftMetadata.contract.openSeaMetadata
+                            .imageUrl;
                       }
                     }
                   } else if (mediaType === "video") {
@@ -244,7 +249,9 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
 
                   // If still no media URL, try fetching from IPA metadata URI
                   if (!mediaUrl && metadata?.ipaMetadataUri) {
-                    const ipaMetadata = await fetchIpaMetadata(metadata.ipaMetadataUri);
+                    const ipaMetadata = await fetchIpaMetadata(
+                      metadata.ipaMetadataUri,
+                    );
                     if (ipaMetadata) {
                       // Try to extract media URL from IPA metadata
                       if (ipaMetadata.mediaUrl) {
@@ -253,7 +260,11 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                         mediaUrl = ipaMetadata.animationUrl;
                       } else if (ipaMetadata.image) {
                         mediaUrl = ipaMetadata.image;
-                      } else if (ipaMetadata.media && Array.isArray(ipaMetadata.media) && ipaMetadata.media.length > 0) {
+                      } else if (
+                        ipaMetadata.media &&
+                        Array.isArray(ipaMetadata.media) &&
+                        ipaMetadata.media.length > 0
+                      ) {
                         mediaUrl = ipaMetadata.media[0];
                       }
 
@@ -279,7 +290,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     isDerivative:
                       metadata?.isDerivative || result.isDerivative || false,
                   };
-                })
+                }),
               );
 
               console.log(

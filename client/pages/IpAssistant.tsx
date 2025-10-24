@@ -897,7 +897,10 @@ const IpAssistant = () => {
       try {
         setWaiting(true);
 
-        console.log("[Search By Owner] Searching for assets by owner:", trimmedAddress);
+        console.log(
+          "[Search By Owner] Searching for assets by owner:",
+          trimmedAddress,
+        );
 
         const response = await fetch("/api/search-by-owner", {
           method: "POST",
@@ -954,7 +957,8 @@ const IpAssistant = () => {
           }, 0);
         });
       } catch (error: any) {
-        const errorMessage = error?.message || "Failed to search IP assets by owner";
+        const errorMessage =
+          error?.message || "Failed to search IP assets by owner";
         console.error("Search By Owner Error:", error);
 
         setMessages((prev) =>

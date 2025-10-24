@@ -93,7 +93,10 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      console.log("[Search By Owner] Searching for assets by owner:", ownerAddress);
+      console.log(
+        "[Search By Owner] Searching for assets by owner:",
+        ownerAddress,
+      );
 
       let allAssets: any[] = [];
       let offset = 0;
@@ -106,27 +109,30 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
         iterations += 1;
 
         try {
-          const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-            method: "POST",
-            headers: {
-              "X-Api-Key": apiKey,
-              "Content-Type": "application/json",
+          const response = await fetch(
+            "https://api.storyapis.com/api/v4/assets",
+            {
+              method: "POST",
+              headers: {
+                "X-Api-Key": apiKey,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                includeLicenses: false,
+                moderated: false,
+                orderBy: "blockNumber",
+                orderDirection: "desc",
+                pagination: {
+                  limit,
+                  offset,
+                },
+                where: {
+                  ownerAddress: ownerAddress,
+                },
+              }),
+              signal: controller.signal,
             },
-            body: JSON.stringify({
-              includeLicenses: false,
-              moderated: false,
-              orderBy: "blockNumber",
-              orderDirection: "desc",
-              pagination: {
-                limit,
-                offset,
-              },
-              where: {
-                ownerAddress: ownerAddress,
-              },
-            }),
-            signal: controller.signal,
-          });
+          );
 
           if (!response.ok) {
             const errorText = await response.text();
@@ -165,7 +171,11 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             status: response.status,
             dataType: typeof data,
             dataKeys: Object.keys(data || {}),
-            dataArray: Array.isArray(data) ? `Array of ${data.length}` : Array.isArray(data?.data) ? `data array of ${data.data.length}` : "not array",
+            dataArray: Array.isArray(data)
+              ? `Array of ${data.length}`
+              : Array.isArray(data?.data)
+                ? `data array of ${data.data.length}`
+                : "not array",
             paginationInfo: data?.pagination,
           });
 
@@ -245,10 +255,13 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
       clearTimeout(timeoutId);
 
       if (iterations >= maxIterations) {
-        console.warn("Max iterations reached when fetching IP assets by owner", {
-          ownerAddress,
-          assetsCollected: allAssets.length,
-        });
+        console.warn(
+          "Max iterations reached when fetching IP assets by owner",
+          {
+            ownerAddress,
+            assetsCollected: allAssets.length,
+          },
+        );
       }
 
       console.log("[Search By Owner] Response data:", {
@@ -285,8 +298,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
               } else if (
                 result?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
               ) {
-                mediaUrl =
-                  result.nftMetadata.contract.openSeaMetadata.imageUrl;
+                mediaUrl = result.nftMetadata.contract.openSeaMetadata.imageUrl;
               }
             }
           } else if (mediaType === "video") {
@@ -376,9 +388,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
               if (!thumbnailUrl) {
                 if (ipaMetadata.thumbnailUrl) {
-                  thumbnailUrl = convertIpfsUriToHttp(
-                    ipaMetadata.thumbnailUrl,
-                  );
+                  thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.thumbnailUrl);
                 } else if (ipaMetadata.image) {
                   thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.image);
                 } else if (ipaMetadata.thumbnail) {

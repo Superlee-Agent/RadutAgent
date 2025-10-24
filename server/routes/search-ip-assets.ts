@@ -1,9 +1,4 @@
 import { RequestHandler } from "express";
-import { OpenAI } from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export const handleSearchIpAssets: RequestHandler = async (req, res) => {
   try {
@@ -27,240 +22,106 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
       });
     }
 
-    let allAssets: any[] = [];
-    let offset = 0;
-    let hasMore = true;
-    const limit = 100;
-    const maxIterations = 10;
-    let iterations = 0;
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      while (hasMore && iterations < maxIterations) {
-        iterations += 1;
+      console.log("[Search IP] Searching for:", query);
 
-        try {
-          const response = await fetch(
-            "https://api.storyapis.com/api/v4/assets",
-            {
-              method: "POST",
-              headers: {
-                "X-Api-Key": apiKey,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                pagination: {
-                  limit,
-                  offset,
-                },
-              }),
-              signal: controller.signal,
+      const response = await fetch(
+        "https://api.storyapis.com/api/v4/search",
+        {
+          method: "POST",
+          headers: {
+            "X-Api-Key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: query.trim(),
+            pagination: {
+              limit: 50,
+              offset: 0,
             },
-          );
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(
-              `Story API Error: ${response.status} - ${errorText}`,
-              {
-                query,
-                offset,
-                iteration: iterations,
-              },
-            );
-
-            clearTimeout(timeoutId);
-            return res.status(response.status).json({
-              ok: false,
-              error: `story_api_error`,
-              details: errorText,
-              status: response.status,
-            });
-          }
-
-          const data = await response.json();
-
-          if (!data) {
-            break;
-          }
-
-          const assets = Array.isArray(data) ? data : data?.data || [];
-
-          if (!Array.isArray(assets)) {
-            console.warn("Unexpected response format from Story API", {
-              query,
-              offset,
-              iteration: iterations,
-            });
-            break;
-          }
-
-          const validAssets = assets.filter((asset: any) => {
-            if (!asset || typeof asset !== "object") {
-              return false;
-            }
-            return true;
-          });
-
-          allAssets = allAssets.concat(validAssets);
-
-          const pagination = data?.pagination;
-          hasMore = pagination?.hasMore === true && validAssets.length > 0;
-          offset += limit;
-
-          if (
-            pagination?.hasMore === false ||
-            !pagination ||
-            validAssets.length === 0
-          ) {
-            hasMore = false;
-          }
-        } catch (fetchError: any) {
-          if (fetchError.name === "AbortError") {
-            console.error("Request timeout while fetching IP assets", {
-              query,
-              offset,
-              iteration: iterations,
-            });
-            clearTimeout(timeoutId);
-            return res.status(504).json({
-              ok: false,
-              error: "timeout",
-              details: "The Story API is responding slowly. Please try again.",
-            });
-          }
-
-          console.error("Fetch request failed for Story API", {
-            query,
-            offset,
-            iteration: iterations,
-            error: fetchError?.message,
-          });
-          clearTimeout(timeoutId);
-          return res.status(500).json({
-            ok: false,
-            error: "network_error",
-            details: fetchError?.message || "Unable to connect to Story API",
-          });
-        }
-      }
+          }),
+          signal: controller.signal,
+        },
+      );
 
       clearTimeout(timeoutId);
 
-      if (allAssets.length === 0) {
-        return res.json({
-          ok: true,
-          results: [],
-          message: "No IP assets found",
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `Story API Error: ${response.status} - ${errorText}`,
+          {
+            query,
+          },
+        );
+
+        let errorDetail = errorText;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorDetail = errorJson.message || errorJson.error || errorText;
+        } catch {
+          // Keep the raw text if not JSON
+        }
+
+        return res.status(response.status).json({
+          ok: false,
+          error: `story_api_error`,
+          details: errorDetail,
+          status: response.status,
         });
       }
 
-      const matchingPrompt = `
-You are an IP asset matcher. Given a search query and a list of IP assets (with title and description), return the top matching assets.
+      const data = await response.json();
 
-Search Query: "${query}"
-
-Be flexible with matching - include partial matches, related concepts, similar themes, and variations.
-
-IP Assets:
-${allAssets
-  .slice(0, 100)
-  .map(
-    (asset: any, idx: number) => `
-${idx + 1}. ID: ${asset.ipId}
-   Title: ${asset.title || "N/A"}
-   Description: ${asset.description || "N/A"}
-   Owner: ${asset.ownerAddress || "N/A"}
-   Type: ${asset.isDerivative ? "Derivative" : "Original"}
-   Created: ${asset.createdAt || "N/A"}
-`,
-  )
-  .join("\n")}
-
-Return a JSON array with top 10 matching assets (or fewer if not enough matches). Be inclusive and match broadly. Return ONLY valid JSON in this format:
-[
-  {
-    "ipId": "0x...",
-    "matchReason": "brief explanation why it matches"
-  },
-  ...
-]
-
-If absolutely no reasonable matches found, return empty array [].
-`;
-
-      const completion = await openai.chat.completions.create({
-        model: process.env.OPENAI_VERIFIER_MODEL || "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: matchingPrompt,
-          },
-        ],
-        temperature: 0.3,
-        max_tokens: 500,
+      console.log("[Search IP] Response data:", {
+        totalResults: data?.total,
+        resultsCount: data?.data?.length,
+        hasMore: data?.pagination?.hasMore,
       });
 
-      let matchedIds: any[] = [];
-      try {
-        const responseText = completion.choices[0]?.message?.content || "[]";
-        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          matchedIds = JSON.parse(jsonMatch[0]);
-        }
-      } catch (parseError) {
-        console.error("Failed to parse LLM response", parseError);
+      if (!data) {
+        return res.json({
+          ok: true,
+          results: [],
+          message: "No response from API",
+        });
       }
 
-      let matchedAssets = matchedIds
-        .map((match: any) => {
-          const asset = allAssets.find(
-            (a: any) => a.ipId?.toLowerCase() === match.ipId?.toLowerCase(),
-          );
-          return asset ? { ...asset, matchReason: match.matchReason } : null;
-        })
-        .filter(Boolean);
-
-      // Fallback: if LLM found nothing, do basic keyword matching
-      if (matchedAssets.length === 0 && allAssets.length > 0) {
-        const queryLower = query.toLowerCase();
-        const keywordMatches = allAssets
-          .filter((asset: any) => {
-            const title = (asset.title || "").toLowerCase();
-            const description = (asset.description || "").toLowerCase();
-            return (
-              title.includes(queryLower) || description.includes(queryLower)
-            );
-          })
-          .slice(0, 10)
-          .map((asset: any) => ({
-            ...asset,
-            matchReason: "Contains search keyword",
-          }));
-
-        if (keywordMatches.length > 0) {
-          matchedAssets = keywordMatches;
-          console.log(
-            `[Search IP] Fallback keyword matching found ${keywordMatches.length} results for "${query}"`,
-          );
-        } else {
-          console.log(
-            `[Search IP] No keyword matches found for "${query}" in ${allAssets.length} assets`,
-          );
-        }
-      }
+      const results = Array.isArray(data.data) ? data.data : [];
 
       res.json({
         ok: true,
-        results: matchedAssets,
-        totalSearched: allAssets.length,
-        message: `Found ${matchedAssets.length} matching IP assets from ${allAssets.length} total assets`,
+        results: results,
+        totalSearched: data?.pagination?.total || results.length,
+        pagination: data?.pagination,
+        message: `Found ${results.length} IP assets matching "${query}"`,
       });
-    } catch (innerError: any) {
+    } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      throw innerError;
+
+      if (fetchError.name === "AbortError") {
+        console.error("Request timeout while searching IP assets", {
+          query,
+        });
+        return res.status(504).json({
+          ok: false,
+          error: "timeout",
+          details: "The Story API is responding slowly. Please try again.",
+        });
+      }
+
+      console.error("Fetch request failed for Story API", {
+        query,
+        error: fetchError?.message,
+      });
+      return res.status(500).json({
+        ok: false,
+        error: "network_error",
+        details: fetchError?.message || "Unable to connect to Story API",
+      });
     }
   } catch (error: any) {
     console.error("Search IP Assets Error:", error);

@@ -621,7 +621,7 @@ const IpAssistant = () => {
       pushMessage({
         id: processingId,
         from: "bot",
-        text: "Processing image, please wait…",
+        text: "Processing image, please wait��",
         ts: processingTs,
         isProcessing: true,
       });
@@ -959,7 +959,7 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, previewImage, pushMessage, runDetection, searchIP]);
+  }, [input, previewImage, pushMessage, runDetection]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -2012,7 +2012,7 @@ const IpAssistant = () => {
                               <div className="mt-2 md:mt-3 p-2 md:p-3 rounded-lg bg-slate-700/20">
                                 <div className="flex items-start md:items-center gap-1.5 md:gap-2 mb-1">
                                   <span className="text-base md:text-lg flex-shrink-0">
-                                    ℹ��
+                                    ℹ️
                                   </span>
                                   <div className="font-bold text-slate-300 text-xs md:text-sm">
                                     NOT ELIGIBLE

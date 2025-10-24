@@ -2465,7 +2465,7 @@ const IpAssistant = () => {
                   >
                     <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden flex items-center justify-center group">
                       {asset.mediaUrl ? (
-                        asset.mediaType === "video" ? (
+                        asset.mediaType?.startsWith("video") ? (
                           <video
                             key={asset.ipId}
                             src={asset.mediaUrl}
@@ -2493,7 +2493,7 @@ const IpAssistant = () => {
                               }
                             }}
                           />
-                        ) : asset.mediaType === "audio" ? (
+                        ) : asset.mediaType?.startsWith("audio") ? (
                           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple-900 to-slate-900">
                             <svg
                               className="w-8 h-8 text-purple-300"

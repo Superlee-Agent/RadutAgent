@@ -434,6 +434,7 @@ const IpAssistant = () => {
   const [ipCheckLoading, setIpCheckLoading] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
+  const [expandedAsset, setExpandedAsset] = useState<any>(null);
 
   useEffect(() => {
     if (activeDetail === null) return;

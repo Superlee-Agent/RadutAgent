@@ -95,64 +95,153 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
     try {
       console.log("[Search By Owner] Searching for assets by owner:", ownerAddress);
 
-      const response = await fetch("https://api.storyapis.com/api/v4/assets", {
-        method: "POST",
-        headers: {
-          "X-Api-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          where: {
-            ownerAddress: ownerAddress.toLowerCase(),
-          },
-          pagination: {
-            limit: 50,
-            offset: 0,
-          },
-        }),
-        signal: controller.signal,
-      });
+      let allAssets: any[] = [];
+      let offset = 0;
+      let hasMore = true;
+      const limit = 100;
+      const maxIterations = 10;
+      let iterations = 0;
+
+      while (hasMore && iterations < maxIterations) {
+        iterations += 1;
+
+        try {
+          const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+            method: "POST",
+            headers: {
+              "X-Api-Key": apiKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              where: {
+                ownerAddress: ownerAddress.toLowerCase(),
+              },
+              pagination: {
+                limit,
+                offset,
+              },
+            }),
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(
+              `Story API Error: ${response.status} - ${errorText}`,
+              {
+                ownerAddress,
+                offset,
+                iteration: iterations,
+              },
+            );
+
+            let errorDetail = errorText;
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorDetail = errorJson.message || errorJson.error || errorText;
+            } catch {
+              // Keep the raw text if not JSON
+            }
+
+            clearTimeout(timeoutId);
+            return res.status(response.status).json({
+              ok: false,
+              error: "story_api_error",
+              details: errorDetail,
+              status: response.status,
+            });
+          }
+
+          const data = await response.json();
+
+          if (!data) {
+            console.error("Empty response from Story API", {
+              ownerAddress,
+              offset,
+              iteration: iterations,
+            });
+            break;
+          }
+
+          const assets = Array.isArray(data) ? data : data?.data || [];
+
+          if (!Array.isArray(assets)) {
+            console.warn("Unexpected response format from Story API", {
+              ownerAddress,
+              offset,
+              iteration: iterations,
+              dataKeys: Object.keys(data || {}),
+              dataType: typeof data,
+            });
+            break;
+          }
+
+          const validAssets = assets.filter((asset: any) => {
+            if (!asset || typeof asset !== "object") {
+              console.warn("Invalid asset object", { asset });
+              return false;
+            }
+            return true;
+          });
+
+          allAssets = allAssets.concat(validAssets);
+
+          const pagination = data?.pagination;
+          hasMore = pagination?.hasMore === true && validAssets.length > 0;
+          offset += limit;
+
+          if (
+            pagination?.hasMore === false ||
+            !pagination ||
+            validAssets.length === 0
+          ) {
+            hasMore = false;
+          }
+        } catch (fetchError: any) {
+          if (fetchError.name === "AbortError") {
+            console.error("Request timeout while fetching IP assets by owner", {
+              ownerAddress,
+              offset,
+              iteration: iterations,
+            });
+            clearTimeout(timeoutId);
+            return res.status(504).json({
+              ok: false,
+              error: "timeout",
+              details: "The Story API is responding slowly. Please try again.",
+            });
+          }
+
+          console.error("Fetch request failed for Story API", {
+            ownerAddress,
+            offset,
+            iteration: iterations,
+            error: fetchError?.message,
+          });
+          clearTimeout(timeoutId);
+          return res.status(500).json({
+            ok: false,
+            error: "network_error",
+            details: fetchError?.message || "Unable to connect to Story API",
+          });
+        }
+      }
 
       clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Story API Error: ${response.status} - ${errorText}`, {
+      if (iterations >= maxIterations) {
+        console.warn("Max iterations reached when fetching IP assets by owner", {
           ownerAddress,
-        });
-
-        let errorDetail = errorText;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorDetail = errorJson.message || errorJson.error || errorText;
-        } catch {
-          // Keep the raw text if not JSON
-        }
-
-        return res.status(response.status).json({
-          ok: false,
-          error: "story_api_error",
-          details: errorDetail,
-          status: response.status,
+          assetsCollected: allAssets.length,
         });
       }
-
-      const data = await response.json();
 
       console.log("[Search By Owner] Response data:", {
-        totalResults: data?.total,
-        resultsCount: data?.data?.length,
+        totalResults: allAssets.length,
+        iterations,
       });
 
-      if (!data) {
-        return res.json({
-          ok: true,
-          results: [],
-          message: "No response from API",
-        });
-      }
-
-      const searchResults = Array.isArray(data.data) ? data.data : [];
+      const searchResults = allAssets;
 
       // Enrich results with metadata
       let enrichedResults = await Promise.all(

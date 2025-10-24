@@ -142,44 +142,79 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
               enrichedResults = searchResults.map((result: any) => {
                 const metadata = metadataMap.get(result.ipId);
 
-                // Priority order for image URL - try multiple sources
-                let imageUrl = null;
+                // Determine media type from result or metadata
+                const mediaType = result?.mediaType || metadata?.mediaType || "image";
 
-                // Try image object first (highest priority)
-                if (metadata?.image?.cachedUrl) {
-                  imageUrl = metadata.image.cachedUrl;
-                } else if (metadata?.image?.pngUrl) {
-                  imageUrl = metadata.image.pngUrl;
-                } else if (metadata?.image?.thumbnailUrl) {
-                  imageUrl = metadata.image.thumbnailUrl;
-                } else if (metadata?.image?.originalUrl) {
-                  imageUrl = metadata.image.originalUrl;
-                }
+                // Get media URL - try multiple sources based on media type
+                let mediaUrl = null;
+                let thumbnailUrl = null;
 
-                // Try NFT metadata sources
-                if (!imageUrl) {
-                  if (metadata?.nftMetadata?.image?.cachedUrl) {
-                    imageUrl = metadata.nftMetadata.image.cachedUrl;
-                  } else if (metadata?.nftMetadata?.image?.pngUrl) {
-                    imageUrl = metadata.nftMetadata.image.pngUrl;
-                  } else if (
-                    metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
-                  ) {
-                    imageUrl =
-                      metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
-                  } else if (metadata?.nftMetadata?.animation?.cachedUrl) {
-                    imageUrl = metadata.nftMetadata.animation.cachedUrl;
+                if (mediaType === "image" || mediaType === "animation") {
+                  // Try image object first (highest priority)
+                  if (metadata?.image?.cachedUrl) {
+                    mediaUrl = metadata.image.cachedUrl;
+                  } else if (metadata?.image?.pngUrl) {
+                    mediaUrl = metadata.image.pngUrl;
+                  } else if (metadata?.image?.thumbnailUrl) {
+                    mediaUrl = metadata.image.thumbnailUrl;
+                  } else if (metadata?.image?.originalUrl) {
+                    mediaUrl = metadata.image.originalUrl;
+                  }
+
+                  // Try NFT metadata sources
+                  if (!mediaUrl) {
+                    if (metadata?.nftMetadata?.image?.cachedUrl) {
+                      mediaUrl = metadata.nftMetadata.image.cachedUrl;
+                    } else if (metadata?.nftMetadata?.image?.pngUrl) {
+                      mediaUrl = metadata.nftMetadata.image.pngUrl;
+                    } else if (
+                      metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
+                    ) {
+                      mediaUrl =
+                        metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                    }
+                  }
+                } else if (mediaType === "video") {
+                  // Try video/animation URLs
+                  if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                    mediaUrl = metadata.nftMetadata.animation.cachedUrl;
+                  } else if (metadata?.nftMetadata?.animation?.originalUrl) {
+                    mediaUrl = metadata.nftMetadata.animation.originalUrl;
+                  } else if (metadata?.image?.cachedUrl) {
+                    // Fallback to image if no video
+                    mediaUrl = metadata.image.cachedUrl;
+                  }
+                  // Get thumbnail for video
+                  if (metadata?.image?.cachedUrl) {
+                    thumbnailUrl = metadata.image.cachedUrl;
+                  } else if (metadata?.image?.thumbnailUrl) {
+                    thumbnailUrl = metadata.image.thumbnailUrl;
+                  }
+                } else if (mediaType === "audio") {
+                  // Try audio URLs
+                  if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                    mediaUrl = metadata.nftMetadata.animation.cachedUrl;
+                  } else if (metadata?.nftMetadata?.animation?.originalUrl) {
+                    mediaUrl = metadata.nftMetadata.animation.originalUrl;
+                  }
+                  // Get thumbnail for audio
+                  if (metadata?.image?.cachedUrl) {
+                    thumbnailUrl = metadata.image.cachedUrl;
+                  } else if (metadata?.image?.thumbnailUrl) {
+                    thumbnailUrl = metadata.image.thumbnailUrl;
                   }
                 }
 
                 // Try raw metadata if available
-                if (!imageUrl && metadata?.nftMetadata?.raw?.image) {
-                  imageUrl = metadata.nftMetadata.raw.image;
+                if (!mediaUrl && metadata?.nftMetadata?.raw?.image) {
+                  mediaUrl = metadata.nftMetadata.raw.image;
                 }
 
                 return {
                   ...result,
-                  imageUrl: imageUrl || null,
+                  mediaUrl: mediaUrl || null,
+                  mediaType: mediaType,
+                  thumbnailUrl: thumbnailUrl,
                   ipaMetadataUri: metadata?.ipaMetadataUri,
                   ownerAddress: metadata?.ownerAddress,
                   lastUpdatedAt: metadata?.lastUpdatedAt,

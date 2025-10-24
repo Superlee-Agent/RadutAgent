@@ -6,6 +6,7 @@ import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
 import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
 import { handleSearchIpAssets } from "./routes/search-ip-assets.js";
+import { handleSearchByOwner } from "./routes/search-by-owner.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
 

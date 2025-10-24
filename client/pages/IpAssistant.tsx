@@ -138,7 +138,7 @@ const ANSWER_DETAILS: Record<
   "7": {
     type: "Human Generated",
     notes: "Original non-AI image; Contains famous brand/character",
-    registrationStatus: "❌ IP cannot be registered",
+    registrationStatus: "��� IP cannot be registered",
     action: "Submit Review",
     smartLicensing: "-",
     aiTraining: "-",
@@ -2457,13 +2457,13 @@ const IpAssistant = () => {
                 </button>
               </div>
 
-              <div className="grid gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {searchResults.map((asset: any, idx: number) => (
                   <div
                     key={asset.ipId || idx}
-                    className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors flex gap-4"
+                    className="group cursor-pointer"
                   >
-                    <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden flex items-center justify-center group">
+                    <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                       {asset.mediaUrl ? (
                         asset.mediaType?.startsWith("video") ? (
                           <video

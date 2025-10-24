@@ -103,6 +103,9 @@ export function createServer() {
   // Parse search intent endpoint (POST /api/parse-search-intent)
   app.post("/api/parse-search-intent", handleParseSearchIntent);
 
+  // Get typing suggestions endpoint (POST /api/get-suggestions)
+  app.post("/api/get-suggestions", handleGetSuggestions);
+
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>
     res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),

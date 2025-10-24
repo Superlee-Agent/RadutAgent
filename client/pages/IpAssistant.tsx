@@ -747,6 +747,100 @@ const IpAssistant = () => {
     [pushMessage],
   );
 
+  const searchIP = useCallback(async (query: string) => {
+    if (!query || query.trim().length === 0) {
+      return;
+    }
+
+    const trimmedQuery = query.trim();
+    const searchKey = `search-${Date.now()}`;
+
+    try {
+      setWaiting(true);
+
+      console.log("[Search IP] Searching for:", trimmedQuery);
+
+      const response = await fetch("/api/search-ip-assets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: trimmedQuery,
+        }),
+      });
+
+      console.log("[Search IP] Response status:", response.status);
+
+      if (!response.ok) {
+        let errorMessage = `API Error: ${response.status}`;
+
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          if (response.status === 400) {
+            errorMessage = "Invalid search query";
+          } else if (response.status === 500) {
+            errorMessage = "Server error - unable to search IP assets";
+          }
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log("[Search IP] Response data:", data);
+      const { results = [], message = "" } = data;
+
+      setSearchResults(results);
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "search-ip" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                query: trimmedQuery,
+                results,
+                resultCount: results.length,
+              }
+            : msg,
+        ),
+      );
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to search IP assets";
+      console.error("Search IP Error:", error);
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.from === "search-ip" && (msg as any).status === "pending"
+            ? {
+                ...msg,
+                status: "complete",
+                query: trimmedQuery,
+                error: errorMessage,
+              }
+            : msg,
+        ),
+      );
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (autoScrollNextRef.current) scrollToBottomImmediate();
+        }, 0);
+      });
+    } finally {
+      setWaiting(false);
+    }
+  }, [scrollToBottomImmediate]);
+
   const handleSend = useCallback(async () => {
     const value = input.trim();
     const hasPreview = previewImage !== null;

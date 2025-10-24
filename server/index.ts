@@ -7,6 +7,7 @@ import { handleDescribe } from "./routes/describe.js";
 import { handleCheckIpAssets } from "./routes/check-ip-assets.js";
 import { handleSearchIpAssets } from "./routes/search-ip-assets.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
+import { handleGetSuggestions } from "./routes/get-suggestions.js";
 
 export function createServer() {
   const app = express();

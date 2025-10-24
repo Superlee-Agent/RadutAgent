@@ -78,8 +78,7 @@ Be flexible and smart about extracting the actual search term from rambling or n
     };
 
     try {
-      const responseText =
-        completion.choices[0]?.message?.content || "{}";
+      const responseText = completion.choices[0]?.message?.content || "{}";
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);

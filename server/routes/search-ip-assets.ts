@@ -45,29 +45,23 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
         searchBody.mediaType = finalMediaType;
       }
 
-      const response = await fetch(
-        "https://api.storyapis.com/api/v4/search",
-        {
-          method: "POST",
-          headers: {
-            "X-Api-Key": apiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(searchBody),
-          signal: controller.signal,
+      const response = await fetch("https://api.storyapis.com/api/v4/search", {
+        method: "POST",
+        headers: {
+          "X-Api-Key": apiKey,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(searchBody),
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(
-          `Story API Error: ${response.status} - ${errorText}`,
-          {
-            query,
-          },
-        );
+        console.error(`Story API Error: ${response.status} - ${errorText}`, {
+          query,
+        });
 
         let errorDetail = errorText;
         try {

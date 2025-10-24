@@ -87,8 +87,7 @@ export const handleResolveIpName: RequestHandler = async (req, res) => {
         return res.status(504).json({
           ok: false,
           error: "timeout",
-          message:
-            "Blockscout API is responding slowly. Please try again.",
+          message: "Blockscout API is responding slowly. Please try again.",
         });
       }
 

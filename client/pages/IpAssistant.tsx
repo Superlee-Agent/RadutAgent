@@ -1060,7 +1060,10 @@ const IpAssistant = () => {
             });
             await new Promise((resolve) => setTimeout(resolve, 300));
             await searchByOwner(ownerAddress);
-          } else if (parseData.searchType === "ip-name" && parseData.searchQuery) {
+          } else if (
+            parseData.searchType === "ip-name" &&
+            parseData.searchQuery
+          ) {
             const ipName = parseData.searchQuery;
             autoScrollNextRef.current = false;
 

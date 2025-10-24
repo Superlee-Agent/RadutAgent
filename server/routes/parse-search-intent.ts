@@ -35,7 +35,9 @@ export const handleParseSearchIntent: RequestHandler = async (req, res) => {
     }
 
     // Check for .ip name pattern: "search/find asset(s) by myname.ip" or just "myname.ip"
-    const ipNameMatch = message.match(/([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.ip)/i);
+    const ipNameMatch = message.match(
+      /([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.ip)/i,
+    );
 
     if (ipNameMatch && ipNameMatch[1]) {
       const ipName = ipNameMatch[1];

@@ -1062,12 +1062,6 @@ const IpAssistant = () => {
           } else if (parseData.searchType === "ip-name" && parseData.searchQuery) {
             const ipName = parseData.searchQuery;
             autoScrollNextRef.current = false;
-            pushMessage({
-              from: "bot",
-              text: `Resolving ${ipName}...`,
-              ts: getCurrentTimestamp(),
-            });
-            await new Promise((resolve) => setTimeout(resolve, 300));
 
             try {
               const resolveResponse = await fetch("/api/resolve-ip-name", {

@@ -30,8 +30,8 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
     let allAssets: any[] = [];
     let offset = 0;
     let hasMore = true;
-    const limit = 50;
-    const maxIterations = 5;
+    const limit = 100;
+    const maxIterations = 10;
     let iterations = 0;
 
     const controller = new AbortController();

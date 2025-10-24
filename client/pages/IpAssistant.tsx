@@ -2514,9 +2514,9 @@ const IpAssistant = () => {
                           />
                         )
                       ) : (
-                        <div className="flex flex-col items-center justify-center gap-1 text-slate-400">
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800">
                           <svg
-                            className="w-6 h-6"
+                            className="w-8 h-8"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -2531,83 +2531,76 @@ const IpAssistant = () => {
                           <span className="text-xs">No media</span>
                         </div>
                       )}
+
+                      {asset.mediaType?.startsWith("video") && (
+                        <div className="absolute bottom-2 right-2 bg-black/80 px-1.5 py-0.5 rounded text-xs font-semibold text-white">
+                          VIDEO
+                        </div>
+                      )}
                     </div>
 
-                    <div className="flex-1 py-3 pr-4 space-y-2 flex flex-col justify-between">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold text-[#FF4DA6] truncate flex-1">
-                            {asset.title || "Untitled"}
-                          </h3>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded font-semibold whitespace-nowrap flex-shrink-0 ${
-                              asset.isDerivative
-                                ? "bg-blue-500/20 text-blue-300"
-                                : "bg-green-500/20 text-green-300"
-                            }`}
-                          >
-                            {asset.isDerivative ? "Derivative" : "Original"}
+                    <div className="pt-3 space-y-2">
+                      <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors">
+                        {asset.title || "Untitled"}
+                      </h3>
+
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          className={`text-xs px-2 py-1 rounded font-semibold ${
+                            asset.isDerivative
+                              ? "bg-blue-500/20 text-blue-300"
+                              : "bg-green-500/20 text-green-300"
+                          }`}
+                        >
+                          {asset.isDerivative ? "Derivative" : "Original"}
+                        </span>
+                        {asset.score !== undefined && (
+                          <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold">
+                            {(asset.score * 100).toFixed(0)}%
                           </span>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-0.5 font-mono truncate">
-                          {asset.ipId}
+                        )}
+                      </div>
+
+                      {asset.description && (
+                        <p className="text-xs text-slate-400 line-clamp-1">
+                          {asset.description}
                         </p>
-                        {asset.description && (
-                          <p className="text-xs text-slate-300 mt-1 line-clamp-2">
-                            {asset.description}
+                      )}
+
+                      <div className="text-xs text-slate-500 space-y-1">
+                        {asset.ownerAddress && (
+                          <p className="font-mono">
+                            {asset.ownerAddress.slice(0, 6)}...{asset.ownerAddress.slice(-4)}
+                          </p>
+                        )}
+                        {asset.mediaType && (
+                          <p className="capitalize">
+                            {asset.mediaType.replace("video/", "").replace("audio/", "").replace("image/", "").toUpperCase()}
                           </p>
                         )}
                       </div>
 
-                      <div className="space-y-1.5">
-                        <div className="flex flex-wrap gap-1 text-xs text-slate-400">
-                          {asset.ownerAddress && (
-                            <span className="px-1.5 py-0.5 bg-slate-700/50 rounded text-xs font-mono">
-                              {asset.ownerAddress.slice(0, 4)}...
-                            </span>
-                          )}
-                          {asset.mediaType && (
-                            <span className="px-1.5 py-0.5 bg-slate-700/50 rounded capitalize text-xs">
-                              {asset.mediaType}
-                            </span>
-                          )}
-                          {asset.score !== undefined && (
-                            <span className="px-1.5 py-0.5 bg-[#FF4DA6]/10 text-[#FF4DA6] rounded text-xs">
-                              {(asset.score * 100).toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex flex-wrap gap-1">
-                          <button
-                            type="button"
-                            className="text-xs px-2 py-1 rounded bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 transition-colors"
-                          >
-                            License
-                          </button>
-                          <button
-                            type="button"
-                            disabled={!authenticated}
-                            className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                            title={!authenticated ? "Connect wallet" : ""}
-                          >
-                            Buy
-                          </button>
-                          <button
-                            type="button"
-                            disabled={!authenticated}
-                            className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                            title={!authenticated ? "Connect wallet" : ""}
-                          >
-                            Remix
-                          </button>
-                          <button
-                            type="button"
-                            className="text-xs px-2 py-1 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition-colors"
-                          >
-                            Dispute
-                          </button>
-                        </div>
+                      <div className="flex flex-wrap gap-1.5 pt-2">
+                        <button
+                          type="button"
+                          className="text-xs px-2 py-1.5 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                        >
+                          License
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-2 py-1.5 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                        >
+                          Buy
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!authenticated}
+                          className="text-xs px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                        >
+                          Remix
+                        </button>
                       </div>
                     </div>
                   </div>

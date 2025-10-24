@@ -113,12 +113,16 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              where: {
-                ownerAddress: ownerAddress.toLowerCase(),
-              },
+              includeLicenses: false,
+              moderated: false,
+              orderBy: "blockNumber",
+              orderDirection: "desc",
               pagination: {
                 limit,
                 offset,
+              },
+              where: {
+                ownerAddress: ownerAddress.toLowerCase(),
               },
             }),
             signal: controller.signal,

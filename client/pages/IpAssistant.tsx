@@ -892,7 +892,7 @@ const IpAssistant = () => {
         return;
       }
 
-      const trimmedAddress = ownerAddress.trim().toLowerCase();
+      const trimmedAddress = ownerAddress.trim();
 
       try {
         setWaiting(true);
@@ -2640,7 +2640,7 @@ const IpAssistant = () => {
                   className="rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
                   aria-label="Close search modal"
                 >
-                  ✕
+                  ��
                 </button>
               </div>
 

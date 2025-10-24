@@ -2483,7 +2483,9 @@ const IpAssistant = () => {
                             >
                               <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                             </svg>
-                            <span className="text-xs text-purple-200 font-medium">Audio</span>
+                            <span className="text-xs text-purple-200 font-medium">
+                              Audio
+                            </span>
                           </div>
                         ) : (
                           <img
@@ -2570,12 +2572,17 @@ const IpAssistant = () => {
                       <div className="text-xs text-slate-500 space-y-1">
                         {asset.ownerAddress && (
                           <p className="font-mono text-xs">
-                            {asset.ownerAddress.slice(0, 6)}...{asset.ownerAddress.slice(-4)}
+                            {asset.ownerAddress.slice(0, 6)}...
+                            {asset.ownerAddress.slice(-4)}
                           </p>
                         )}
                         {asset.mediaType && (
                           <p className="capitalize text-xs">
-                            {asset.mediaType.replace("video/", "").replace("audio/", "").replace("image/", "").toUpperCase()}
+                            {asset.mediaType
+                              .replace("video/", "")
+                              .replace("audio/", "")
+                              .replace("image/", "")
+                              .toUpperCase()}
                           </p>
                         )}
                       </div>

@@ -6,15 +6,22 @@ function convertIpfsUriToHttp(uri: string): string {
   if (!uri) return uri;
 
   // Extract CID from various IPFS formats
-  let cid = uri;
   if (uri.startsWith("ipfs://")) {
-    cid = uri.replace("ipfs://", "");
-  } else if (uri.includes("/ipfs/")) {
-    cid = uri.split("/ipfs/")[1];
+    const cid = uri.replace("ipfs://", "");
+    return PINATA_GATEWAY
+      ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
+      : `https://ipfs.io/ipfs/${cid}`;
   }
 
-  // Always use Pinata gateway if available for better performance
-  if (PINATA_GATEWAY && (uri.startsWith("ipfs://") || uri.includes("/ipfs/"))) {
+  // Replace ipfs.io with Pinata gateway for better performance
+  if (PINATA_GATEWAY && uri.includes("ipfs.io/ipfs/")) {
+    const cid = uri.split("/ipfs/")[1];
+    return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
+  }
+
+  // Replace any other IPFS gateway with Pinata if available
+  if (PINATA_GATEWAY && uri.includes("/ipfs/")) {
+    const cid = uri.split("/ipfs/")[1];
     return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
   }
 

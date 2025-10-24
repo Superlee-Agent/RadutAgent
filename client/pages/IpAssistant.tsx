@@ -2464,20 +2464,43 @@ const IpAssistant = () => {
                     className="rounded-lg border border-[#FF4DA6]/20 bg-slate-800/50 overflow-hidden hover:border-[#FF4DA6]/40 transition-colors flex gap-4"
                   >
                     <div className="relative flex-shrink-0 w-28 h-28 bg-slate-900 overflow-hidden flex items-center justify-center">
-                      {asset.imageUrl ? (
-                        <img
-                          src={asset.imageUrl}
-                          alt={asset.title || "IP Asset"}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const parent = (e.target as HTMLImageElement)
-                              .parentElement;
-                            if (parent) {
-                              (e.target as HTMLImageElement).style.display =
-                                "none";
-                            }
-                          }}
-                        />
+                      {asset.mediaUrl ? (
+                        asset.mediaType === "video" ? (
+                          <video
+                            src={asset.mediaUrl}
+                            poster={asset.thumbnailUrl}
+                            className="w-full h-full object-cover"
+                            controls={false}
+                            muted
+                          />
+                        ) : asset.mediaType === "audio" ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple-900 to-slate-900">
+                            <svg
+                              className="w-8 h-8 text-purple-300"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                            </svg>
+                            <span className="text-xs text-purple-200 text-center px-2">
+                              Audio
+                            </span>
+                          </div>
+                        ) : (
+                          <img
+                            src={asset.mediaUrl}
+                            alt={asset.title || "IP Asset"}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const parent = (e.target as HTMLImageElement)
+                                .parentElement;
+                              if (parent) {
+                                (e.target as HTMLImageElement).style.display =
+                                  "none";
+                              }
+                            }}
+                          />
+                        )
                       ) : (
                         <div className="flex flex-col items-center justify-center gap-1 text-slate-400">
                           <svg
@@ -2493,7 +2516,7 @@ const IpAssistant = () => {
                               d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
                           </svg>
-                          <span className="text-xs">No image</span>
+                          <span className="text-xs">No media</span>
                         </div>
                       )}
                     </div>

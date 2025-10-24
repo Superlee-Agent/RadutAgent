@@ -101,6 +101,9 @@ export function createServer() {
   // Search IP Assets endpoint (POST /api/search-ip-assets)
   app.post("/api/search-ip-assets", handleSearchIpAssets);
 
+  // Search IP Assets by Owner endpoint (POST /api/search-by-owner)
+  app.post("/api/search-by-owner", handleSearchByOwner);
+
   // Parse search intent endpoint (POST /api/parse-search-intent)
   app.post("/api/parse-search-intent", handleParseSearchIntent);
 

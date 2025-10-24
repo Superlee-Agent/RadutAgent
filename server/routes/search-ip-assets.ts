@@ -141,25 +141,41 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
 
               enrichedResults = searchResults.map((result: any) => {
                 const metadata = metadataMap.get(result.ipId);
+
+                // Priority order for image URL
+                let imageUrl = null;
+                if (metadata?.image?.cachedUrl) {
+                  imageUrl = metadata.image.cachedUrl;
+                } else if (metadata?.image?.pngUrl) {
+                  imageUrl = metadata.image.pngUrl;
+                } else if (metadata?.image?.thumbnailUrl) {
+                  imageUrl = metadata.image.thumbnailUrl;
+                } else if (metadata?.image?.originalUrl) {
+                  imageUrl = metadata.image.originalUrl;
+                } else if (metadata?.nftMetadata?.animation?.cachedUrl) {
+                  imageUrl = metadata.nftMetadata.animation.cachedUrl;
+                } else if (
+                  metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl
+                ) {
+                  imageUrl =
+                    metadata.nftMetadata.contract.openSeaMetadata.imageUrl;
+                }
+
                 return {
                   ...result,
-                  imageUrl:
-                    metadata?.image?.cachedUrl ||
-                    metadata?.image?.pngUrl ||
-                    metadata?.image?.thumbnailUrl ||
-                    metadata?.nftMetadata?.animation?.cachedUrl ||
-                    metadata?.nftMetadata?.contract?.openSeaMetadata?.imageUrl,
+                  imageUrl,
                   ipaMetadataUri: metadata?.ipaMetadataUri,
                   ownerAddress: metadata?.ownerAddress,
+                  lastUpdatedAt: metadata?.lastUpdatedAt,
                 };
               });
 
               console.log(
-                `[Search IP] Enriched ${enrichedResults.length} results with metadata`,
+                `[Search IP] Enriched ${enrichedResults.length} results with metadata (${enrichedResults.filter((r: any) => r.imageUrl).length} with images)`,
               );
             } else {
               console.warn(
-                "[Search IP] Failed to fetch enriched metadata, using search results only",
+                `[Search IP] Failed to fetch enriched metadata (${metadataResponse.status}), using search results only`,
               );
             }
           }

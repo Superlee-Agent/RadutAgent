@@ -1604,7 +1604,7 @@ const IpAssistant = () => {
                 <motion.div
                   key={`register-${index}`}
                   {...getBubbleMotionProps(index)}
-                  className="flex items-start mb-2 gap-2 px-2 md:px-4"
+                  className="flex items-start mb-3 gap-2 px-3 md:px-6 last:mb-1"
                 >
                   <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
                     <div className="text-sm font-semibold text-[#FF4DA6]">

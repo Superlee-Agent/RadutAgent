@@ -5,24 +5,25 @@ const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
 function convertIpfsUriToHttp(uri: string): string {
   if (!uri) return uri;
 
+  // Use Cloudflare IPFS gateway for public files (better performance than ipfs.io)
+  const PUBLIC_GATEWAY = "cloudflare-ipfs.com";
+
   // Extract CID from various IPFS formats
   if (uri.startsWith("ipfs://")) {
     const cid = uri.replace("ipfs://", "");
-    return PINATA_GATEWAY
-      ? `https://${PINATA_GATEWAY}/ipfs/${cid}`
-      : `https://ipfs.io/ipfs/${cid}`;
+    return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;
   }
 
-  // Replace ipfs.io with Pinata gateway for better performance
-  if (PINATA_GATEWAY && uri.includes("ipfs.io/ipfs/")) {
+  // Replace ipfs.io with Cloudflare gateway for better performance
+  if (uri.includes("ipfs.io/ipfs/")) {
     const cid = uri.split("/ipfs/")[1];
-    return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
+    return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;
   }
 
-  // Replace any other IPFS gateway with Pinata if available
-  if (PINATA_GATEWAY && uri.includes("/ipfs/")) {
+  // Replace any other IPFS gateway with Cloudflare
+  if (uri.includes("/ipfs/") && !uri.includes(PUBLIC_GATEWAY)) {
     const cid = uri.split("/ipfs/")[1];
-    return `https://${PINATA_GATEWAY}/ipfs/${cid}`;
+    return `https://${PUBLIC_GATEWAY}/ipfs/${cid}`;
   }
 
   return uri;

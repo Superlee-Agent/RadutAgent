@@ -264,29 +264,81 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                       metadata.ipaMetadataUri,
                     );
                     if (ipaMetadata) {
-                      // Try to extract media URL from IPA metadata
-                      if (ipaMetadata.mediaUrl) {
-                        mediaUrl = ipaMetadata.mediaUrl;
-                      } else if (ipaMetadata.animationUrl) {
-                        mediaUrl = ipaMetadata.animationUrl;
-                      } else if (ipaMetadata.image) {
-                        mediaUrl = ipaMetadata.image;
-                      } else if (
-                        ipaMetadata.media &&
-                        Array.isArray(ipaMetadata.media) &&
-                        ipaMetadata.media.length > 0
-                      ) {
-                        mediaUrl = ipaMetadata.media[0];
+                      // Try to extract media URL from IPA metadata based on media type
+                      if (mediaType === "video") {
+                        // For videos, try animation-related fields first
+                        if (ipaMetadata.animation) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animation);
+                        } else if (ipaMetadata.animationUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                        } else if (ipaMetadata.video) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.video);
+                        } else if (ipaMetadata.videoUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.videoUrl);
+                        } else if (ipaMetadata.mediaUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.mediaUrl);
+                        } else if (
+                          ipaMetadata.media &&
+                          Array.isArray(ipaMetadata.media) &&
+                          ipaMetadata.media.length > 0
+                        ) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.media[0]);
+                        }
+                      } else if (mediaType === "audio") {
+                        // For audio, try audio-related fields first
+                        if (ipaMetadata.audio) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.audio);
+                        } else if (ipaMetadata.audioUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.audioUrl);
+                        } else if (ipaMetadata.animation) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animation);
+                        } else if (ipaMetadata.animationUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                        } else if (ipaMetadata.mediaUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.mediaUrl);
+                        } else if (
+                          ipaMetadata.media &&
+                          Array.isArray(ipaMetadata.media) &&
+                          ipaMetadata.media.length > 0
+                        ) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.media[0]);
+                        }
+                      } else {
+                        // For images and other types
+                        if (ipaMetadata.mediaUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.mediaUrl);
+                        } else if (ipaMetadata.image) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.image);
+                        } else if (ipaMetadata.animationUrl) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.animationUrl);
+                        } else if (
+                          ipaMetadata.media &&
+                          Array.isArray(ipaMetadata.media) &&
+                          ipaMetadata.media.length > 0
+                        ) {
+                          mediaUrl = convertIpfsUriToHttp(ipaMetadata.media[0]);
+                        }
                       }
 
                       // Try to get thumbnail from IPA metadata
                       if (!thumbnailUrl) {
                         if (ipaMetadata.thumbnailUrl) {
-                          thumbnailUrl = ipaMetadata.thumbnailUrl;
-                        } else if (ipaMetadata.image && mediaType !== "image") {
-                          thumbnailUrl = ipaMetadata.image;
+                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.thumbnailUrl);
+                        } else if (ipaMetadata.image) {
+                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.image);
+                        } else if (ipaMetadata.thumbnail) {
+                          thumbnailUrl = convertIpfsUriToHttp(ipaMetadata.thumbnail);
                         }
                       }
+
+                      console.log(
+                        `[Search IP] Extracted from IPA metadata for ${result.ipId}:`,
+                        {
+                          mediaType,
+                          mediaUrl: mediaUrl ? "found" : "not found",
+                          thumbnailUrl: thumbnailUrl ? "found" : "not found",
+                        },
+                      );
                     }
                   }
 

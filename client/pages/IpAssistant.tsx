@@ -173,6 +173,7 @@ const IpAssistant = () => {
     blob: Blob;
     name: string;
     url: string;
+    isRemixImage?: boolean;
   } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<

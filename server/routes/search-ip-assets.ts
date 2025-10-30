@@ -273,7 +273,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   );
 
                   // Determine media type from result or metadata
-                  const mediaType =
+                  let mediaType =
                     result?.mediaType || metadata?.mediaType || "image";
 
                   // Get media URL - try multiple sources based on media type

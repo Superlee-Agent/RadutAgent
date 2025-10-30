@@ -318,6 +318,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
           const isDerivative = parentsCount > 0;
 
           let mediaType = result?.mediaType || "image";
+          let mediaUrl = null;
 
           let mediaUrl = null;
           let thumbnailUrl = null;

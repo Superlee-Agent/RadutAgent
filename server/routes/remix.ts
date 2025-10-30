@@ -3,7 +3,8 @@ import { http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 const PUBLIC_SPG_CONTRACT = process.env.VITE_PUBLIC_SPG_COLLECTION;
-const STORY_RPC = process.env.VITE_PUBLIC_STORY_RPC || "https://mainnet.storyrpc.io";
+const STORY_RPC =
+  process.env.VITE_PUBLIC_STORY_RPC || "https://mainnet.storyrpc.io";
 
 export const handleRemix = async (req: any, res: any) => {
   try {
@@ -84,7 +85,10 @@ export const handleRemix = async (req: any, res: any) => {
       },
     });
 
-    console.log("[Remix] Success:", { ipId: response.ipId, txHash: response.txHash });
+    console.log("[Remix] Success:", {
+      ipId: response.ipId,
+      txHash: response.txHash,
+    });
 
     return res.status(200).json({
       ok: true,

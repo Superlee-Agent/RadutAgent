@@ -195,7 +195,11 @@ const IpAssistant = () => {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [showRemixOptions, setShowRemixOptions] = useState(false);
   const [remixLoading, setRemixLoading] = useState(false);
-  const [remixResult, setRemixResult] = useState<{ success: boolean; message: string; ipId?: string } | null>(null);
+  const [remixResult, setRemixResult] = useState<{
+    success: boolean;
+    message: string;
+    ipId?: string;
+  } | null>(null);
 
   const handleRemixWithAiEditor = useCallback(async () => {
     if (!expandedAsset || !expandedAsset.ipId) return;
@@ -2753,7 +2757,9 @@ const IpAssistant = () => {
                         </svg>
                       )}
                       <div className="flex-1">
-                        <p className="text-sm font-medium">{remixResult.message}</p>
+                        <p className="text-sm font-medium">
+                          {remixResult.message}
+                        </p>
                         {remixResult.ipId && (
                           <p className="text-xs opacity-90 mt-1 font-mono">
                             IP ID: {remixResult.ipId.slice(0, 8)}...
@@ -2770,7 +2776,9 @@ const IpAssistant = () => {
                         <span className="dot" />
                         <span className="dot" />
                       </div>
-                      <span className="text-slate-100 text-sm">Remixing...</span>
+                      <span className="text-slate-100 text-sm">
+                        Remixing...
+                      </span>
                     </div>
                   </div>
                 ) : (

@@ -206,6 +206,23 @@ const IpAssistant = () => {
   }, [activeDetail]);
 
   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (
+        showRemixMenu &&
+        !target.closest("button:has(🔄)") &&
+        !target.closest("[data-remix-menu]")
+      ) {
+        setShowRemixMenu(false);
+      }
+    }
+    if (showRemixMenu) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [showRemixMenu]);
+
+  useEffect(() => {
     resetRegister();
     setMintingFee("");
     setRevShare("");

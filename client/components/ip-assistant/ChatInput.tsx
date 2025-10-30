@@ -58,7 +58,12 @@ const ChatInput = ({
     className="chat-input flex items-center gap-2 px-3 sm:px-[1.45rem] py-3.5 border-t-0 md:border-t md:border-[#FF4DA6]/10 bg-slate-950/60 md:bg-gradient-to-r md:from-slate-950/60 md:via-[#FF4DA6]/5 md:to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
     onSubmit={(event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      void onSubmit();
+      const isRemixWithRegister =
+        previewImage?.isRemixImage &&
+        input.toLowerCase().includes("register");
+      if (!isRemixWithRegister) {
+        void onSubmit();
+      }
     }}
     autoComplete="off"
   >

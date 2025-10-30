@@ -2658,6 +2658,9 @@ const IpAssistant = () => {
                   if (expandedAsset?.mediaUrl) {
                     try {
                       const response = await fetch(expandedAsset.mediaUrl);
+                      if (!response.ok) {
+                        throw new Error(`Failed to load image: ${response.status}`);
+                      }
                       const blob = await response.blob();
                       const fileName =
                         expandedAsset.title || expandedAsset.name || "IP Asset";
@@ -2677,6 +2680,15 @@ const IpAssistant = () => {
                       }, 100);
                     } catch (error) {
                       console.error("Failed to load remix image:", error);
+                      const errorMessage: Message = {
+                        id: `msg-${Date.now()}`,
+                        from: "bot",
+                        text: `❌ Failed to load remix image. ${error instanceof Error ? error.message : "Please try again."}`,
+                        ts: getCurrentTimestamp(),
+                      };
+                      setMessages((prev) => [...prev, errorMessage]);
+                      setShowRemixMenu(false);
+                      autoScrollNextRef.current = true;
                     }
                   }
                 }}

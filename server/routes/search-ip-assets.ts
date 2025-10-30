@@ -199,8 +199,17 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
               const metadataData = await metadataResponse.json();
               const metadataMap = new Map();
 
+              console.log(
+                "[Search IP] Full metadata API response:",
+                JSON.stringify(metadataData, null, 2).substring(0, 2000),
+              );
+
               if (Array.isArray(metadataData.data)) {
                 metadataData.data.forEach((asset: any) => {
+                  console.log(
+                    `[Search IP] Asset ${asset.ipId} full data:`,
+                    JSON.stringify(asset, null, 2).substring(0, 1000),
+                  );
                   metadataMap.set(asset.ipId, asset);
                 });
               }

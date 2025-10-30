@@ -36,6 +36,7 @@ type ChatInputProps = {
   setToolsOpen: Dispatch<SetStateAction<boolean>>;
   suggestions: string[];
   setSuggestions: Dispatch<SetStateAction<string[]>>;
+  onRemixRegisterWarning?: () => void;
 };
 
 const ChatInput = ({

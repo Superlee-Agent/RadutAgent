@@ -63,16 +63,9 @@ const ChatInput = ({
       const isRemixWithRegister =
         previewImage?.isRemixImage &&
         input.toLowerCase().includes("register");
-      console.log("[ChatInput] Form submit - isRemixWithRegister:", isRemixWithRegister, {
-        hasRemixImage: previewImage?.isRemixImage,
-        hasRegisterKeyword: input.toLowerCase().includes("register"),
-        input: input,
-      });
       if (isRemixWithRegister) {
-        console.log("[ChatInput] Calling remix warning callback");
         onRemixRegisterWarning?.();
       } else {
-        console.log("[ChatInput] Submitting normally");
         void onSubmit();
       }
     }}

@@ -95,215 +95,169 @@ export const YouTubeStyleSearchResults = ({
         </div>
 
         {/* Results Grid */}
-        <motion.div
-          className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-max">
-            <AnimatePresence>
-              {searchResults.map((asset, idx) => (
-                <motion.div
-                  key={asset.ipId || idx}
-                  variants={itemVariants}
-                  onMouseEnter={() => setHoveredIndex(idx)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className="group flex flex-col h-full cursor-pointer"
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-max">
+            {searchResults.map((asset, idx) => (
+              <div
+                key={asset.ipId || idx}
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                className="group flex flex-col h-full cursor-pointer"
+              >
+                {/* Thumbnail Container */}
+                <div
+                  className="relative w-full aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 flex-shrink-0 hover:-translate-y-1"
+                  onClick={() => onAssetClick(asset)}
                 >
-                  {/* Thumbnail Container */}
-                  <motion.div
-                    className="relative w-full aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden flex items-center justify-center shadow-lg transition-all duration-300 flex-shrink-0"
-                    whileHover={{ y: -4 }}
-                    onClick={() => onAssetClick(asset)}
-                  >
-                    {asset.mediaUrl ? (
-                      asset.mediaType?.startsWith("video") ? (
-                        <div className="w-full h-full relative group/video">
-                          <video
-                            key={asset.ipId}
-                            src={asset.mediaUrl}
-                            poster={asset.thumbnailUrl}
-                            className="w-full h-full object-cover"
-                            preload="metadata"
-                            playsInline
-                          />
-                          {/* Play button overlay */}
-                          <motion.div
-                            className="absolute inset-0 bg-black/0 group-hover/video:bg-black/40 transition-colors flex items-center justify-center"
-                            initial={{ opacity: 0 }}
-                            whileHover={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <motion.div
-                              className="w-16 h-16 rounded-full bg-[#FF4DA6] flex items-center justify-center shadow-2xl"
-                              whileHover={{ scale: 1.15 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              <svg
-                                className="w-8 h-8 text-white fill-current ml-1"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M3 3v18h18V3H3zm9 14V7l5 5-5 5z" />
-                              </svg>
-                            </motion.div>
-                          </motion.div>
-
-                          {/* Video badge */}
-                          <motion.div
-                            className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-white"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.1 }}
-                          >
-                            VIDEO
-                          </motion.div>
-                        </div>
-                      ) : asset.mediaType?.startsWith("audio") ? (
-                        <motion.div
-                          className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900/80 via-purple-800/40 to-slate-900 cursor-pointer"
-                          onClick={() => onAssetClick(asset)}
-                          whileHover={{ scale: 1.02 }}
-                        >
-                          <motion.div whileHover={{ scale: 1.1 }}>
-                            <svg
-                              className="w-14 h-14 text-purple-300"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                            </svg>
-                          </motion.div>
-                          <span className="text-xs text-purple-200 font-semibold">
-                            AUDIO
-                          </span>
-                        </motion.div>
-                      ) : (
-                        <motion.img
-                          src={asset.mediaUrl}
-                          alt={asset.title || asset.name || "IP Asset"}
-                          className="w-full h-full object-cover"
-                          onClick={() => onAssetClick(asset)}
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.3 }}
-                          onError={(e) => {
-                            const img = e.target as HTMLImageElement;
-                            const parent = img.parentElement;
-                            if (
-                              parent &&
-                              parent.querySelector("img") === img
-                            ) {
-                              img.replaceWith(
-                                Object.assign(document.createElement("div"), {
-                                  className:
-                                    "w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800",
-                                  innerHTML: `
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span class="text-xs">Failed to load</span>
-                                  `,
-                                }),
-                              );
-                            }
-                          }}
-                        />
-                      )
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800">
-                        <svg
-                          className="w-8 h-8"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span className="text-xs">No media</span>
-                      </div>
-                    )}
-
-                    {/* Ring effect on hover */}
-                    {hoveredIndex === idx && (
-                      <motion.div
-                        className="absolute inset-0 ring-2 ring-[#FF4DA6]/60 rounded-xl pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                {asset.mediaUrl ? (
+                  asset.mediaType?.startsWith("video") ? (
+                    <div className="w-full h-full relative group/video">
+                      <video
+                        key={asset.ipId}
+                        src={asset.mediaUrl}
+                        poster={asset.thumbnailUrl}
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                        playsInline
                       />
-                    )}
-                  </motion.div>
-
-                  {/* Content */}
-                  <motion.div className="pt-4 space-y-2 flex flex-col flex-grow">
-                    {/* Title */}
-                    <motion.h3
-                      className="text-sm font-bold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors duration-200"
-                      whileHover={{ letterSpacing: 0.5 }}
-                    >
-                      {asset.title || asset.name || "Untitled Asset"}
-                    </motion.h3>
-
-                    {/* Badges Row */}
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <motion.span
-                        className={`text-xs px-2.5 py-1 rounded-full font-semibold whitespace-nowrap backdrop-blur-sm transition-all ${
-                          asset.isDerivative
-                            ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                            : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                        }`}
-                        whileHover={{ scale: 1.05 }}
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover/video:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover/video:opacity-100">
+                        <div className="w-16 h-16 rounded-full bg-[#FF4DA6] flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                          <svg
+                            className="w-8 h-8 text-white fill-current ml-1"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M3 3v18h18V3H3zm9 14V7l5 5-5 5z" />
+                          </svg>
+                        </div>
+                      </div>
+                      {/* Video badge */}
+                      <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-white">
+                        VIDEO
+                      </div>
+                    </div>
+                  ) : asset.mediaType?.startsWith("audio") ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900/80 via-purple-800/40 to-slate-900 cursor-pointer hover:scale-102 transition-transform">
+                      <svg
+                        className="w-14 h-14 text-purple-300 hover:scale-110 transition-transform"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        {asset.isDerivative ? "🔄 Remix" : "✨ Original"}
-                      </motion.span>
-
-                      {asset.score !== undefined && (
-                        <motion.span
-                          className="text-xs px-2.5 py-1 rounded-full bg-[#FF4DA6]/20 text-[#FF4DA6] border border-[#FF4DA6]/30 font-semibold whitespace-nowrap backdrop-blur-sm"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          {(asset.score * 100).toFixed(0)}% Match
-                        </motion.span>
-                      )}
+                        <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                      </svg>
+                      <span className="text-xs text-purple-200 font-semibold">
+                        AUDIO
+                      </span>
                     </div>
+                  ) : (
+                    <img
+                      src={asset.mediaUrl}
+                      alt={asset.title || asset.name || "IP Asset"}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onClick={() => onAssetClick(asset)}
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        const parent = img.parentElement;
+                        if (
+                          parent &&
+                          parent.querySelector("img") === img
+                        ) {
+                          img.replaceWith(
+                            Object.assign(document.createElement("div"), {
+                              className:
+                                "w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800",
+                              innerHTML: `
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-xs">Failed to load</span>
+                              `,
+                            }),
+                          );
+                        }
+                      }}
+                    />
+                  )
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400 bg-slate-800">
+                    <svg
+                      className="w-8 h-8"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="m4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-xs">No media</span>
+                  </div>
+                )}
+                {hoveredIndex === idx && (
+                  <div className="absolute inset-0 ring-2 ring-[#FF4DA6]/60 rounded-xl pointer-events-none" />
+                )}
+              </div>
 
-                    {/* Description */}
-                    {asset.description && (
-                      <p className="text-xs text-slate-400 line-clamp-1 leading-relaxed">
-                        {asset.description}
-                      </p>
-                    )}
+              {/* Content */}
+              <div className="pt-4 space-y-2 flex flex-col flex-grow">
+                {/* Title */}
+                <h3 className="text-sm font-bold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors duration-200">
+                  {asset.title || asset.name || "Untitled Asset"}
+                </h3>
 
-                    {/* Metadata */}
-                    <div className="text-xs text-slate-500 space-y-1">
-                      {asset.ownerAddress && (
-                        <p className="font-mono text-[0.7rem] bg-slate-800/40 px-2 py-1 rounded w-fit">
-                          {asset.ownerAddress.slice(0, 8)}...
-                          {asset.ownerAddress.slice(-6)}
-                        </p>
-                      )}
+                {/* Badges Row */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-full font-semibold whitespace-nowrap backdrop-blur-sm transition-all ${
+                      asset.isDerivative
+                        ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                        : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    }`}
+                  >
+                    {asset.isDerivative ? "🔄 Remix" : "✨ Original"}
+                  </span>
 
-                      {asset.mediaType && (
-                        <p className="capitalize text-xs text-slate-400">
-                          {asset.mediaType
-                            .replace("video/", "")
-                            .replace("audio/", "")
-                            .replace("image/", "")
-                            .toUpperCase()}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
+                  {asset.score !== undefined && (
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-[#FF4DA6]/20 text-[#FF4DA6] border border-[#FF4DA6]/30 font-semibold whitespace-nowrap backdrop-blur-sm">
+                      {(asset.score * 100).toFixed(0)}% Match
+                    </span>
+                  )}
+                </div>
+
+                {/* Description */}
+                {asset.description && (
+                  <p className="text-xs text-slate-400 line-clamp-1 leading-relaxed">
+                    {asset.description}
+                  </p>
+                )}
+
+                {/* Metadata */}
+                <div className="text-xs text-slate-500 space-y-1">
+                  {asset.ownerAddress && (
+                    <p className="font-mono text-[0.7rem] bg-slate-800/40 px-2 py-1 rounded w-fit">
+                      {asset.ownerAddress.slice(0, 8)}...
+                      {asset.ownerAddress.slice(-6)}
+                    </p>
+                  )}
+
+                  {asset.mediaType && (
+                    <p className="capitalize text-xs text-slate-400">
+                      {asset.mediaType
+                        .replace("video/", "")
+                        .replace("audio/", "")
+                        .replace("image/", "")
+                        .toUpperCase()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );

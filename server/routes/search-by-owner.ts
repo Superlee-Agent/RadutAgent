@@ -299,11 +299,24 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
       // Helper function to check Content-Type header for video
       const checkContentType = async (url: string): Promise<boolean> => {
         try {
-          const response = await fetch(url, {
+          // Try HEAD first
+          const headResponse = await fetch(url, {
             method: "HEAD",
             signal: AbortSignal.timeout(5000),
+          }).catch(() => null);
+
+          if (headResponse) {
+            const contentType = headResponse.headers.get("content-type") || "";
+            if (contentType.startsWith("video/")) return true;
+          }
+
+          // Fallback: Try GET with range header (just get first byte)
+          const getResponse = await fetch(url, {
+            headers: { Range: "bytes=0-0" },
+            signal: AbortSignal.timeout(5000),
           });
-          const contentType = response.headers.get("content-type") || "";
+
+          const contentType = getResponse.headers.get("content-type") || "";
           return contentType.startsWith("video/");
         } catch {
           return false;

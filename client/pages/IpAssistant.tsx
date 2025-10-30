@@ -2573,9 +2573,10 @@ const IpAssistant = () => {
               <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
-                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
+                  disabled={!authenticated}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
                 >
-                  License
+                  🔄 Remix
                 </button>
                 <button
                   type="button"

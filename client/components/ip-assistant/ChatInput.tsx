@@ -25,8 +25,8 @@ type ChatInputProps = {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   waiting: boolean;
-  previewImage: PreviewImage | null;
-  setPreviewImage: Dispatch<SetStateAction<PreviewImage | null>>;
+  previewImage: (PreviewImage & { isRemixImage?: boolean }) | null;
+  setPreviewImage: Dispatch<SetStateAction<(PreviewImage & { isRemixImage?: boolean }) | null>>;
   uploadRef: MutableRefObject<HTMLInputElement | null>;
   handleImage: (event: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => Promise<void> | void;

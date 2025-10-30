@@ -128,46 +128,49 @@ export function createServer() {
         });
       }
 
+      // Try fetching the asset details
       const response = await fetch(
-        `https://api.storyapis.com/api/v4/ip-assets/${ipId}`,
+        "https://api.storyapis.com/api/v4/assets",
         {
+          method: "POST",
           headers: {
             "X-Api-Key": apiKey,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            where: {
+              ipIds: [ipId],
+            },
+            pagination: {
+              limit: 1,
+              offset: 0,
+            },
+          }),
         },
       );
 
+      if (!response.ok) {
+        return res.status(response.status).json({
+          ok: false,
+          error: `API returned ${response.status}`,
+        });
+      }
+
       const data = await response.json();
-
-      // Extract parent details
-      const parentIpIds = data?.relationships?.parents
-        ? data.relationships.parents.map((p: any) => p.parentIpId)
-        : [];
-
-      const parentLicenseTerms = data?.relationships?.parents
-        ? data.relationships.parents.map((p: any) => ({
-            id: p.licenseTermsId,
-            parentIpId: p.parentIpId,
-            mintingFee: p.mintingFee || "0",
-            commercialRevShare: p.commercialRevShare || "0",
-          }))
-        : [];
+      const asset = data?.data?.[0];
 
       return res.json({
         ok: true,
         ipId,
         status: response.status,
-        fullApiResponse: data,
-        extractedParents: {
-          parentIpIds,
-          parentLicenseTerms,
-        },
+        asset: asset,
+        parentsCount: asset?.parentsCount,
+        message: "Detailed asset data - parent details not available in API",
       });
     } catch (error: any) {
       res.status(500).json({
         ok: false,
-        error: error?.message || "Failed to fetch parent details",
+        error: error?.message || "Failed to fetch asset details",
       });
     }
   });

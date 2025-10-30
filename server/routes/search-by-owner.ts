@@ -168,7 +168,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                includeLicenses: false,
+                includeLicenses: true,
                 moderated: false,
                 orderBy: "blockNumber",
                 orderDirection: "desc",

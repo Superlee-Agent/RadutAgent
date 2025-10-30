@@ -115,7 +115,7 @@ const History = () => {
       if (session.title.toLowerCase().includes(query)) return true;
       return session.messages.some(
         (message) =>
-          message.from !== "user-image" &&
+          ("text" in message) &&
           message.text.toLowerCase().includes(query),
       );
     });

@@ -3,6 +3,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import ChatHeaderActions from "@/components/ip-assistant/ChatHeaderActions";
+import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
+import ChatInput from "@/components/ip-assistant/ChatInput";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   Popover,

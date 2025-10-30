@@ -13,14 +13,27 @@ const getMessagePreview = (message: Message) => {
   if (message.from === "user-image") {
     return "Image upload";
   }
-  const text = message.text.trim();
-  if (text.length === 0) {
-    return "(Empty message)";
+  if ("text" in message) {
+    const text = message.text.trim();
+    if (text.length === 0) return "(Empty message)";
+    if (text.length <= 48) return text;
+    return `${text.slice(0, 48)}...`;
   }
-  if (text.length <= 48) {
-    return text;
+  if (message.from === "register") {
+    return `Register: ${message.title}`;
   }
-  return `${text.slice(0, 48)}...`;
+  if (message.from === "ip-check") {
+    if (message.status === "pending") return "IP Check (pending)";
+    if (message.error) return "IP Check Error";
+    return `IP Assets: ${message.totalCount ?? 0}`;
+  }
+  if (message.from === "search-ip") {
+    if (message.status === "pending") return "Search IP (pending)";
+    if (message.error) return "Search Error";
+    const count = message.resultCount ?? message.results?.length ?? 0;
+    return `Search Results: ${count}`;
+  }
+  return "(Unknown message)";
 };
 
 type DisplaySession = {

@@ -269,6 +269,13 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
         iterations,
       });
 
+      if (allAssets.length > 0) {
+        console.log(
+          "[Search By Owner] First asset sample:",
+          JSON.stringify(allAssets[0], null, 2).substring(0, 1500),
+        );
+      }
+
       const searchResults = allAssets;
 
       // Enrich results with metadata

@@ -63,7 +63,9 @@ const ChatInput = ({
       const isRemixWithRegister =
         previewImage?.isRemixImage &&
         input.toLowerCase().includes("register");
-      if (!isRemixWithRegister) {
+      if (isRemixWithRegister) {
+        onRemixRegisterWarning?.();
+      } else {
         void onSubmit();
       }
     }}

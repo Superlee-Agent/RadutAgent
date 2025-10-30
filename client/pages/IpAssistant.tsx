@@ -2416,7 +2416,9 @@ const IpAssistant = () => {
                     }
                   }}
                   className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                  aria-label={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
+                  aria-label={
+                    isFullscreen ? "Exit fullscreen" : "View fullscreen"
+                  }
                   title={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
                 >
                   {isFullscreen ? (

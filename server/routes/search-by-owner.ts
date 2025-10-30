@@ -554,6 +554,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             isDerivative: isDerivative,
             parentsCount: parentsCount,
             parentIpDetails: parentIpDetails || undefined,
+            licenses: result?.licenses || [],
           };
         }),
       );

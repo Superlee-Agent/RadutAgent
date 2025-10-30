@@ -4,6 +4,7 @@ interface PreviewImage {
   blob: Blob;
   name: string;
   url: string;
+  isRemixImage?: boolean;
 }
 
 interface RemixImageProps {

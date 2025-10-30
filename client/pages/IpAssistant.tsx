@@ -194,6 +194,56 @@ const IpAssistant = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [showRemixOptions, setShowRemixOptions] = useState(false);
+  const [remixLoading, setRemixLoading] = useState(false);
+  const [remixResult, setRemixResult] = useState<{ success: boolean; message: string; ipId?: string } | null>(null);
+
+  const handleRemixWithAiEditor = useCallback(async () => {
+    if (!expandedAsset || !expandedAsset.ipId) return;
+
+    setRemixLoading(true);
+    setRemixResult(null);
+
+    try {
+      const licenseTermsId = "1";
+      const response = await fetch("/api/remix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          parentIpId: expandedAsset.ipId,
+          licenseTermsId,
+          useGuestMode: guestMode || !authenticated,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setRemixResult({
+          success: false,
+          message: data.message || "Failed to remix IP asset",
+        });
+        return;
+      }
+
+      setRemixResult({
+        success: true,
+        message: "Remix created successfully!",
+        ipId: data.ipId,
+      });
+
+      setTimeout(() => {
+        setShowRemixOptions(false);
+      }, 2000);
+    } catch (error: any) {
+      console.error("Remix error:", error);
+      setRemixResult({
+        success: false,
+        message: error?.message || "An error occurred during remix",
+      });
+    } finally {
+      setRemixLoading(false);
+    }
+  }, [expandedAsset, guestMode, authenticated]);
 
   useEffect(() => {
     if (activeDetail === null) return;

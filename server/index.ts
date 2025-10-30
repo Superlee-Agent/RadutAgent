@@ -114,8 +114,6 @@ export function createServer() {
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);
 
-  // Remix IP asset endpoint (POST /api/remix)
-  app.post("/api/remix", handleRemix);
 
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>

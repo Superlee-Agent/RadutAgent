@@ -2618,6 +2618,57 @@ const IpAssistant = () => {
       )}
 
       <AnimatePresence>
+        {showRemixMenu && (guestMode || authenticated) && expandedAsset ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center px-4 py-6"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
+              onClick={() => setShowRemixMenu(false)}
+              aria-hidden="true"
+            />
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: -10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="relative z-10 bg-slate-900/95 backdrop-blur-xl rounded-lg shadow-lg border border-slate-700/50 p-2 min-w-56"
+            >
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                onClick={() => {
+                  console.log("Remix with AI editor:", expandedAsset?.ipId);
+                  setShowRemixMenu(false);
+                }}
+              >
+                ✨ Remix with AI editor
+              </button>
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                onClick={() => {
+                  console.log("Remix to Video:", expandedAsset?.ipId);
+                  setShowRemixMenu(false);
+                }}
+              >
+                🎬 Remix to Video
+              </button>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {showAssetDetails && expandedAsset ? (
           <motion.div
             initial={{ opacity: 0 }}

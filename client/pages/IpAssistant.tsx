@@ -2640,6 +2640,7 @@ const IpAssistant = () => {
                         blob: blob,
                         name: fileName,
                         url: expandedAsset.mediaUrl,
+                        isRemixImage: true,
                       });
                       setShowRemixMenu(false);
                       setExpandedAsset(null);

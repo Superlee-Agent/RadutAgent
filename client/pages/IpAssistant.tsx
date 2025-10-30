@@ -15,6 +15,25 @@ import {
   requiresSelfieVerification,
   requiresSubmitReview,
 } from "@/lib/groupLicense";
+import { ANSWER_DETAILS } from "@/lib/ip-assistant/answer-details";
+import {
+  getCurrentTimestamp,
+  getInitialBotMessage,
+  getMessagePreview,
+  isValidEthereumAddress,
+  summaryFromAnswer,
+  truncateAddress,
+} from "@/lib/ip-assistant/utils";
+import {
+  CURRENT_SESSION_KEY,
+  IP_ASSISTANT_AVATAR,
+  STORAGE_KEY,
+} from "@/lib/ip-assistant/constants";
+import type {
+  BotMessage,
+  ChatSession,
+  Message,
+} from "@/lib/ip-assistant/types";
 
 type BotMessage = {
   id?: string;

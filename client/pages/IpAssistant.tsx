@@ -2306,7 +2306,7 @@ const IpAssistant = () => {
                               : "bg-green-500/20 text-green-300"
                           }`}
                         >
-                          {asset.isDerivative ? "Derivative" : "Original"}
+                          {asset.isDerivative ? "Remix" : "Original"}
                         </span>
                         {asset.score !== undefined && (
                           <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">

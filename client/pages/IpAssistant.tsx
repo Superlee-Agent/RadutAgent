@@ -938,7 +938,13 @@ const IpAssistant = () => {
         const isRemixWithRegister =
           previewImage?.isRemixImage &&
           input.toLowerCase().includes("register");
+        console.log("[handleKeyDown] Enter pressed - isRemixWithRegister:", isRemixWithRegister, {
+          hasRemixImage: previewImage?.isRemixImage,
+          hasRegisterKeyword: input.toLowerCase().includes("register"),
+          input: input,
+        });
         if (isRemixWithRegister) {
+          console.log("[handleKeyDown] Showing remix warning");
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
             type: "bot",
@@ -948,6 +954,7 @@ const IpAssistant = () => {
           };
           setMessages((prev) => [...prev, warningMessage]);
         } else {
+          console.log("[handleKeyDown] Sending normally");
           void handleSend();
         }
       }

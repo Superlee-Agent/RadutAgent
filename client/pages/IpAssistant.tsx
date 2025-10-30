@@ -2599,7 +2599,10 @@ const IpAssistant = () => {
                 </button>
 
                 {showRemixMenu && authenticated && (
-                  <div className="absolute left-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-lg p-2 z-50 min-w-48">
+                  <div
+                    data-remix-menu
+                    className="absolute left-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-lg p-2 z-50 min-w-48"
+                  >
                     <button
                       type="button"
                       className="w-full text-left px-4 py-2.5 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"

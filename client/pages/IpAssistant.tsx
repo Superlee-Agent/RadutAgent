@@ -215,13 +215,25 @@ const IpAssistant = () => {
         }),
       });
 
-      const data = await response.json();
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error("Failed to parse response JSON:", e);
+        setRemixResult({
+          success: false,
+          message: `Server error: ${response.status} ${response.statusText}`,
+        });
+        setRemixLoading(false);
+        return;
+      }
 
       if (!response.ok) {
         setRemixResult({
           success: false,
-          message: data.message || "Failed to remix IP asset",
+          message: data?.message || `Error: ${response.status}`,
         });
+        setRemixLoading(false);
         return;
       }
 

@@ -278,6 +278,24 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
       const searchResults = allAssets;
 
+      // Helper function to detect if URL points to a video
+      const isVideoUrl = (url: string): boolean => {
+        if (!url) return false;
+        const videoExtensions = [
+          ".mp4",
+          ".webm",
+          ".mov",
+          ".avi",
+          ".mkv",
+          ".flv",
+          ".wmv",
+          ".m4v",
+          ".3gp",
+        ];
+        const lowerUrl = url.toLowerCase();
+        return videoExtensions.some((ext) => lowerUrl.includes(ext));
+      };
+
       // Enrich results with metadata
       let enrichedResults = await Promise.all(
         searchResults.map(async (result: any) => {
@@ -285,7 +303,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
           const parentsCount = result?.parentsCount || 0;
           const isDerivative = parentsCount > 0;
 
-          const mediaType = result?.mediaType || "image";
+          let mediaType = result?.mediaType || "image";
 
           let mediaUrl = null;
           let thumbnailUrl = null;

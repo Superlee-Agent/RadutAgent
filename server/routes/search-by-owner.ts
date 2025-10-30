@@ -436,6 +436,14 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             }
           }
 
+          // Fallback: detect if URL is actually a video despite API classification
+          if (mediaUrl && !mediaType?.startsWith("video") && isVideoUrl(mediaUrl)) {
+            mediaType = "video/mp4"; // Set as video type
+            console.log(
+              `[Search By Owner] Auto-detected video for ${result.ipId} from URL: ${mediaUrl}`,
+            );
+          }
+
           return {
             ...result,
             mediaUrl: mediaUrl || null,

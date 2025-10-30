@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  CURRENT_SESSION_KEY,
-  STORAGE_KEY,
-  type ChatSession,
-  type Message,
-} from "./IpAssistant";
+import { CURRENT_SESSION_KEY, STORAGE_KEY } from "@/lib/ip-assistant/constants";
+import { getMessagePreview } from "@/lib/ip-assistant/utils";
+import { type ChatSession, type Message } from "@/lib/ip-assistant/types";
 
 const getMessagePreview = (message: Message) => {
   if (message.from === "user-image") {

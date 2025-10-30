@@ -2042,9 +2042,8 @@ const IpAssistant = () => {
         onRemixRegisterWarning={() => {
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
-            type: "bot",
-            content:
-              "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            from: "bot",
+            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
             timestamp: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);

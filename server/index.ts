@@ -115,6 +115,63 @@ export function createServer() {
   app.post("/api/get-suggestions", handleGetSuggestions);
 
 
+  // Debug endpoint to fetch parent IP details for a given IP ID
+  app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
+    try {
+      const { ipId } = req.params;
+      const apiKey = process.env.STORY_API_KEY;
+
+      if (!apiKey) {
+        return res.status(500).json({
+          ok: false,
+          error: "API key not configured",
+        });
+      }
+
+      const response = await fetch(
+        `https://api.storyapis.com/api/v4/ip-assets/${ipId}`,
+        {
+          headers: {
+            "X-Api-Key": apiKey,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      // Extract parent details
+      const parentIpIds = data?.relationships?.parents
+        ? data.relationships.parents.map((p: any) => p.parentIpId)
+        : [];
+
+      const parentLicenseTerms = data?.relationships?.parents
+        ? data.relationships.parents.map((p: any) => ({
+            id: p.licenseTermsId,
+            parentIpId: p.parentIpId,
+            mintingFee: p.mintingFee || "0",
+            commercialRevShare: p.commercialRevShare || "0",
+          }))
+        : [];
+
+      return res.json({
+        ok: true,
+        ipId,
+        status: response.status,
+        fullApiResponse: data,
+        extractedParents: {
+          parentIpIds,
+          parentLicenseTerms,
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        ok: false,
+        error: error?.message || "Failed to fetch parent details",
+      });
+    }
+  });
+
   // Debug endpoint to check OpenAI env presence
   app.get("/api/_debug_openai", (req, res) =>
     res.json({ ok: true, hasKey: !!process.env.OPENAI_API_KEY }),

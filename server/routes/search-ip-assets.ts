@@ -541,6 +541,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     lastUpdatedAt: metadata?.lastUpdatedAt,
                     isDerivative: isDerivative,
                     parentsCount: parentsCount,
+                    parentIpDetails: parentIpDetails || undefined,
                   };
                 }),
               );

@@ -205,7 +205,6 @@ const IpAssistant = () => {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [activeDetail]);
 
-
   useEffect(() => {
     resetRegister();
     setMintingFee("");

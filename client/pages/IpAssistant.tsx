@@ -191,6 +191,7 @@ const IpAssistant = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
+  const [showAssetDetails, setShowAssetDetails] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
@@ -1693,7 +1694,7 @@ const IpAssistant = () => {
                         className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
-                          ? "Registering…"
+                          ? "Registering��"
                           : !guestMode && !authenticated
                             ? "Register IP (requires auth)"
                             : "Register IP"}

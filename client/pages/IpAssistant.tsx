@@ -8,11 +8,6 @@ import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
 import ChatInput from "@/components/ip-assistant/ChatInput";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import {
   getLicenseSettingsByGroup,
   GROUPS,
   requiresSelfieVerification,

@@ -2335,28 +2335,6 @@ const IpAssistant = () => {
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5 pt-3 mt-auto">
-                        <button
-                          type="button"
-                          className="text-xs px-2 py-1.5 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
-                        >
-                          License
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-2 py-1.5 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
-                        >
-                          Buy
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
-                        >
-                          Remix
-                        </button>
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -2448,7 +2426,7 @@ const IpAssistant = () => {
                   {expandedAsset.description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+              <div className="flex flex-wrap gap-2 text-xs text-slate-400 mb-4">
                 <span className="px-2 py-1 bg-slate-700 rounded">
                   {expandedAsset.mediaType
                     ?.replace("video/", "")
@@ -2467,6 +2445,28 @@ const IpAssistant = () => {
                     {(expandedAsset.score * 100).toFixed(0)}% Match
                   </span>
                 )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="text-xs px-3 py-2 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                >
+                  License
+                </button>
+                <button
+                  type="button"
+                  disabled={!authenticated}
+                  className="text-xs px-3 py-2 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                >
+                  Buy
+                </button>
+                <button
+                  type="button"
+                  disabled={!authenticated}
+                  className="text-xs px-3 py-2 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                >
+                  Remix
+                </button>
               </div>
             </div>
           </motion.div>

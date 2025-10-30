@@ -2598,7 +2598,7 @@ const IpAssistant = () => {
                   🔄 Remix
                 </button>
 
-                {showRemixMenu && (
+                {showRemixMenu && (guestMode || authenticated) && (
                   <div
                     data-remix-menu
                     className="absolute left-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-lg p-2 z-50 min-w-48"

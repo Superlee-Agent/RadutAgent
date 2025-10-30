@@ -427,7 +427,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             ownerAddress: result?.ownerAddress,
             lastUpdatedAt: result?.lastUpdatedAt,
             isDerivative: isDerivative,
-            parentIps: parentIps,
+            parentsCount: parentsCount,
           };
         }),
       );

@@ -417,7 +417,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     ownerAddress: metadata?.ownerAddress,
                     lastUpdatedAt: metadata?.lastUpdatedAt,
                     isDerivative: isDerivative,
-                    parentIps: parentIps,
+                    parentsCount: parentsCount,
                   };
                 }),
               );

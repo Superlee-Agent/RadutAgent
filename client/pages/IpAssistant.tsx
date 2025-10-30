@@ -2338,7 +2338,6 @@ const IpAssistant = () => {
                           </p>
                         )}
                       </div>
-
                     </div>
                   </div>
                 ))}

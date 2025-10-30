@@ -56,10 +56,7 @@ async function fetchParentIpDetails(
       edges: edges,
     };
   } catch (error) {
-    console.warn(
-      `Error fetching parent details for ${childIpId}:`,
-      error,
-    );
+    console.warn(`Error fetching parent details for ${childIpId}:`, error);
     return null;
   }
 }
@@ -167,7 +164,6 @@ export function createServer() {
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);
 
-
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
     try {
@@ -182,25 +178,22 @@ export function createServer() {
       }
 
       // Fetch the asset details
-      const response = await fetch(
-        "https://api.storyapis.com/api/v4/assets",
-        {
-          method: "POST",
-          headers: {
-            "X-Api-Key": apiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            where: {
-              ipIds: [ipId],
-            },
-            pagination: {
-              limit: 1,
-              offset: 0,
-            },
-          }),
+      const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+        method: "POST",
+        headers: {
+          "X-Api-Key": apiKey,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          where: {
+            ipIds: [ipId],
+          },
+          pagination: {
+            limit: 1,
+            offset: 0,
+          },
+        }),
+      });
 
       if (!response.ok) {
         return res.status(response.status).json({

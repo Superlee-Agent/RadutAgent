@@ -47,10 +47,7 @@ async function fetchParentIpDetails(
       edges: edges,
     };
   } catch (error) {
-    console.warn(
-      `Error fetching parent details for ${childIpId}:`,
-      error,
-    );
+    console.warn(`Error fetching parent details for ${childIpId}:`, error);
     return null;
   }
 }
@@ -118,7 +115,6 @@ async function fetchIpaMetadata(ipaMetadataUri: string): Promise<any> {
     return null;
   }
 }
-
 
 export const handleSearchIpAssets: RequestHandler = async (req, res) => {
   try {

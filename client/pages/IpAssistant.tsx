@@ -1011,12 +1011,6 @@ const IpAssistant = () => {
     [compressToBlob],
   );
 
-  const summaryFromAnswer = (code: string): string => {
-    const info = ANSWER_DETAILS[code];
-    if (info) return `${info.type} · ${info.notes}.`;
-    return "(Unknown classification)";
-  };
-
   const checkIpAssets = useCallback(async (address: string) => {
     if (!address || address.trim().length === 0) {
       return;

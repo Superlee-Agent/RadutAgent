@@ -2223,7 +2223,10 @@ const IpAssistant = () => {
                             </div>
                           </div>
                         ) : asset.mediaType?.startsWith("audio") ? (
-                          <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900">
+                          <div
+                            className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
+                            onClick={() => setExpandedAsset(asset)}
+                          >
                             <svg
                               className="w-12 h-12 text-purple-300"
                               fill="currentColor"

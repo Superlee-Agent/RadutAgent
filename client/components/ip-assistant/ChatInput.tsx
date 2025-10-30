@@ -74,19 +74,6 @@ const ChatInput = ({
     <div className="flex-1 flex flex-col gap-2 bg-slate-900/60 rounded-2xl pl-2 pr-4 py-2 focus-within:ring-2 focus-within:ring-[#FF4DA6]/30 transition-all duration-300">
       <RemixImage previewImage={previewImage} setPreviewImage={setPreviewImage} />
 
-      {previewImage?.isRemixImage &&
-        input.toLowerCase().includes("register") && (
-          <div className="bg-yellow-500/15 border border-yellow-600/50 rounded-lg p-3">
-            <p className="text-xs text-yellow-200 font-semibold flex items-start gap-2">
-              <span className="text-lg mt-0.5">⚠️</span>
-              <span>
-                Remix images cannot be registered. Please clear the image to
-                register this IP.
-              </span>
-            </p>
-          </div>
-        )}
-
       <div className="flex items-center gap-2">
         <button
           type="button"

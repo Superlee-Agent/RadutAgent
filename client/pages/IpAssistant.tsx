@@ -6,6 +6,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import ChatHeaderActions from "@/components/ip-assistant/ChatHeaderActions";
 import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
 import ChatInput from "@/components/ip-assistant/ChatInput";
+import { YouTubeStyleSearchResults } from "@/components/ip-assistant/YouTubeStyleSearchResults";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   getLicenseSettingsByGroup,
@@ -53,6 +54,7 @@ const IpAssistant = () => {
   >(new Map());
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadedImagesRef = useRef<Set<string>>(new Set());
+  const expandedMediaContainerRef = useRef<HTMLDivElement | null>(null);
 
   // throttled scroll helpers to avoid excessive layout work on mobile
   const lastScrollRef = useRef<number>(0);
@@ -172,6 +174,7 @@ const IpAssistant = () => {
     name: string;
     url: string;
   } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,
@@ -190,6 +193,73 @@ const IpAssistant = () => {
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [showRemixOptions, setShowRemixOptions] = useState(false);
+  const [remixLoading, setRemixLoading] = useState(false);
+  const [remixResult, setRemixResult] = useState<{
+    success: boolean;
+    message: string;
+    ipId?: string;
+  } | null>(null);
+
+  const handleRemixWithAiEditor = useCallback(async () => {
+    if (!expandedAsset || !expandedAsset.ipId) return;
+
+    setRemixLoading(true);
+    setRemixResult(null);
+
+    try {
+      const licenseTermsId = "1";
+      const response = await fetch("/api/remix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          parentIpId: expandedAsset.ipId,
+          licenseTermsId,
+          useGuestMode: guestMode || !authenticated,
+        }),
+      });
+
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error("Failed to parse response JSON:", e);
+        setRemixResult({
+          success: false,
+          message: `Server error: ${response.status} ${response.statusText}`,
+        });
+        setRemixLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        setRemixResult({
+          success: false,
+          message: data?.message || `Error: ${response.status}`,
+        });
+        setRemixLoading(false);
+        return;
+      }
+
+      setRemixResult({
+        success: true,
+        message: "Remix created successfully!",
+        ipId: data.ipId,
+      });
+
+      setTimeout(() => {
+        setShowRemixOptions(false);
+      }, 2000);
+    } catch (error: any) {
+      console.error("Remix error:", error);
+      setRemixResult({
+        success: false,
+        message: error?.message || "An error occurred during remix",
+      });
+    } finally {
+      setRemixLoading(false);
+    }
+  }, [expandedAsset, guestMode, authenticated]);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -2164,13 +2234,12 @@ const IpAssistant = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
             />
-            <motion.div
-              className="relative z-10 w-full max-w-3xl max-h-[80vh] rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-[#FF4DA6]/20 p-6 shadow-xl overflow-y-auto"
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.98 }}
-              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <YouTubeStyleSearchResults
+              searchResults={searchResults}
+              onClose={() => setShowSearchModal(false)}
+              onAssetClick={setExpandedAsset}
+            />
+            <motion.div className="hidden">
               <div className="flex items-start justify-between gap-4 mb-6 sticky top-0 bg-slate-900/80 -mx-6 px-6 py-4 border-b border-[#FF4DA6]/10">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4DA6]">
@@ -2352,129 +2421,423 @@ const IpAssistant = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
         >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
             onClick={() => setExpandedAsset(null)}
             aria-hidden="true"
           />
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="relative z-10 bg-slate-900 rounded-xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 w-full max-w-4xl bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden flex flex-col max-h-[90vh]"
           >
-            <button
-              onClick={() => setExpandedAsset(null)}
-              className="absolute top-4 right-4 z-20 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
-              aria-label="Close"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            {expandedAsset.mediaType?.startsWith("video") ? (
-              <video
-                src={expandedAsset.mediaUrl}
-                poster={expandedAsset.thumbnailUrl}
-                className="w-full h-auto max-h-[70vh] object-contain"
-                controls
-                autoPlay
-                playsInline
-              />
-            ) : expandedAsset.mediaType?.startsWith("audio") ? (
-              <div className="w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-slate-900 gap-4">
-                <svg
-                  className="w-24 h-24 text-purple-300"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-                <audio
-                  src={expandedAsset.mediaUrl}
-                  controls
-                  className="w-full max-w-md px-4"
-                />
+            {/* Header */}
+            <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4 flex-shrink-0">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-100 line-clamp-2">
+                  {expandedAsset.title ||
+                    expandedAsset.name ||
+                    "Untitled Asset"}
+                </h2>
               </div>
-            ) : (
-              <img
-                src={expandedAsset.mediaUrl}
-                alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
-                className="w-full h-auto max-h-[70vh] object-contain"
-              />
-            )}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const container = expandedMediaContainerRef.current;
+                    if (!container) return;
 
-            <div className="p-6 bg-slate-800/50 border-t border-slate-700">
-              <h3 className="text-lg font-semibold text-slate-100 mb-2">
-                {expandedAsset.title || expandedAsset.name || "Untitled"}
-              </h3>
+                    if (!isFullscreen) {
+                      if (container.requestFullscreen) {
+                        container.requestFullscreen().catch(() => {});
+                      } else if ((container as any).webkitRequestFullscreen) {
+                        (container as any).webkitRequestFullscreen();
+                      } else if ((container as any).mozRequestFullScreen) {
+                        (container as any).mozRequestFullScreen();
+                      } else if ((container as any).msRequestFullscreen) {
+                        (container as any).msRequestFullscreen();
+                      }
+                      setIsFullscreen(true);
+                    } else {
+                      if (document.fullscreenElement) {
+                        if (document.exitFullscreen) {
+                          document.exitFullscreen().catch(() => {});
+                        } else if ((document as any).webkitExitFullscreen) {
+                          (document as any).webkitExitFullscreen();
+                        } else if ((document as any).mozCancelFullScreen) {
+                          (document as any).mozCancelFullScreen();
+                        } else if ((document as any).msExitFullscreen) {
+                          (document as any).msExitFullscreen();
+                        }
+                      }
+                      setIsFullscreen(false);
+                    }
+                  }}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label={
+                    isFullscreen ? "Exit fullscreen" : "View fullscreen"
+                  }
+                  title={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
+                >
+                  {isFullscreen ? (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 6h12v12H6z M3 3h8v8H3z M13 13h8v8h-8z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 8V4m0 0h4m-4 0l5 5m11-5v4m0-4h-4m4 0l-5 5M4 20v-4m0 4h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                      />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExpandedAsset(null)}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Media Container */}
+            <div
+              ref={expandedMediaContainerRef}
+              className="flex-1 flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-slate-950/50 min-h-0 overflow-hidden"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+                className="w-full max-w-full aspect-video flex items-center justify-center bg-black/40 rounded-lg"
+              >
+                {expandedAsset.mediaType?.startsWith("video") ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <video
+                      src={expandedAsset.mediaUrl}
+                      poster={expandedAsset.thumbnailUrl}
+                      className="w-full h-full object-contain"
+                      controls
+                      autoPlay
+                      playsInline
+                    />
+                  </div>
+                ) : expandedAsset.mediaType?.startsWith("audio") ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-6 py-12">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                      className="flex-shrink-0"
+                    >
+                      <svg
+                        className="w-24 h-24 text-[#FF4DA6]"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                      </svg>
+                    </motion.div>
+                    <div className="w-full max-w-md">
+                      <audio
+                        src={expandedAsset.mediaUrl}
+                        controls
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={expandedAsset.mediaUrl}
+                    alt={
+                      expandedAsset.title || expandedAsset.name || "IP Asset"
+                    }
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </motion.div>
+            </div>
+
+            {/* Footer with Details and Actions */}
+            <div className="border-t border-slate-800/30 bg-slate-950/95 backdrop-blur-xl px-6 py-6 sm:py-8 space-y-6 flex-shrink-0">
               {expandedAsset.description && (
-                <p className="text-sm text-slate-300 mb-4">
+                <p className="text-sm text-slate-300 leading-relaxed">
                   {expandedAsset.description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 text-xs text-slate-400 mb-4">
-                <span className="px-2 py-1 bg-slate-700 rounded">
-                  {expandedAsset.mediaType
-                    ?.replace("video/", "")
-                    .replace("audio/", "")
-                    .replace("image/", "")
-                    .toUpperCase() || "Media"}
+
+              {/* Metadata Badges */}
+              <div className="flex flex-wrap gap-3">
+                <span
+                  className={`text-xs px-3 py-2 rounded-full font-semibold whitespace-nowrap backdrop-blur-sm border transition-all ${
+                    expandedAsset.isDerivative
+                      ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                      : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                  }`}
+                >
+                  {expandedAsset.isDerivative ? "🔄 Remix" : "✨ Original"}
                 </span>
-                {expandedAsset.ownerAddress && (
-                  <span className="px-2 py-1 bg-slate-700 rounded font-mono">
-                    {expandedAsset.ownerAddress.slice(0, 6)}...
-                    {expandedAsset.ownerAddress.slice(-4)}
-                  </span>
-                )}
+
                 {expandedAsset.score !== undefined && (
-                  <span className="px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded">
+                  <span className="text-xs px-3 py-2 rounded-full bg-[#FF4DA6]/20 text-[#FF4DA6] border border-[#FF4DA6]/30 font-semibold whitespace-nowrap backdrop-blur-sm">
                     {(expandedAsset.score * 100).toFixed(0)}% Match
                   </span>
                 )}
+
+                {expandedAsset.mediaType && (
+                  <span className="text-xs px-3 py-2 rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/50 font-semibold whitespace-nowrap backdrop-blur-sm">
+                    {expandedAsset.mediaType
+                      ?.replace("video/", "")
+                      .replace("audio/", "")
+                      .replace("image/", "")
+                      .toUpperCase() || "Media"}
+                  </span>
+                )}
+
+                {expandedAsset.ownerAddress && (
+                  <span className="text-xs px-3 py-2 rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/50 font-mono whitespace-nowrap backdrop-blur-sm">
+                    {expandedAsset.ownerAddress.slice(0, 8)}...
+                    {expandedAsset.ownerAddress.slice(-6)}
+                  </span>
+                )}
               </div>
-              <div className="flex flex-wrap gap-2">
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
-                  className="text-xs px-3 py-2 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
                 >
                   License
                 </button>
                 <button
                   type="button"
                   disabled={!authenticated}
-                  className="text-xs px-3 py-2 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                  className="text-sm px-4 py-2.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:bg-blue-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Buy
                 </button>
-                <button
-                  type="button"
-                  disabled={!authenticated}
-                  className="text-xs px-3 py-2 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
-                >
-                  Remix
-                </button>
+                {!expandedAsset.mediaType?.startsWith("video") &&
+                !expandedAsset.mediaType?.startsWith("audio") ? (
+                  <button
+                    type="button"
+                    disabled={!authenticated && !guestMode}
+                    onClick={() => setShowRemixOptions(true)}
+                    className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+                  >
+                    Remix
+                  </button>
+                ) : null}
               </div>
             </div>
           </motion.div>
         </motion.div>
       )}
+
+      <AnimatePresence>
+        {showRemixOptions && expandedAsset ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
+              onClick={() => setShowRemixOptions(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-full max-w-sm bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden"
+            >
+              <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4">
+                <h3 className="text-lg font-semibold text-slate-100">
+                  Remix Options
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowRemixOptions(false)}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-6 space-y-3">
+                {remixResult ? (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      remixResult.success
+                        ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-200"
+                        : "bg-red-500/20 border border-red-500/30 text-red-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {remixResult.success ? (
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                        </svg>
+                      )}
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">
+                          {remixResult.message}
+                        </p>
+                        {remixResult.ipId && (
+                          <p className="text-xs opacity-90 mt-1 font-mono">
+                            IP ID: {remixResult.ipId.slice(0, 8)}...
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : remixLoading ? (
+                  <div className="p-4 bg-slate-900/50 border border-slate-800/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
+                        <span className="dot" />
+                        <span className="dot" />
+                        <span className="dot" />
+                      </div>
+                      <span className="text-slate-100 text-sm">
+                        Remixing...
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      disabled={remixLoading}
+                      onClick={() => {
+                        handleRemixWithAiEditor();
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                    >
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                        <span>Remix with AI editor</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={true}
+                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500/30"
+                    >
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>Remix to Video (Coming soon)</span>
+                      </div>
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </DashboardLayout>
   );
 };

@@ -2659,76 +2659,22 @@ const IpAssistant = () => {
                     </p>
                   </div>
 
-                  {expandedAsset.parentIpIds && expandedAsset.parentIpIds.length > 0 && (
-                    <>
-                      <div className="pt-4 border-t border-slate-800/30">
-                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                          Parent IP Details
-                        </label>
-                        <div className="mt-4 space-y-4">
-                          {expandedAsset.parentIpIds.map((parentId: string, idx: number) => (
-                            <div
-                              key={idx}
-                              className="bg-slate-900/40 border border-slate-800/50 rounded-lg p-4 space-y-3"
-                            >
-                              <div>
-                                <div className="text-xs text-slate-400 mb-1">
-                                  Parent IP ID
-                                </div>
-                                <p className="text-sm text-slate-200 font-mono break-all">
-                                  {parentId}
-                                </p>
-                              </div>
-
-                              {expandedAsset.parentLicenseTerms &&
-                                expandedAsset.parentLicenseTerms[idx] && (
-                                  <>
-                                    <div>
-                                      <div className="text-xs text-slate-400 mb-1">
-                                        License Terms ID
-                                      </div>
-                                      <p className="text-sm text-slate-200 font-mono">
-                                        {expandedAsset.parentLicenseTerms[
-                                          idx
-                                        ].id || "Not available"}
-                                      </p>
-                                    </div>
-
-                                    {expandedAsset.parentLicenseTerms[idx]
-                                      .mintingFee !== undefined && (
-                                      <div>
-                                        <div className="text-xs text-slate-400 mb-1">
-                                          Minting Fee
-                                        </div>
-                                        <p className="text-sm text-slate-200">
-                                          {expandedAsset.parentLicenseTerms[
-                                            idx
-                                          ].mintingFee || "No fee"}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {expandedAsset.parentLicenseTerms[idx]
-                                      .commercialRevShare !== undefined && (
-                                      <div>
-                                        <div className="text-xs text-slate-400 mb-1">
-                                          Commercial Revenue Share
-                                        </div>
-                                        <p className="text-sm text-slate-200">
-                                          {expandedAsset.parentLicenseTerms[
-                                            idx
-                                          ].commercialRevShare || "0"}
-                                          %
-                                        </p>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                            </div>
-                          ))}
-                        </div>
+                  {expandedAsset.parentsCount && expandedAsset.parentsCount > 0 && (
+                    <div className="pt-4 border-t border-slate-800/30">
+                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                        Derivative Status
+                      </label>
+                      <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                        <p className="text-sm text-blue-200">
+                          This is a derivative work with {expandedAsset.parentsCount}{" "}
+                          parent IP asset{expandedAsset.parentsCount > 1 ? "s" : ""}.
+                        </p>
+                        <p className="text-xs text-blue-300/70 mt-2">
+                          Note: Detailed parent IP information (license terms, minting fees,
+                          revenue share) is not available through the current API.
+                        </p>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   <div className="pt-4 border-t border-slate-800/30">

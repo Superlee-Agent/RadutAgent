@@ -943,7 +943,7 @@ const IpAssistant = () => {
             id: `msg-${Date.now()}`,
             from: "bot",
             text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
-            timestamp: getCurrentTimestamp(),
+            ts: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);
         } else {

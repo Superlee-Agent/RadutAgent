@@ -384,6 +384,18 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
           const parentsCount = result?.parentsCount || 0;
           const isDerivative = parentsCount > 0;
 
+          // Fetch parent IP details for derivative assets
+          let parentIpDetails = null;
+          if (isDerivative) {
+            parentIpDetails = await fetchParentIpDetails(result.ipId, apiKey);
+            if (parentIpDetails) {
+              console.log(
+                `[Search By Owner] Fetched parent details for ${result.ipId}:`,
+                parentIpDetails,
+              );
+            }
+          }
+
           let mediaType = result?.mediaType || "image";
           let mediaUrl = null;
           let thumbnailUrl = null;

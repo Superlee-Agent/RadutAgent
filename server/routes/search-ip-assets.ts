@@ -147,11 +147,19 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
 
       const data = await response.json();
 
+      console.log("[Search IP] Full search API response:", JSON.stringify(data, null, 2));
       console.log("[Search IP] Response data:", {
         totalResults: data?.total,
         resultsCount: data?.data?.length,
         hasMore: data?.pagination?.hasMore,
       });
+
+      if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+        console.log(
+          "[Search IP] First search result sample:",
+          JSON.stringify(data.data[0], null, 2),
+        );
+      }
 
       if (!data) {
         return res.json({

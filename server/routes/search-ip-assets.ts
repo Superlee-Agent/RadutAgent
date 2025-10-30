@@ -226,13 +226,13 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                 searchResults.map(async (result: any) => {
                   const metadata = metadataMap.get(result.ipId);
 
-                  // Determine if asset is derivative by checking for parent IPs
-                  const parentIps = metadata?.parentIps || [];
-                  const isDerivative = parentIps.length > 0;
+                  // Determine if asset is derivative by checking parentsCount
+                  const parentsCount = metadata?.parentsCount || 0;
+                  const isDerivative = parentsCount > 0;
 
                   console.log(
-                    `[Search IP] Asset ${result.ipId} - Parent IPs:`,
-                    parentIps,
+                    `[Search IP] Asset ${result.ipId} - parentsCount:`,
+                    parentsCount,
                     ", isDerivative:",
                     isDerivative,
                   );

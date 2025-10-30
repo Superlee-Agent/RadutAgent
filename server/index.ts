@@ -181,7 +181,7 @@ export function createServer() {
         });
       }
 
-      // Try fetching the asset details
+      // Fetch the asset details
       const response = await fetch(
         "https://api.storyapis.com/api/v4/assets",
         {
@@ -212,13 +212,20 @@ export function createServer() {
       const data = await response.json();
       const asset = data?.data?.[0];
 
+      // Fetch parent IP details if asset is a derivative
+      let parentIpDetails = null;
+      if (asset?.parentsCount && asset.parentsCount > 0) {
+        parentIpDetails = await fetchParentIpDetails(ipId, apiKey);
+      }
+
       return res.json({
         ok: true,
         ipId,
         status: response.status,
         asset: asset,
         parentsCount: asset?.parentsCount,
-        message: "Detailed asset data - parent details not available in API",
+        parentIpDetails: parentIpDetails,
+        message: "Asset details with parent IP information",
       });
     } catch (error: any) {
       res.status(500).json({

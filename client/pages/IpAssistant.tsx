@@ -2597,6 +2597,201 @@ const IpAssistant = () => {
         </motion.div>
       )}
 
+      <AnimatePresence>
+        {showAssetDetails && expandedAsset ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-6"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
+              onClick={() => setShowAssetDetails(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-full max-w-lg bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden"
+            >
+              <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4">
+                <h3 className="text-lg font-semibold text-slate-100">
+                  IP Asset Details
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowAssetDetails(false)}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                      IP ID
+                    </label>
+                    <p className="text-sm text-slate-200 font-mono mt-2 break-all bg-slate-900/40 p-3 rounded-lg border border-slate-800/50">
+                      {expandedAsset.ipId || "Not available"}
+                    </p>
+                  </div>
+
+                  {expandedAsset.parentIpIds && expandedAsset.parentIpIds.length > 0 && (
+                    <>
+                      <div className="pt-4 border-t border-slate-800/30">
+                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                          Parent IP Details
+                        </label>
+                        <div className="mt-4 space-y-4">
+                          {expandedAsset.parentIpIds.map((parentId: string, idx: number) => (
+                            <div
+                              key={idx}
+                              className="bg-slate-900/40 border border-slate-800/50 rounded-lg p-4 space-y-3"
+                            >
+                              <div>
+                                <div className="text-xs text-slate-400 mb-1">
+                                  Parent IP ID
+                                </div>
+                                <p className="text-sm text-slate-200 font-mono break-all">
+                                  {parentId}
+                                </p>
+                              </div>
+
+                              {expandedAsset.parentLicenseTerms &&
+                                expandedAsset.parentLicenseTerms[idx] && (
+                                  <>
+                                    <div>
+                                      <div className="text-xs text-slate-400 mb-1">
+                                        License Terms ID
+                                      </div>
+                                      <p className="text-sm text-slate-200 font-mono">
+                                        {expandedAsset.parentLicenseTerms[
+                                          idx
+                                        ].id || "Not available"}
+                                      </p>
+                                    </div>
+
+                                    {expandedAsset.parentLicenseTerms[idx]
+                                      .mintingFee !== undefined && (
+                                      <div>
+                                        <div className="text-xs text-slate-400 mb-1">
+                                          Minting Fee
+                                        </div>
+                                        <p className="text-sm text-slate-200">
+                                          {expandedAsset.parentLicenseTerms[
+                                            idx
+                                          ].mintingFee || "No fee"}
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {expandedAsset.parentLicenseTerms[idx]
+                                      .commercialRevShare !== undefined && (
+                                      <div>
+                                        <div className="text-xs text-slate-400 mb-1">
+                                          Commercial Revenue Share
+                                        </div>
+                                        <p className="text-sm text-slate-200">
+                                          {expandedAsset.parentLicenseTerms[
+                                            idx
+                                          ].commercialRevShare || "0"}
+                                          %
+                                        </p>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="pt-4 border-t border-slate-800/30">
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                      Asset Information
+                    </label>
+                    <div className="mt-4 space-y-3">
+                      {expandedAsset.title && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Title
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {expandedAsset.title}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.ownerAddress && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Owner Address
+                          </div>
+                          <p className="text-sm text-slate-200 font-mono break-all">
+                            {expandedAsset.ownerAddress}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.mediaType && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Media Type
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {expandedAsset.mediaType
+                              ?.replace("video/", "")
+                              .replace("audio/", "")
+                              .replace("image/", "")
+                              .toUpperCase() || "Unknown"}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.score !== undefined && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Match Score
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {(expandedAsset.score * 100).toFixed(1)}%
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
     </DashboardLayout>
   );
 };

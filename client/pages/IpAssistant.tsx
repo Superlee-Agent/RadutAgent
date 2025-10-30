@@ -2352,125 +2352,206 @@ const IpAssistant = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
         >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
             onClick={() => setExpandedAsset(null)}
             aria-hidden="true"
           />
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="relative z-10 bg-slate-900 rounded-xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 w-full max-w-4xl bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden flex flex-col max-h-[90vh]"
           >
-            <button
-              onClick={() => setExpandedAsset(null)}
-              className="absolute top-4 right-4 z-20 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors"
-              aria-label="Close"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* Header */}
+            <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4 flex-shrink-0">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-100 line-clamp-2">
+                  {expandedAsset.title || expandedAsset.name || "Untitled Asset"}
+                </h2>
+              </div>
+              <motion.button
+                type="button"
+                onClick={() => setExpandedAsset(null)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                aria-label="Close"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            {expandedAsset.mediaType?.startsWith("video") ? (
-              <video
-                src={expandedAsset.mediaUrl}
-                poster={expandedAsset.thumbnailUrl}
-                className="w-full h-auto max-h-[70vh] object-contain"
-                controls
-                autoPlay
-                playsInline
-              />
-            ) : expandedAsset.mediaType?.startsWith("audio") ? (
-              <div className="w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-slate-900 gap-4">
                 <svg
-                  className="w-24 h-24 text-purple-300"
-                  fill="currentColor"
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
-                <audio
-                  src={expandedAsset.mediaUrl}
-                  controls
-                  className="w-full max-w-md px-4"
-                />
-              </div>
-            ) : (
-              <img
-                src={expandedAsset.mediaUrl}
-                alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
-                className="w-full h-auto max-h-[70vh] object-contain"
-              />
-            )}
+              </motion.button>
+            </div>
 
-            <div className="p-6 bg-slate-800/50 border-t border-slate-700">
-              <h3 className="text-lg font-semibold text-slate-100 mb-2">
-                {expandedAsset.title || expandedAsset.name || "Untitled"}
-              </h3>
+            {/* Media Container */}
+            <div className="flex-1 overflow-y-auto flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-slate-950/50 min-h-0">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+                className="w-full h-full flex items-center justify-center p-4 sm:p-8"
+              >
+                {expandedAsset.mediaType?.startsWith("video") ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <video
+                      src={expandedAsset.mediaUrl}
+                      poster={expandedAsset.thumbnailUrl}
+                      className="w-full h-full object-contain rounded-lg"
+                      controls
+                      autoPlay
+                      playsInline
+                    />
+                  </div>
+                ) : expandedAsset.mediaType?.startsWith("audio") ? (
+                  <div className="w-full flex flex-col items-center justify-center gap-6 py-12">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      className="flex-shrink-0"
+                    >
+                      <svg
+                        className="w-24 h-24 text-[#FF4DA6]"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                      </svg>
+                    </motion.div>
+                    <div className="w-full max-w-md">
+                      <audio
+                        src={expandedAsset.mediaUrl}
+                        controls
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={expandedAsset.mediaUrl}
+                    alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
+                    className="max-w-full max-h-full object-contain rounded-lg"
+                  />
+                )}
+              </motion.div>
+            </div>
+
+            {/* Footer with Details and Actions */}
+            <div className="border-t border-slate-800/30 bg-slate-950/95 backdrop-blur-xl px-6 py-6 sm:py-8 space-y-6 flex-shrink-0">
               {expandedAsset.description && (
-                <p className="text-sm text-slate-300 mb-4">
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-sm text-slate-300 leading-relaxed"
+                >
                   {expandedAsset.description}
-                </p>
+                </motion.p>
               )}
-              <div className="flex flex-wrap gap-2 text-xs text-slate-400 mb-4">
-                <span className="px-2 py-1 bg-slate-700 rounded">
-                  {expandedAsset.mediaType
-                    ?.replace("video/", "")
-                    .replace("audio/", "")
-                    .replace("image/", "")
-                    .toUpperCase() || "Media"}
-                </span>
-                {expandedAsset.ownerAddress && (
-                  <span className="px-2 py-1 bg-slate-700 rounded font-mono">
-                    {expandedAsset.ownerAddress.slice(0, 6)}...
-                    {expandedAsset.ownerAddress.slice(-4)}
-                  </span>
-                )}
+
+              {/* Metadata Badges */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-wrap gap-3"
+              >
+                <motion.span
+                  className={`text-xs px-3 py-2 rounded-full font-semibold whitespace-nowrap backdrop-blur-sm border transition-all ${
+                    expandedAsset.isDerivative
+                      ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                      : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {expandedAsset.isDerivative ? "🔄 Remix" : "✨ Original"}
+                </motion.span>
+
                 {expandedAsset.score !== undefined && (
-                  <span className="px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded">
+                  <motion.span
+                    className="text-xs px-3 py-2 rounded-full bg-[#FF4DA6]/20 text-[#FF4DA6] border border-[#FF4DA6]/30 font-semibold whitespace-nowrap backdrop-blur-sm"
+                    whileHover={{ scale: 1.05 }}
+                  >
                     {(expandedAsset.score * 100).toFixed(0)}% Match
-                  </span>
+                  </motion.span>
                 )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
+
+                {expandedAsset.mediaType && (
+                  <motion.span
+                    className="text-xs px-3 py-2 rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/50 font-semibold whitespace-nowrap backdrop-blur-sm"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {expandedAsset.mediaType
+                      ?.replace("video/", "")
+                      .replace("audio/", "")
+                      .replace("image/", "")
+                      .toUpperCase() || "Media"}
+                  </motion.span>
+                )}
+
+                {expandedAsset.ownerAddress && (
+                  <motion.span
+                    className="text-xs px-3 py-2 rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/50 font-mono whitespace-nowrap backdrop-blur-sm"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {expandedAsset.ownerAddress.slice(0, 8)}...
+                    {expandedAsset.ownerAddress.slice(-6)}
+                  </motion.span>
+                )}
+              </motion.div>
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="flex flex-wrap gap-3 pt-4"
+              >
+                <motion.button
                   type="button"
-                  className="text-xs px-3 py-2 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
                 >
                   License
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
                   disabled={!authenticated}
-                  className="text-xs px-3 py-2 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                  whileHover={authenticated ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={authenticated ? { scale: 0.95 } : {}}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:bg-blue-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Buy
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
                   disabled={!authenticated}
-                  className="text-xs px-3 py-2 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                  whileHover={authenticated ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={authenticated ? { scale: 0.95 } : {}}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
                 >
                   Remix
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>

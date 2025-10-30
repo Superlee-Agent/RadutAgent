@@ -462,6 +462,30 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     }
                   }
 
+                  let parentIpIds: string[] = [];
+                  let parentLicenseTerms: any[] = [];
+
+                  if (isDerivative && metadata?.parentIpIds) {
+                    parentIpIds = Array.isArray(metadata.parentIpIds)
+                      ? metadata.parentIpIds
+                      : [metadata.parentIpIds];
+
+                    if (
+                      metadata?.parentLicenseTermsIds &&
+                      Array.isArray(metadata.parentLicenseTermsIds)
+                    ) {
+                      parentLicenseTerms = metadata.parentLicenseTermsIds.map(
+                        (termId: string, idx: number) => ({
+                          id: termId,
+                          parentIpId: parentIpIds[idx],
+                          mintingFee: metadata?.parentMintingFees?.[idx],
+                          commercialRevShare:
+                            metadata?.parentCommercialRevShares?.[idx],
+                        }),
+                      );
+                    }
+                  }
+
                   return {
                     ...result,
                     mediaUrl: mediaUrl || null,
@@ -472,6 +496,11 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     lastUpdatedAt: metadata?.lastUpdatedAt,
                     isDerivative: isDerivative,
                     parentsCount: parentsCount,
+                    parentIpIds: parentIpIds.length > 0 ? parentIpIds : undefined,
+                    parentLicenseTerms:
+                      parentLicenseTerms.length > 0
+                        ? parentLicenseTerms
+                        : undefined,
                   };
                 }),
               );

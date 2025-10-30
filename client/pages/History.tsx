@@ -1,26 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  CURRENT_SESSION_KEY,
-  STORAGE_KEY,
-  type ChatSession,
-  type Message,
-} from "./IpAssistant";
-
-const getMessagePreview = (message: Message) => {
-  if (message.from === "user-image") {
-    return "Image upload";
-  }
-  const text = message.text.trim();
-  if (text.length === 0) {
-    return "(Empty message)";
-  }
-  if (text.length <= 48) {
-    return text;
-  }
-  return `${text.slice(0, 48)}...`;
-};
+import { CURRENT_SESSION_KEY, STORAGE_KEY } from "@/lib/ip-assistant/constants";
+import { getMessagePreview } from "@/lib/ip-assistant/utils";
+import { type ChatSession, type Message } from "@/lib/ip-assistant/types";
 
 type DisplaySession = {
   id: string;
@@ -101,8 +83,7 @@ const History = () => {
       if (session.title.toLowerCase().includes(query)) return true;
       return session.messages.some(
         (message) =>
-          message.from !== "user-image" &&
-          message.text.toLowerCase().includes(query),
+          "text" in message && message.text.toLowerCase().includes(query),
       );
     });
   }, [combinedSessions, search]);
@@ -307,19 +288,36 @@ const History = () => {
                             </div>
                           );
                         }
+                        if (message.from === "user-image") {
+                          return (
+                            <div
+                              key={`image-${index}`}
+                              className="flex justify-end"
+                            >
+                              <div className="max-w-[80%] overflow-hidden rounded-xl border border-[#FF4DA6]/60">
+                                <img
+                                  src={message.url}
+                                  alt="Uploaded"
+                                  className="max-h-60 w-full object-contain"
+                                />
+                                {message.ts ? (
+                                  <div className="bg-black/60 px-3 py-1 text-[10px] text-slate-300">
+                                    {message.ts}
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          );
+                        }
                         return (
                           <div
-                            key={`image-${index}`}
-                            className="flex justify-end"
+                            key={`other-${index}`}
+                            className="flex justify-start"
                           >
-                            <div className="max-w-[80%] overflow-hidden rounded-xl border border-[#FF4DA6]/60">
-                              <img
-                                src={message.url}
-                                alt="Uploaded"
-                                className="max-h-60 w-full object-contain"
-                              />
-                              {message.ts ? (
-                                <div className="bg-black/60 px-3 py-1 text-[10px] text-slate-300">
+                            <div className="max-w-[80%] rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-sm text-slate-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                              {getMessagePreview(message)}
+                              {"ts" in message && message.ts ? (
+                                <div className="mt-1 text-[10px] text-slate-400">
                                   {message.ts}
                                 </div>
                               ) : null}

@@ -42,12 +42,6 @@ export function keccak256Hex(data: Uint8Array): string {
     32907n,
     9223372036854808579n,
   ];
-  const ROT =
-    ([0, 36, 3, 41, 18],
-    [1, 44, 10, 45, 2],
-    [62, 6, 43, 15, 61],
-    [28, 55, 25, 21, 56],
-    [27, 20, 39, 8, 14]);
   // Using a very compact but slower implementation (sufficient for metadata strings)
   const s = new Array<bigint>(25).fill(0n);
   const rate = 136; // keccak256 bitrate

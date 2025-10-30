@@ -2497,18 +2497,13 @@ const IpAssistant = () => {
               </div>
 
               {/* Action Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="flex flex-wrap gap-3 pt-4"
-              >
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
-                type="button"
-                className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
-              >
-                License
-              </button>
+                  type="button"
+                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
+                >
+                  License
+                </button>
                 <button
                   type="button"
                   disabled={!authenticated}
@@ -2523,7 +2518,7 @@ const IpAssistant = () => {
                 >
                   Remix
                 </button>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

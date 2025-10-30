@@ -2166,7 +2166,7 @@ const IpAssistant = () => {
               transition={{ duration: 0.18 }}
             />
             <motion.div
-              className="relative z-10 w-full max-w-3xl max-h-[80vh] rounded-2xl bg-slate-900/80 backdrop-blur-sm border border-[#FF4DA6]/20 p-6 shadow-xl overflow-y-auto"
+              // This div is replaced with YouTubeStyleSearchResults component
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}

@@ -35,66 +35,6 @@ import type {
   Message,
 } from "@/lib/ip-assistant/types";
 
-const truncateAddress = (address: string) => {
-  if (!address) return "";
-  if (address.length <= 10) return address;
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
-
-const getCurrentTimestamp = () =>
-  new Date().toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-const getInitialBotMessage = (): BotMessage => ({
-  id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-  from: "bot",
-  text: "Hello, I am Radut Agent. Attach an image and I'll analyze it automatically.",
-  ts: getCurrentTimestamp(),
-});
-
-const getMessagePreview = (message: Message) => {
-  if (message.from === "user-image") {
-    return "Image uploaded";
-  }
-  if ((message as any).from === "register") {
-    return `Register IP: ${(message as any).title}`;
-  }
-  if ((message as any).from === "ip-check") {
-    const ipMsg = message as any;
-    if (ipMsg.status === "pending") {
-      return "IP Assets Check (pending address input)";
-    }
-    if (ipMsg.error) {
-      return `IP Check Error: ${ipMsg.error.slice(0, 30)}...`;
-    }
-    const eligible =
-      ipMsg.totalCount > 20 ? " �� STORY OG CARD NFT ELIGIBLE" : "";
-    return `IP Assets: ${ipMsg.totalCount} (${ipMsg.originalCount} original, ${ipMsg.remixCount} remixes)${eligible}`;
-  }
-  if ("text" in message && message.text.trim().length === 0) {
-    return "(Empty message)";
-  }
-  if ("text" in message && message.text.length <= 40) {
-    return message.text;
-  }
-  if ("text" in message) {
-    return `${message.text.slice(0, 40)}...`;
-  }
-  return "(Unknown message)";
-};
-
-const IP_ASSISTANT_AVATAR =
-  "https://cdn.builder.io/api/v1/image/assets%2Fc692190cfd69486380fecff59911b51b%2F885c66a9b5da433b9a8c619e8679d4c7";
-
-export const STORAGE_KEY = "radut_sessions";
-export const CURRENT_SESSION_KEY = "radut_current_session";
-
-const isValidEthereumAddress = (address: string): boolean => {
-  const trimmed = address.trim();
-  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
-};
 
 const IpAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([getInitialBotMessage()]);

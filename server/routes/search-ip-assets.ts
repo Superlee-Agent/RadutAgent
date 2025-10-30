@@ -276,6 +276,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                  includeLicenses: true,
                   where: {
                     ipIds,
                   },

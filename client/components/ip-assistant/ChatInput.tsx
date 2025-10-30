@@ -87,7 +87,9 @@ const ChatInput = ({
             </button>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-slate-300 truncate">{previewImage.name}</p>
+            <p className="text-xs text-slate-300 truncate">
+              {previewImage.name}
+            </p>
             <p className="text-xs text-slate-400 mt-0.5">Ready to send</p>
           </div>
         </div>

@@ -54,7 +54,9 @@ const SidebarExtras: FC<SidebarExtrasProps> = ({
                           : "You"}
                     </span>
                     {"ts" in message && message.ts ? (
-                      <span className="text-[10px] text-slate-400">{message.ts}</span>
+                      <span className="text-[10px] text-slate-400">
+                        {message.ts}
+                      </span>
                     ) : null}
                   </div>
                   <div className="mt-1 text-slate-200">

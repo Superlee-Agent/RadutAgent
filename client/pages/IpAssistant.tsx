@@ -2375,7 +2375,9 @@ const IpAssistant = () => {
             <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4 flex-shrink-0">
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-100 line-clamp-2">
-                  {expandedAsset.title || expandedAsset.name || "Untitled Asset"}
+                  {expandedAsset.title ||
+                    expandedAsset.name ||
+                    "Untitled Asset"}
                 </h2>
               </div>
               <button
@@ -2423,7 +2425,11 @@ const IpAssistant = () => {
                   <div className="w-full flex flex-col items-center justify-center gap-6 py-12">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                       className="flex-shrink-0"
                     >
                       <svg
@@ -2445,7 +2451,9 @@ const IpAssistant = () => {
                 ) : (
                   <img
                     src={expandedAsset.mediaUrl}
-                    alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
+                    alt={
+                      expandedAsset.title || expandedAsset.name || "IP Asset"
+                    }
                     className="max-w-full max-h-full object-contain rounded-lg"
                   />
                 )}

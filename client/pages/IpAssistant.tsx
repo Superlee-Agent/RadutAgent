@@ -2588,7 +2588,7 @@ const IpAssistant = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4 relative">
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowRemixMenu(!showRemixMenu)}
@@ -2597,37 +2597,6 @@ const IpAssistant = () => {
                 >
                   🔄 Remix
                 </button>
-
-                {showRemixMenu && (guestMode || authenticated) && (
-                  <div
-                    data-remix-menu
-                    className="absolute left-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-lg p-2 z-50 min-w-48"
-                  >
-                    <button
-                      type="button"
-                      className="w-full text-left px-4 py-2.5 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
-                      onClick={() => {
-                        console.log(
-                          "Remix with AI editor:",
-                          expandedAsset?.ipId,
-                        );
-                        setShowRemixMenu(false);
-                      }}
-                    >
-                      ✨ Remix with AI editor
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full text-left px-4 py-2.5 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
-                      onClick={() => {
-                        console.log("Remix to Video:", expandedAsset?.ipId);
-                        setShowRemixMenu(false);
-                      }}
-                    >
-                      🎬 Remix to Video
-                    </button>
-                  </div>
-                )}
                 <button
                   type="button"
                   disabled={!authenticated}

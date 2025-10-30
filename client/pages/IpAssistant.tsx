@@ -2571,14 +2571,43 @@ const IpAssistant = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4 relative">
                 <button
                   type="button"
+                  onClick={() => setShowRemixMenu(!showRemixMenu)}
                   disabled={!authenticated}
                   className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
                 >
                   🔄 Remix
                 </button>
+
+                {showRemixMenu && authenticated && (
+                  <div className="absolute left-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-lg p-2 z-50 min-w-48">
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2.5 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                      onClick={() => {
+                        console.log(
+                          "Remix with AI editor:",
+                          expandedAsset?.ipId,
+                        );
+                        setShowRemixMenu(false);
+                      }}
+                    >
+                      ✨ Remix with AI editor
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2.5 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                      onClick={() => {
+                        console.log("Remix to Video:", expandedAsset?.ipId);
+                        setShowRemixMenu(false);
+                      }}
+                    >
+                      🎬 Remix to Video
+                    </button>
+                  </div>
+                )}
                 <button
                   type="button"
                   disabled={!authenticated}

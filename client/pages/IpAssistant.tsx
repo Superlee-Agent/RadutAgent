@@ -947,7 +947,6 @@ const IpAssistant = () => {
           };
           setMessages((prev) => [...prev, warningMessage]);
         } else {
-          console.log("[handleKeyDown] Sending normally");
           void handleSend();
         }
       }

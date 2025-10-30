@@ -939,6 +939,7 @@ const IpAssistant = () => {
           previewImage?.isRemixImage &&
           input.toLowerCase().includes("register");
         if (isRemixWithRegister) {
+          autoScrollNextRef.current = true;
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
             from: "bot",
@@ -2039,6 +2040,7 @@ const IpAssistant = () => {
         suggestions={suggestions}
         setSuggestions={setSuggestions}
         onRemixRegisterWarning={() => {
+          autoScrollNextRef.current = true;
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
             from: "bot",
@@ -2656,6 +2658,9 @@ const IpAssistant = () => {
                   if (expandedAsset?.mediaUrl) {
                     try {
                       const response = await fetch(expandedAsset.mediaUrl);
+                      if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: Failed to fetch image`);
+                      }
                       const blob = await response.blob();
                       const fileName =
                         expandedAsset.title || expandedAsset.name || "IP Asset";
@@ -2675,6 +2680,15 @@ const IpAssistant = () => {
                       }, 100);
                     } catch (error) {
                       console.error("Failed to load remix image:", error);
+                      autoScrollNextRef.current = true;
+                      const errorMessage: Message = {
+                        id: `msg-${Date.now()}`,
+                        from: "bot",
+                        text: `❌ Failed to load remix image. ${error instanceof Error ? error.message : "Unknown error"}`,
+                        ts: getCurrentTimestamp(),
+                      };
+                      setMessages((prev) => [...prev, errorMessage]);
+                      setShowRemixMenu(false);
                     }
                   }
                 }}

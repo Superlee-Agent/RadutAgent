@@ -193,6 +193,7 @@ const IpAssistant = () => {
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [showRemixOptions, setShowRemixOptions] = useState(false);
 
   useEffect(() => {
     if (activeDetail === null) return;

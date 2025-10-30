@@ -938,18 +938,11 @@ const IpAssistant = () => {
         const isRemixWithRegister =
           previewImage?.isRemixImage &&
           input.toLowerCase().includes("register");
-        console.log("[handleKeyDown] Enter pressed - isRemixWithRegister:", isRemixWithRegister, {
-          hasRemixImage: previewImage?.isRemixImage,
-          hasRegisterKeyword: input.toLowerCase().includes("register"),
-          input: input,
-        });
         if (isRemixWithRegister) {
-          console.log("[handleKeyDown] Showing remix warning");
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
-            type: "bot",
-            content:
-              "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            from: "bot",
+            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
             timestamp: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);

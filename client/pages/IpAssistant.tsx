@@ -2595,13 +2595,17 @@ const IpAssistant = () => {
                 >
                   Buy
                 </button>
-                <button
-                  type="button"
-                  disabled={!authenticated}
-                  className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
-                >
-                  Remix
-                </button>
+                {!expandedAsset.mediaType?.startsWith("video") &&
+                !expandedAsset.mediaType?.startsWith("audio") ? (
+                  <button
+                    type="button"
+                    disabled={!authenticated}
+                    onClick={() => setShowRemixOptions(true)}
+                    className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+                  >
+                    Remix
+                  </button>
+                ) : null}
               </div>
             </div>
           </motion.div>

@@ -2295,7 +2295,7 @@ const IpAssistant = () => {
 
                     <div className="pt-3 space-y-2 flex flex-col flex-grow">
                       <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors">
-                        {asset.title || "Untitled"}
+                        {asset.title || asset.name || "Untitled"}
                       </h3>
 
                       <div className="flex items-center justify-between gap-2">

@@ -2792,163 +2792,167 @@ const IpAssistant = () => {
                     </div>
                   </div>
 
-                  {expandedAsset.licenses && expandedAsset.licenses.length > 0 && (
-                    <div className="pt-4 border-t border-slate-800/30">
-                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                        Licenses
-                      </label>
-                      <div className="mt-4 space-y-3">
-                        {expandedAsset.licenses.map(
-                          (license: any, index: number) => (
-                            <div
-                              key={index}
-                              className="bg-slate-900/40 border border-slate-700/50 rounded-lg p-4 space-y-3"
-                            >
-                              {license.templateName && (
-                                <div>
-                                  <div className="text-xs text-slate-400 mb-1">
-                                    Template Name
+                  {expandedAsset.licenses &&
+                    expandedAsset.licenses.length > 0 && (
+                      <div className="pt-4 border-t border-slate-800/30">
+                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                          Licenses
+                        </label>
+                        <div className="mt-4 space-y-3">
+                          {expandedAsset.licenses.map(
+                            (license: any, index: number) => (
+                              <div
+                                key={index}
+                                className="bg-slate-900/40 border border-slate-700/50 rounded-lg p-4 space-y-3"
+                              >
+                                {license.templateName && (
+                                  <div>
+                                    <div className="text-xs text-slate-400 mb-1">
+                                      Template Name
+                                    </div>
+                                    <p className="text-sm text-slate-200 font-semibold">
+                                      {license.templateName}
+                                    </p>
                                   </div>
-                                  <p className="text-sm text-slate-200 font-semibold">
-                                    {license.templateName}
-                                  </p>
-                                </div>
-                              )}
+                                )}
 
-                              {license.licenseTermsId && (
-                                <div>
-                                  <div className="text-xs text-slate-400 mb-1">
-                                    License Terms ID
+                                {license.licenseTermsId && (
+                                  <div>
+                                    <div className="text-xs text-slate-400 mb-1">
+                                      License Terms ID
+                                    </div>
+                                    <p className="text-xs text-slate-300 font-mono break-all">
+                                      {license.licenseTermsId}
+                                    </p>
                                   </div>
-                                  <p className="text-xs text-slate-300 font-mono break-all">
-                                    {license.licenseTermsId}
-                                  </p>
-                                </div>
-                              )}
+                                )}
 
-                              {license.terms && (
-                                <div className="space-y-2 pt-2 border-t border-slate-700/30">
-                                  <div className="text-xs font-semibold text-slate-300 mb-2">
-                                    Terms:
+                                {license.terms && (
+                                  <div className="space-y-2 pt-2 border-t border-slate-700/30">
+                                    <div className="text-xs font-semibold text-slate-300 mb-2">
+                                      Terms:
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      {license.terms.commercialUse !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Commercial Use:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.commercialUse
+                                              ? "✓ Allowed"
+                                              : "✗ Not Allowed"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.derivativesAllowed !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Derivatives:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.derivativesAllowed
+                                              ? "✓ Allowed"
+                                              : "✗ Not Allowed"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.transferable !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Transferable:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.transferable
+                                              ? "✓ Yes"
+                                              : "✗ No"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.commercialAttribution !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Attribution Required:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.commercialAttribution
+                                              ? "✓ Yes"
+                                              : "✗ No"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.commercialRevShare !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Rev Share:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.commercialRevShare}%
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.licensingConfig?.mintingFee && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Minting Fee:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.licensingConfig.mintingFee}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.currency && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Currency:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.currency}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.expiration && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Expiration:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.expiration}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                  <div className="grid grid-cols-2 gap-2 text-xs">
-                                    {license.terms.commercialUse !== undefined && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Commercial Use:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.commercialUse
-                                            ? "✓ Allowed"
-                                            : "✗ Not Allowed"}
-                                        </p>
-                                      </div>
-                                    )}
+                                )}
 
-                                    {license.terms.derivativesAllowed !== undefined && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Derivatives:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.derivativesAllowed
-                                            ? "✓ Allowed"
-                                            : "✗ Not Allowed"}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.terms.transferable !==
-                                      undefined && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Transferable:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.transferable
-                                            ? "✓ Yes"
-                                            : "✗ No"}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.terms.commercialAttribution !==
-                                      undefined && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Attribution Required:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms
-                                            .commercialAttribution
-                                            ? "✓ Yes"
-                                            : "✗ No"}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.terms.commercialRevShare !==
-                                      undefined && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Rev Share:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.commercialRevShare}%
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.licensingConfig
-                                      ?.mintingFee && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Minting Fee:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.licensingConfig.mintingFee}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.terms.currency && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Currency:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.currency}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {license.terms.expiration && (
-                                      <div>
-                                        <span className="text-slate-400">
-                                          Expiration:
-                                        </span>
-                                        <p className="text-slate-200 font-semibold">
-                                          {license.terms.expiration}
-                                        </p>
-                                      </div>
-                                    )}
+                                {license.createdAt && (
+                                  <div className="pt-2 border-t border-slate-700/30">
+                                    <div className="text-xs text-slate-500">
+                                      Created:{" "}
+                                      {new Date(
+                                        license.createdAt,
+                                      ).toLocaleDateString()}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-
-                              {license.createdAt && (
-                                <div className="pt-2 border-t border-slate-700/30">
-                                  <div className="text-xs text-slate-500">
-                                    Created: {new Date(license.createdAt).toLocaleDateString()}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ),
-                        )}
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             </motion.div>

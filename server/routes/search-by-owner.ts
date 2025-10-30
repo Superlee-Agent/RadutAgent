@@ -419,7 +419,8 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             ipaMetadataUri: result?.ipaMetadataUri,
             ownerAddress: result?.ownerAddress,
             lastUpdatedAt: result?.lastUpdatedAt,
-            isDerivative: result?.isDerivative || false,
+            isDerivative: isDerivative,
+            parentIps: parentIps,
           };
         }),
       );

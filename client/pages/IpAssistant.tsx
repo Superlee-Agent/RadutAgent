@@ -2525,32 +2525,26 @@ const IpAssistant = () => {
                 transition={{ delay: 0.25 }}
                 className="flex flex-wrap gap-3 pt-4"
               >
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
-                >
-                  License
-                </motion.button>
-                <motion.button
+                <button
+                type="button"
+                className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
+              >
+                License
+              </button>
+                <button
                   type="button"
                   disabled={!authenticated}
-                  whileHover={authenticated ? { scale: 1.05, y: -2 } : {}}
-                  whileTap={authenticated ? { scale: 0.95 } : {}}
                   className="text-sm px-4 py-2.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:bg-blue-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Buy
-                </motion.button>
-                <motion.button
+                </button>
+                <button
                   type="button"
                   disabled={!authenticated}
-                  whileHover={authenticated ? { scale: 1.05, y: -2 } : {}}
-                  whileTap={authenticated ? { scale: 0.95 } : {}}
                   className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
                 >
                   Remix
-                </motion.button>
+                </button>
               </motion.div>
             </div>
           </motion.div>

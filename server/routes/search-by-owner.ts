@@ -269,11 +269,22 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
         iterations,
       });
 
+      if (allAssets.length > 0) {
+        console.log(
+          "[Search By Owner] First asset sample:",
+          JSON.stringify(allAssets[0], null, 2).substring(0, 1500),
+        );
+      }
+
       const searchResults = allAssets;
 
       // Enrich results with metadata
       let enrichedResults = await Promise.all(
         searchResults.map(async (result: any) => {
+          // Determine if asset is derivative by checking parentsCount
+          const parentsCount = result?.parentsCount || 0;
+          const isDerivative = parentsCount > 0;
+
           const mediaType = result?.mediaType || "image";
 
           let mediaUrl = null;
@@ -415,7 +426,8 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             ipaMetadataUri: result?.ipaMetadataUri,
             ownerAddress: result?.ownerAddress,
             lastUpdatedAt: result?.lastUpdatedAt,
-            isDerivative: result?.isDerivative || false,
+            isDerivative: isDerivative,
+            parentsCount: parentsCount,
           };
         }),
       );

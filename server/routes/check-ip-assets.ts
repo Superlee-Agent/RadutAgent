@@ -196,11 +196,13 @@ export const handleCheckIpAssets: any = async (req: any, res: any) => {
       }
 
       const originalCount = allAssets.filter((asset: any) => {
-        return !asset.isDerivative;
+        const parentsCount = asset?.parentsCount || 0;
+        return parentsCount === 0;
       }).length;
 
       const remixCount = allAssets.filter((asset: any) => {
-        return asset.isDerivative;
+        const parentsCount = asset?.parentsCount || 0;
+        return parentsCount > 0;
       }).length;
 
       const totalCount = allAssets.length;

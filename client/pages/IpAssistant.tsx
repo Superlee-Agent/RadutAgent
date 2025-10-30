@@ -2223,7 +2223,10 @@ const IpAssistant = () => {
                             </div>
                           </div>
                         ) : asset.mediaType?.startsWith("audio") ? (
-                          <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900">
+                          <div
+                            className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
+                            onClick={() => setExpandedAsset(asset)}
+                          >
                             <svg
                               className="w-12 h-12 text-purple-300"
                               fill="currentColor"
@@ -2239,7 +2242,8 @@ const IpAssistant = () => {
                           <img
                             src={asset.mediaUrl}
                             alt={asset.title || "IP Asset"}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover cursor-pointer"
+                            onClick={() => setExpandedAsset(asset)}
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               const parent = img.parentElement;
@@ -2291,7 +2295,7 @@ const IpAssistant = () => {
 
                     <div className="pt-3 space-y-2 flex flex-col flex-grow">
                       <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-[#FF4DA6] transition-colors">
-                        {asset.title || "Untitled"}
+                        {asset.title || asset.name || "Untitled"}
                       </h3>
 
                       <div className="flex items-center justify-between gap-2">
@@ -2302,7 +2306,7 @@ const IpAssistant = () => {
                               : "bg-green-500/20 text-green-300"
                           }`}
                         >
-                          {asset.isDerivative ? "Derivative" : "Original"}
+                          {asset.isDerivative ? "Remix" : "Original"}
                         </span>
                         {asset.score !== undefined && (
                           <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">
@@ -2333,29 +2337,6 @@ const IpAssistant = () => {
                               .toUpperCase()}
                           </p>
                         )}
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5 pt-3 mt-auto">
-                        <button
-                          type="button"
-                          className="text-xs px-2 py-1.5 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
-                        >
-                          License
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-2 py-1.5 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
-                        >
-                          Buy
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!authenticated}
-                          className="text-xs px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
-                        >
-                          Remix
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -2434,21 +2415,21 @@ const IpAssistant = () => {
             ) : (
               <img
                 src={expandedAsset.mediaUrl}
-                alt={expandedAsset.title}
+                alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
                 className="w-full h-auto max-h-[70vh] object-contain"
               />
             )}
 
             <div className="p-6 bg-slate-800/50 border-t border-slate-700">
               <h3 className="text-lg font-semibold text-slate-100 mb-2">
-                {expandedAsset.title || "Untitled"}
+                {expandedAsset.title || expandedAsset.name || "Untitled"}
               </h3>
               {expandedAsset.description && (
                 <p className="text-sm text-slate-300 mb-4">
                   {expandedAsset.description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+              <div className="flex flex-wrap gap-2 text-xs text-slate-400 mb-4">
                 <span className="px-2 py-1 bg-slate-700 rounded">
                   {expandedAsset.mediaType
                     ?.replace("video/", "")
@@ -2467,6 +2448,28 @@ const IpAssistant = () => {
                     {(expandedAsset.score * 100).toFixed(0)}% Match
                   </span>
                 )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="text-xs px-3 py-2 rounded-md bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 font-medium transition-all hover:scale-105"
+                >
+                  License
+                </button>
+                <button
+                  type="button"
+                  disabled={!authenticated}
+                  className="text-xs px-3 py-2 rounded-md bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                >
+                  Buy
+                </button>
+                <button
+                  type="button"
+                  disabled={!authenticated}
+                  className="text-xs px-3 py-2 rounded-md bg-green-500/20 text-green-300 hover:bg-green-500/30 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105"
+                >
+                  Remix
+                </button>
               </div>
             </div>
           </motion.div>

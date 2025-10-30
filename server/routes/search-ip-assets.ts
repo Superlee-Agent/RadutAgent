@@ -147,11 +147,22 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
 
       const data = await response.json();
 
+      console.log(
+        "[Search IP] Full search API response:",
+        JSON.stringify(data, null, 2),
+      );
       console.log("[Search IP] Response data:", {
         totalResults: data?.total,
         resultsCount: data?.data?.length,
         hasMore: data?.pagination?.hasMore,
       });
+
+      if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+        console.log(
+          "[Search IP] First search result sample:",
+          JSON.stringify(data.data[0], null, 2),
+        );
+      }
 
       if (!data) {
         return res.json({
@@ -199,8 +210,17 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
               const metadataData = await metadataResponse.json();
               const metadataMap = new Map();
 
+              console.log(
+                "[Search IP] Full metadata API response:",
+                JSON.stringify(metadataData, null, 2).substring(0, 2000),
+              );
+
               if (Array.isArray(metadataData.data)) {
                 metadataData.data.forEach((asset: any) => {
+                  console.log(
+                    `[Search IP] Asset ${asset.ipId} full data:`,
+                    JSON.stringify(asset, null, 2).substring(0, 1000),
+                  );
                   metadataMap.set(asset.ipId, asset);
                 });
               }
@@ -208,6 +228,17 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
               enrichedResults = await Promise.all(
                 searchResults.map(async (result: any) => {
                   const metadata = metadataMap.get(result.ipId);
+
+                  // Determine if asset is derivative by checking parentsCount
+                  const parentsCount = metadata?.parentsCount || 0;
+                  const isDerivative = parentsCount > 0;
+
+                  console.log(
+                    `[Search IP] Asset ${result.ipId} - parentsCount:`,
+                    parentsCount,
+                    ", isDerivative:",
+                    isDerivative,
+                  );
 
                   // Determine media type from result or metadata
                   const mediaType =
@@ -388,8 +419,8 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     ipaMetadataUri: metadata?.ipaMetadataUri,
                     ownerAddress: metadata?.ownerAddress,
                     lastUpdatedAt: metadata?.lastUpdatedAt,
-                    isDerivative:
-                      metadata?.isDerivative || result.isDerivative || false,
+                    isDerivative: isDerivative,
+                    parentsCount: parentsCount,
                   };
                 }),
               );

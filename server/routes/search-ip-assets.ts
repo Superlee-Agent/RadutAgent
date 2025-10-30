@@ -326,6 +326,21 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     isDerivative,
                   );
 
+                  // Fetch parent IP details for derivative assets
+                  let parentIpDetails = null;
+                  if (isDerivative) {
+                    parentIpDetails = await fetchParentIpDetails(
+                      result.ipId,
+                      apiKey,
+                    );
+                    if (parentIpDetails) {
+                      console.log(
+                        `[Search IP] Fetched parent details for ${result.ipId}:`,
+                        parentIpDetails,
+                      );
+                    }
+                  }
+
                   // Determine media type from result or metadata
                   let mediaType =
                     result?.mediaType || metadata?.mediaType || "image";

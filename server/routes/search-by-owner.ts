@@ -274,6 +274,10 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
       // Enrich results with metadata
       let enrichedResults = await Promise.all(
         searchResults.map(async (result: any) => {
+          // Determine if asset is derivative by checking for parent IPs
+          const parentIps = result?.parentIps || [];
+          const isDerivative = parentIps.length > 0;
+
           const mediaType = result?.mediaType || "image";
 
           let mediaUrl = null;

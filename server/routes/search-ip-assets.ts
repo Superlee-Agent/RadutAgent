@@ -444,15 +444,22 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   }
 
                   // Fallback: detect if URL is actually a video despite API classification
-                  if (
-                    mediaUrl &&
-                    !mediaType?.startsWith("video") &&
-                    isVideoUrl(mediaUrl)
-                  ) {
-                    mediaType = "video/mp4"; // Set as video type
-                    console.log(
-                      `[Search IP] Auto-detected video for ${result.ipId} from URL: ${mediaUrl}`,
-                    );
+                  if (mediaUrl && !mediaType?.startsWith("video")) {
+                    if (isVideoUrl(mediaUrl)) {
+                      mediaType = "video/mp4"; // Set as video type based on extension
+                      console.log(
+                        `[Search IP] Auto-detected video for ${result.ipId} from URL extension: ${mediaUrl}`,
+                      );
+                    } else {
+                      // Check Content-Type header as additional fallback
+                      const isVideo = await checkContentType(mediaUrl);
+                      if (isVideo) {
+                        mediaType = "video/mp4";
+                        console.log(
+                          `[Search IP] Auto-detected video for ${result.ipId} from Content-Type: ${mediaUrl}`,
+                        );
+                      }
+                    }
                   }
 
                   return {

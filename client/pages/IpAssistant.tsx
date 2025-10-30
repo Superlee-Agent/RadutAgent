@@ -947,6 +947,7 @@ const IpAssistant = () => {
             ts: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);
+          autoScrollNextRef.current = true;
         } else {
           void handleSend();
         }
@@ -2048,6 +2049,7 @@ const IpAssistant = () => {
             ts: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);
+          autoScrollNextRef.current = true;
         }}
       />
 

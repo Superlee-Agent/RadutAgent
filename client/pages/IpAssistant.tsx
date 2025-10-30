@@ -2455,14 +2455,9 @@ const IpAssistant = () => {
             {/* Footer with Details and Actions */}
             <div className="border-t border-slate-800/30 bg-slate-950/95 backdrop-blur-xl px-6 py-6 sm:py-8 space-y-6 flex-shrink-0">
               {expandedAsset.description && (
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="text-sm text-slate-300 leading-relaxed"
-                >
+                <p className="text-sm text-slate-300 leading-relaxed">
                   {expandedAsset.description}
-                </motion.p>
+                </p>
               )}
 
               {/* Metadata Badges */}

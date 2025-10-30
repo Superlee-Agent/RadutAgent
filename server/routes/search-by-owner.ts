@@ -319,8 +319,6 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
           let mediaType = result?.mediaType || "image";
           let mediaUrl = null;
-
-          let mediaUrl = null;
           let thumbnailUrl = null;
 
           if (mediaType === "image" || mediaType === "animation") {

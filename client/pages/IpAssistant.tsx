@@ -2477,4 +2477,7 @@ const IpAssistant = () => {
   );
 };
 
+export { STORAGE_KEY, CURRENT_SESSION_KEY } from "@/lib/ip-assistant/constants";
+export type { BotMessage, ChatSession, Message } from "@/lib/ip-assistant/types";
+
 export default IpAssistant;

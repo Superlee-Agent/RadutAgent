@@ -2415,7 +2415,7 @@ const IpAssistant = () => {
             ) : (
               <img
                 src={expandedAsset.mediaUrl}
-                alt={expandedAsset.title}
+                alt={expandedAsset.title || expandedAsset.name || "IP Asset"}
                 className="w-full h-auto max-h-[70vh] object-contain"
               />
             )}

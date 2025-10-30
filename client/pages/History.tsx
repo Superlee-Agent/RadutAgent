@@ -113,8 +113,7 @@ const History = () => {
       if (session.title.toLowerCase().includes(query)) return true;
       return session.messages.some(
         (message) =>
-          ("text" in message) &&
-          message.text.toLowerCase().includes(query),
+          "text" in message && message.text.toLowerCase().includes(query),
       );
     });
   }, [combinedSessions, search]);
@@ -321,7 +320,10 @@ const History = () => {
                         }
                         if (message.from === "user-image") {
                           return (
-                            <div key={`image-${index}`} className="flex justify-end">
+                            <div
+                              key={`image-${index}`}
+                              className="flex justify-end"
+                            >
                               <div className="max-w-[80%] overflow-hidden rounded-xl border border-[#FF4DA6]/60">
                                 <img
                                   src={message.url}
@@ -338,11 +340,16 @@ const History = () => {
                           );
                         }
                         return (
-                          <div key={`other-${index}`} className="flex justify-start">
+                          <div
+                            key={`other-${index}`}
+                            className="flex justify-start"
+                          >
                             <div className="max-w-[80%] rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-sm text-slate-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                               {getMessagePreview(message)}
                               {"ts" in message && message.ts ? (
-                                <div className="mt-1 text-[10px] text-slate-400">{message.ts}</div>
+                                <div className="mt-1 text-[10px] text-slate-400">
+                                  {message.ts}
+                                </div>
                               ) : null}
                             </div>
                           </div>

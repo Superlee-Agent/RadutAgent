@@ -2629,9 +2629,28 @@ const IpAssistant = () => {
               <button
                 type="button"
                 className="w-full text-left px-4 py-3 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
-                onClick={() => {
-                  console.log("Remix with AI editor:", expandedAsset?.ipId);
-                  setShowRemixMenu(false);
+                onClick={async () => {
+                  if (expandedAsset?.mediaUrl) {
+                    try {
+                      const response = await fetch(expandedAsset.mediaUrl);
+                      const blob = await response.blob();
+                      const fileName = expandedAsset.title || expandedAsset.name || "IP Asset";
+                      setPreviewImage({
+                        blob: blob,
+                        name: fileName,
+                        url: expandedAsset.mediaUrl,
+                      });
+                      setShowRemixMenu(false);
+                      setExpandedAsset(null);
+                      setShowAssetDetails(false);
+                      setShowSearchModal(false);
+                      setTimeout(() => {
+                        inputRef.current?.focus();
+                      }, 100);
+                    } catch (error) {
+                      console.error("Failed to load remix image:", error);
+                    }
+                  }
                 }}
               >
                 ✨ Remix with AI editor

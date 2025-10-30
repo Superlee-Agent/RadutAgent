@@ -2657,7 +2657,8 @@ const IpAssistant = () => {
                     try {
                       const response = await fetch(expandedAsset.mediaUrl);
                       const blob = await response.blob();
-                      const fileName = expandedAsset.title || expandedAsset.name || "IP Asset";
+                      const fileName =
+                        expandedAsset.title || expandedAsset.name || "IP Asset";
                       setPreviewImage({
                         blob: blob,
                         name: fileName,

@@ -178,6 +178,38 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
       let enrichedResults = searchResults;
 
       if (searchResults.length > 0) {
+        // Helper function to detect if URL points to a video
+        const isVideoUrl = (url: string): boolean => {
+          if (!url) return false;
+          const videoExtensions = [
+            ".mp4",
+            ".webm",
+            ".mov",
+            ".avi",
+            ".mkv",
+            ".flv",
+            ".wmv",
+            ".m4v",
+            ".3gp",
+          ];
+          const lowerUrl = url.toLowerCase();
+          return videoExtensions.some((ext) => lowerUrl.includes(ext));
+        };
+
+        // Helper function to check Content-Type header for video
+        const checkContentType = async (url: string): Promise<boolean> => {
+          try {
+            const response = await fetch(url, {
+              method: "HEAD",
+              signal: AbortSignal.timeout(5000),
+            });
+            const contentType = response.headers.get("content-type") || "";
+            return contentType.startsWith("video/");
+          } catch {
+            return false;
+          }
+        };
+
         try {
           const ipIds = searchResults
             .slice(0, 20)
@@ -241,7 +273,7 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   );
 
                   // Determine media type from result or metadata
-                  const mediaType =
+                  let mediaType =
                     result?.mediaType || metadata?.mediaType || "image";
 
                   // Get media URL - try multiple sources based on media type
@@ -408,6 +440,25 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                           thumbnailUrl: thumbnailUrl || "not found",
                         },
                       );
+                    }
+                  }
+
+                  // Fallback: detect if URL is actually a video despite API classification
+                  if (mediaUrl && !mediaType?.startsWith("video")) {
+                    if (isVideoUrl(mediaUrl)) {
+                      mediaType = "video/mp4"; // Set as video type based on extension
+                      console.log(
+                        `[Search IP] Auto-detected video for ${result.ipId} from URL extension: ${mediaUrl}`,
+                      );
+                    } else {
+                      // Check Content-Type header as additional fallback
+                      const isVideo = await checkContentType(mediaUrl);
+                      if (isVideo) {
+                        mediaType = "video/mp4";
+                        console.log(
+                          `[Search IP] Auto-detected video for ${result.ipId} from Content-Type: ${mediaUrl}`,
+                        );
+                      }
                     }
                   }
 

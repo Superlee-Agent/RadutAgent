@@ -278,6 +278,51 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
 
       const searchResults = allAssets;
 
+      // Helper function to detect if URL points to a video
+      const isVideoUrl = (url: string): boolean => {
+        if (!url) return false;
+        const videoExtensions = [
+          ".mp4",
+          ".webm",
+          ".mov",
+          ".avi",
+          ".mkv",
+          ".flv",
+          ".wmv",
+          ".m4v",
+          ".3gp",
+        ];
+        const lowerUrl = url.toLowerCase();
+        return videoExtensions.some((ext) => lowerUrl.includes(ext));
+      };
+
+      // Helper function to check Content-Type header for video
+      const checkContentType = async (url: string): Promise<boolean> => {
+        try {
+          // Try HEAD first
+          const headResponse = await fetch(url, {
+            method: "HEAD",
+            signal: AbortSignal.timeout(5000),
+          }).catch(() => null);
+
+          if (headResponse) {
+            const contentType = headResponse.headers.get("content-type") || "";
+            if (contentType.startsWith("video/")) return true;
+          }
+
+          // Fallback: Try GET with range header (just get first byte)
+          const getResponse = await fetch(url, {
+            headers: { Range: "bytes=0-0" },
+            signal: AbortSignal.timeout(5000),
+          });
+
+          const contentType = getResponse.headers.get("content-type") || "";
+          return contentType.startsWith("video/");
+        } catch {
+          return false;
+        }
+      };
+
       // Enrich results with metadata
       let enrichedResults = await Promise.all(
         searchResults.map(async (result: any) => {
@@ -285,8 +330,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
           const parentsCount = result?.parentsCount || 0;
           const isDerivative = parentsCount > 0;
 
-          const mediaType = result?.mediaType || "image";
-
+          let mediaType = result?.mediaType || "image";
           let mediaUrl = null;
           let thumbnailUrl = null;
 
@@ -415,6 +459,25 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
                   thumbnailUrl: thumbnailUrl || "not found",
                 },
               );
+            }
+          }
+
+          // Fallback: detect if URL is actually a video despite API classification
+          if (mediaUrl && !mediaType?.startsWith("video")) {
+            if (isVideoUrl(mediaUrl)) {
+              mediaType = "video/mp4"; // Set as video type based on extension
+              console.log(
+                `[Search By Owner] Auto-detected video for ${result.ipId} from URL extension: ${mediaUrl}`,
+              );
+            } else {
+              // Check Content-Type header as additional fallback
+              const isVideo = await checkContentType(mediaUrl);
+              if (isVideo) {
+                mediaType = "video/mp4";
+                console.log(
+                  `[Search By Owner] Auto-detected video for ${result.ipId} from Content-Type: ${mediaUrl}`,
+                );
+              }
             }
           }
 

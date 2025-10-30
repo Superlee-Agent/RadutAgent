@@ -358,7 +358,6 @@ const IpAssistant = () => {
       animate: { opacity: 1, x: 0, scale: 1 },
       exit: { opacity: 0, x: 20, scale: 0.95 },
       transition: {
-        type: "spring",
         damping: 20,
         stiffness: 300,
         mass: 0.8,
@@ -713,7 +712,7 @@ const IpAssistant = () => {
 
         const data = await response.json();
         let display = (data as any)?.display || "(No analysis result)";
-        let verification: { label: string; code: number } | string | undefined;
+        let verification: { label: string; code: string } | string | undefined;
 
         if (
           typeof (data as any)?.group === "number" &&

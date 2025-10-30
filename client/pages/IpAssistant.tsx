@@ -6,6 +6,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import ChatHeaderActions from "@/components/ip-assistant/ChatHeaderActions";
 import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
 import ChatInput from "@/components/ip-assistant/ChatInput";
+import { YouTubeStyleSearchResults } from "@/components/ip-assistant/YouTubeStyleSearchResults";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   getLicenseSettingsByGroup,

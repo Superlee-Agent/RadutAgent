@@ -209,11 +209,15 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                 searchResults.map(async (result: any) => {
                   const metadata = metadataMap.get(result.ipId);
 
+                  // Determine if asset is derivative by checking for parent IPs
+                  const parentIps = metadata?.parentIps || [];
+                  const isDerivative = parentIps.length > 0;
+
                   console.log(
-                    `[Search IP] Asset ${result.ipId} - Search result isDerivative:`,
-                    result.isDerivative,
-                    ", Metadata isDerivative:",
-                    metadata?.isDerivative,
+                    `[Search IP] Asset ${result.ipId} - Parent IPs:`,
+                    parentIps,
+                    ", isDerivative:",
+                    isDerivative,
                   );
 
                   // Determine media type from result or metadata

@@ -192,6 +192,7 @@ const IpAssistant = () => {
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
   const [showAssetDetails, setShowAssetDetails] = useState<boolean>(false);
+  const [showRemixMenu, setShowRemixMenu] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 

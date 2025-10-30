@@ -522,30 +522,6 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     }
                   }
 
-                  let parentIpIds: string[] = [];
-                  let parentLicenseTerms: any[] = [];
-
-                  // Fetch parent details if this is a derivative asset
-                  if (isDerivative && result.ipId) {
-                    const parentDetails = await fetchParentIpDetails(
-                      result.ipId,
-                      apiKey,
-                    );
-
-                    if (parentDetails) {
-                      parentIpIds = parentDetails.parentIpIds || [];
-                      parentLicenseTerms = parentDetails.parentLicenseTerms || [];
-
-                      console.log(
-                        `[Search IP] Retrieved parent info for ${result.ipId}:`,
-                        {
-                          parentCount: parentIpIds.length,
-                          termsCount: parentLicenseTerms.length,
-                        },
-                      );
-                    }
-                  }
-
                   return {
                     ...result,
                     mediaUrl: mediaUrl || null,
@@ -556,11 +532,6 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     lastUpdatedAt: metadata?.lastUpdatedAt,
                     isDerivative: isDerivative,
                     parentsCount: parentsCount,
-                    parentIpIds: parentIpIds.length > 0 ? parentIpIds : undefined,
-                    parentLicenseTerms:
-                      parentLicenseTerms.length > 0
-                        ? parentLicenseTerms
-                        : undefined,
                   };
                 }),
               );

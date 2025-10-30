@@ -2664,15 +2664,74 @@ const IpAssistant = () => {
                       <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
                         Derivative Status
                       </label>
-                      <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                      <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 space-y-4">
                         <p className="text-sm text-blue-200">
                           This is a derivative work with {expandedAsset.parentsCount}{" "}
                           parent IP asset{expandedAsset.parentsCount > 1 ? "s" : ""}.
                         </p>
-                        <p className="text-xs text-blue-300/70 mt-2">
-                          Note: Detailed parent IP information (license terms, minting fees,
-                          revenue share) is not available through the current API.
-                        </p>
+
+                        {expandedAsset.parentIpDetails ? (
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-1 gap-3">
+                              {expandedAsset.parentIpDetails.parentIpIds?.map(
+                                (parentId: string, index: number) => (
+                                  <div
+                                    key={index}
+                                    className="bg-slate-900/40 border border-slate-700/50 rounded p-3 space-y-2"
+                                  >
+                                    <div>
+                                      <div className="text-xs text-slate-400 mb-1">
+                                        Parent IP ID
+                                      </div>
+                                      <p className="text-xs text-slate-300 font-mono break-all">
+                                        {parentId}
+                                      </p>
+                                    </div>
+
+                                    {expandedAsset.parentIpDetails.licenseTermsIds &&
+                                      expandedAsset.parentIpDetails.licenseTermsIds[
+                                        index
+                                      ] && (
+                                        <div>
+                                          <div className="text-xs text-slate-400 mb-1">
+                                            License Terms ID
+                                          </div>
+                                          <p className="text-xs text-slate-300 font-mono break-all">
+                                            {
+                                              expandedAsset.parentIpDetails
+                                                .licenseTermsIds[index]
+                                            }
+                                          </p>
+                                        </div>
+                                      )}
+
+                                    {expandedAsset.parentIpDetails
+                                      .licenseTemplates &&
+                                      expandedAsset.parentIpDetails.licenseTemplates[
+                                        index
+                                      ] && (
+                                        <div>
+                                          <div className="text-xs text-slate-400 mb-1">
+                                            License Template
+                                          </div>
+                                          <p className="text-xs text-slate-300 font-mono break-all">
+                                            {
+                                              expandedAsset.parentIpDetails
+                                                .licenseTemplates[index]
+                                            }
+                                          </p>
+                                        </div>
+                                      )}
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-blue-300/70">
+                            Parent IP details are being loaded...
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}

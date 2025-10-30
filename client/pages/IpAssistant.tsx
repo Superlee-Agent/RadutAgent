@@ -2378,11 +2378,9 @@ const IpAssistant = () => {
                   {expandedAsset.title || expandedAsset.name || "Untitled Asset"}
                 </h2>
               </div>
-              <motion.button
+              <button
                 type="button"
                 onClick={() => setExpandedAsset(null)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
                 className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
                 aria-label="Close"
               >
@@ -2399,7 +2397,7 @@ const IpAssistant = () => {
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </motion.button>
+              </button>
             </div>
 
             {/* Media Container */}

@@ -2,6 +2,56 @@ import { RequestHandler } from "express";
 
 const PINATA_GATEWAY = process.env.PINATA_GATEWAY;
 
+async function fetchParentIpDetails(
+  childIpId: string,
+  apiKey: string,
+): Promise<any> {
+  try {
+    const response = await fetch(
+      "https://api.storyapis.com/api/v4/assets/edges",
+      {
+        method: "POST",
+        headers: {
+          "X-Api-Key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          where: {
+            childIpId: childIpId,
+          },
+          pagination: {
+            limit: 100,
+            offset: 0,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      console.warn(
+        `Failed to fetch parent details for ${childIpId}: ${response.status}`,
+      );
+      return null;
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      return null;
+    }
+
+    const edges = data.data;
+    return {
+      parentIpIds: edges.map((edge: any) => edge.parentIpId),
+      licenseTermsIds: edges.map((edge: any) => edge.licenseTermsId),
+      licenseTemplates: edges.map((edge: any) => edge.licenseTemplate),
+      edges: edges,
+    };
+  } catch (error) {
+    console.warn(`Error fetching parent details for ${childIpId}:`, error);
+    return null;
+  }
+}
+
 function convertIpfsUriToHttp(uri: string): string {
   if (!uri) return uri;
 
@@ -118,7 +168,7 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                includeLicenses: false,
+                includeLicenses: true,
                 moderated: false,
                 orderBy: "blockNumber",
                 orderDirection: "desc",
@@ -330,6 +380,18 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
           const parentsCount = result?.parentsCount || 0;
           const isDerivative = parentsCount > 0;
 
+          // Fetch parent IP details for derivative assets
+          let parentIpDetails = null;
+          if (isDerivative) {
+            parentIpDetails = await fetchParentIpDetails(result.ipId, apiKey);
+            if (parentIpDetails) {
+              console.log(
+                `[Search By Owner] Fetched parent details for ${result.ipId}:`,
+                parentIpDetails,
+              );
+            }
+          }
+
           let mediaType = result?.mediaType || "image";
           let mediaUrl = null;
           let thumbnailUrl = null;
@@ -491,6 +553,8 @@ export const handleSearchByOwner: RequestHandler = async (req, res) => {
             lastUpdatedAt: result?.lastUpdatedAt,
             isDerivative: isDerivative,
             parentsCount: parentsCount,
+            parentIpDetails: parentIpDetails || undefined,
+            licenses: result?.licenses || [],
           };
         }),
       );

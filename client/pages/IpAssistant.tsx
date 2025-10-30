@@ -173,6 +173,7 @@ const IpAssistant = () => {
     blob: Blob;
     name: string;
     url: string;
+    isRemixImage?: boolean;
   } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
@@ -191,75 +192,10 @@ const IpAssistant = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
+  const [showAssetDetails, setShowAssetDetails] = useState<boolean>(false);
+  const [showRemixMenu, setShowRemixMenu] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-  const [showRemixOptions, setShowRemixOptions] = useState(false);
-  const [remixLoading, setRemixLoading] = useState(false);
-  const [remixResult, setRemixResult] = useState<{
-    success: boolean;
-    message: string;
-    ipId?: string;
-  } | null>(null);
-
-  const handleRemixWithAiEditor = useCallback(async () => {
-    if (!expandedAsset || !expandedAsset.ipId) return;
-
-    setRemixLoading(true);
-    setRemixResult(null);
-
-    try {
-      const licenseTermsId = "1";
-      const response = await fetch("/api/remix", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          parentIpId: expandedAsset.ipId,
-          licenseTermsId,
-          useGuestMode: guestMode || !authenticated,
-        }),
-      });
-
-      let data: any;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error("Failed to parse response JSON:", e);
-        setRemixResult({
-          success: false,
-          message: `Server error: ${response.status} ${response.statusText}`,
-        });
-        setRemixLoading(false);
-        return;
-      }
-
-      if (!response.ok) {
-        setRemixResult({
-          success: false,
-          message: data?.message || `Error: ${response.status}`,
-        });
-        setRemixLoading(false);
-        return;
-      }
-
-      setRemixResult({
-        success: true,
-        message: "Remix created successfully!",
-        ipId: data.ipId,
-      });
-
-      setTimeout(() => {
-        setShowRemixOptions(false);
-      }, 2000);
-    } catch (error: any) {
-      console.error("Remix error:", error);
-      setRemixResult({
-        success: false,
-        message: error?.message || "An error occurred during remix",
-      });
-    } finally {
-      setRemixLoading(false);
-    }
-  }, [expandedAsset, guestMode, authenticated]);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -999,10 +935,25 @@ const IpAssistant = () => {
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        void handleSend();
+        const isRemixWithRegister =
+          previewImage?.isRemixImage &&
+          input.toLowerCase().includes("register");
+        if (isRemixWithRegister) {
+          autoScrollNextRef.current = true;
+          const warningMessage: Message = {
+            id: `msg-${Date.now()}`,
+            from: "bot",
+            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            ts: getCurrentTimestamp(),
+          };
+          setMessages((prev) => [...prev, warningMessage]);
+          autoScrollNextRef.current = true;
+        } else {
+          void handleSend();
+        }
       }
     },
-    [handleSend],
+    [handleSend, previewImage, input],
   );
 
   const compressToBlob = useCallback(
@@ -1128,7 +1079,7 @@ const IpAssistant = () => {
 
       const data = await response.json();
       console.log("[IP Check] Response data:", data);
-      const { totalCount, originalCount, remixCount } = data;
+      const { totalCount, originalCount } = data;
 
       setMessages((prev) =>
         prev.map((msg) =>
@@ -1138,7 +1089,6 @@ const IpAssistant = () => {
                 status: "complete",
                 address: trimmedAddress,
                 originalCount,
-                remixCount,
                 totalCount,
               }
             : msg,
@@ -1761,7 +1711,7 @@ const IpAssistant = () => {
                         className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
-                          ? "Registering…"
+                          ? "Registering��"
                           : !guestMode && !authenticated
                             ? "Register IP (requires auth)"
                             : "Register IP"}
@@ -1890,22 +1840,12 @@ const IpAssistant = () => {
                             <div className="text-base md:text-lg font-bold text-[#FF4DA6]">
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
-                            <div className="grid grid-cols-2 gap-2 md:gap-3">
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
-                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
-                                  Original
-                                </div>
-                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
-                                  {ipCheckMsg.originalCount}
-                                </div>
+                            <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
+                              <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
+                                Original
                               </div>
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
-                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
-                                  Remixes
-                                </div>
-                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
-                                  {ipCheckMsg.remixCount}
-                                </div>
+                              <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
+                                {ipCheckMsg.originalCount}
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
@@ -2100,6 +2040,17 @@ const IpAssistant = () => {
         setToolsOpen={setToolsOpen}
         suggestions={suggestions}
         setSuggestions={setSuggestions}
+        onRemixRegisterWarning={() => {
+          autoScrollNextRef.current = true;
+          const warningMessage: Message = {
+            id: `msg-${Date.now()}`,
+            from: "bot",
+            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            ts: getCurrentTimestamp(),
+          };
+          setMessages((prev) => [...prev, warningMessage]);
+          autoScrollNextRef.current = true;
+        }}
       />
 
       <input
@@ -2375,7 +2326,7 @@ const IpAssistant = () => {
                               : "bg-green-500/20 text-green-300"
                           }`}
                         >
-                          {asset.isDerivative ? "Remix" : "Original"}
+                          Original
                         </span>
                         {asset.score !== undefined && (
                           <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">
@@ -2619,7 +2570,7 @@ const IpAssistant = () => {
                       : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                   }`}
                 >
-                  {expandedAsset.isDerivative ? "🔄 Remix" : "✨ Original"}
+                  ✨ Original
                 </span>
 
                 {expandedAsset.score !== undefined && (
@@ -2650,9 +2601,11 @@ const IpAssistant = () => {
               <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
-                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
+                  onClick={() => setShowRemixMenu(!showRemixMenu)}
+                  disabled={!guestMode && !authenticated}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
                 >
-                  License
+                  🔄 Remix
                 </button>
                 <button
                   type="button"
@@ -2661,17 +2614,13 @@ const IpAssistant = () => {
                 >
                   Buy
                 </button>
-                {!expandedAsset.mediaType?.startsWith("video") &&
-                !expandedAsset.mediaType?.startsWith("audio") ? (
-                  <button
-                    type="button"
-                    disabled={!authenticated && !guestMode}
-                    onClick={() => setShowRemixOptions(true)}
-                    className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
-                  >
-                    Remix
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setShowAssetDetails(true)}
+                  className="text-sm px-4 py-2.5 rounded-lg bg-slate-700/40 text-slate-200 border border-slate-600/50 font-semibold transition-all hover:shadow-lg hover:shadow-slate-700/25 hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500/50"
+                >
+                  Details
+                </button>
               </div>
             </div>
           </motion.div>
@@ -2679,13 +2628,13 @@ const IpAssistant = () => {
       )}
 
       <AnimatePresence>
-        {showRemixOptions && expandedAsset ? (
+        {showRemixMenu && (guestMode || authenticated) && expandedAsset ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6"
+            className="fixed inset-0 z-[80] flex items-center justify-center px-4 py-6"
           >
             <motion.div
               initial={{ opacity: 0 }}
@@ -2693,7 +2642,94 @@ const IpAssistant = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
-              onClick={() => setShowRemixOptions(false)}
+              onClick={() => setShowRemixMenu(false)}
+              aria-hidden="true"
+            />
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: -10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="relative z-10 bg-slate-900/95 backdrop-blur-xl rounded-lg shadow-lg border border-slate-700/50 p-2 min-w-56"
+            >
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                onClick={async () => {
+                  if (expandedAsset?.mediaUrl) {
+                    try {
+                      const response = await fetch(expandedAsset.mediaUrl);
+                      if (!response.ok) {
+                        throw new Error(
+                          `HTTP ${response.status}: Failed to fetch image`,
+                        );
+                      }
+                      const blob = await response.blob();
+                      const fileName =
+                        expandedAsset.title || expandedAsset.name || "IP Asset";
+                      setPreviewImage({
+                        blob: blob,
+                        name: fileName,
+                        url: expandedAsset.mediaUrl,
+                        isRemixImage: true,
+                      });
+                      setInput("");
+                      setShowRemixMenu(false);
+                      setExpandedAsset(null);
+                      setShowAssetDetails(false);
+                      setShowSearchModal(false);
+                      setTimeout(() => {
+                        inputRef.current?.focus();
+                      }, 100);
+                    } catch (error) {
+                      console.error("Failed to load remix image:", error);
+                      autoScrollNextRef.current = true;
+                      const errorMessage: Message = {
+                        id: `msg-${Date.now()}`,
+                        from: "bot",
+                        text: `❌ Failed to load remix image. ${error instanceof Error ? error.message : "Unknown error"}`,
+                        ts: getCurrentTimestamp(),
+                      };
+                      setMessages((prev) => [...prev, errorMessage]);
+                      setShowRemixMenu(false);
+                    }
+                  }
+                }}
+              >
+                ✨ Remix with AI editor
+              </button>
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 text-sm text-slate-200 font-semibold hover:bg-slate-800/50 rounded-lg transition-colors"
+                onClick={() => {
+                  console.log("Remix to Video:", expandedAsset?.ipId);
+                  setShowRemixMenu(false);
+                }}
+              >
+                🎬 Remix to Video
+              </button>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showAssetDetails && expandedAsset ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-6"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
+              onClick={() => setShowAssetDetails(false)}
               aria-hidden="true"
             />
             <motion.div
@@ -2701,15 +2737,15 @@ const IpAssistant = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10 w-full max-w-sm bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden"
+              className="relative z-10 w-full max-w-lg bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden"
             >
               <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4">
                 <h3 className="text-lg font-semibold text-slate-100">
-                  Remix Options
+                  IP Asset Details
                 </h3>
                 <button
                   type="button"
-                  onClick={() => setShowRemixOptions(false)}
+                  onClick={() => setShowAssetDetails(false)}
                   className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
                   aria-label="Close"
                 >
@@ -2729,110 +2765,324 @@ const IpAssistant = () => {
                 </button>
               </div>
 
-              <div className="p-6 space-y-3">
-                {remixResult ? (
-                  <div
-                    className={`p-4 rounded-lg ${
-                      remixResult.success
-                        ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-200"
-                        : "bg-red-500/20 border border-red-500/30 text-red-200"
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      {remixResult.success ? (
-                        <svg
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                        </svg>
-                      )}
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">
-                          {remixResult.message}
-                        </p>
-                        {remixResult.ipId && (
-                          <p className="text-xs opacity-90 mt-1 font-mono">
-                            IP ID: {remixResult.ipId.slice(0, 8)}...
-                          </p>
-                        )}
-                      </div>
-                    </div>
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                      IP ID
+                    </label>
+                    <p className="text-sm text-slate-200 font-mono mt-2 break-all bg-slate-900/40 p-3 rounded-lg border border-slate-800/50">
+                      {expandedAsset.ipId || "Not available"}
+                    </p>
                   </div>
-                ) : remixLoading ? (
-                  <div className="p-4 bg-slate-900/50 border border-slate-800/50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
-                        <span className="dot" />
-                        <span className="dot" />
-                        <span className="dot" />
-                      </div>
-                      <span className="text-slate-100 text-sm">
-                        Remixing...
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      disabled={remixLoading}
-                      onClick={() => {
-                        handleRemixWithAiEditor();
-                      }}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                    >
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                        <span>Remix with AI editor</span>
-                      </div>
-                    </button>
 
-                    <button
-                      type="button"
-                      disabled={true}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500/30"
-                    >
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span>Remix to Video (Coming soon)</span>
+                  {expandedAsset.parentsCount &&
+                    expandedAsset.parentsCount > 0 && (
+                      <div className="pt-4 border-t border-slate-800/30">
+                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                          Derivative Status
+                        </label>
+                        <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 space-y-4">
+                          <p className="text-sm text-blue-200">
+                            This is a derivative work with{" "}
+                            {expandedAsset.parentsCount} parent IP asset
+                            {expandedAsset.parentsCount > 1 ? "s" : ""}.
+                          </p>
+
+                          {expandedAsset.parentIpDetails ? (
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-1 gap-3">
+                                {expandedAsset.parentIpDetails.parentIpIds?.map(
+                                  (parentId: string, index: number) => (
+                                    <div
+                                      key={index}
+                                      className="bg-slate-900/40 border border-slate-700/50 rounded p-3 space-y-2"
+                                    >
+                                      <div>
+                                        <div className="text-xs text-slate-400 mb-1">
+                                          Parent IP ID
+                                        </div>
+                                        <p className="text-xs text-slate-300 font-mono break-all">
+                                          {parentId}
+                                        </p>
+                                      </div>
+
+                                      {expandedAsset.parentIpDetails
+                                        .licenseTermsIds &&
+                                        expandedAsset.parentIpDetails
+                                          .licenseTermsIds[index] && (
+                                          <div>
+                                            <div className="text-xs text-slate-400 mb-1">
+                                              License Terms ID
+                                            </div>
+                                            <p className="text-xs text-slate-300 font-mono break-all">
+                                              {
+                                                expandedAsset.parentIpDetails
+                                                  .licenseTermsIds[index]
+                                              }
+                                            </p>
+                                          </div>
+                                        )}
+
+                                      {expandedAsset.parentIpDetails
+                                        .licenseTemplates &&
+                                        expandedAsset.parentIpDetails
+                                          .licenseTemplates[index] && (
+                                          <div>
+                                            <div className="text-xs text-slate-400 mb-1">
+                                              License Template
+                                            </div>
+                                            <p className="text-xs text-slate-300 font-mono break-all">
+                                              {
+                                                expandedAsset.parentIpDetails
+                                                  .licenseTemplates[index]
+                                              }
+                                            </p>
+                                          </div>
+                                        )}
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-blue-300/70">
+                              Parent IP details are being loaded...
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </button>
-                  </>
-                )}
+                    )}
+
+                  <div className="pt-4 border-t border-slate-800/30">
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                      Asset Information
+                    </label>
+                    <div className="mt-4 space-y-3">
+                      {expandedAsset.title && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Title
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {expandedAsset.title}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.ownerAddress && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Owner Address
+                          </div>
+                          <p className="text-sm text-slate-200 font-mono break-all">
+                            {expandedAsset.ownerAddress}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.mediaType && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Media Type
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {expandedAsset.mediaType
+                              ?.replace("video/", "")
+                              .replace("audio/", "")
+                              .replace("image/", "")
+                              .toUpperCase() || "Unknown"}
+                          </p>
+                        </div>
+                      )}
+
+                      {expandedAsset.score !== undefined && (
+                        <div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            Match Score
+                          </div>
+                          <p className="text-sm text-slate-200">
+                            {(expandedAsset.score * 100).toFixed(1)}%
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {expandedAsset.licenses &&
+                    expandedAsset.licenses.length > 0 && (
+                      <div className="pt-4 border-t border-slate-800/30">
+                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                          Licenses
+                        </label>
+                        <div className="mt-4 space-y-3">
+                          {expandedAsset.licenses.map(
+                            (license: any, index: number) => (
+                              <div
+                                key={index}
+                                className="bg-slate-900/40 border border-slate-700/50 rounded-lg p-4 space-y-3"
+                              >
+                                {license.templateName && (
+                                  <div>
+                                    <div className="text-xs text-slate-400 mb-1">
+                                      Template Name
+                                    </div>
+                                    <p className="text-sm text-slate-200 font-semibold">
+                                      {license.templateName}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {license.licenseTermsId && (
+                                  <div>
+                                    <div className="text-xs text-slate-400 mb-1">
+                                      License Terms ID
+                                    </div>
+                                    <p className="text-xs text-slate-300 font-mono break-all">
+                                      {license.licenseTermsId}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {license.terms && (
+                                  <div className="space-y-2 pt-2 border-t border-slate-700/30">
+                                    <div className="text-xs font-semibold text-slate-300 mb-2">
+                                      Terms:
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      {license.terms.commercialUse !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Commercial Use:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.commercialUse
+                                              ? "✓ Allowed"
+                                              : "✗ Not Allowed"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.derivativesAllowed !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Derivatives:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.derivativesAllowed
+                                              ? "✓ Allowed"
+                                              : "✗ Not Allowed"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.transferable !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Transferable:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.transferable
+                                              ? "✓ Yes"
+                                              : "✗ No"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.commercialAttribution !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Attribution Required:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.commercialAttribution
+                                              ? "✓ Yes"
+                                              : "✗ No"}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.commercialRevShare !==
+                                        undefined && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Rev Share:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {(
+                                              Number(
+                                                license.terms
+                                                  .commercialRevShare,
+                                              ) / 1000000
+                                            ).toFixed(2)}
+                                            %
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.licensingConfig?.mintingFee && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Minting Fee:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {(
+                                              Number(
+                                                license.licensingConfig
+                                                  .mintingFee,
+                                              ) / 1e18
+                                            ).toFixed(6)}{" "}
+                                            tokens
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.currency && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Currency:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.currency}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {license.terms.expiration && (
+                                        <div>
+                                          <span className="text-slate-400">
+                                            Expiration:
+                                          </span>
+                                          <p className="text-slate-200 font-semibold">
+                                            {license.terms.expiration}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {license.createdAt && (
+                                  <div className="pt-2 border-t border-slate-700/30">
+                                    <div className="text-xs text-slate-500">
+                                      Created:{" "}
+                                      {new Date(
+                                        license.createdAt,
+                                      ).toLocaleDateString()}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
+                </div>
               </div>
             </motion.div>
           </motion.div>

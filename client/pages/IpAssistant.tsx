@@ -193,73 +193,6 @@ const IpAssistant = () => {
   const [expandedAsset, setExpandedAsset] = useState<any>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-  const [showRemixOptions, setShowRemixOptions] = useState(false);
-  const [remixLoading, setRemixLoading] = useState(false);
-  const [remixResult, setRemixResult] = useState<{
-    success: boolean;
-    message: string;
-    ipId?: string;
-  } | null>(null);
-
-  const handleRemixWithAiEditor = useCallback(async () => {
-    if (!expandedAsset || !expandedAsset.ipId) return;
-
-    setRemixLoading(true);
-    setRemixResult(null);
-
-    try {
-      const licenseTermsId = "1";
-      const response = await fetch("/api/remix", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          parentIpId: expandedAsset.ipId,
-          licenseTermsId,
-          useGuestMode: guestMode || !authenticated,
-        }),
-      });
-
-      let data: any;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error("Failed to parse response JSON:", e);
-        setRemixResult({
-          success: false,
-          message: `Server error: ${response.status} ${response.statusText}`,
-        });
-        setRemixLoading(false);
-        return;
-      }
-
-      if (!response.ok) {
-        setRemixResult({
-          success: false,
-          message: data?.message || `Error: ${response.status}`,
-        });
-        setRemixLoading(false);
-        return;
-      }
-
-      setRemixResult({
-        success: true,
-        message: "Remix created successfully!",
-        ipId: data.ipId,
-      });
-
-      setTimeout(() => {
-        setShowRemixOptions(false);
-      }, 2000);
-    } catch (error: any) {
-      console.error("Remix error:", error);
-      setRemixResult({
-        success: false,
-        message: error?.message || "An error occurred during remix",
-      });
-    } finally {
-      setRemixLoading(false);
-    }
-  }, [expandedAsset, guestMode, authenticated]);
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -1128,7 +1061,7 @@ const IpAssistant = () => {
 
       const data = await response.json();
       console.log("[IP Check] Response data:", data);
-      const { totalCount, originalCount, remixCount } = data;
+      const { totalCount, originalCount } = data;
 
       setMessages((prev) =>
         prev.map((msg) =>
@@ -1138,7 +1071,6 @@ const IpAssistant = () => {
                 status: "complete",
                 address: trimmedAddress,
                 originalCount,
-                remixCount,
                 totalCount,
               }
             : msg,
@@ -1890,22 +1822,12 @@ const IpAssistant = () => {
                             <div className="text-base md:text-lg font-bold text-[#FF4DA6]">
                               Total IP Assets: {ipCheckMsg.totalCount}
                             </div>
-                            <div className="grid grid-cols-2 gap-2 md:gap-3">
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
-                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
-                                  Original
-                                </div>
-                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
-                                  {ipCheckMsg.originalCount}
-                                </div>
+                            <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
+                              <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
+                                Original
                               </div>
-                              <div className="bg-black/40 rounded-lg p-1.5 md:p-2">
-                                <div className="text-xs text-slate-400 mb-0.5 md:mb-1">
-                                  Remixes
-                                </div>
-                                <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
-                                  {ipCheckMsg.remixCount}
-                                </div>
+                              <div className="text-lg md:text-xl font-bold text-[#FF4DA6]">
+                                {ipCheckMsg.originalCount}
                               </div>
                             </div>
                             {ipCheckMsg.totalCount > 20 ? (
@@ -2375,7 +2297,7 @@ const IpAssistant = () => {
                               : "bg-green-500/20 text-green-300"
                           }`}
                         >
-                          {asset.isDerivative ? "Remix" : "Original"}
+                          Original
                         </span>
                         {asset.score !== undefined && (
                           <span className="text-xs px-2 py-1 bg-[#FF4DA6]/20 text-[#FF4DA6] rounded font-semibold whitespace-nowrap">
@@ -2619,7 +2541,7 @@ const IpAssistant = () => {
                       : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                   }`}
                 >
-                  {expandedAsset.isDerivative ? "🔄 Remix" : "✨ Original"}
+                  ✨ Original
                 </span>
 
                 {expandedAsset.score !== undefined && (
@@ -2661,183 +2583,12 @@ const IpAssistant = () => {
                 >
                   Buy
                 </button>
-                {!expandedAsset.mediaType?.startsWith("video") &&
-                !expandedAsset.mediaType?.startsWith("audio") ? (
-                  <button
-                    type="button"
-                    disabled={!authenticated && !guestMode}
-                    onClick={() => setShowRemixOptions(true)}
-                    className="text-sm px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-emerald-500/25 hover:bg-emerald-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
-                  >
-                    Remix
-                  </button>
-                ) : null}
               </div>
             </div>
           </motion.div>
         </motion.div>
       )}
 
-      <AnimatePresence>
-        {showRemixOptions && expandedAsset ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-slate-900/70 backdrop-blur-md"
-              onClick={() => setShowRemixOptions(false)}
-              aria-hidden="true"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10 w-full max-w-sm bg-slate-950/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/50 overflow-hidden"
-            >
-              <div className="flex items-center justify-between gap-4 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/30 px-6 py-4">
-                <h3 className="text-lg font-semibold text-slate-100">
-                  Remix Options
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowRemixOptions(false)}
-                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                  aria-label="Close"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="p-6 space-y-3">
-                {remixResult ? (
-                  <div
-                    className={`p-4 rounded-lg ${
-                      remixResult.success
-                        ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-200"
-                        : "bg-red-500/20 border border-red-500/30 text-red-200"
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      {remixResult.success ? (
-                        <svg
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                        </svg>
-                      )}
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">
-                          {remixResult.message}
-                        </p>
-                        {remixResult.ipId && (
-                          <p className="text-xs opacity-90 mt-1 font-mono">
-                            IP ID: {remixResult.ipId.slice(0, 8)}...
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ) : remixLoading ? (
-                  <div className="p-4 bg-slate-900/50 border border-slate-800/50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
-                        <span className="dot" />
-                        <span className="dot" />
-                        <span className="dot" />
-                      </div>
-                      <span className="text-slate-100 text-sm">
-                        Remixing...
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      disabled={remixLoading}
-                      onClick={() => {
-                        handleRemixWithAiEditor();
-                      }}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                    >
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                        <span>Remix with AI editor</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={true}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500/30"
-                    >
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span>Remix to Video (Coming soon)</span>
-                      </div>
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </DashboardLayout>
   );
 };

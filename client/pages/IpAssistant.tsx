@@ -2318,46 +2318,59 @@ const IpAssistant = () => {
               }
             }
 
+            if (msg.from === "user-image") {
+              return (
+                <motion.div
+                  key={`image-${index}`}
+                  {...getBubbleMotionProps(index)}
+                  className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
+                >
+                  <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
+                    <img
+                      src={msg.url}
+                      alt="Uploaded"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md"
+                      onLoad={() => {
+                        const imgKey = `img-${index}-${msg.url}`;
+                        if (!loadedImagesRef.current.has(imgKey)) {
+                          loadedImagesRef.current.add(imgKey);
+                          if (
+                            index === messages.length - 1 &&
+                            autoScrollNextRef.current
+                          ) {
+                            // throttle scrolling for performance
+                            scrollToBottomImmediate();
+                          }
+                        }
+                      }}
+                      onError={() => {
+                        const imgKey = `img-${index}-${msg.url}`;
+                        if (!loadedImagesRef.current.has(imgKey)) {
+                          loadedImagesRef.current.add(imgKey);
+                          if (
+                            index === messages.length - 1 &&
+                            autoScrollNextRef.current
+                          ) {
+                            // throttle scrolling for performance
+                            scrollToBottomImmediate();
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              );
+            }
             return (
               <motion.div
-                key={`image-${index}`}
+                key={`other-${index}`}
                 {...getBubbleMotionProps(index)}
-                className="flex justify-end mb-3 last:mb-1 px-3 md:px-8"
+                className="flex items-start mb-3 last:mb-1 px-3 md:px-8"
               >
-                <div className="rounded-md overflow-hidden max-w-[88%] md:max-w-[70%]">
-                  <img
-                    src={msg.url}
-                    alt="Uploaded"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-auto max-w-[90vw] sm:max-w-[420px] md:max-w-[720px] max-h-[50vh] object-contain block rounded-md"
-                    onLoad={() => {
-                      const imgKey = `img-${index}-${msg.url}`;
-                      if (!loadedImagesRef.current.has(imgKey)) {
-                        loadedImagesRef.current.add(imgKey);
-                        if (
-                          index === messages.length - 1 &&
-                          autoScrollNextRef.current
-                        ) {
-                          // throttle scrolling for performance
-                          scrollToBottomImmediate();
-                        }
-                      }
-                    }}
-                    onError={() => {
-                      const imgKey = `img-${index}-${msg.url}`;
-                      if (!loadedImagesRef.current.has(imgKey)) {
-                        loadedImagesRef.current.add(imgKey);
-                        if (
-                          index === messages.length - 1 &&
-                          autoScrollNextRef.current
-                        ) {
-                          // throttle scrolling for performance
-                          scrollToBottomImmediate();
-                        }
-                      }
-                    }}
-                  />
+                <div className="bg-slate-900/70 px-4 py-2.5 rounded-2xl max-w-[85%] md:max-w-[65%] break-words text-slate-100">
+                  <div>{getMessagePreview(msg as any)}</div>
                 </div>
               </motion.div>
             );

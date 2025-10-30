@@ -58,65 +58,6 @@ async function fetchIpaMetadata(ipaMetadataUri: string): Promise<any> {
   }
 }
 
-async function fetchParentIpDetails(
-  ipId: string,
-  apiKey: string,
-): Promise<{
-  parentIpIds?: string[];
-  parentLicenseTerms?: any[];
-} | null> {
-  try {
-    const response = await fetch(
-      "https://api.storyapis.com/api/v4/ip-assets/" + ipId,
-      {
-        headers: {
-          "X-Api-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        signal: AbortSignal.timeout(5000),
-      },
-    );
-
-    if (!response.ok) {
-      console.warn(
-        `[Search By Owner] Failed to fetch parent details for ${ipId}: ${response.status}`,
-      );
-      return null;
-    }
-
-    const data = await response.json();
-
-    const parentIpIds = data?.relationships?.parents
-      ? data.relationships.parents.map((p: any) => p.parentIpId)
-      : [];
-
-    const parentLicenseTerms = data?.relationships?.parents
-      ? data.relationships.parents.map((p: any) => ({
-          id: p.licenseTermsId,
-          parentIpId: p.parentIpId,
-          mintingFee: p.mintingFee || "0",
-          commercialRevShare: p.commercialRevShare || "0",
-        }))
-      : [];
-
-    console.log(
-      `[Search By Owner] Fetched parent details for ${ipId}:`,
-      { parentIpIds, parentLicenseTerms },
-    );
-
-    return {
-      parentIpIds: parentIpIds.length > 0 ? parentIpIds : undefined,
-      parentLicenseTerms:
-        parentLicenseTerms.length > 0 ? parentLicenseTerms : undefined,
-    };
-  } catch (error) {
-    console.warn(
-      `[Search By Owner] Error fetching parent details for ${ipId}:`,
-      error,
-    );
-    return null;
-  }
-}
 
 export const handleSearchByOwner: RequestHandler = async (req, res) => {
   try {

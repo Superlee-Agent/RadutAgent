@@ -935,10 +935,24 @@ const IpAssistant = () => {
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        void handleSend();
+        const isRemixWithRegister =
+          previewImage?.isRemixImage &&
+          input.toLowerCase().includes("register");
+        if (isRemixWithRegister) {
+          const warningMessage: Message = {
+            id: `msg-${Date.now()}`,
+            type: "bot",
+            content:
+              "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            timestamp: getCurrentTimestamp(),
+          };
+          setMessages((prev) => [...prev, warningMessage]);
+        } else {
+          void handleSend();
+        }
       }
     },
-    [handleSend],
+    [handleSend, previewImage, input],
   );
 
   const compressToBlob = useCallback(

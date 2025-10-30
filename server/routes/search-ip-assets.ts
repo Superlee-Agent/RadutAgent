@@ -178,6 +178,24 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
       let enrichedResults = searchResults;
 
       if (searchResults.length > 0) {
+        // Helper function to detect if URL points to a video
+        const isVideoUrl = (url: string): boolean => {
+          if (!url) return false;
+          const videoExtensions = [
+            ".mp4",
+            ".webm",
+            ".mov",
+            ".avi",
+            ".mkv",
+            ".flv",
+            ".wmv",
+            ".m4v",
+            ".3gp",
+          ];
+          const lowerUrl = url.toLowerCase();
+          return videoExtensions.some((ext) => lowerUrl.includes(ext));
+        };
+
         try {
           const ipIds = searchResults
             .slice(0, 20)

@@ -2659,7 +2659,9 @@ const IpAssistant = () => {
                     try {
                       const response = await fetch(expandedAsset.mediaUrl);
                       if (!response.ok) {
-                        throw new Error(`Failed to load image: ${response.status}`);
+                        throw new Error(
+                          `Failed to load image: ${response.status}`,
+                        );
                       }
                       const blob = await response.blob();
                       const fileName =

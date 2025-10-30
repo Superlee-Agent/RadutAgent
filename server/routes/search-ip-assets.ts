@@ -209,6 +209,13 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                 searchResults.map(async (result: any) => {
                   const metadata = metadataMap.get(result.ipId);
 
+                  console.log(
+                    `[Search IP] Asset ${result.ipId} - Search result isDerivative:`,
+                    result.isDerivative,
+                    ", Metadata isDerivative:",
+                    metadata?.isDerivative,
+                  );
+
                   // Determine media type from result or metadata
                   const mediaType =
                     result?.mediaType || metadata?.mediaType || "image";

@@ -54,6 +54,7 @@ const IpAssistant = () => {
   >(new Map());
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadedImagesRef = useRef<Set<string>>(new Set());
+  const expandedMediaContainerRef = useRef<HTMLDivElement | null>(null);
 
   // throttled scroll helpers to avoid excessive layout work on mobile
   const lastScrollRef = useRef<number>(0);
@@ -173,6 +174,7 @@ const IpAssistant = () => {
     name: string;
     url: string;
   } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,
@@ -2380,49 +2382,120 @@ const IpAssistant = () => {
                     "Untitled Asset"}
                 </h2>
               </div>
-              <button
-                type="button"
-                onClick={() => setExpandedAsset(null)}
-                className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                aria-label="Close"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const container = expandedMediaContainerRef.current;
+                    if (!container) return;
+
+                    if (!isFullscreen) {
+                      if (container.requestFullscreen) {
+                        container.requestFullscreen().catch(() => {});
+                      } else if ((container as any).webkitRequestFullscreen) {
+                        (container as any).webkitRequestFullscreen();
+                      } else if ((container as any).mozRequestFullScreen) {
+                        (container as any).mozRequestFullScreen();
+                      } else if ((container as any).msRequestFullscreen) {
+                        (container as any).msRequestFullscreen();
+                      }
+                      setIsFullscreen(true);
+                    } else {
+                      if (document.fullscreenElement) {
+                        if (document.exitFullscreen) {
+                          document.exitFullscreen().catch(() => {});
+                        } else if ((document as any).webkitExitFullscreen) {
+                          (document as any).webkitExitFullscreen();
+                        } else if ((document as any).mozCancelFullScreen) {
+                          (document as any).mozCancelFullScreen();
+                        } else if ((document as any).msExitFullscreen) {
+                          (document as any).msExitFullscreen();
+                        }
+                      }
+                      setIsFullscreen(false);
+                    }
+                  }}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
+                  title={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                  {isFullscreen ? (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 6h12v12H6z M3 3h8v8H3z M13 13h8v8h-8z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 8V4m0 0h4m-4 0l5 5m11-5v4m0-4h-4m4 0l-5 5M4 20v-4m0 4h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                      />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExpandedAsset(null)}
+                  className="flex-shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-[#FF4DA6]/20 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                  aria-label="Close"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Media Container */}
-            <div className="flex-1 overflow-y-auto flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-slate-950/50 min-h-0">
+            <div
+              ref={expandedMediaContainerRef}
+              className="flex-1 flex items-center justify-center bg-gradient-to-b from-slate-900/50 to-slate-950/50 min-h-0 overflow-hidden"
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
-                className="w-full h-full flex items-center justify-center p-4 sm:p-8"
+                className="w-full max-w-full aspect-video flex items-center justify-center bg-black/40 rounded-lg"
               >
                 {expandedAsset.mediaType?.startsWith("video") ? (
                   <div className="w-full h-full flex items-center justify-center">
                     <video
                       src={expandedAsset.mediaUrl}
                       poster={expandedAsset.thumbnailUrl}
-                      className="w-full h-full object-contain rounded-lg"
+                      className="w-full h-full object-contain"
                       controls
                       autoPlay
                       playsInline
                     />
                   </div>
                 ) : expandedAsset.mediaType?.startsWith("audio") ? (
-                  <div className="w-full flex flex-col items-center justify-center gap-6 py-12">
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-6 py-12">
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{
@@ -2454,7 +2527,7 @@ const IpAssistant = () => {
                     alt={
                       expandedAsset.title || expandedAsset.name || "IP Asset"
                     }
-                    className="max-w-full max-h-full object-contain rounded-lg"
+                    className="w-full h-full object-contain"
                   />
                 )}
               </motion.div>

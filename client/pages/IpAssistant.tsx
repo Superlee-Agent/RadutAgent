@@ -2898,9 +2898,11 @@ const IpAssistant = () => {
                                           <p className="text-slate-200 font-semibold">
                                             {(
                                               Number(
-                                                license.terms.commercialRevShare,
+                                                license.terms
+                                                  .commercialRevShare,
                                               ) / 1000000
-                                            ).toFixed(2)}%
+                                            ).toFixed(2)}
+                                            %
                                           </p>
                                         </div>
                                       )}
@@ -2913,7 +2915,8 @@ const IpAssistant = () => {
                                           <p className="text-slate-200 font-semibold">
                                             {(
                                               Number(
-                                                license.licensingConfig.mintingFee,
+                                                license.licensingConfig
+                                                  .mintingFee,
                                               ) / 1e18
                                             ).toFixed(6)}{" "}
                                             tokens

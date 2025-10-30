@@ -2714,55 +2714,105 @@ const IpAssistant = () => {
               </div>
 
               <div className="p-6 space-y-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowRemixOptions(false);
-                  }}
-                  className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                >
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                    <span>Remix with AI editor</span>
+                {remixResult ? (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      remixResult.success
+                        ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-200"
+                        : "bg-red-500/20 border border-red-500/30 text-red-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {remixResult.success ? (
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                        </svg>
+                      )}
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{remixResult.message}</p>
+                        {remixResult.ipId && (
+                          <p className="text-xs opacity-90 mt-1 font-mono">
+                            IP ID: {remixResult.ipId.slice(0, 8)}...
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </button>
+                ) : remixLoading ? (
+                  <div className="p-4 bg-slate-900/50 border border-slate-800/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
+                        <span className="dot" />
+                        <span className="dot" />
+                        <span className="dot" />
+                      </div>
+                      <span className="text-slate-100 text-sm">Remixing...</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      disabled={remixLoading}
+                      onClick={() => {
+                        handleRemixWithAiEditor();
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
+                    >
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                        <span>Remix with AI editor</span>
+                      </div>
+                    </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowRemixOptions(false);
-                  }}
-                  className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-[#FF4DA6]/20 hover:border-[#FF4DA6]/50 hover:text-[#FF4DA6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
-                >
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    <button
+                      type="button"
+                      disabled={true}
+                      className="w-full text-left px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-100 font-medium transition-all hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500/30"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span>Remix to Video</span>
-                  </div>
-                </button>
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>Remix to Video (Coming soon)</span>
+                      </div>
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>

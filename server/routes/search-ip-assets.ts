@@ -525,23 +525,23 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                   let parentIpIds: string[] = [];
                   let parentLicenseTerms: any[] = [];
 
-                  if (isDerivative && metadata?.parentIpIds) {
-                    parentIpIds = Array.isArray(metadata.parentIpIds)
-                      ? metadata.parentIpIds
-                      : [metadata.parentIpIds];
+                  // Fetch parent details if this is a derivative asset
+                  if (isDerivative && result.ipId) {
+                    const parentDetails = await fetchParentIpDetails(
+                      result.ipId,
+                      apiKey,
+                    );
 
-                    if (
-                      metadata?.parentLicenseTermsIds &&
-                      Array.isArray(metadata.parentLicenseTermsIds)
-                    ) {
-                      parentLicenseTerms = metadata.parentLicenseTermsIds.map(
-                        (termId: string, idx: number) => ({
-                          id: termId,
-                          parentIpId: parentIpIds[idx],
-                          mintingFee: metadata?.parentMintingFees?.[idx],
-                          commercialRevShare:
-                            metadata?.parentCommercialRevShares?.[idx],
-                        }),
+                    if (parentDetails) {
+                      parentIpIds = parentDetails.parentIpIds || [];
+                      parentLicenseTerms = parentDetails.parentLicenseTerms || [];
+
+                      console.log(
+                        `[Search IP] Retrieved parent info for ${result.ipId}:`,
+                        {
+                          parentCount: parentIpIds.length,
+                          termsCount: parentLicenseTerms.length,
+                        },
                       );
                     }
                   }

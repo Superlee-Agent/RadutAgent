@@ -196,6 +196,20 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
           return videoExtensions.some((ext) => lowerUrl.includes(ext));
         };
 
+        // Helper function to check Content-Type header for video
+        const checkContentType = async (url: string): Promise<boolean> => {
+          try {
+            const response = await fetch(url, {
+              method: "HEAD",
+              signal: AbortSignal.timeout(5000),
+            });
+            const contentType = response.headers.get("content-type") || "";
+            return contentType.startsWith("video/");
+          } catch {
+            return false;
+          }
+        };
+
         try {
           const ipIds = searchResults
             .slice(0, 20)

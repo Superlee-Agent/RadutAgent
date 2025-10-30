@@ -2666,6 +2666,7 @@ const IpAssistant = () => {
                         url: expandedAsset.mediaUrl,
                         isRemixImage: true,
                       });
+                      setInput("");
                       setShowRemixMenu(false);
                       setExpandedAsset(null);
                       setShowAssetDetails(false);

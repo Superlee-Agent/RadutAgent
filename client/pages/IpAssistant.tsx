@@ -2422,7 +2422,7 @@ const IpAssistant = () => {
 
             <div className="p-6 bg-slate-800/50 border-t border-slate-700">
               <h3 className="text-lg font-semibold text-slate-100 mb-2">
-                {expandedAsset.title || "Untitled"}
+                {expandedAsset.title || expandedAsset.name || "Untitled"}
               </h3>
               {expandedAsset.description && (
                 <p className="text-sm text-slate-300 mb-4">

@@ -1727,7 +1727,7 @@ const IpAssistant = () => {
                         className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
-                          ? "Registering��"
+                          ? "Registering���"
                           : !guestMode && !authenticated
                             ? "Register IP (requires auth)"
                             : "Register IP"}
@@ -2045,8 +2045,8 @@ const IpAssistant = () => {
         input={input}
         setInput={setInput}
         waiting={waiting}
-        previewImage={previewImage}
-        setPreviewImage={setPreviewImage}
+        previewImages={previewImages}
+        setPreviewImages={setPreviewImages}
         uploadRef={uploadRef}
         handleImage={handleImage}
         onSubmit={handleSend}
@@ -2067,6 +2067,7 @@ const IpAssistant = () => {
           setMessages((prev) => [...prev, warningMessage]);
           autoScrollNextRef.current = true;
         }}
+        onAddRemixImage={() => setShowAddRemixImageModal(true)}
       />
 
       <input
@@ -2988,7 +2989,7 @@ const IpAssistant = () => {
                                           </span>
                                           <p className="text-slate-200 font-semibold">
                                             {license.terms.derivativesAllowed
-                                              ? "✓ Allowed"
+                                              ? "�� Allowed"
                                               : "✗ Not Allowed"}
                                           </p>
                                         </div>

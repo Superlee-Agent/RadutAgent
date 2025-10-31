@@ -47,7 +47,7 @@ export const AddRemixImageModal = ({
 
     setSearching(true);
     try {
-      const response = await fetch("/api/ipfi-assistant/search-ips", {
+      const response = await fetch("/api/search-ip-assets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

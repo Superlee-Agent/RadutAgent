@@ -1162,11 +1162,14 @@ const IpAssistant = () => {
         lastUploadBlobRef.current = blob;
         lastUploadNameRef.current = f.name || "image.jpg";
 
-        setPreviewImage({
-          blob,
-          name: f.name || "image.jpg",
-          url,
-        });
+        setPreviewImages((prev) => ({
+          ...prev,
+          additionalImage: {
+            blob,
+            name: f.name || "image.jpg",
+            url,
+          },
+        }));
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message

@@ -2685,11 +2685,13 @@ const IpAssistant = () => {
                       const blob = await response.blob();
                       const fileName =
                         expandedAsset.title || expandedAsset.name || "IP Asset";
-                      setPreviewImage({
-                        blob: blob,
-                        name: fileName,
-                        url: expandedAsset.mediaUrl,
-                        isRemixImage: true,
+                      setPreviewImages({
+                        remixImage: {
+                          blob: blob,
+                          name: fileName,
+                          url: expandedAsset.mediaUrl,
+                        },
+                        additionalImage: null,
                       });
                       setInput("");
                       setShowRemixMenu(false);

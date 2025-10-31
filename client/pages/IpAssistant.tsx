@@ -170,12 +170,23 @@ const IpAssistant = () => {
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
   const [toolsOpen, setToolsOpen] = useState<boolean>(false);
-  const [previewImage, setPreviewImage] = useState<{
-    blob: Blob;
-    name: string;
-    url: string;
-    isRemixImage?: boolean;
-  } | null>(null);
+  const [previewImages, setPreviewImages] = useState<{
+    remixImage: {
+      blob: Blob;
+      name: string;
+      url: string;
+    } | null;
+    additionalImage: {
+      blob: Blob;
+      name: string;
+      url: string;
+    } | null;
+  }>({
+    remixImage: null,
+    additionalImage: null,
+  });
+  const [showAddRemixImageModal, setShowAddRemixImageModal] =
+    useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<

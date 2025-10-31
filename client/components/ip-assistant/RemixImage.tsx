@@ -4,7 +4,6 @@ interface PreviewImage {
   blob: Blob;
   name: string;
   url: string;
-  isRemixImage?: boolean;
 }
 
 interface PreviewImagesState {
@@ -18,7 +17,7 @@ interface RemixImageProps {
   onAddImageClick?: () => void;
 }
 
-const ImageThumb = ({
+const ImageItem = ({
   image,
   onRemove,
   label,
@@ -30,28 +29,30 @@ const ImageThumb = ({
   if (!image) return null;
 
   return (
-    <div className="relative flex-shrink-0">
-      <img
-        src={image.url}
-        alt={label}
-        className="h-16 w-16 object-cover rounded-lg"
-      />
-      <button
-        type="button"
-        onClick={onRemove}
-        className="absolute -top-2 -left-2 p-1 bg-red-500/80 text-white hover:bg-red-600 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
-        aria-label={`Remove ${label}`}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-3.5 w-3.5"
-          viewBox="0 0 24 24"
-          fill="currentColor"
+    <div className="flex items-center gap-2 min-w-0">
+      <div className="relative flex-shrink-0">
+        <img
+          src={image.url}
+          alt={label}
+          className="h-16 w-16 object-cover rounded-lg"
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute -top-2 -left-2 p-1 bg-red-500/80 text-white hover:bg-red-600 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
+          aria-label={`Remove ${label}`}
         >
-          <path d="M18.3 5.71a.996.996 0 00-1.41 0L12 10.59 7.11 5.7A.996.996 0 105.7 7.11L10.59 12 5.7 16.89a.996.996 0 101.41 1.41L12 13.41l4.89 4.89a.996.996 0 101.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-        </svg>
-      </button>
-      <div className="flex-1 min-w-0 ml-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-3.5 w-3.5"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M18.3 5.71a.996.996 0 00-1.41 0L12 10.59 7.11 5.7A.996.996 0 105.7 7.11L10.59 12 5.7 16.89a.996.996 0 101.41 1.41L12 13.41l4.89 4.89a.996.996 0 101.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+          </svg>
+        </button>
+      </div>
+      <div className="flex-1 min-w-0">
         <p className="text-xs text-slate-300 truncate">{image.name}</p>
         <p className="text-xs text-slate-400 mt-0.5">Ready to send</p>
       </div>
@@ -70,9 +71,9 @@ export const RemixImage = ({
 
   return (
     <div className="flex items-center gap-3 bg-slate-900/40 rounded-lg p-3">
-      {previewImages.remixImage && (
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <ImageThumb
+      <div className="flex flex-1 items-center gap-4 min-w-0">
+        {previewImages.remixImage && (
+          <ImageItem
             image={previewImages.remixImage}
             onRemove={() =>
               setPreviewImages((prev) => ({
@@ -82,23 +83,26 @@ export const RemixImage = ({
             }
             label="Remix Image"
           />
-        </div>
-      )}
+        )}
 
-      {previewImages.additionalImage && (
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <ImageThumb
-            image={previewImages.additionalImage}
-            onRemove={() =>
-              setPreviewImages((prev) => ({
-                ...prev,
-                additionalImage: null,
-              }))
-            }
-            label="Additional Image"
-          />
-        </div>
-      )}
+        {previewImages.additionalImage && (
+          <>
+            {previewImages.remixImage && (
+              <div className="w-px h-12 bg-slate-700/50" />
+            )}
+            <ImageItem
+              image={previewImages.additionalImage}
+              onRemove={() =>
+                setPreviewImages((prev) => ({
+                  ...prev,
+                  additionalImage: null,
+                }))
+              }
+              label="Additional Image"
+            />
+          </>
+        )}
+      </div>
 
       {previewImages.remixImage && !previewImages.additionalImage && (
         <button

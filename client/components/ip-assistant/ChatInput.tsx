@@ -199,7 +199,12 @@ const ChatInput = ({
 
     <button
       type="submit"
-      disabled={waiting || (!input.trim() && !previewImages.remixImage && !previewImages.additionalImage)}
+      disabled={
+        waiting ||
+        (!input.trim() &&
+          !previewImages.remixImage &&
+          !previewImages.additionalImage)
+      }
       className="flex-shrink-0 p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
       aria-label="Send message"
       onPointerDown={(event) => event.preventDefault()}

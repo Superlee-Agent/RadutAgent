@@ -3107,6 +3107,44 @@ const IpAssistant = () => {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <AddRemixImageModal
+        isOpen={showAddRemixImageModal}
+        onClose={() => setShowAddRemixImageModal(false)}
+        onSelectImage={async (asset: any) => {
+          try {
+            const response = await fetch(asset.mediaUrl);
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: Failed to fetch image`);
+            }
+            const blob = await response.blob();
+            const fileName = asset.title || asset.name || "IP Asset";
+
+            setPreviewImages((prev) => ({
+              ...prev,
+              additionalImage: {
+                blob,
+                name: fileName,
+                url: asset.mediaUrl,
+              },
+            }));
+            setShowAddRemixImageModal(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 100);
+          } catch (error) {
+            console.error("Failed to load additional image:", error);
+            autoScrollNextRef.current = true;
+            const errorMessage: Message = {
+              id: `msg-${Date.now()}`,
+              from: "bot",
+              text: `❌ Failed to load image. ${error instanceof Error ? error.message : "Unknown error"}`,
+              ts: getCurrentTimestamp(),
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+          }
+        }}
+      />
     </DashboardLayout>
   );
 };

@@ -760,7 +760,8 @@ const IpAssistant = () => {
 
   const handleSend = useCallback(async () => {
     const value = input.trim();
-    const hasPreview = previewImage !== null;
+    const hasPreview = previewImages.additionalImage !== null;
+    const imageToProcess = previewImages.additionalImage;
 
     if (!value && !hasPreview) return;
 
@@ -775,15 +776,15 @@ const IpAssistant = () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      if (hasPreview) {
+      if (hasPreview && imageToProcess) {
         pushMessage({
           from: "user-image",
-          url: previewImage.url,
+          url: imageToProcess.url,
           ts,
         });
         await new Promise((resolve) => setTimeout(resolve, 300));
-        await runDetection(previewImage.blob, previewImage.name);
-        setPreviewImage(null);
+        await runDetection(imageToProcess.blob, imageToProcess.name);
+        setPreviewImages({ remixImage: null, additionalImage: null });
       } else if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
@@ -894,16 +895,16 @@ const IpAssistant = () => {
             await searchIP(query, mediaType);
           } else {
             // Search intent detected but no query extracted - only process image if there's a preview
-            if (hasPreview) {
-              await runDetection(previewImage.blob, previewImage.name);
-              setPreviewImage(null);
+            if (hasPreview && imageToProcess) {
+              await runDetection(imageToProcess.blob, imageToProcess.name);
+              setPreviewImages({ remixImage: null, additionalImage: null });
             }
           }
         } else {
           // Not a search intent - only process image if there's a preview
-          if (hasPreview) {
-            await runDetection(previewImage.blob, previewImage.name);
-            setPreviewImage(null);
+          if (hasPreview && imageToProcess) {
+            await runDetection(imageToProcess.blob, imageToProcess.name);
+            setPreviewImages({ remixImage: null, additionalImage: null });
           }
         }
       } catch (error) {

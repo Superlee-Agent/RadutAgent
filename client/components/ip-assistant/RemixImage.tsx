@@ -71,38 +71,18 @@ export const RemixImage = ({
 
   return (
     <div className="flex items-center gap-3 bg-slate-900/40 rounded-lg p-3">
-      <div className="flex flex-1 items-center gap-4 min-w-0">
-        {previewImages.remixImage && (
-          <ImageItem
-            image={previewImages.remixImage}
-            onRemove={() =>
-              setPreviewImages((prev) => ({
-                ...prev,
-                remixImage: null,
-              }))
-            }
-            label="Remix Image"
-          />
-        )}
-
-        {previewImages.additionalImage && (
-          <>
-            {previewImages.remixImage && (
-              <div className="w-px h-12 bg-slate-700/50" />
-            )}
-            <ImageItem
-              image={previewImages.additionalImage}
-              onRemove={() =>
-                setPreviewImages((prev) => ({
-                  ...prev,
-                  additionalImage: null,
-                }))
-              }
-              label="Additional Image"
-            />
-          </>
-        )}
-      </div>
+      {previewImages.remixImage && (
+        <ImageItem
+          image={previewImages.remixImage}
+          onRemove={() =>
+            setPreviewImages((prev) => ({
+              ...prev,
+              remixImage: null,
+            }))
+          }
+          label="Remix Image"
+        />
+      )}
 
       {previewImages.remixImage && !previewImages.additionalImage && (
         <button
@@ -120,6 +100,24 @@ export const RemixImage = ({
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
           </svg>
         </button>
+      )}
+
+      {previewImages.additionalImage && (
+        <>
+          {previewImages.remixImage && (
+            <div className="w-px h-12 bg-slate-700/50" />
+          )}
+          <ImageItem
+            image={previewImages.additionalImage}
+            onRemove={() =>
+              setPreviewImages((prev) => ({
+                ...prev,
+                additionalImage: null,
+              }))
+            }
+            label="Additional Image"
+          />
+        </>
       )}
     </div>
   );

@@ -21,14 +21,17 @@ type PreviewImage = {
   url: string;
 };
 
+type PreviewImagesState = {
+  remixImage: PreviewImage | null;
+  additionalImage: PreviewImage | null;
+};
+
 type ChatInputProps = {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   waiting: boolean;
-  previewImage: (PreviewImage & { isRemixImage?: boolean }) | null;
-  setPreviewImage: Dispatch<
-    SetStateAction<(PreviewImage & { isRemixImage?: boolean }) | null>
-  >;
+  previewImages: PreviewImagesState;
+  setPreviewImages: Dispatch<SetStateAction<PreviewImagesState>>;
   uploadRef: MutableRefObject<HTMLInputElement | null>;
   handleImage: (event: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => Promise<void> | void;
@@ -39,14 +42,15 @@ type ChatInputProps = {
   suggestions: string[];
   setSuggestions: Dispatch<SetStateAction<string[]>>;
   onRemixRegisterWarning?: () => void;
+  onAddRemixImage?: () => void;
 };
 
 const ChatInput = ({
   input,
   setInput,
   waiting,
-  previewImage,
-  setPreviewImage,
+  previewImages,
+  setPreviewImages,
   uploadRef,
   handleImage,
   onSubmit,
@@ -57,13 +61,14 @@ const ChatInput = ({
   suggestions,
   setSuggestions,
   onRemixRegisterWarning,
+  onAddRemixImage,
 }: ChatInputProps) => (
   <form
     className="chat-input flex items-center gap-2 px-3 sm:px-[1.45rem] py-3.5 border-t-0 md:border-t md:border-[#FF4DA6]/10 bg-slate-950/60 md:bg-gradient-to-r md:from-slate-950/60 md:via-[#FF4DA6]/5 md:to-slate-950/60 flex-none sticky bottom-0 z-10 backdrop-blur-xl transition-all duration-300"
     onSubmit={(event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const isRemixWithRegister =
-        previewImage?.isRemixImage && input.toLowerCase().includes("register");
+        previewImages.remixImage && input.toLowerCase().includes("register");
       if (isRemixWithRegister) {
         onRemixRegisterWarning?.();
       } else {
@@ -74,8 +79,9 @@ const ChatInput = ({
   >
     <div className="flex-1 flex flex-col gap-2 bg-slate-900/60 rounded-2xl pl-2 pr-4 py-2 focus-within:ring-2 focus-within:ring-[#FF4DA6]/30 transition-all duration-300">
       <RemixImage
-        previewImage={previewImage}
-        setPreviewImage={setPreviewImage}
+        previewImages={previewImages}
+        setPreviewImages={setPreviewImages}
+        onAddImageClick={onAddRemixImage}
       />
 
       <div className="flex items-center gap-2">
@@ -193,7 +199,12 @@ const ChatInput = ({
 
     <button
       type="submit"
-      disabled={waiting || (!input.trim() && !previewImage)}
+      disabled={
+        waiting ||
+        (!input.trim() &&
+          !previewImages.remixImage &&
+          !previewImages.additionalImage)
+      }
       className="flex-shrink-0 p-2 rounded-lg bg-[#FF4DA6]/20 text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/30"
       aria-label="Send message"
       onPointerDown={(event) => event.preventDefault()}

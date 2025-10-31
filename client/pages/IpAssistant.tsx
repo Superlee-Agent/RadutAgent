@@ -7,6 +7,7 @@ import ChatHeaderActions from "@/components/ip-assistant/ChatHeaderActions";
 import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
 import ChatInput from "@/components/ip-assistant/ChatInput";
 import { YouTubeStyleSearchResults } from "@/components/ip-assistant/YouTubeStyleSearchResults";
+import { AddRemixImageModal } from "@/components/ip-assistant/AddRemixImageModal";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   getLicenseSettingsByGroup,
@@ -169,12 +170,23 @@ const IpAssistant = () => {
   );
   const [guestMode, setGuestMode] = useState<boolean>(false);
   const [toolsOpen, setToolsOpen] = useState<boolean>(false);
-  const [previewImage, setPreviewImage] = useState<{
-    blob: Blob;
-    name: string;
-    url: string;
-    isRemixImage?: boolean;
-  } | null>(null);
+  const [previewImages, setPreviewImages] = useState<{
+    remixImage: {
+      blob: Blob;
+      name: string;
+      url: string;
+    } | null;
+    additionalImage: {
+      blob: Blob;
+      name: string;
+      url: string;
+    } | null;
+  }>({
+    remixImage: null,
+    additionalImage: null,
+  });
+  const [showAddRemixImageModal, setShowAddRemixImageModal] =
+    useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
@@ -748,7 +760,8 @@ const IpAssistant = () => {
 
   const handleSend = useCallback(async () => {
     const value = input.trim();
-    const hasPreview = previewImage !== null;
+    const hasPreview = previewImages.additionalImage !== null;
+    const imageToProcess = previewImages.additionalImage;
 
     if (!value && !hasPreview) return;
 
@@ -763,15 +776,15 @@ const IpAssistant = () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (value.toLowerCase() === "register") {
-      if (hasPreview) {
+      if (hasPreview && imageToProcess) {
         pushMessage({
           from: "user-image",
-          url: previewImage.url,
+          url: imageToProcess.url,
           ts,
         });
         await new Promise((resolve) => setTimeout(resolve, 300));
-        await runDetection(previewImage.blob, previewImage.name);
-        setPreviewImage(null);
+        await runDetection(imageToProcess.blob, imageToProcess.name);
+        setPreviewImages({ remixImage: null, additionalImage: null });
       } else if (lastUploadBlobRef.current) {
         await runDetection(
           lastUploadBlobRef.current,
@@ -882,24 +895,24 @@ const IpAssistant = () => {
             await searchIP(query, mediaType);
           } else {
             // Search intent detected but no query extracted - only process image if there's a preview
-            if (hasPreview) {
-              await runDetection(previewImage.blob, previewImage.name);
-              setPreviewImage(null);
+            if (hasPreview && imageToProcess) {
+              await runDetection(imageToProcess.blob, imageToProcess.name);
+              setPreviewImages({ remixImage: null, additionalImage: null });
             }
           }
         } else {
           // Not a search intent - only process image if there's a preview
-          if (hasPreview) {
-            await runDetection(previewImage.blob, previewImage.name);
-            setPreviewImage(null);
+          if (hasPreview && imageToProcess) {
+            await runDetection(imageToProcess.blob, imageToProcess.name);
+            setPreviewImages({ remixImage: null, additionalImage: null });
           }
         }
       } catch (error) {
         console.error("Failed to parse search intent", error);
         // Only process image if there's a preview
-        if (hasPreview) {
-          await runDetection(previewImage.blob, previewImage.name);
-          setPreviewImage(null);
+        if (hasPreview && imageToProcess) {
+          await runDetection(imageToProcess.blob, imageToProcess.name);
+          setPreviewImages({ remixImage: null, additionalImage: null });
         }
       }
     } else if (value.toLowerCase() === "gradut") {
@@ -929,15 +942,21 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, previewImage, pushMessage, runDetection, searchIP, searchByOwner]);
+  }, [
+    input,
+    previewImages,
+    pushMessage,
+    runDetection,
+    searchIP,
+    searchByOwner,
+  ]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         const isRemixWithRegister =
-          previewImage?.isRemixImage &&
-          input.toLowerCase().includes("register");
+          previewImages.remixImage && input.toLowerCase().includes("register");
         if (isRemixWithRegister) {
           autoScrollNextRef.current = true;
           const warningMessage: Message = {
@@ -953,7 +972,7 @@ const IpAssistant = () => {
         }
       }
     },
-    [handleSend, previewImage, input],
+    [handleSend, previewImages, input],
   );
 
   const compressToBlob = useCallback(
@@ -1149,11 +1168,14 @@ const IpAssistant = () => {
         lastUploadBlobRef.current = blob;
         lastUploadNameRef.current = f.name || "image.jpg";
 
-        setPreviewImage({
-          blob,
-          name: f.name || "image.jpg",
-          url,
-        });
+        setPreviewImages((prev) => ({
+          ...prev,
+          additionalImage: {
+            blob,
+            name: f.name || "image.jpg",
+            url,
+          },
+        }));
       } catch (error: any) {
         console.error("handleImage error", error);
         const message = error?.message
@@ -1711,7 +1733,7 @@ const IpAssistant = () => {
                         className="rounded-md bg-[#FF4DA6]/20 px-4 py-2 text-sm font-semibold text-[#FF4DA6] hover:bg-[#FF4DA6]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {registerState.status === "minting"
-                          ? "Registering��"
+                          ? "Registering���"
                           : !guestMode && !authenticated
                             ? "Register IP (requires auth)"
                             : "Register IP"}
@@ -2029,8 +2051,8 @@ const IpAssistant = () => {
         input={input}
         setInput={setInput}
         waiting={waiting}
-        previewImage={previewImage}
-        setPreviewImage={setPreviewImage}
+        previewImages={previewImages}
+        setPreviewImages={setPreviewImages}
         uploadRef={uploadRef}
         handleImage={handleImage}
         onSubmit={handleSend}
@@ -2051,6 +2073,7 @@ const IpAssistant = () => {
           setMessages((prev) => [...prev, warningMessage]);
           autoScrollNextRef.current = true;
         }}
+        onAddRemixImage={() => setShowAddRemixImageModal(true)}
       />
 
       <input
@@ -2668,11 +2691,13 @@ const IpAssistant = () => {
                       const blob = await response.blob();
                       const fileName =
                         expandedAsset.title || expandedAsset.name || "IP Asset";
-                      setPreviewImage({
-                        blob: blob,
-                        name: fileName,
-                        url: expandedAsset.mediaUrl,
-                        isRemixImage: true,
+                      setPreviewImages({
+                        remixImage: {
+                          blob: blob,
+                          name: fileName,
+                          url: expandedAsset.mediaUrl,
+                        },
+                        additionalImage: null,
                       });
                       setInput("");
                       setShowRemixMenu(false);
@@ -2972,7 +2997,7 @@ const IpAssistant = () => {
                                           </span>
                                           <p className="text-slate-200 font-semibold">
                                             {license.terms.derivativesAllowed
-                                              ? "✓ Allowed"
+                                              ? "�� Allowed"
                                               : "✗ Not Allowed"}
                                           </p>
                                         </div>
@@ -3088,6 +3113,44 @@ const IpAssistant = () => {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <AddRemixImageModal
+        isOpen={showAddRemixImageModal}
+        onClose={() => setShowAddRemixImageModal(false)}
+        onSelectImage={async (asset: any) => {
+          try {
+            const response = await fetch(asset.mediaUrl);
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: Failed to fetch image`);
+            }
+            const blob = await response.blob();
+            const fileName = asset.title || asset.name || "IP Asset";
+
+            setPreviewImages((prev) => ({
+              ...prev,
+              additionalImage: {
+                blob,
+                name: fileName,
+                url: asset.mediaUrl,
+              },
+            }));
+            setShowAddRemixImageModal(false);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 100);
+          } catch (error) {
+            console.error("Failed to load additional image:", error);
+            autoScrollNextRef.current = true;
+            const errorMessage: Message = {
+              id: `msg-${Date.now()}`,
+              from: "bot",
+              text: `❌ Failed to load image. ${error instanceof Error ? error.message : "Unknown error"}`,
+              ts: getCurrentTimestamp(),
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+          }
+        }}
+      />
     </DashboardLayout>
   );
 };

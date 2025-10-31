@@ -942,14 +942,14 @@ const IpAssistant = () => {
         // ignore
       }
     }
-  }, [input, previewImage, pushMessage, runDetection, searchIP, searchByOwner]);
+  }, [input, previewImages, pushMessage, runDetection, searchIP, searchByOwner]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         const isRemixWithRegister =
-          previewImage?.isRemixImage &&
+          previewImages.remixImage &&
           input.toLowerCase().includes("register");
         if (isRemixWithRegister) {
           autoScrollNextRef.current = true;
@@ -966,7 +966,7 @@ const IpAssistant = () => {
         }
       }
     },
-    [handleSend, previewImage, input],
+    [handleSend, previewImages, input],
   );
 
   const compressToBlob = useCallback(

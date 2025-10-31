@@ -231,7 +231,9 @@ export const AddRemixImageModal = ({
                             >
                               <path d="M12 3v9.28c-.47-.46-1.12-.74-1.84-.74-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5V7h4V3h-4zm0 0" />
                             </svg>
-                            <span className="text-xs text-slate-400">Audio</span>
+                            <span className="text-xs text-slate-400">
+                              Audio
+                            </span>
                           </div>
                         ) : (
                           <img

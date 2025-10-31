@@ -910,9 +910,9 @@ const IpAssistant = () => {
       } catch (error) {
         console.error("Failed to parse search intent", error);
         // Only process image if there's a preview
-        if (hasPreview) {
-          await runDetection(previewImage.blob, previewImage.name);
-          setPreviewImage(null);
+        if (hasPreview && imageToProcess) {
+          await runDetection(imageToProcess.blob, imageToProcess.name);
+          setPreviewImages({ remixImage: null, additionalImage: null });
         }
       }
     } else if (value.toLowerCase() === "gradut") {

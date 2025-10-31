@@ -150,7 +150,6 @@ export const AddRemixImageModal = ({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeLinejoin="round"
                   strokeWidth={2}
                   d="M6 18L18 6M6 6l12 12"
                 />

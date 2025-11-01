@@ -101,7 +101,9 @@ export async function handleCheckRemixHash(
 ): Promise<void> {
   try {
     const { hash, pHash } = req.body;
-    console.log(`[Remix Hash] Check request - hash: ${hash?.substring(0, 16)}..., pHash: ${pHash}`);
+    console.log(
+      `[Remix Hash] Check request - hash: ${hash?.substring(0, 16)}..., pHash: ${pHash}`,
+    );
 
     if (!hash || typeof hash !== "string") {
       console.log("[Remix Hash] Hash invalid/missing");
@@ -113,7 +115,9 @@ export async function handleCheckRemixHash(
     const entry = await checkHashInWhitelist(hash.toLowerCase());
 
     if (entry) {
-      console.log(`[Remix Hash] EXACT MATCH: ${entry.metadata?.title || entry.title}`);
+      console.log(
+        `[Remix Hash] EXACT MATCH: ${entry.metadata?.title || entry.title}`,
+      );
       res.status(200).json({
         found: true,
         message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
@@ -144,13 +148,17 @@ export async function handleCheckRemixHash(
         const whitelist = JSON.parse(content);
 
         // Check pHash similarity using hamming distance
-        console.log(`[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash similarity...`);
+        console.log(
+          `[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash similarity...`,
+        );
         for (const entry of whitelist.entries || []) {
           const storedPHash = entry.metadata?.pHash || entry.pHash;
           if (storedPHash) {
             const distance = hammingDistance(pHash, storedPHash);
             const similarity = Math.round(((64 - distance) / 64) * 100);
-            console.log(`[Remix Hash]   Comparing: ${pHash} vs ${storedPHash} - distance: ${distance}, similarity: ${similarity}%`);
+            console.log(
+              `[Remix Hash]   Comparing: ${pHash} vs ${storedPHash} - distance: ${distance}, similarity: ${similarity}%`,
+            );
 
             // If similarity >= 75%, consider it a match
             if (similarity >= 75) {

@@ -801,7 +801,11 @@ const IpAssistant = () => {
           });
 
           if (!hashCheckResponse.ok) {
-            console.error("[Hash Detection] Response error:", hashCheckResponse.status, hashCheckResponse.statusText);
+            console.error(
+              "[Hash Detection] Response error:",
+              hashCheckResponse.status,
+              hashCheckResponse.statusText,
+            );
           }
 
           if (hashCheckResponse.ok) {
@@ -809,7 +813,9 @@ const IpAssistant = () => {
             console.log("[Hash Detection] Response:", hashCheck);
             if (hashCheck.found) {
               // Hash found - offer remix instead of blocking
-              console.log("[Hash Detection] MATCH FOUND! Showing remix offer...");
+              console.log(
+                "[Hash Detection] MATCH FOUND! Showing remix offer...",
+              );
               autoScrollNextRef.current = true;
               const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
@@ -829,7 +835,9 @@ const IpAssistant = () => {
               setPreviewImages({ remixImage: null, additionalImage: null });
               return;
             } else {
-              console.log("[Hash Detection] No match found, proceeding to OpenAI...");
+              console.log(
+                "[Hash Detection] No match found, proceeding to OpenAI...",
+              );
             }
           }
         } catch (hashError) {

@@ -122,8 +122,12 @@ export async function handleCheckRemixHash(
         const whitelist = JSON.parse(content);
 
         // Check pHash matches
+        console.log(`[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash match...`);
         for (const entry of whitelist.entries || []) {
           const storedPHash = entry.metadata?.pHash || entry.pHash;
+          if (storedPHash) {
+            console.log(`[Remix Hash]   Comparing: ${pHash} vs ${storedPHash}`);
+          }
           if (storedPHash && storedPHash === pHash) {
             console.log(
               `[Remix Hash] pHash match found! IP: ${entry.metadata?.ipId || entry.ipId}`,

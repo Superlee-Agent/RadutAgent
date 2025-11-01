@@ -216,6 +216,19 @@ export async function handleCheckRemixHash(
                 timestamp: entry.metadata?.timestamp || entry.timestamp,
                 matchType: "pHash",
                 similarity,
+                // Parent IP Details
+                parentIpIds: entry.metadata?.parentIpIds,
+                licenseTermsIds: entry.metadata?.licenseTermsIds,
+                licenseTemplates: entry.metadata?.licenseTemplates,
+                // License Configuration
+                royaltyContext: entry.metadata?.royaltyContext,
+                maxMintingFee: entry.metadata?.maxMintingFee,
+                maxRts: entry.metadata?.maxRts,
+                maxRevenueShare: entry.metadata?.maxRevenueShare,
+                licenseVisibility: entry.metadata?.licenseVisibility,
+                // Derivative Status
+                isDerivative: entry.metadata?.isDerivative,
+                parentsCount: entry.metadata?.parentsCount,
               });
               return;
             }

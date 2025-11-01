@@ -151,7 +151,17 @@
         "pHash": "40604cffff700000",
         "visionDescription": "The image features the word \"RAZOR\" written in red, bold, blocky letters with a slightly uneven, hand-drawn style. The background is black, creating a stark contrast with the red text. In the top left corner, there is a white circular logo with a stylized letter \"S\" inside it. The overall vibe is minimalistic and striking, with a focus on the text and contrasting colors."
       }
+    },
+    {
+      "hash": "150b9dc4dba66143ab1989c7fedddda31dcb2681e5057cf45bfc912cab112642",
+      "metadata": {
+        "ipId": "0xEb273843E0A6d39Fc5bDDa9F8861d7A8D7026Ed4",
+        "title": "stingray",
+        "timestamp": 1762017493719,
+        "pHash": "ffe7c3c3c3c7efff",
+        "visionDescription": "The image depicts an abstract drawing of a person viewed from behind, wearing a blue shirt with brown hair. Surrounding the person are three large, floating, dark blue whale-like shapes. The background is a soft blue oval, giving the scene a surreal or dreamlike quality. The style is simple and cartoon-like, with bold outlines and minimal details."
+      }
     }
   ],
-  "lastUpdated": 1762017350028
+  "lastUpdated": 1762017493722
 }

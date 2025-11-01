@@ -3483,6 +3483,97 @@ const IpAssistant = () => {
                         </div>
                       </div>
                     )}
+
+                  {/* License Configuration Section */}
+                  {(expandedAsset.royaltyContext ||
+                    expandedAsset.maxMintingFee ||
+                    expandedAsset.maxRts ||
+                    expandedAsset.maxRevenueShare ||
+                    expandedAsset.licenseVisibility) && (
+                    <div className="pt-4 border-t border-slate-800/30">
+                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                        License Configuration
+                      </label>
+                      <div className="mt-4 bg-slate-900/40 border border-slate-700/50 rounded-lg p-4 grid grid-cols-2 gap-4">
+                        {expandedAsset.royaltyContext && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Royalty Context
+                            </div>
+                            <p className="text-sm text-slate-200 font-mono break-all">
+                              {expandedAsset.royaltyContext}
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxMintingFee && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max Minting Fee
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxMintingFee) / 1e18 || 0}{" "}
+                              tokens
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxRts && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max RTS
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxRts) / 1e6 || 0}%
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxRevenueShare && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max Revenue Share
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxRevenueShare) / 1e6 || 0}%
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.licenseVisibility && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              License Visibility
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {expandedAsset.licenseVisibility}
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.licenseTemplates &&
+                          expandedAsset.licenseTemplates.length > 0 && (
+                            <div className="col-span-2">
+                              <div className="text-xs text-slate-400 mb-2">
+                                License Templates
+                              </div>
+                              <div className="space-y-2">
+                                {expandedAsset.licenseTemplates.map(
+                                  (template: string, idx: number) => (
+                                    <p
+                                      key={idx}
+                                      className="text-xs text-slate-300 font-mono break-all bg-slate-900/50 rounded px-2 py-1.5"
+                                    >
+                                      {template}
+                                    </p>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

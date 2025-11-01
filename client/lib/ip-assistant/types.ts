@@ -6,6 +6,14 @@ export type BotMessage = {
   verification?: { label: string; code: string } | string | null;
   ctxKey?: string;
   isProcessing?: boolean;
+  action?: {
+    type: "remix";
+    label: string;
+    imageBlob: Blob;
+    imageName: string;
+    ipId: string;
+    title: string;
+  };
 };
 
 export type Message =

@@ -2630,7 +2630,10 @@ const IpAssistant = () => {
                         asset.mediaType?.startsWith("video") ? (
                           <div
                             className="w-full h-full cursor-pointer relative group/video"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                           >
                             <video
                               key={asset.ipId}
@@ -3460,7 +3463,7 @@ const IpAssistant = () => {
                                           <p className="text-slate-200 font-semibold">
                                             {license.terms.commercialUse
                                               ? "✓ Allowed"
-                                              : "✗ Not Allowed"}
+                                              : "��� Not Allowed"}
                                           </p>
                                         </div>
                                       )}

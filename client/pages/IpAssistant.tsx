@@ -1379,7 +1379,9 @@ const IpAssistant = () => {
                           onClick={async () => {
                             try {
                               // Add image to remix whitelist
-                              const hash = await calculateBlobHash(msg.action.imageBlob);
+                              const hash = await calculateBlobHash(
+                                msg.action.imageBlob,
+                              );
 
                               // Load image to preview with remix mode
                               const imageName = msg.action.imageName;
@@ -1387,7 +1389,9 @@ const IpAssistant = () => {
                                 remixImage: {
                                   blob: msg.action.imageBlob,
                                   name: imageName,
-                                  url: URL.createObjectURL(msg.action.imageBlob),
+                                  url: URL.createObjectURL(
+                                    msg.action.imageBlob,
+                                  ),
                                 },
                                 additionalImage: null,
                               });

@@ -791,6 +791,7 @@ const IpAssistant = () => {
         // Hash Detection - Check before OpenAI analysis
         try {
           const hash = await calculateBlobHash(imageToProcess.blob);
+          console.log("[Hash Detection] Checking hash:", hash);
           const hashCheckResponse = await fetch("/api/check-remix-hash", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -799,6 +800,7 @@ const IpAssistant = () => {
 
           if (hashCheckResponse.ok) {
             const hashCheck = await hashCheckResponse.json();
+            console.log("[Hash Detection] Response:", hashCheck);
             if (hashCheck.found) {
               // Hash found - offer remix instead of blocking
               autoScrollNextRef.current = true;

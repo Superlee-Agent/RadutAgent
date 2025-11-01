@@ -79,37 +79,34 @@ async function getImageVisionDescription(
     // Convert buffer to base64
     const base64 = imageBuffer.toString("base64");
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:image/jpeg;base64,${base64}`,
-                  },
-                },
-                {
-                  type: "text",
-                  text: "Describe this image in detail. Focus on: main subjects, objects, characters, colors, style, distinctive features. Be concise but specific. Output only the description without any preamble.",
-                },
-              ],
-            },
-          ],
-          max_tokens: 300,
-        }),
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
-    );
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64}`,
+                },
+              },
+              {
+                type: "text",
+                text: "Describe this image in detail. Focus on: main subjects, objects, characters, colors, style, distinctive features. Be concise but specific. Output only the description without any preamble.",
+              },
+            ],
+          },
+        ],
+        max_tokens: 300,
+      }),
+    });
 
     if (!response.ok) {
       const error = await response.text();
@@ -142,7 +139,12 @@ export async function handleCaptureAssetVision(
   res: Response,
 ): Promise<void> {
   try {
-    const { mediaUrl, ipId = "unknown", title = "IP Asset", mediaType = "image/png" } = req.body;
+    const {
+      mediaUrl,
+      ipId = "unknown",
+      title = "IP Asset",
+      mediaType = "image/png",
+    } = req.body;
 
     if (!mediaUrl || typeof mediaUrl !== "string") {
       return res.status(400).json({ error: "mediaUrl is required" });
@@ -200,13 +202,19 @@ export async function handleCaptureAssetVision(
         console.log(`[Capture Vision] Calculated pHash for ${ipId}: ${pHash}`);
       }
     } catch (error) {
-      console.warn(`[Capture Vision] Failed to calculate pHash for ${ipId}:`, error);
+      console.warn(
+        `[Capture Vision] Failed to calculate pHash for ${ipId}:`,
+        error,
+      );
     }
 
     // Get vision description
     let visionDescription: string | undefined;
     try {
-      visionDescription = await getImageVisionDescription(imageBuffer, mediaType);
+      visionDescription = await getImageVisionDescription(
+        imageBuffer,
+        mediaType,
+      );
       if (visionDescription) {
         console.log(
           `[Capture Vision] Got vision description for ${ipId} (${visionDescription.length} chars)`,
@@ -230,9 +238,7 @@ export async function handleCaptureAssetVision(
       };
 
       await addHashToWhitelist(hash, metadata);
-      console.log(
-        `[Capture Vision] Successfully added ${ipId} to whitelist`,
-      );
+      console.log(`[Capture Vision] Successfully added ${ipId} to whitelist`);
 
       res.status(200).json({
         success: true,

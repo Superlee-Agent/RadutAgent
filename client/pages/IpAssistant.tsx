@@ -3269,21 +3269,34 @@ const IpAssistant = () => {
               // Continue with original blob if watermarking fails
             }
 
-            // Calculate hash and pHash, then add to whitelist
+            // Calculate hash, pHash, and vision description, then add to whitelist
             try {
               const hash = await calculateBlobHash(blob);
               const pHash = await calculatePerceptualHash(blob);
+
+              // Get vision description for similarity detection
+              let visionDescription: string | undefined;
+              try {
+                const visionResult = await getImageVisionDescription(blob);
+                if (visionResult?.success) {
+                  visionDescription = visionResult.description;
+                }
+              } catch (visionError) {
+                console.warn("Vision description failed, continuing:", visionError);
+              }
+
               await fetch("/api/add-remix-hash", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   hash,
                   pHash,
+                  visionDescription,
                   ipId: asset.ipId || "unknown",
                   title: asset.title || asset.name || "Additional Image",
                 }),
               });
-              console.log("Hash added to whitelist:", hash, "pHash:", pHash);
+              console.log("Hash added to whitelist:", hash, "pHash:", pHash, "visionDescription:", visionDescription ? "stored" : "skipped");
             } catch (hashError) {
               console.warn("Failed to add hash to whitelist:", hashError);
               // Continue even if hash whitelist fails

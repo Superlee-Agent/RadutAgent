@@ -71,21 +71,21 @@ export async function handleAddRemixHash(
 /**
  * Check if hash exists in remix whitelist
  * POST /api/check-remix-hash
- * Body: { hash: string }
+ * Body: { hash: string, pHash?: string }
  */
 export async function handleCheckRemixHash(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const { hash } = req.body;
+    const { hash, pHash } = req.body;
 
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
       return;
     }
 
-    // Check whitelist
+    // Check exact hash match first
     const entry = await checkHashInWhitelist(hash.toLowerCase());
 
     if (entry) {
@@ -96,12 +96,51 @@ export async function handleCheckRemixHash(
         title: entry.title,
         timestamp: entry.timestamp,
       });
-    } else {
-      res.status(200).json({
-        found: false,
-        message: "Hash not found in whitelist",
-      });
+      return;
     }
+
+    // If no exact match and pHash provided, check pHash similarity
+    if (pHash) {
+      console.log(`[Remix Hash] Exact hash not found, checking pHash: ${pHash}`);
+
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const whitelistPath = path.join(
+        process.cwd(),
+        "server",
+        "data",
+        "remix-hashes.json",
+      );
+
+      try {
+        const content = await fs.readFile(whitelistPath, "utf-8");
+        const whitelist = JSON.parse(content);
+
+        // Check pHash matches
+        for (const entry of whitelist.entries || []) {
+          const storedPHash = entry.metadata?.pHash || entry.pHash;
+          if (storedPHash && storedPHash === pHash) {
+            console.log(`[Remix Hash] pHash match found! IP: ${entry.metadata?.ipId || entry.ipId}`);
+            res.status(200).json({
+              found: true,
+              message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
+              ipId: entry.metadata?.ipId || entry.ipId,
+              title: entry.metadata?.title || entry.title,
+              timestamp: entry.metadata?.timestamp || entry.timestamp,
+            });
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("[Remix Hash] Error reading whitelist for pHash check:", err);
+      }
+    }
+
+    // No match found
+    res.status(200).json({
+      found: false,
+      message: "Hash not found in whitelist",
+    });
   } catch (error) {
     console.error("Error checking remix hash:", error);
     res.status(500).json({

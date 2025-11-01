@@ -4,11 +4,11 @@ import path from "path";
 
 /**
  * SINGLE POWERFUL SOLUTION: OpenAI Vision-based Image Detection
- * 
+ *
  * Extracts semantic features from images using GPT-4 Vision
  * Compares with stored descriptions to detect similar images
  * Works better than pHash because it understands image content/meaning
- * 
+ *
  * POST /api/vision-image-detection
  */
 
@@ -177,7 +177,8 @@ export async function handleVisionImageDetection(
 
     for (const entry of whitelist.entries || []) {
       // Support both old and new whitelist formats
-      const visionDesc = entry.metadata?.visionDescription || entry.visionDescription;
+      const visionDesc =
+        entry.metadata?.visionDescription || entry.visionDescription;
 
       if (!visionDesc) {
         // Skip entries without vision descriptions

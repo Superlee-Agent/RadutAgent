@@ -204,7 +204,9 @@ export async function handleAdvancedImageDetection(
       blocked: false,
       confidence: 0,
       tier: "none" as const,
-      details: { error: error instanceof Error ? error.message : "Unknown error" },
+      details: {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
     });
   }
 }

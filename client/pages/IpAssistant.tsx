@@ -2784,12 +2784,16 @@ const IpAssistant = () => {
                         // Get vision description for similarity detection
                         let visionDescription: string | undefined;
                         try {
-                          const visionResult = await getImageVisionDescription(blob);
+                          const visionResult =
+                            await getImageVisionDescription(blob);
                           if (visionResult?.success) {
                             visionDescription = visionResult.description;
                           }
                         } catch (visionError) {
-                          console.warn("Vision description failed, continuing:", visionError);
+                          console.warn(
+                            "Vision description failed, continuing:",
+                            visionError,
+                          );
                         }
 
                         await fetch("/api/add-remix-hash", {
@@ -3282,7 +3286,10 @@ const IpAssistant = () => {
                   visionDescription = visionResult.description;
                 }
               } catch (visionError) {
-                console.warn("Vision description failed, continuing:", visionError);
+                console.warn(
+                  "Vision description failed, continuing:",
+                  visionError,
+                );
               }
 
               await fetch("/api/add-remix-hash", {
@@ -3296,7 +3303,14 @@ const IpAssistant = () => {
                   title: asset.title || asset.name || "Additional Image",
                 }),
               });
-              console.log("Hash added to whitelist:", hash, "pHash:", pHash, "visionDescription:", visionDescription ? "stored" : "skipped");
+              console.log(
+                "Hash added to whitelist:",
+                hash,
+                "pHash:",
+                pHash,
+                "visionDescription:",
+                visionDescription ? "stored" : "skipped",
+              );
             } catch (hashError) {
               console.warn("Failed to add hash to whitelist:", hashError);
               // Continue even if hash whitelist fails

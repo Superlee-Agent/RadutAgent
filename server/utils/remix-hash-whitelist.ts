@@ -5,7 +5,7 @@ import path from "path";
  * Refactored Whitelist Structure:
  * - Hash: SHA256 of pure image pixels only (no metadata)
  * - Metadata: Stored separately (ipId, title, timestamp, pHash, visionDescription)
- * 
+ *
  * This separation allows:
  * 1. Pure image hash matching
  * 2. Flexible metadata storage

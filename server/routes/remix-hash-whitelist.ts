@@ -232,10 +232,12 @@ export async function handleCheckRemixHash(
               );
               // Get derivatives allowed status from licenses
               const licenses = entry.metadata?.licenses || [];
+              // If licenses exist, check derivativesAllowed
+              // If no licenses (legacy data), assume allow remix
               const derivativesAllowed =
                 licenses.length > 0
                   ? licenses[0].terms?.derivativesAllowed === true
-                  : false; // Default to false (safer) if no license info
+                  : true; // Legacy entries without license info assume remix allowed
 
               res.status(200).json({
                 found: true,

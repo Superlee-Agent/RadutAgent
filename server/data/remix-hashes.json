@@ -374,7 +374,17 @@
         "isDerivative": false,
         "parentsCount": 0
       }
+    },
+    {
+      "hash": "63d74fecd993bf5cc9722944e6e8a72895db1a485b152d855f375b81f735a07e",
+      "metadata": {
+        "ipId": "0x406004085758511d432497d338bDA38a27915DD9",
+        "title": "PINGU",
+        "timestamp": 1762026667877,
+        "pHash": "ffc3c3c3c3e7e7ff",
+        "visionDescription": "The image features a cute cartoon character with a simple, chibi-like design. The character has short black hair, round cheeks, and a cheerful expression with big brown eyes and a small smile. She is wearing a cream-colored shirt with a heart design on the chest and a pink skirt. Her footwear is not detailed but appears to be small and white. The style is minimalistic with clean lines and soft pastel colors, emphasizing a playful and endearing appearance."
+      }
     }
   ],
-  "lastUpdated": 1762025142581
+  "lastUpdated": 1762026667878
 }

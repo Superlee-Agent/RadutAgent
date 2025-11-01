@@ -2775,14 +2775,16 @@ const IpAssistant = () => {
                         // Continue with original blob if watermarking fails
                       }
 
-                      // Calculate hash and add to whitelist
+                      // Calculate hash and pHash, then add to whitelist
                       try {
                         const hash = await calculateBlobHash(blob);
+                        const pHash = await calculatePerceptualHash(blob);
                         await fetch("/api/add-remix-hash", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({
                             hash,
+                            pHash,
                             ipId: expandedAsset.ipId || "unknown",
                             title:
                               expandedAsset.title ||
@@ -2790,7 +2792,7 @@ const IpAssistant = () => {
                               "Remix Image",
                           }),
                         });
-                        console.log("Hash added to whitelist:", hash);
+                        console.log("Hash added to whitelist:", hash, "pHash:", pHash);
                       } catch (hashError) {
                         console.warn(
                           "Failed to add hash to whitelist:",

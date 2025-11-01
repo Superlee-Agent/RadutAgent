@@ -190,13 +190,13 @@ export async function handleVisionImageDetection(
         visionDesc,
       );
 
-      if (similarity >= 65 && similarity > bestSimilarity) {
+      if (similarity >= 50 && similarity > bestSimilarity) {
         bestSimilarity = similarity;
         bestMatch = entry;
       }
     }
 
-    // Block if similarity >= 65% (sensitive threshold)
+    // Block if similarity >= 50% (more lenient for same-image detection)
     if (bestSimilarity >= 65 && bestMatch) {
       const matchedTitle = bestMatch.metadata?.title || bestMatch.title;
       const matchedIpId = bestMatch.metadata?.ipId || bestMatch.ipId;

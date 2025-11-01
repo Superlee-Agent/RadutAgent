@@ -276,20 +276,6 @@ export const YouTubeStyleSearchResults = ({
                     )}
                   </div>
 
-                  {/* Remix Button - Show only if derivatives allowed */}
-                  {allowsDerivatives(asset) && onRemix && (
-                    <motion.button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemix(asset);
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="mt-3 w-full py-2 px-3 rounded-lg bg-[#FF4DA6]/20 hover:bg-[#FF4DA6]/30 text-[#FF4DA6] font-semibold text-sm border border-[#FF4DA6]/50 hover:border-[#FF4DA6] transition-all"
-                    >
-                      🎨 Remix
-                    </motion.button>
-                  )}
                 </div>
               </div>
             ))}

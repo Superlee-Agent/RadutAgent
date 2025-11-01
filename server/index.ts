@@ -180,6 +180,11 @@ export function createServer() {
   // Verify watermark endpoint (POST /api/verify-watermark)
   app.post("/api/verify-watermark", upload.single("image"), handleVerifyWatermark);
 
+  // Remix hash whitelist endpoints
+  app.post("/api/add-remix-hash", handleAddRemixHash);
+  app.post("/api/check-remix-hash", handleCheckRemixHash);
+  app.get("/api/_admin/remix-hashes", handleGetRemixHashes);
+
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
     try {

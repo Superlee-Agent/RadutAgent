@@ -265,7 +265,17 @@
         "isDerivative": false,
         "parentsCount": 0
       }
+    },
+    {
+      "hash": "efbf6a17a0ca7fc8aef259ddd233adaeb871c92b48cf15044f6c3559fdc59bc2",
+      "metadata": {
+        "ipId": "0x6310A2AEf96b0Aa20f99771ae7830611b680dd7E",
+        "title": "1514: Mycelium Remix #93727",
+        "timestamp": 1762023333292,
+        "pHash": "fff7e3c3c7c7c3ff",
+        "visionDescription": "A cartoon drawing of a yellow chick is depicted lying on its back with blue tears streaming from its eyes. The chick has large, wide-open eyes and an orange beak. Its wings and feet are slightly lifted. Below the chick, the word \"MUSHYYYYY\" is written in bold, black uppercase letters. The overall style is simplistic and whimsical."
+      }
     }
   ],
-  "lastUpdated": 1762023212886
+  "lastUpdated": 1762023333293
 }

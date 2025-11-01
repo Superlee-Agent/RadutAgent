@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
@@ -10,6 +11,16 @@ import { handleSearchByOwner } from "./routes/search-by-owner.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
 import { handleResolveIpName } from "./routes/resolve-ip-name.js";
+import handleVerifyWatermark from "./routes/verify-watermark.js";
+import {
+  handleAddRemixHash,
+  handleCheckRemixHash,
+  handleGetRemixHashes,
+} from "./routes/remix-hash-whitelist.js";
+import { handleCheckImageSimilarity } from "./routes/check-image-similarity.js";
+import { handleVisionImageDetection } from "./routes/vision-image-detection.js";
+import { handleAnalyzeImageVision } from "./routes/analyze-image-vision.js";
+import { handleCaptureAssetVision } from "./routes/capture-asset-vision.js";
 
 async function fetchParentIpDetails(
   childIpId: string,
@@ -63,6 +74,12 @@ async function fetchParentIpDetails(
 
 export function createServer() {
   const app = express();
+
+  // Setup multer for image upload handling in watermark verification
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 8 * 1024 * 1024 },
+  });
 
   // Middleware
   // CORS configuration - allow requests from the same origin and common localhost/preview domains
@@ -163,6 +180,38 @@ export function createServer() {
 
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);
+
+  // Verify watermark endpoint (POST /api/verify-watermark)
+  app.post(
+    "/api/verify-watermark",
+    upload.single("image"),
+    handleVerifyWatermark,
+  );
+
+  // Remix hash whitelist endpoints
+  app.post("/api/add-remix-hash", handleAddRemixHash);
+  app.post("/api/check-remix-hash", handleCheckRemixHash);
+  app.get("/api/_admin/remix-hashes", handleGetRemixHashes);
+
+  // Capture asset vision endpoint (silently on asset click)
+  app.post("/api/capture-asset-vision", handleCaptureAssetVision);
+
+  // Image similarity detection endpoint
+  app.post(
+    "/api/check-image-similarity",
+    upload.single("image"),
+    handleCheckImageSimilarity,
+  );
+
+  // Vision-based image detection endpoint (most powerful)
+  app.post(
+    "/api/vision-image-detection",
+    upload.single("image"),
+    handleVisionImageDetection,
+  );
+
+  // Analyze image with Vision API endpoint
+  app.post("/api/analyze-image-vision", handleAnalyzeImageVision);
 
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {

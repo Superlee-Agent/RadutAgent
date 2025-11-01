@@ -24,6 +24,10 @@ import {
   summaryFromAnswer,
   truncateAddress,
 } from "@/lib/ip-assistant/utils";
+import { applyWatermarkFromAsset } from "@/lib/utils/apply-watermark";
+import { calculateBlobHash } from "@/lib/utils/hash";
+import { calculatePerceptualHash } from "@/lib/utils/perceptual-hash";
+import { getImageVisionDescription } from "@/lib/utils/vision-api";
 import {
   CURRENT_SESSION_KEY,
   IP_ASSISTANT_AVATAR,
@@ -208,6 +212,21 @@ const IpAssistant = () => {
   const [showRemixMenu, setShowRemixMenu] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [capturedAssetIds, setCapturedAssetIds] = useState<Set<string>>(
+    new Set(),
+  );
+
+  // Check if asset allows derivatives based on license
+  const allowsDerivatives = (asset: any): boolean => {
+    if (!asset?.licenses || !Array.isArray(asset.licenses)) {
+      return false;
+    }
+    return asset.licenses.some(
+      (license: any) =>
+        license.terms?.derivativesAllowed === true ||
+        license.derivativesAllowed === true,
+    );
+  };
 
   useEffect(() => {
     if (activeDetail === null) return;
@@ -783,9 +802,124 @@ const IpAssistant = () => {
           ts,
         });
         await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Hash Detection - Check before OpenAI analysis
+        try {
+          const hash = await calculateBlobHash(imageToProcess.blob);
+          const pHash = await calculatePerceptualHash(imageToProcess.blob);
+          console.log("[Hash Detection] SHA256:", hash, "pHash:", pHash);
+
+          const hashCheckResponse = await fetch("/api/check-remix-hash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hash, pHash }),
+          });
+
+          if (!hashCheckResponse.ok) {
+            console.error(
+              "[Hash Detection] Response error:",
+              hashCheckResponse.status,
+              hashCheckResponse.statusText,
+            );
+          }
+
+          if (hashCheckResponse.ok) {
+            const hashCheck = await hashCheckResponse.json();
+            console.log("[Hash Detection] Response:", hashCheck);
+            if (hashCheck.found) {
+              // Hash found - offer remix instead of blocking
+              console.log(
+                "[Hash Detection] MATCH FOUND! Showing remix offer...",
+              );
+              autoScrollNextRef.current = true;
+              const warningMessage: Message = {
+                id: `msg-${Date.now()}`,
+                from: "bot",
+                text: `⚠️ This is copyrighted content. Remixing is allowed.`,
+                ts: getCurrentTimestamp(),
+                action: {
+                  type: "remix",
+                  label: "Remix this",
+                  imageBlob: imageToProcess.blob,
+                  imageName: imageToProcess.name,
+                  ipId: hashCheck.ipId,
+                  title: hashCheck.title,
+                },
+              };
+              setMessages((prev) => [...prev, warningMessage]);
+              setPreviewImages({ remixImage: null, additionalImage: null });
+              return;
+            } else {
+              console.log(
+                "[Hash Detection] No match found, proceeding to OpenAI...",
+              );
+            }
+          }
+        } catch (hashError) {
+          console.error(
+            "[Hash Detection] Exception caught, continuing with registration:",
+            hashError,
+          );
+          // Continue to OpenAI analysis if hash check fails
+        }
+
+        // Hash check passed - proceed to OpenAI image classification
         await runDetection(imageToProcess.blob, imageToProcess.name);
         setPreviewImages({ remixImage: null, additionalImage: null });
       } else if (lastUploadBlobRef.current) {
+        // Hash Detection for previously uploaded images
+        try {
+          const hash = await calculateBlobHash(lastUploadBlobRef.current);
+          const pHash = await calculatePerceptualHash(
+            lastUploadBlobRef.current,
+          );
+          console.log(
+            "[Hash Detection] SHA256:",
+            hash,
+            "pHash:",
+            pHash,
+            "(from previous upload)",
+          );
+
+          const hashCheckResponse = await fetch("/api/check-remix-hash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hash, pHash }),
+          });
+
+          if (hashCheckResponse.ok) {
+            const hashCheck = await hashCheckResponse.json();
+            console.log("[Hash Detection] Response:", hashCheck);
+            if (hashCheck.found) {
+              // Hash found - offer remix instead of blocking
+              autoScrollNextRef.current = true;
+              const warningMessage: Message = {
+                id: `msg-${Date.now()}`,
+                from: "bot",
+                text: `⚠️ This is copyrighted content. Remixing is allowed.`,
+                ts: getCurrentTimestamp(),
+                action: {
+                  type: "remix",
+                  label: "Remix this",
+                  imageBlob: lastUploadBlobRef.current!,
+                  imageName: lastUploadNameRef.current || "image.jpg",
+                  ipId: hashCheck.ipId,
+                  title: hashCheck.title,
+                },
+              };
+              setMessages((prev) => [...prev, warningMessage]);
+              return;
+            }
+          }
+        } catch (hashError) {
+          console.warn(
+            "Hash check failed, continuing with registration:",
+            hashError,
+          );
+          // Continue to OpenAI analysis if hash check fails
+        }
+
+        // Hash check passed - proceed to OpenAI image classification
         await runDetection(
           lastUploadBlobRef.current,
           lastUploadNameRef.current || "image.jpg",
@@ -1285,6 +1419,52 @@ const IpAssistant = () => {
                       ) : null}
                       <div>{msg.text}</div>
                     </div>
+                    {msg.action?.type === "remix" ? (
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          onClick={async () => {
+                            try {
+                              // Add image to remix whitelist
+                              const hash = await calculateBlobHash(
+                                msg.action.imageBlob,
+                              );
+
+                              // Load image to preview with remix mode
+                              const imageName = msg.action.imageName;
+                              setPreviewImages({
+                                remixImage: {
+                                  blob: msg.action.imageBlob,
+                                  name: imageName,
+                                  url: URL.createObjectURL(
+                                    msg.action.imageBlob,
+                                  ),
+                                },
+                                additionalImage: null,
+                              });
+
+                              // Clear input and scroll
+                              setInput("");
+                              autoScrollNextRef.current = true;
+                              inputRef.current?.focus();
+
+                              // Show remix mode activated message
+                              const remixActiveMsg: Message = {
+                                id: `msg-${Date.now()}`,
+                                from: "bot",
+                                text: `✨ Remix mode activated for "${msg.action.title}". You can now remix this image!`,
+                                ts: getCurrentTimestamp(),
+                              };
+                              setMessages((prev) => [...prev, remixActiveMsg]);
+                            } catch (error) {
+                              console.error("Error activating remix:", error);
+                            }
+                          }}
+                          className="px-4 py-2 bg-[#FF4DA6] text-white rounded-lg hover:bg-[#FF4DA6]/80 transition-colors text-sm font-semibold"
+                        >
+                          Remix this
+                        </button>
+                      </div>
+                    ) : null}
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
                         Final verification:{" "}
@@ -2211,7 +2391,126 @@ const IpAssistant = () => {
             <YouTubeStyleSearchResults
               searchResults={searchResults}
               onClose={() => setShowSearchModal(false)}
-              onAssetClick={setExpandedAsset}
+              onAssetClick={(asset) => {
+                setExpandedAsset(asset);
+
+                // Silently capture asset vision in background (no loading UI)
+                if (
+                  asset?.ipId &&
+                  asset?.mediaUrl &&
+                  !capturedAssetIds.has(asset.ipId)
+                ) {
+                  setCapturedAssetIds((prev) => new Set(prev).add(asset.ipId));
+
+                  // Fire and forget - don't await or show loading
+                  fetch("/api/capture-asset-vision", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      mediaUrl: asset.mediaUrl,
+                      ipId: asset.ipId,
+                      title: asset.title || asset.name,
+                      mediaType: asset.mediaType,
+                    }),
+                  }).catch((err) => {
+                    console.warn("Failed to capture asset vision:", err);
+                    // Don't let errors affect UX
+                  });
+                }
+              }}
+              onRemix={async (asset) => {
+                try {
+                  if (!asset.mediaUrl) {
+                    throw new Error("No media URL available for this asset");
+                  }
+
+                  setWaiting(true);
+                  const response = await fetch(asset.mediaUrl);
+                  if (!response.ok) {
+                    throw new Error(
+                      `HTTP ${response.status}: Failed to fetch image`,
+                    );
+                  }
+                  let blob = await response.blob();
+
+                  // Apply invisible watermark to protect IP
+                  try {
+                    blob = await applyWatermarkFromAsset(blob, asset);
+                  } catch (watermarkError) {
+                    console.warn(
+                      "Watermark application failed, using original image:",
+                      watermarkError,
+                    );
+                  }
+
+                  // Calculate hash, pHash, and vision description, then add to whitelist
+                  try {
+                    const hash = await calculateBlobHash(blob);
+                    const pHash = await calculatePerceptualHash(blob);
+
+                    let visionDescription: string | undefined;
+                    try {
+                      const visionResult =
+                        await getImageVisionDescription(blob);
+                      if (visionResult?.success) {
+                        visionDescription = visionResult.description;
+                      }
+                    } catch (visionError) {
+                      console.warn(
+                        "Vision description failed, continuing:",
+                        visionError,
+                      );
+                    }
+
+                    await fetch("/api/add-remix-hash", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        hash,
+                        pHash,
+                        visionDescription,
+                        ipId: asset.ipId || "unknown",
+                        title: asset.title || asset.name || "Remix Image",
+                      }),
+                    });
+                    console.log(
+                      "Hash added to whitelist:",
+                      hash,
+                      "pHash:",
+                      pHash,
+                    );
+                  } catch (hashError) {
+                    console.warn("Failed to add hash to whitelist:", hashError);
+                  }
+
+                  const fileName = asset.title || asset.name || "IP Asset";
+                  setPreviewImages({
+                    remixImage: {
+                      blob: blob,
+                      name: fileName,
+                      url: asset.mediaUrl,
+                    },
+                    additionalImage: null,
+                  });
+                  setInput("");
+                  setShowSearchModal(false);
+                  setWaiting(false);
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 100);
+                } catch (error) {
+                  setWaiting(false);
+                  console.error("Failed to load remix image:", error);
+                  autoScrollNextRef.current = true;
+                  const errorMessage: Message = {
+                    id: `msg-${Date.now()}`,
+                    from: "bot",
+                    text: `❌ Failed to load remix image. ${error instanceof Error ? error.message : "Unknown error"}`,
+                    ts: getCurrentTimestamp(),
+                  };
+                  setMessages((prev) => [...prev, errorMessage]);
+                }
+              }}
             />
             <motion.div className="hidden">
               <div className="flex items-start justify-between gap-4 mb-6 sticky top-0 bg-slate-900/80 -mx-6 px-6 py-4 border-b border-[#FF4DA6]/10">
@@ -2622,14 +2921,16 @@ const IpAssistant = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowRemixMenu(!showRemixMenu)}
-                  disabled={!guestMode && !authenticated}
-                  className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
-                >
-                  🔄 Remix
-                </button>
+                {allowsDerivatives(expandedAsset) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRemixMenu(!showRemixMenu)}
+                    disabled={!guestMode && !authenticated}
+                    className="text-sm px-4 py-2.5 rounded-lg bg-[#FF4DA6] text-white font-semibold transition-all hover:shadow-lg hover:shadow-[#FF4DA6]/25 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4DA6]/50"
+                  >
+                    🎨 Remix
+                  </button>
+                )}
                 <button
                   type="button"
                   disabled={!authenticated}
@@ -2688,7 +2989,82 @@ const IpAssistant = () => {
                           `HTTP ${response.status}: Failed to fetch image`,
                         );
                       }
-                      const blob = await response.blob();
+                      let blob = await response.blob();
+
+                      // Apply invisible watermark to protect IP
+                      try {
+                        blob = await applyWatermarkFromAsset(
+                          blob,
+                          expandedAsset,
+                        );
+                      } catch (watermarkError) {
+                        console.warn(
+                          "Watermark application failed, using original image:",
+                          watermarkError,
+                        );
+                        // Continue with original blob if watermarking fails
+                      }
+
+                      // Skip hash calculation if already captured during asset expansion
+                      if (!capturedAssetIds.has(expandedAsset.ipId)) {
+                        // Asset wasn't captured yet, calculate and add to whitelist
+                        try {
+                          const hash = await calculateBlobHash(blob);
+                          const pHash = await calculatePerceptualHash(blob);
+
+                          // Get vision description for similarity detection
+                          let visionDescription: string | undefined;
+                          try {
+                            const visionResult =
+                              await getImageVisionDescription(blob);
+                            if (visionResult?.success) {
+                              visionDescription = visionResult.description;
+                            }
+                          } catch (visionError) {
+                            console.warn(
+                              "Vision description failed, continuing:",
+                              visionError,
+                            );
+                          }
+
+                          await fetch("/api/add-remix-hash", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              hash,
+                              pHash,
+                              visionDescription,
+                              ipId: expandedAsset.ipId || "unknown",
+                              title:
+                                expandedAsset.title ||
+                                expandedAsset.name ||
+                                "Remix Image",
+                            }),
+                          });
+                          console.log(
+                            "Hash added to whitelist:",
+                            hash,
+                            "pHash:",
+                            pHash,
+                            "visionDescription:",
+                            visionDescription ? "stored" : "skipped",
+                          );
+                        } catch (hashError) {
+                          console.warn(
+                            "Failed to add hash to whitelist:",
+                            hashError,
+                          );
+                          // Continue even if hash whitelist fails
+                        }
+                      } else {
+                        // Asset was already captured during expansion, skip recalculation
+                        console.log(
+                          "[Remix] Asset",
+                          expandedAsset.ipId,
+                          "was pre-captured, skipping hash recalculation",
+                        );
+                      }
+
                       const fileName =
                         expandedAsset.title || expandedAsset.name || "IP Asset";
                       setPreviewImages({
@@ -3107,6 +3483,98 @@ const IpAssistant = () => {
                         </div>
                       </div>
                     )}
+
+                  {/* License Configuration Section */}
+                  {(expandedAsset.royaltyContext ||
+                    expandedAsset.maxMintingFee ||
+                    expandedAsset.maxRts ||
+                    expandedAsset.maxRevenueShare ||
+                    expandedAsset.licenseVisibility) && (
+                    <div className="pt-4 border-t border-slate-800/30">
+                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                        License Configuration
+                      </label>
+                      <div className="mt-4 bg-slate-900/40 border border-slate-700/50 rounded-lg p-4 grid grid-cols-2 gap-4">
+                        {expandedAsset.royaltyContext && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Royalty Context
+                            </div>
+                            <p className="text-sm text-slate-200 font-mono break-all">
+                              {expandedAsset.royaltyContext}
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxMintingFee && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max Minting Fee
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxMintingFee) / 1e18 || 0}{" "}
+                              tokens
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxRts && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max RTS
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxRts) / 1e6 || 0}%
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.maxRevenueShare && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              Max Revenue Share
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {Number(expandedAsset.maxRevenueShare) / 1e6 || 0}
+                              %
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.licenseVisibility && (
+                          <div>
+                            <div className="text-xs text-slate-400 mb-1">
+                              License Visibility
+                            </div>
+                            <p className="text-sm text-slate-200 font-semibold">
+                              {expandedAsset.licenseVisibility}
+                            </p>
+                          </div>
+                        )}
+
+                        {expandedAsset.licenseTemplates &&
+                          expandedAsset.licenseTemplates.length > 0 && (
+                            <div className="col-span-2">
+                              <div className="text-xs text-slate-400 mb-2">
+                                License Templates
+                              </div>
+                              <div className="space-y-2">
+                                {expandedAsset.licenseTemplates.map(
+                                  (template: string, idx: number) => (
+                                    <p
+                                      key={idx}
+                                      className="text-xs text-slate-300 font-mono break-all bg-slate-900/50 rounded px-2 py-1.5"
+                                    >
+                                      {template}
+                                    </p>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -3123,7 +3591,62 @@ const IpAssistant = () => {
             if (!response.ok) {
               throw new Error(`HTTP ${response.status}: Failed to fetch image`);
             }
-            const blob = await response.blob();
+            let blob = await response.blob();
+
+            // Apply invisible watermark to protect IP
+            try {
+              blob = await applyWatermarkFromAsset(blob, asset);
+            } catch (watermarkError) {
+              console.warn(
+                "Watermark application failed, using original image:",
+                watermarkError,
+              );
+              // Continue with original blob if watermarking fails
+            }
+
+            // Calculate hash, pHash, and vision description, then add to whitelist
+            try {
+              const hash = await calculateBlobHash(blob);
+              const pHash = await calculatePerceptualHash(blob);
+
+              // Get vision description for similarity detection
+              let visionDescription: string | undefined;
+              try {
+                const visionResult = await getImageVisionDescription(blob);
+                if (visionResult?.success) {
+                  visionDescription = visionResult.description;
+                }
+              } catch (visionError) {
+                console.warn(
+                  "Vision description failed, continuing:",
+                  visionError,
+                );
+              }
+
+              await fetch("/api/add-remix-hash", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  hash,
+                  pHash,
+                  visionDescription,
+                  ipId: asset.ipId || "unknown",
+                  title: asset.title || asset.name || "Additional Image",
+                }),
+              });
+              console.log(
+                "Hash added to whitelist:",
+                hash,
+                "pHash:",
+                pHash,
+                "visionDescription:",
+                visionDescription ? "stored" : "skipped",
+              );
+            } catch (hashError) {
+              console.warn("Failed to add hash to whitelist:", hashError);
+              // Continue even if hash whitelist fails
+            }
+
             const fileName = asset.title || asset.name || "IP Asset";
 
             setPreviewImages((prev) => ({

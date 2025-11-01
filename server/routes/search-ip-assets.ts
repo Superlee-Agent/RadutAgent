@@ -528,6 +528,24 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     }
                   }
 
+                  // Extract license details from metadata
+                  const licenseDetails = metadata?.licenses?.[0]
+                    ? {
+                        licenseTermsIds: metadata.licenses.map(
+                          (l: any) => l.licenseTermsId,
+                        ),
+                        licenseTemplates: metadata.licenses.map(
+                          (l: any) => l.licenseTemplate,
+                        ),
+                        royaltyContext: metadata.licenses[0]?.royaltyContext,
+                        maxMintingFee: metadata.licenses[0]?.maxMintingFee,
+                        maxRts: metadata.licenses[0]?.maxRts,
+                        maxRevenueShare: metadata.licenses[0]?.maxRevenueShare,
+                        licenseVisibility:
+                          metadata.licenses[0]?.licenseVisibility,
+                      }
+                    : {};
+
                   return {
                     ...result,
                     mediaUrl: mediaUrl || null,
@@ -540,6 +558,13 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     parentsCount: parentsCount,
                     parentIpDetails: parentIpDetails || undefined,
                     licenses: metadata?.licenses || [],
+                    licenseTermsIds: licenseDetails.licenseTermsIds,
+                    licenseTemplates: licenseDetails.licenseTemplates,
+                    royaltyContext: licenseDetails.royaltyContext,
+                    maxMintingFee: licenseDetails.maxMintingFee,
+                    maxRts: licenseDetails.maxRts,
+                    maxRevenueShare: licenseDetails.maxRevenueShare,
+                    licenseVisibility: licenseDetails.licenseVisibility,
                   };
                 }),
               );

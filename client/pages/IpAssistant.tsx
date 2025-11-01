@@ -1383,7 +1383,7 @@ const IpAssistant = () => {
         }
 
         // Add ALL asset data to whitelist (including parent IP details)
-        await fetch("/api/add-remix-hash", {
+        const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1407,6 +1407,15 @@ const IpAssistant = () => {
             parentsCount: asset.parentsCount,
           }),
         });
+
+        if (!whitelistResponse.ok) {
+          const errorText = await whitelistResponse.text();
+          console.warn(
+            `Failed to add to whitelist: ${whitelistResponse.status}`,
+            errorText,
+          );
+          return;
+        }
 
         console.log("Asset captured to whitelist:", asset.ipId, "hash:", hash);
       } catch (err) {

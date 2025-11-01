@@ -79,8 +79,10 @@ export async function handleCheckRemixHash(
 ): Promise<void> {
   try {
     const { hash, pHash } = req.body;
+    console.log(`[Remix Hash] Check request - hash: ${hash?.substring(0, 16)}..., pHash: ${pHash}`);
 
     if (!hash || typeof hash !== "string") {
+      console.log("[Remix Hash] Hash invalid/missing");
       res.status(400).json({ error: "Hash is required" });
       return;
     }

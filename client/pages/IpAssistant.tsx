@@ -1400,6 +1400,10 @@ const IpAssistant = () => {
             visionDescription,
             ipId: asset.ipId,
             title: asset.title || asset.name,
+            // Asset Information from Details modal
+            ownerAddress: asset.ownerAddress || "",
+            mediaType: asset.mediaType || "",
+            score: asset.score ?? null,
             // Parent IP Details (original IP as self-reference, or actual parents if derivative)
             parentIpIds: parentIpIds,
             licenseTermsIds: asset.licenseTermsIds || [],
@@ -1410,6 +1414,8 @@ const IpAssistant = () => {
             maxRts: asset.maxRts || "0",
             maxRevenueShare: asset.maxRevenueShare ?? 0,
             licenseVisibility: asset.licenseVisibility || "",
+            // Detailed Licenses information from Details modal
+            licenses: asset.licenses || [],
             // Derivative Status
             isDerivative: asset.isDerivative || false,
             parentsCount: asset.parentsCount || 0,

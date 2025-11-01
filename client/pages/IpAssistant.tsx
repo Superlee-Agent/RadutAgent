@@ -2439,14 +2439,10 @@ const IpAssistant = () => {
                       pHash,
                     );
                   } catch (hashError) {
-                    console.warn(
-                      "Failed to add hash to whitelist:",
-                      hashError,
-                    );
+                    console.warn("Failed to add hash to whitelist:", hashError);
                   }
 
-                  const fileName =
-                    asset.title || asset.name || "IP Asset";
+                  const fileName = asset.title || asset.name || "IP Asset";
                   setPreviewImages({
                     remixImage: {
                       blob: blob,

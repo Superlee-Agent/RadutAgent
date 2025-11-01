@@ -162,9 +162,10 @@ export async function handleCheckRemixHash(
       );
       // Get derivatives allowed status from licenses
       const licenses = entry.metadata?.licenses || [];
-      const derivativesAllowed = licenses.length > 0
-        ? licenses[0].terms?.derivativesAllowed === true
-        : true; // Default to true if no license info
+      const derivativesAllowed =
+        licenses.length > 0
+          ? licenses[0].terms?.derivativesAllowed === true
+          : true; // Default to true if no license info
 
       res.status(200).json({
         found: true,

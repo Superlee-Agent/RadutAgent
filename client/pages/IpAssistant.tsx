@@ -785,9 +785,71 @@ const IpAssistant = () => {
           ts,
         });
         await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Hash Detection - Check before OpenAI analysis
+        try {
+          const hash = await calculateBlobHash(imageToProcess.blob);
+          const hashCheckResponse = await fetch("/api/check-remix-hash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hash }),
+          });
+
+          if (hashCheckResponse.ok) {
+            const hashCheck = await hashCheckResponse.json();
+            if (hashCheck.found) {
+              // Hash found in whitelist - block registration
+              autoScrollNextRef.current = true;
+              const errorMessage: Message = {
+                id: `msg-${Date.now()}`,
+                from: "bot",
+                text: `⚠️ ${hashCheck.message || "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix."}`,
+                ts: getCurrentTimestamp(),
+              };
+              setMessages((prev) => [...prev, errorMessage]);
+              setPreviewImages({ remixImage: null, additionalImage: null });
+              return;
+            }
+          }
+        } catch (hashError) {
+          console.warn("Hash check failed, continuing with registration:", hashError);
+          // Continue to OpenAI analysis if hash check fails
+        }
+
+        // Hash check passed - proceed to OpenAI image classification
         await runDetection(imageToProcess.blob, imageToProcess.name);
         setPreviewImages({ remixImage: null, additionalImage: null });
       } else if (lastUploadBlobRef.current) {
+        // Hash Detection for previously uploaded images
+        try {
+          const hash = await calculateBlobHash(lastUploadBlobRef.current);
+          const hashCheckResponse = await fetch("/api/check-remix-hash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hash }),
+          });
+
+          if (hashCheckResponse.ok) {
+            const hashCheck = await hashCheckResponse.json();
+            if (hashCheck.found) {
+              // Hash found in whitelist - block registration
+              autoScrollNextRef.current = true;
+              const errorMessage: Message = {
+                id: `msg-${Date.now()}`,
+                from: "bot",
+                text: `⚠️ ${hashCheck.message || "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix."}`,
+                ts: getCurrentTimestamp(),
+              };
+              setMessages((prev) => [...prev, errorMessage]);
+              return;
+            }
+          }
+        } catch (hashError) {
+          console.warn("Hash check failed, continuing with registration:", hashError);
+          // Continue to OpenAI analysis if hash check fails
+        }
+
+        // Hash check passed - proceed to OpenAI image classification
         await runDetection(
           lastUploadBlobRef.current,
           lastUploadNameRef.current || "image.jpg",

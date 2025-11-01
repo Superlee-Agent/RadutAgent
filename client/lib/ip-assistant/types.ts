@@ -13,6 +13,7 @@ export type BotMessage = {
     imageName: string;
     ipId: string;
     title: string;
+    disabled?: boolean;
   };
 };
 

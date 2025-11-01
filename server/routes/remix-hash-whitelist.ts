@@ -37,6 +37,9 @@ export async function handleAddRemixHash(
       visionDescription,
       ipId = "unknown",
       title = "Remix Image",
+      ownerAddress,
+      mediaType,
+      score,
       parentIpIds,
       licenseTermsIds,
       licenseTemplates,
@@ -45,6 +48,7 @@ export async function handleAddRemixHash(
       maxRts,
       maxRevenueShare,
       licenseVisibility,
+      licenses,
       isDerivative,
       parentsCount,
     } = req.body;

@@ -165,7 +165,7 @@ export async function handleCheckRemixHash(
       const derivativesAllowed =
         licenses.length > 0
           ? licenses[0].terms?.derivativesAllowed === true
-          : true; // Default to true if no license info
+          : false; // Default to false (safer) if no license info
 
       res.status(200).json({
         found: true,

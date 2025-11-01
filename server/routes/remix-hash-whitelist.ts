@@ -160,6 +160,12 @@ export async function handleCheckRemixHash(
       console.log(
         `[Remix Hash] EXACT MATCH: ${entry.metadata?.title || entry.title}`,
       );
+      // Get derivatives allowed status from licenses
+      const licenses = entry.metadata?.licenses || [];
+      const derivativesAllowed = licenses.length > 0
+        ? licenses[0].terms?.derivativesAllowed === true
+        : true; // Default to true if no license info
+
       res.status(200).json({
         found: true,
         message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
@@ -179,6 +185,9 @@ export async function handleCheckRemixHash(
         // Derivative Status
         isDerivative: entry.metadata?.isDerivative,
         parentsCount: entry.metadata?.parentsCount,
+        // License terms
+        licenses: entry.metadata?.licenses,
+        derivativesAllowed: derivativesAllowed,
       });
       return;
     }

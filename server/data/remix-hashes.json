@@ -221,7 +221,51 @@
         "pHash": "004856385c9ac700",
         "visionDescription": "An illustrated yellow bird is standing on a stage behind a wooden podium, holding a microphone with one wing and gesturing with the other. The background features a blue curtain with yellow stars and dots, and is framed by red curtains with yellow and red pennant banners above. The style is cartoonish and vibrant."
       }
+    },
+    {
+      "hash": "4c34a1fd25b56b6b3578ef4abacf8e740e0ad10822ec4757d8ce09037bef6e03",
+      "metadata": {
+        "ipId": "0x3D63665f9435522f90e22A12B6b0Bb03aB7d010b",
+        "title": "Mushy Remix",
+        "timestamp": 1762023210686,
+        "pHash": "0f9f173f3ac8e000",
+        "visionDescription": "The image depicts a humorous, cartoon-style scene with bright colors. The central figure is a giant anthropomorphic candy robot with a red wrapper labeled \"LIQUORICE\" and glowing blue elements. The robot has a wide-open mouth, appearing enthusiastic or aggressive. Surrounding the candy robot are several people, dressed in casual and work-like attire, running away in panic. Speech bubbles contain phrases about a \"trailblazer role\" and \"Liquorice airdrop,” suggesting excitement for a tech or web3 event. The background shows a grassy landscape with rolling hills and a clear blue sky. The style is exaggerated and dynamic, with expressive facial features and motion lines depicting the chaos of the scene."
+      }
+    },
+    {
+      "hash": "dc2f4f3875c907335c1640e264ee3b17bd655a3d5e0dcadce41dfa8d27f076a2",
+      "metadata": {
+        "ipId": "0xaf4f4709eB5279F9d450f3239a8b2ea3738e7B6D",
+        "title": "MUSHY ",
+        "timestamp": 1762023212886,
+        "pHash": "0c18387a7e7e3c3e",
+        "visionDescription": "A cartoonish duck character is depicted with large, round eyes and a small beak. The duck is wearing a blue winter hat with a yellow pom-pom and has a yellow body. It is wrapped in a striped scarf with shades of blue and yellow. The background is black, highlighting the bright colors of the duck and its attire. The style is simplistic with bold outlines, giving it a playful and whimsical appearance.",
+        "parentIpIds": [
+          "0xaf4f4709eB5279F9d450f3239a8b2ea3738e7B6D"
+        ],
+        "licenseTermsIds": [
+          "1434",
+          "1435",
+          "1436",
+          "1437",
+          "10"
+        ],
+        "licenseTemplates": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "royaltyContext": "",
+        "maxMintingFee": "0",
+        "maxRts": "0",
+        "maxRevenueShare": 0,
+        "licenseVisibility": "",
+        "isDerivative": false,
+        "parentsCount": 0
+      }
     }
   ],
-  "lastUpdated": 1762022973383
+  "lastUpdated": 1762023212886
 }

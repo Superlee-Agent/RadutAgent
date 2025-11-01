@@ -137,16 +137,21 @@ export async function embedWatermark(
       // Serialize watermark data
       const serialized = serializeWatermark(watermarkData);
 
-      // Embed watermark bits in image using redundancy
-      let dataIndex = 0;
-      let blockIndex = 0;
-      const redundancy = 5; // Repeat each bit 5 times for robustness
+      // Embed watermark bits in image using spread spectrum redundancy
+      // Each bit is embedded multiple times across the image for robustness
+      const redundancy = 8; // Repeat each bit 8 times
+      let pixelPosition = 0;
+      const seed = 42; // Fixed seed for reproducibility
 
-      for (let i = 0; i < serialized.length && blockIndex < 256; i++) {
+      for (let i = 0; i < serialized.length; i++) {
         const bit = parseInt(serialized[i]);
-        for (let r = 0; r < redundancy && blockIndex < 256; r++) {
-          DCTWatermark.embedBit(data, bit, blockIndex);
-          blockIndex++;
+
+        // Embed same bit multiple times at different locations
+        for (let r = 0; r < redundancy; r++) {
+          if (pixelPosition < data.length) {
+            RobustWatermark.embedBit(data, bit, pixelPosition, seed + i);
+            pixelPosition += Math.floor(data.length / (serialized.length * redundancy)) + 1;
+          }
         }
       }
 

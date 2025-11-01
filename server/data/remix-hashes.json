@@ -241,23 +241,9 @@
         "timestamp": 1762023212886,
         "pHash": "0c18387a7e7e3c3e",
         "visionDescription": "A cartoonish duck character is depicted with large, round eyes and a small beak. The duck is wearing a blue winter hat with a yellow pom-pom and has a yellow body. It is wrapped in a striped scarf with shades of blue and yellow. The background is black, highlighting the bright colors of the duck and its attire. The style is simplistic with bold outlines, giving it a playful and whimsical appearance.",
-        "parentIpIds": [
-          "0xaf4f4709eB5279F9d450f3239a8b2ea3738e7B6D"
-        ],
-        "licenseTermsIds": [
-          "1434",
-          "1435",
-          "1436",
-          "1437",
-          "10"
-        ],
-        "licenseTemplates": [
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
+        "parentIpIds": ["0xaf4f4709eB5279F9d450f3239a8b2ea3738e7B6D"],
+        "licenseTermsIds": ["1434", "1435", "1436", "1437", "10"],
+        "licenseTemplates": [null, null, null, null, null],
         "royaltyContext": "",
         "maxMintingFee": "0",
         "maxRts": "0",
@@ -318,15 +304,9 @@
         "ownerAddress": "0xF8780d979561aa242184436bd310f3a29861C9Fd",
         "mediaType": "image/jpeg",
         "score": 0.4220849275588989,
-        "parentIpIds": [
-          "0xd2479280BD6B3D914eF16B8Ea0073B9F74152f22"
-        ],
-        "licenseTermsIds": [
-          "28015"
-        ],
-        "licenseTemplates": [
-          null
-        ],
+        "parentIpIds": ["0xd2479280BD6B3D914eF16B8Ea0073B9F74152f22"],
+        "licenseTermsIds": ["28015"],
+        "licenseTemplates": [null],
         "royaltyContext": "",
         "maxMintingFee": "0",
         "maxRts": "0",

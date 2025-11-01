@@ -3005,54 +3005,64 @@ const IpAssistant = () => {
                         // Continue with original blob if watermarking fails
                       }
 
-                      // Calculate hash, pHash, and vision description, then add to whitelist
-                      try {
-                        const hash = await calculateBlobHash(blob);
-                        const pHash = await calculatePerceptualHash(blob);
-
-                        // Get vision description for similarity detection
-                        let visionDescription: string | undefined;
+                      // Skip hash calculation if already captured during asset expansion
+                      if (!capturedAssetIds.has(expandedAsset.ipId)) {
+                        // Asset wasn't captured yet, calculate and add to whitelist
                         try {
-                          const visionResult =
-                            await getImageVisionDescription(blob);
-                          if (visionResult?.success) {
-                            visionDescription = visionResult.description;
-                          }
-                        } catch (visionError) {
-                          console.warn(
-                            "Vision description failed, continuing:",
-                            visionError,
-                          );
-                        }
+                          const hash = await calculateBlobHash(blob);
+                          const pHash = await calculatePerceptualHash(blob);
 
-                        await fetch("/api/add-remix-hash", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
+                          // Get vision description for similarity detection
+                          let visionDescription: string | undefined;
+                          try {
+                            const visionResult =
+                              await getImageVisionDescription(blob);
+                            if (visionResult?.success) {
+                              visionDescription = visionResult.description;
+                            }
+                          } catch (visionError) {
+                            console.warn(
+                              "Vision description failed, continuing:",
+                              visionError,
+                            );
+                          }
+
+                          await fetch("/api/add-remix-hash", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              hash,
+                              pHash,
+                              visionDescription,
+                              ipId: expandedAsset.ipId || "unknown",
+                              title:
+                                expandedAsset.title ||
+                                expandedAsset.name ||
+                                "Remix Image",
+                            }),
+                          });
+                          console.log(
+                            "Hash added to whitelist:",
                             hash,
+                            "pHash:",
                             pHash,
-                            visionDescription,
-                            ipId: expandedAsset.ipId || "unknown",
-                            title:
-                              expandedAsset.title ||
-                              expandedAsset.name ||
-                              "Remix Image",
-                          }),
-                        });
+                            "visionDescription:",
+                            visionDescription ? "stored" : "skipped",
+                          );
+                        } catch (hashError) {
+                          console.warn(
+                            "Failed to add hash to whitelist:",
+                            hashError,
+                          );
+                          // Continue even if hash whitelist fails
+                        }
+                      } else {
+                        // Asset was already captured during expansion, skip recalculation
                         console.log(
-                          "Hash added to whitelist:",
-                          hash,
-                          "pHash:",
-                          pHash,
-                          "visionDescription:",
-                          visionDescription ? "stored" : "skipped",
+                          "[Remix] Asset",
+                          expandedAsset.ipId,
+                          "was pre-captured, skipping hash recalculation",
                         );
-                      } catch (hashError) {
-                        console.warn(
-                          "Failed to add hash to whitelist:",
-                          hashError,
-                        );
-                        // Continue even if hash whitelist fails
                       }
 
                       const fileName =

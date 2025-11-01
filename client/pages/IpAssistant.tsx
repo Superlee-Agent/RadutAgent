@@ -1527,7 +1527,9 @@ const IpAssistant = () => {
                     {msg.action?.type === "remix" ? (
                       <div className="mt-3 flex gap-2">
                         <button
+                          disabled={msg.action?.disabled}
                           onClick={async () => {
+                            if (msg.action?.disabled) return;
                             try {
                               // Add image to remix whitelist
                               const hash = await calculateBlobHash(
@@ -1564,7 +1566,11 @@ const IpAssistant = () => {
                               console.error("Error activating remix:", error);
                             }
                           }}
-                          className="px-4 py-2 bg-[#FF4DA6] text-white rounded-lg hover:bg-[#FF4DA6]/80 transition-colors text-sm font-semibold"
+                          className={`px-4 py-2 rounded-lg transition-colors text-sm font-semibold ${
+                            msg.action?.disabled
+                              ? "bg-slate-600 text-slate-400 cursor-not-allowed"
+                              : "bg-[#FF4DA6] text-white hover:bg-[#FF4DA6]/80"
+                          }`}
                         >
                           Remix this
                         </button>

@@ -51,7 +51,17 @@
         "timestamp": 1762012408940,
         "pHash": "0c7e7e7e2eceff80"
       }
+    },
+    {
+      "hash": "88d439bfda5b9deafc118181cbba51276a43dbcbb30e5633a9dfa7da908e9d4f",
+      "metadata": {
+        "ipId": "0x8902efdf14be946d01222A26092C16fef16924e4",
+        "title": "hornet ",
+        "timestamp": 1762012553925,
+        "pHash": "3c3f0fc89cdc7000",
+        "visionDescription": "The image depicts a character with a white, horned mask and black eyes, standing in a stylized, pixelated landscape. The character wears a red cloak and holds a needle-like weapon. The background consists of various shades of green, suggesting bushy foliage and abstract shapes. The art style is minimalist and impressionistic with bold color blocks and a lack of intricate detail."
+      }
     }
   ],
-  "lastUpdated": 1762012408941
+  "lastUpdated": 1762012553925
 }

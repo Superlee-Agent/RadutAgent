@@ -14,6 +14,9 @@ import {
  *   title?: string,
  *   pHash?: string,
  *   visionDescription?: string,
+ *   ownerAddress?: string,
+ *   mediaType?: string,
+ *   score?: number,
  *   parentIpIds?: string[],
  *   licenseTermsIds?: string[],
  *   licenseTemplates?: string[],
@@ -22,6 +25,7 @@ import {
  *   maxRts?: string,
  *   maxRevenueShare?: number,
  *   licenseVisibility?: string,
+ *   licenses?: any[],
  *   isDerivative?: boolean,
  *   parentsCount?: number
  * }

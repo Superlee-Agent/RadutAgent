@@ -1383,7 +1383,11 @@ const IpAssistant = () => {
         }
 
         // Add ALL asset data to whitelist (including parent IP details)
-        // Always send all fields, even if undefined (will be stored as null/undefined)
+        // For original IPs (not derivatives), include ipId as self-reference for future remix tracking
+        const parentIpIds = asset.parentIpIds && asset.parentIpIds.length > 0
+          ? asset.parentIpIds
+          : (asset.isDerivative === false ? [asset.ipId] : []);
+
         const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1393,8 +1397,8 @@ const IpAssistant = () => {
             visionDescription,
             ipId: asset.ipId,
             title: asset.title || asset.name,
-            // Parent IP Details (may be empty for original IPs)
-            parentIpIds: asset.parentIpIds || [],
+            // Parent IP Details (original IP as self-reference, or actual parents if derivative)
+            parentIpIds: parentIpIds,
             licenseTermsIds: asset.licenseTermsIds || [],
             licenseTemplates: asset.licenseTemplates || [],
             // License Configuration (may be empty for non-commercial)

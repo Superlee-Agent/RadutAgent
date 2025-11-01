@@ -116,6 +116,31 @@ export function useIPRegistrationAgent() {
           // Don't block registration if watermark check fails
         }
 
+        // Check hash against remix whitelist
+        try {
+          const hash = await calculateFileHash(file);
+          const hashCheckResponse = await fetch("/api/check-remix-hash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hash }),
+          });
+
+          if (hashCheckResponse.ok) {
+            const hashCheck = await hashCheckResponse.json();
+            if (hashCheck.found) {
+              setRegisterState({
+                status: "error",
+                progress: 0,
+                error: hashCheck.message || "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix.",
+              });
+              return { success: false, reason: "hash_in_whitelist" } as const;
+            }
+          }
+        } catch (hashError) {
+          console.warn("Hash whitelist check failed, continuing:", hashError);
+          // Don't block registration if hash check fails
+        }
+
         const licenseSettings = getLicenseSettingsByGroup(
           group,
           aiTrainingManual,

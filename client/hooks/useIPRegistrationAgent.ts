@@ -148,37 +148,37 @@ export function useIPRegistrationAgent() {
           // Don't block registration if hash check fails
         }
 
-        // Check image similarity with whitelisted images
+        // Vision-based image detection (most powerful)
         try {
           const formData = new FormData();
           formData.append("image", file);
-          const similarityResponse = await fetch(
-            "/api/check-image-similarity",
+          const visionResponse = await fetch(
+            "/api/vision-image-detection",
             {
               method: "POST",
               body: formData,
             },
           );
 
-          if (similarityResponse.ok) {
-            const similarityCheck = await similarityResponse.json();
-            if (similarityCheck.found) {
+          if (visionResponse.ok) {
+            const visionCheck = await visionResponse.json();
+            if (visionCheck.blocked) {
               setRegisterState({
                 status: "error",
                 progress: 0,
                 error:
-                  similarityCheck.message ||
+                  visionCheck.message ||
                   "Image mirip dengan IP yang sudah terdaftar. Tidak dapat registrasi.",
               });
-              return { success: false, reason: "similar_image_found" } as const;
+              return { success: false, reason: "vision_match_found" } as const;
             }
           }
-        } catch (similarityError) {
+        } catch (visionError) {
           console.warn(
-            "Image similarity check failed, continuing:",
-            similarityError,
+            "Vision-based detection failed, continuing:",
+            visionError,
           );
-          // Don't block registration if similarity check fails
+          // Don't block registration if vision check fails
         }
 
         const licenseSettings = getLicenseSettingsByGroup(

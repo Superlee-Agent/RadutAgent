@@ -73,6 +73,9 @@ export async function handleAddRemixHash(
       timestamp: Date.now(),
       pHash,
       visionDescription,
+      ownerAddress,
+      mediaType,
+      score,
       parentIpIds,
       licenseTermsIds,
       licenseTemplates,
@@ -81,6 +84,7 @@ export async function handleAddRemixHash(
       maxRts,
       maxRevenueShare,
       licenseVisibility,
+      licenses,
       isDerivative,
       parentsCount,
     };

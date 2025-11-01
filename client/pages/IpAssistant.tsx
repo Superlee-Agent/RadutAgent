@@ -3133,7 +3133,16 @@ const IpAssistant = () => {
             if (!response.ok) {
               throw new Error(`HTTP ${response.status}: Failed to fetch image`);
             }
-            const blob = await response.blob();
+            let blob = await response.blob();
+
+            // Apply invisible watermark to protect IP
+            try {
+              blob = await applyWatermarkFromAsset(blob, asset);
+            } catch (watermarkError) {
+              console.warn("Watermark application failed, using original image:", watermarkError);
+              // Continue with original blob if watermarking fails
+            }
+
             const fileName = asset.title || asset.name || "IP Asset";
 
             setPreviewImages((prev) => ({

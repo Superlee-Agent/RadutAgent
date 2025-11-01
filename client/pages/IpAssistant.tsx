@@ -1373,6 +1373,48 @@ const IpAssistant = () => {
                       ) : null}
                       <div>{msg.text}</div>
                     </div>
+                    {msg.action?.type === "remix" ? (
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          onClick={async () => {
+                            try {
+                              // Add image to remix whitelist
+                              const hash = await calculateBlobHash(msg.action.imageBlob);
+
+                              // Load image to preview with remix mode
+                              const imageName = msg.action.imageName;
+                              setPreviewImages({
+                                remixImage: {
+                                  blob: msg.action.imageBlob,
+                                  name: imageName,
+                                  url: URL.createObjectURL(msg.action.imageBlob),
+                                },
+                                additionalImage: null,
+                              });
+
+                              // Clear input and scroll
+                              setInput("");
+                              autoScrollNextRef.current = true;
+                              inputRef.current?.focus();
+
+                              // Show remix mode activated message
+                              const remixActiveMsg: Message = {
+                                id: `msg-${Date.now()}`,
+                                from: "bot",
+                                text: `✨ Remix mode activated for "${msg.action.title}". You can now remix this image!`,
+                                ts: getCurrentTimestamp(),
+                              };
+                              setMessages((prev) => [...prev, remixActiveMsg]);
+                            } catch (error) {
+                              console.error("Error activating remix:", error);
+                            }
+                          }}
+                          className="px-4 py-2 bg-[#FF4DA6] text-white rounded-lg hover:bg-[#FF4DA6]/80 transition-colors text-sm font-semibold"
+                        >
+                          Remix this
+                        </button>
+                      </div>
+                    ) : null}
                     {verificationObject ? (
                       <div className="mt-2 text-xs text-[#FF4DA6]">
                         Final verification:{" "}

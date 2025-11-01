@@ -176,19 +176,20 @@ export async function handleVisionImageDetection(
     let bestSimilarity = 0;
 
     for (const entry of whitelist.entries || []) {
-      // If entry doesn't have vision description, analyze it now
-      if (!entry.visionDescription) {
-        // TODO: In production, store vision descriptions when images are added
-        // For now, skip entries without descriptions
+      // Support both old and new whitelist formats
+      const visionDesc = entry.metadata?.visionDescription || entry.visionDescription;
+
+      if (!visionDesc) {
+        // Skip entries without vision descriptions
         continue;
       }
 
       const similarity = calculateDescriptionSimilarity(
         uploadedDescription,
-        entry.visionDescription,
+        visionDesc,
       );
 
-      if (similarity > bestSimilarity) {
+      if (similarity >= 65 && similarity > bestSimilarity) {
         bestSimilarity = similarity;
         bestMatch = entry;
       }
@@ -196,11 +197,14 @@ export async function handleVisionImageDetection(
 
     // Block if similarity >= 65% (sensitive threshold)
     if (bestSimilarity >= 65 && bestMatch) {
+      const matchedTitle = bestMatch.metadata?.title || bestMatch.title;
+      const matchedIpId = bestMatch.metadata?.ipId || bestMatch.ipId;
+
       const result: VisionResult = {
         blocked: true,
-        message: `Image mirip dengan IP "${bestMatch.title}" (${bestSimilarity}% match). Tidak dapat registrasi.`,
-        matchedIp: bestMatch.ipId,
-        matchedTitle: bestMatch.title,
+        message: `Image mirip dengan IP "${matchedTitle}" (${bestSimilarity}% match). Tidak dapat registrasi.`,
+        matchedIp: matchedIpId,
+        matchedTitle: matchedTitle,
         similarity: bestSimilarity / 100,
       };
       res.status(200).json(result);

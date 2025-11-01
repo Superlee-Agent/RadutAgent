@@ -2657,7 +2657,10 @@ const IpAssistant = () => {
                         ) : asset.mediaType?.startsWith("audio") ? (
                           <div
                             className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                           >
                             <svg
                               className="w-12 h-12 text-purple-300"
@@ -3463,7 +3466,7 @@ const IpAssistant = () => {
                                           <p className="text-slate-200 font-semibold">
                                             {license.terms.commercialUse
                                               ? "✓ Allowed"
-                                              : "��� Not Allowed"}
+                                              : "✗ Not Allowed"}
                                           </p>
                                         </div>
                                       )}

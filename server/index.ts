@@ -193,6 +193,9 @@ export function createServer() {
   app.post("/api/check-remix-hash", handleCheckRemixHash);
   app.get("/api/_admin/remix-hashes", handleGetRemixHashes);
 
+  // Capture asset vision endpoint (silently on asset click)
+  app.post("/api/capture-asset-vision", handleCaptureAssetVision);
+
   // Image similarity detection endpoint
   app.post(
     "/api/check-image-similarity",

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { handleUpload } from "./routes/upload.js";
 import { handleIpfsUpload, handleIpfsUploadJson } from "./routes/ipfs.js";
 import { handleDescribe } from "./routes/describe.js";
@@ -10,6 +11,7 @@ import { handleSearchByOwner } from "./routes/search-by-owner.js";
 import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
 import { handleResolveIpName } from "./routes/resolve-ip-name.js";
+import handleVerifyWatermark from "./routes/verify-watermark.js";
 
 async function fetchParentIpDetails(
   childIpId: string,

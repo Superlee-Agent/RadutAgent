@@ -206,6 +206,9 @@ export function createServer() {
     handleVisionImageDetection,
   );
 
+  // Analyze image with Vision API endpoint
+  app.post("/api/analyze-image-vision", handleAnalyzeImageVision);
+
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
     try {

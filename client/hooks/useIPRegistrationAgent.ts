@@ -88,6 +88,33 @@ export function useIPRegistrationAgent() {
       ethereumProvider?: any,
     ) => {
       try {
+        // Verify watermark to prevent re-registration of remixed images
+        setRegisterState({ status: "compressing", progress: 5, error: null });
+        try {
+          const formData = new FormData();
+          formData.append("image", file);
+
+          const verifyResponse = await fetch("/api/verify-watermark", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (verifyResponse.ok) {
+            const watermarkCheck = await verifyResponse.json();
+            if (watermarkCheck.blockRegistration) {
+              setRegisterState({
+                status: "error",
+                progress: 0,
+                error: watermarkCheck.message || "This image is a remix and cannot be registered as a new IP.",
+              });
+              return { success: false, reason: "watermark_detected" } as const;
+            }
+          }
+        } catch (watermarkError) {
+          console.warn("Watermark verification failed, continuing:", watermarkError);
+          // Don't block registration if watermark check fails
+        }
+
         const licenseSettings = getLicenseSettingsByGroup(
           group,
           aiTrainingManual,

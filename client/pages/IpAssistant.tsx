@@ -800,15 +800,23 @@ const IpAssistant = () => {
           if (hashCheckResponse.ok) {
             const hashCheck = await hashCheckResponse.json();
             if (hashCheck.found) {
-              // Hash found in whitelist - block registration
+              // Hash found - offer remix instead of blocking
               autoScrollNextRef.current = true;
-              const errorMessage: Message = {
+              const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
                 from: "bot",
-                text: `⚠️ ${hashCheck.message || "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix."}`,
+                text: `⚠️ Gambar ini telah terdaftar legal IP, anda hny punya wewenang remix.`,
                 ts: getCurrentTimestamp(),
+                action: {
+                  type: "remix",
+                  label: "Remix this",
+                  imageBlob: imageToProcess.blob,
+                  imageName: imageToProcess.name,
+                  ipId: hashCheck.ipId,
+                  title: hashCheck.title,
+                },
               };
-              setMessages((prev) => [...prev, errorMessage]);
+              setMessages((prev) => [...prev, warningMessage]);
               setPreviewImages({ remixImage: null, additionalImage: null });
               return;
             }

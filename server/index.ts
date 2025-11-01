@@ -20,6 +20,7 @@ import {
 import { handleCheckImageSimilarity } from "./routes/check-image-similarity.js";
 import { handleVisionImageDetection } from "./routes/vision-image-detection.js";
 import { handleAnalyzeImageVision } from "./routes/analyze-image-vision.js";
+import { handleCaptureAssetVision } from "./routes/capture-asset-vision.js";
 
 async function fetchParentIpDetails(
   childIpId: string,

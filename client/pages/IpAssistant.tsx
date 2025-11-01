@@ -212,6 +212,9 @@ const IpAssistant = () => {
   const [showRemixMenu, setShowRemixMenu] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [capturedAssetIds, setCapturedAssetIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Check if asset allows derivatives based on license
   const allowsDerivatives = (asset: any): boolean => {

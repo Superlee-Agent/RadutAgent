@@ -26,6 +26,7 @@ import {
 } from "@/lib/ip-assistant/utils";
 import { applyWatermarkFromAsset } from "@/lib/utils/apply-watermark";
 import { calculateBlobHash } from "@/lib/utils/hash";
+import { calculatePerceptualHash } from "@/lib/utils/perceptual-hash";
 import {
   CURRENT_SESSION_KEY,
   IP_ASSISTANT_AVATAR,

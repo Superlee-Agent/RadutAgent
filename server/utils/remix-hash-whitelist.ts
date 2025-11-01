@@ -6,6 +6,7 @@ interface RemixHashEntry {
   ipId: string;
   title: string;
   timestamp: number;
+  pHash?: string; // Perceptual hash for similarity detection
 }
 
 interface RemixHashWhitelist {

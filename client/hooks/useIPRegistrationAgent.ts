@@ -148,6 +148,33 @@ export function useIPRegistrationAgent() {
           // Don't block registration if hash check fails
         }
 
+        // Check image similarity with whitelisted images
+        try {
+          const formData = new FormData();
+          formData.append("image", file);
+          const similarityResponse = await fetch("/api/check-image-similarity", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (similarityResponse.ok) {
+            const similarityCheck = await similarityResponse.json();
+            if (similarityCheck.found) {
+              setRegisterState({
+                status: "error",
+                progress: 0,
+                error:
+                  similarityCheck.message ||
+                  "Image mirip dengan IP yang sudah terdaftar. Tidak dapat registrasi.",
+              });
+              return { success: false, reason: "similar_image_found" } as const;
+            }
+          }
+        } catch (similarityError) {
+          console.warn("Image similarity check failed, continuing:", similarityError);
+          // Don't block registration if similarity check fails
+        }
+
         const licenseSettings = getLicenseSettingsByGroup(
           group,
           aiTrainingManual,

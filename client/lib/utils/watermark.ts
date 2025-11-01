@@ -198,14 +198,21 @@ export async function extractWatermark(imageBlob: Blob): Promise<{
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Extract watermark bits
+      // Extract watermark bits using majority voting
       let extractedBits = "";
-      const redundancy = 5;
+      const redundancy = 8;
       const maxBits = 2048; // Maximum bits to extract
+      const seed = 42;
+      let pixelPosition = 0;
 
-      for (let blockIndex = 0; blockIndex < 256 && extractedBits.length < maxBits; blockIndex++) {
-        const bit = DCTWatermark.extractBit(data, blockIndex);
-        extractedBits += bit;
+      // Extract bits using same positioning as embed
+      for (let i = 0; i < 256 && extractedBits.length < maxBits; i++) {
+        if (pixelPosition < data.length) {
+          // Extract bit using majority voting from redundant copies
+          const bit = RobustWatermark.extractBit(data, pixelPosition, seed + i);
+          extractedBits += bit;
+          pixelPosition += Math.floor(data.length / (256 * redundancy)) + 1;
+        }
       }
 
       // Decode watermark
@@ -215,7 +222,7 @@ export async function extractWatermark(imageBlob: Blob): Promise<{
           resolve({
             found: true,
             data: decoded,
-            confidence: 0.95, // High confidence for successful decode
+            confidence: 0.9, // High confidence for successful decode
           });
         } else {
           resolve({ found: false, confidence: 0 });

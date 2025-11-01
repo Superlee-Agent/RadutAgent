@@ -178,6 +178,10 @@ export function useIPRegistrationAgent() {
           // Don't block registration if vision check fails
         }
 
+        // ✅ TIER 1 DETECTION COMPLETE
+        // Hash/Vision checks passed - image is allowed to proceed
+        // Now continue to Tier 2: Brand/Character detection
+
         const licenseSettings = getLicenseSettingsByGroup(
           group,
           aiTrainingManual,

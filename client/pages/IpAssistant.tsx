@@ -832,10 +832,17 @@ const IpAssistant = () => {
                 "[Hash Detection] MATCH FOUND! Showing remix offer...",
               );
               autoScrollNextRef.current = true;
+
+              // Check if derivatives are allowed
+              const derivativesAllowed = hashCheck.derivativesAllowed !== false;
+              const warningText = derivativesAllowed
+                ? `⚠️ This is copyrighted content. Remixing is allowed.`
+                : `⚠️ This is copyrighted content.`;
+
               const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
                 from: "bot",
-                text: `⚠️ This is copyrighted content. Remixing is allowed.`,
+                text: warningText,
                 ts: getCurrentTimestamp(),
                 action: {
                   type: "remix",
@@ -844,6 +851,7 @@ const IpAssistant = () => {
                   imageName: imageToProcess.name,
                   ipId: hashCheck.ipId,
                   title: hashCheck.title,
+                  disabled: !derivativesAllowed,
                 },
               };
               setMessages((prev) => [...prev, warningMessage]);

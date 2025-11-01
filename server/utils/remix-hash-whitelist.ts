@@ -64,6 +64,7 @@ export async function addHashToWhitelist(
   hash: string,
   ipId: string,
   title: string,
+  pHash?: string,
 ): Promise<void> {
   const whitelist = await loadWhitelist();
 
@@ -76,10 +77,11 @@ export async function addHashToWhitelist(
       ipId,
       title,
       timestamp: Date.now(),
+      pHash,
     });
 
     await saveWhitelist(whitelist);
-    console.log(`[Remix Hash] Added hash ${hash} for IP ${ipId}`);
+    console.log(`[Remix Hash] Added hash ${hash} for IP ${ipId}${pHash ? ` (pHash: ${pHash})` : ""}`);
   }
 }
 

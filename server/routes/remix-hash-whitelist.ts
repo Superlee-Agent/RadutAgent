@@ -101,7 +101,9 @@ export async function handleCheckRemixHash(
 
     // If no exact match and pHash provided, check pHash similarity
     if (pHash) {
-      console.log(`[Remix Hash] Exact hash not found, checking pHash: ${pHash}`);
+      console.log(
+        `[Remix Hash] Exact hash not found, checking pHash: ${pHash}`,
+      );
 
       const fs = await import("fs/promises");
       const path = await import("path");
@@ -120,7 +122,9 @@ export async function handleCheckRemixHash(
         for (const entry of whitelist.entries || []) {
           const storedPHash = entry.metadata?.pHash || entry.pHash;
           if (storedPHash && storedPHash === pHash) {
-            console.log(`[Remix Hash] pHash match found! IP: ${entry.metadata?.ipId || entry.ipId}`);
+            console.log(
+              `[Remix Hash] pHash match found! IP: ${entry.metadata?.ipId || entry.ipId}`,
+            );
             res.status(200).json({
               found: true,
               message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
@@ -132,7 +136,10 @@ export async function handleCheckRemixHash(
           }
         }
       } catch (err) {
-        console.warn("[Remix Hash] Error reading whitelist for pHash check:", err);
+        console.warn(
+          "[Remix Hash] Error reading whitelist for pHash check:",
+          err,
+        );
       }
     }
 

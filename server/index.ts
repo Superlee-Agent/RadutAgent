@@ -66,6 +66,12 @@ async function fetchParentIpDetails(
 export function createServer() {
   const app = express();
 
+  // Setup multer for image upload handling in watermark verification
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 8 * 1024 * 1024 },
+  });
+
   // Middleware
   // CORS configuration - allow requests from the same origin and common localhost/preview domains
   const corsOptions = {

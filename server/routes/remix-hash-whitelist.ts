@@ -91,12 +91,13 @@ export async function handleCheckRemixHash(
     const entry = await checkHashInWhitelist(hash.toLowerCase());
 
     if (entry) {
+      console.log(`[Remix Hash] EXACT MATCH: ${entry.metadata?.title || entry.title}`);
       res.status(200).json({
         found: true,
-        message: `IP ${entry.ipId} sudah terdaftar (${entry.title})`,
-        ipId: entry.ipId,
-        title: entry.title,
-        timestamp: entry.timestamp,
+        message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
+        ipId: entry.metadata?.ipId || entry.ipId,
+        title: entry.metadata?.title || entry.title,
+        timestamp: entry.metadata?.timestamp || entry.timestamp,
       });
       return;
     }

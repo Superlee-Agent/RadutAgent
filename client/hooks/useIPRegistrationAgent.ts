@@ -139,14 +139,18 @@ export function useIPRegistrationAgent() {
           if (hashCheckResponse.ok) {
             const hashCheck = await hashCheckResponse.json();
             if (hashCheck.found) {
+              // Hash found - offer remix instead of blocking
               setRegisterState({
-                status: "error",
+                status: "idle",
                 progress: 0,
-                error:
-                  hashCheck.message ||
-                  "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix.",
+                error: null,
               });
-              return { success: false, reason: "hash_in_whitelist" } as const;
+              return {
+                success: false,
+                reason: "hash_found_offer_remix",
+                matchedIpId: hashCheck.ipId,
+                matchedTitle: hashCheck.title,
+              } as const;
             }
           }
         } catch (hashError) {

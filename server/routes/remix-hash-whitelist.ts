@@ -69,6 +69,28 @@ export async function handleAddRemixHash(
 }
 
 /**
+ * Calculate hamming distance between two pHashes
+ * Used for perceptual hash similarity comparison
+ */
+function hammingDistance(hash1: string, hash2: string): number {
+  if (hash1.length !== hash2.length) {
+    return 64; // Max distance for 64-bit hash
+  }
+
+  let distance = 0;
+  // Convert hex to binary and count differing bits
+  for (let i = 0; i < hash1.length; i++) {
+    const xor = parseInt(hash1[i], 16) ^ parseInt(hash2[i], 16);
+    // Count bits in xor result
+    for (let j = 0; j < 4; j++) {
+      distance += (xor >> j) & 1;
+    }
+  }
+
+  return distance;
+}
+
+/**
  * Check if hash exists in remix whitelist
  * POST /api/check-remix-hash
  * Body: { hash: string, pHash?: string }
@@ -121,25 +143,31 @@ export async function handleCheckRemixHash(
         const content = await fs.readFile(whitelistPath, "utf-8");
         const whitelist = JSON.parse(content);
 
-        // Check pHash matches
-        console.log(`[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash match...`);
+        // Check pHash similarity using hamming distance
+        console.log(`[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash similarity...`);
         for (const entry of whitelist.entries || []) {
           const storedPHash = entry.metadata?.pHash || entry.pHash;
           if (storedPHash) {
-            console.log(`[Remix Hash]   Comparing: ${pHash} vs ${storedPHash}`);
-          }
-          if (storedPHash && storedPHash === pHash) {
-            console.log(
-              `[Remix Hash] pHash match found! IP: ${entry.metadata?.ipId || entry.ipId}`,
-            );
-            res.status(200).json({
-              found: true,
-              message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
-              ipId: entry.metadata?.ipId || entry.ipId,
-              title: entry.metadata?.title || entry.title,
-              timestamp: entry.metadata?.timestamp || entry.timestamp,
-            });
-            return;
+            const distance = hammingDistance(pHash, storedPHash);
+            const similarity = Math.round(((64 - distance) / 64) * 100);
+            console.log(`[Remix Hash]   Comparing: ${pHash} vs ${storedPHash} - distance: ${distance}, similarity: ${similarity}%`);
+
+            // If similarity >= 75%, consider it a match
+            if (similarity >= 75) {
+              console.log(
+                `[Remix Hash] pHash MATCH found! (${similarity}% similar) IP: ${entry.metadata?.ipId || entry.ipId}`,
+              );
+              res.status(200).json({
+                found: true,
+                message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
+                ipId: entry.metadata?.ipId || entry.ipId,
+                title: entry.metadata?.title || entry.title,
+                timestamp: entry.metadata?.timestamp || entry.timestamp,
+                matchType: "pHash",
+                similarity,
+              });
+              return;
+            }
           }
         }
       } catch (err) {

@@ -17,6 +17,7 @@ import {
   handleCheckRemixHash,
   handleGetRemixHashes,
 } from "./routes/remix-hash-whitelist.js";
+import { handleCheckImageSimilarity } from "./routes/check-image-similarity.js";
 
 async function fetchParentIpDetails(
   childIpId: string,

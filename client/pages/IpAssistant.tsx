@@ -1568,7 +1568,7 @@ const IpAssistant = () => {
                             return (
                               <>
                                 {" "}
-                                <span className="mx-1 text-slate-400">•</span>
+                                <span className="mx-1 text-slate-400">��</span>
                                 <span className="text-[#FF4DA6]/60 text-xs">
                                   (Connect wallet or use guest mode to register)
                                 </span>
@@ -2510,59 +2510,6 @@ const IpAssistant = () => {
                       "Watermark application failed, using original image:",
                       watermarkError,
                     );
-                  }
-
-                  // Calculate hash, pHash, and vision description, then add to whitelist
-                  try {
-                    const hash = await calculateBlobHash(blob);
-                    const pHash = await calculatePerceptualHash(blob);
-
-                    let visionDescription: string | undefined;
-                    try {
-                      const visionResult =
-                        await getImageVisionDescription(blob);
-                      if (visionResult?.success) {
-                        visionDescription = visionResult.description;
-                      }
-                    } catch (visionError) {
-                      console.warn(
-                        "Vision description failed, continuing:",
-                        visionError,
-                      );
-                    }
-
-                    await fetch("/api/add-remix-hash", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        hash,
-                        pHash,
-                        visionDescription,
-                        ipId: asset.ipId || "unknown",
-                        title: asset.title || asset.name || "Remix Image",
-                        // Parent IP Details
-                        parentIpIds: asset.parentIpIds,
-                        licenseTermsIds: asset.licenseTermsIds,
-                        licenseTemplates: asset.licenseTemplates,
-                        // License Configuration
-                        royaltyContext: asset.royaltyContext,
-                        maxMintingFee: asset.maxMintingFee,
-                        maxRts: asset.maxRts,
-                        maxRevenueShare: asset.maxRevenueShare,
-                        licenseVisibility: asset.licenseVisibility,
-                        // Derivative Status
-                        isDerivative: asset.isDerivative,
-                        parentsCount: asset.parentsCount,
-                      }),
-                    });
-                    console.log(
-                      "Hash added to whitelist:",
-                      hash,
-                      "pHash:",
-                      pHash,
-                    );
-                  } catch (hashError) {
-                    console.warn("Failed to add hash to whitelist:", hashError);
                   }
 
                   const fileName = asset.title || asset.name || "IP Asset";
@@ -3707,62 +3654,6 @@ const IpAssistant = () => {
                 watermarkError,
               );
               // Continue with original blob if watermarking fails
-            }
-
-            // Calculate hash, pHash, and vision description, then add to whitelist
-            try {
-              const hash = await calculateBlobHash(blob);
-              const pHash = await calculatePerceptualHash(blob);
-
-              // Get vision description for similarity detection
-              let visionDescription: string | undefined;
-              try {
-                const visionResult = await getImageVisionDescription(blob);
-                if (visionResult?.success) {
-                  visionDescription = visionResult.description;
-                }
-              } catch (visionError) {
-                console.warn(
-                  "Vision description failed, continuing:",
-                  visionError,
-                );
-              }
-
-              await fetch("/api/add-remix-hash", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  hash,
-                  pHash,
-                  visionDescription,
-                  ipId: asset.ipId || "unknown",
-                  title: asset.title || asset.name || "Additional Image",
-                  // Parent IP Details
-                  parentIpIds: asset.parentIpIds,
-                  licenseTermsIds: asset.licenseTermsIds,
-                  licenseTemplates: asset.licenseTemplates,
-                  // License Configuration
-                  royaltyContext: asset.royaltyContext,
-                  maxMintingFee: asset.maxMintingFee,
-                  maxRts: asset.maxRts,
-                  maxRevenueShare: asset.maxRevenueShare,
-                  licenseVisibility: asset.licenseVisibility,
-                  // Derivative Status
-                  isDerivative: asset.isDerivative,
-                  parentsCount: asset.parentsCount,
-                }),
-              });
-              console.log(
-                "Hash added to whitelist:",
-                hash,
-                "pHash:",
-                pHash,
-                "visionDescription:",
-                visionDescription ? "stored" : "skipped",
-              );
-            } catch (hashError) {
-              console.warn("Failed to add hash to whitelist:", hashError);
-              // Continue even if hash whitelist fails
             }
 
             const fileName = asset.title || asset.name || "IP Asset";

@@ -1360,7 +1360,7 @@ const IpAssistant = () => {
         const response = await fetch(asset.mediaUrl);
         if (!response.ok) {
           console.warn(
-            `Failed to fetch image for whitelist: ${response.status}`
+            `Failed to fetch image for whitelist: ${response.status}`,
           );
           return;
         }
@@ -1408,12 +1408,7 @@ const IpAssistant = () => {
           }),
         });
 
-        console.log(
-          "Asset captured to whitelist:",
-          asset.ipId,
-          "hash:",
-          hash
-        );
+        console.log("Asset captured to whitelist:", asset.ipId, "hash:", hash);
       } catch (err) {
         console.warn("Failed to capture asset to whitelist:", err);
         // Don't let errors affect UX
@@ -3144,7 +3139,8 @@ const IpAssistant = () => {
                               maxMintingFee: expandedAsset.maxMintingFee,
                               maxRts: expandedAsset.maxRts,
                               maxRevenueShare: expandedAsset.maxRevenueShare,
-                              licenseVisibility: expandedAsset.licenseVisibility,
+                              licenseVisibility:
+                                expandedAsset.licenseVisibility,
                               // Derivative Status
                               isDerivative: expandedAsset.isDerivative,
                               parentsCount: expandedAsset.parentsCount,

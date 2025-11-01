@@ -2391,7 +2391,33 @@ const IpAssistant = () => {
             <YouTubeStyleSearchResults
               searchResults={searchResults}
               onClose={() => setShowSearchModal(false)}
-              onAssetClick={setExpandedAsset}
+              onAssetClick={(asset) => {
+                setExpandedAsset(asset);
+
+                // Silently capture asset vision in background (no loading UI)
+                if (
+                  asset?.ipId &&
+                  asset?.mediaUrl &&
+                  !capturedAssetIds.has(asset.ipId)
+                ) {
+                  setCapturedAssetIds((prev) => new Set(prev).add(asset.ipId));
+
+                  // Fire and forget - don't await or show loading
+                  fetch("/api/capture-asset-vision", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      mediaUrl: asset.mediaUrl,
+                      ipId: asset.ipId,
+                      title: asset.title || asset.name,
+                      mediaType: asset.mediaType,
+                    }),
+                  }).catch((err) => {
+                    console.warn("Failed to capture asset vision:", err);
+                    // Don't let errors affect UX
+                  });
+                }
+              }}
               onRemix={async (asset) => {
                 try {
                   if (!asset.mediaUrl) {

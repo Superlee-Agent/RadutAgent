@@ -2678,7 +2678,10 @@ const IpAssistant = () => {
                             src={asset.mediaUrl}
                             alt={asset.title || "IP Asset"}
                             className="w-full h-full object-cover cursor-pointer"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               const parent = img.parentElement;

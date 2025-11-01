@@ -1384,9 +1384,12 @@ const IpAssistant = () => {
 
         // Add ALL asset data to whitelist (including parent IP details)
         // For original IPs (not derivatives), include ipId as self-reference for future remix tracking
-        const parentIpIds = asset.parentIpIds && asset.parentIpIds.length > 0
-          ? asset.parentIpIds
-          : (asset.isDerivative === false ? [asset.ipId] : []);
+        const parentIpIds =
+          asset.parentIpIds && asset.parentIpIds.length > 0
+            ? asset.parentIpIds
+            : asset.isDerivative === false
+              ? [asset.ipId]
+              : [];
 
         const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",

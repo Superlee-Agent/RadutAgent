@@ -27,6 +27,7 @@ import {
 import { applyWatermarkFromAsset } from "@/lib/utils/apply-watermark";
 import { calculateBlobHash } from "@/lib/utils/hash";
 import { calculatePerceptualHash } from "@/lib/utils/perceptual-hash";
+import { getImageVisionDescription } from "@/lib/utils/vision-api";
 import {
   CURRENT_SESSION_KEY,
   IP_ASSISTANT_AVATAR,

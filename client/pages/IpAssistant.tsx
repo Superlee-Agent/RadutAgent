@@ -820,7 +820,7 @@ const IpAssistant = () => {
               const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
                 from: "bot",
-                text: `⚠️ This image is already registered as an IP. You can only remix it.`,
+                text: `⚠️ This is copyrighted content. Remixing is allowed.`,
                 ts: getCurrentTimestamp(),
                 action: {
                   type: "remix",
@@ -881,7 +881,7 @@ const IpAssistant = () => {
               const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
                 from: "bot",
-                text: `⚠️ This image is already registered as an IP. You can only remix it.`,
+                text: `⚠️ This is copyrighted content. Remixing is allowed.`,
                 ts: getCurrentTimestamp(),
                 action: {
                   type: "remix",

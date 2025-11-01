@@ -560,8 +560,12 @@ export const handleSearchIpAssets: RequestHandler = async (req, res) => {
                     parentIpIds: parentIpDetails?.parentIpIds,
                     parentIpDetails: parentIpDetails || undefined,
                     licenses: metadata?.licenses || [],
-                    licenseTermsIds: parentIpDetails?.licenseTermsIds || licenseDetails.licenseTermsIds,
-                    licenseTemplates: parentIpDetails?.licenseTemplates || licenseDetails.licenseTemplates,
+                    licenseTermsIds:
+                      parentIpDetails?.licenseTermsIds ||
+                      licenseDetails.licenseTermsIds,
+                    licenseTemplates:
+                      parentIpDetails?.licenseTemplates ||
+                      licenseDetails.licenseTemplates,
                     royaltyContext: licenseDetails.royaltyContext,
                     maxMintingFee: licenseDetails.maxMintingFee,
                     maxRts: licenseDetails.maxRts,

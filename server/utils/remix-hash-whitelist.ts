@@ -1,12 +1,29 @@
 import fs from "fs/promises";
 import path from "path";
 
-interface RemixHashEntry {
-  hash: string;
+/**
+ * Refactored Whitelist Structure:
+ * - Hash: SHA256 of pure image pixels only (no metadata)
+ * - Metadata: Stored separately (ipId, title, timestamp, pHash, visionDescription)
+ * 
+ * This separation allows:
+ * 1. Pure image hash matching
+ * 2. Flexible metadata storage
+ * 3. Multiple metadata per hash (if needed)
+ * 4. Clean hash-based comparison
+ */
+
+interface RemixImageMetadata {
   ipId: string;
   title: string;
   timestamp: number;
-  pHash?: string; // Perceptual hash for similarity detection
+  pHash?: string;
+  visionDescription?: string;
+}
+
+interface RemixHashEntry {
+  hash: string; // SHA256 of pure image pixels only
+  metadata: RemixImageMetadata;
 }
 
 interface RemixHashWhitelist {
@@ -41,7 +58,35 @@ async function loadWhitelist(): Promise<RemixHashWhitelist> {
 
   try {
     const content = await fs.readFile(WHITELIST_PATH, "utf-8");
-    return JSON.parse(content);
+    const parsed = JSON.parse(content);
+
+    // Support both old and new formats
+    if (parsed.entries && parsed.entries.length > 0) {
+      if (parsed.entries[0].metadata) {
+        // New format: already separated
+        return parsed;
+      } else if (parsed.entries[0].ipId) {
+        // Old format: needs migration
+        console.log("[Remix Hash] Migrating whitelist to new format...");
+        const migratedEntries = parsed.entries.map((entry: any) => ({
+          hash: entry.hash,
+          metadata: {
+            ipId: entry.ipId,
+            title: entry.title,
+            timestamp: entry.timestamp,
+            pHash: entry.pHash,
+            visionDescription: entry.visionDescription,
+          },
+        }));
+
+        return {
+          entries: migratedEntries,
+          lastUpdated: parsed.lastUpdated || Date.now(),
+        };
+      }
+    }
+
+    return parsed;
   } catch (error) {
     // File doesn't exist or is empty, return empty whitelist
     return { entries: [], lastUpdated: Date.now() };
@@ -58,13 +103,13 @@ async function saveWhitelist(whitelist: RemixHashWhitelist): Promise<void> {
 }
 
 /**
- * Add hash to whitelist
+ * Add hash to whitelist with separated metadata
+ * @param hash SHA256 hash of pure image pixels only
+ * @param metadata Image metadata (ipId, title, etc)
  */
 export async function addHashToWhitelist(
   hash: string,
-  ipId: string,
-  title: string,
-  pHash?: string,
+  metadata: RemixImageMetadata,
 ): Promise<void> {
   const whitelist = await loadWhitelist();
 
@@ -74,29 +119,26 @@ export async function addHashToWhitelist(
   if (!exists) {
     whitelist.entries.push({
       hash,
-      ipId,
-      title,
-      timestamp: Date.now(),
-      pHash,
+      metadata,
     });
 
     await saveWhitelist(whitelist);
     console.log(
-      `[Remix Hash] Added hash ${hash} for IP ${ipId}${pHash ? ` (pHash: ${pHash})` : ""}`,
+      `[Remix Hash] Added hash ${hash} for IP ${metadata.ipId} (${metadata.title})`,
     );
   }
 }
 
 /**
  * Check if hash exists in whitelist
- * Returns the entry if found, null otherwise
+ * Returns the metadata if found, null otherwise
  */
 export async function checkHashInWhitelist(
   hash: string,
-): Promise<RemixHashEntry | null> {
+): Promise<RemixImageMetadata | null> {
   const whitelist = await loadWhitelist();
   const entry = whitelist.entries.find((entry) => entry.hash === hash);
-  return entry || null;
+  return entry?.metadata || null;
 }
 
 /**
@@ -105,6 +147,14 @@ export async function checkHashInWhitelist(
 export async function getAllWhitelistHashes(): Promise<string[]> {
   const whitelist = await loadWhitelist();
   return whitelist.entries.map((entry) => entry.hash);
+}
+
+/**
+ * Get all entries with metadata
+ */
+export async function getAllWhitelistEntries(): Promise<RemixHashEntry[]> {
+  const whitelist = await loadWhitelist();
+  return whitelist.entries;
 }
 
 /**
@@ -117,4 +167,21 @@ export async function clearWhitelist(): Promise<void> {
   };
   await saveWhitelist(whitelist);
   console.log("[Remix Hash] Whitelist cleared");
+}
+
+/**
+ * Update metadata for a hash (add visionDescription, etc)
+ */
+export async function updateHashMetadata(
+  hash: string,
+  partialMetadata: Partial<RemixImageMetadata>,
+): Promise<void> {
+  const whitelist = await loadWhitelist();
+  const entry = whitelist.entries.find((e) => e.hash === hash);
+
+  if (entry) {
+    entry.metadata = { ...entry.metadata, ...partialMetadata };
+    await saveWhitelist(whitelist);
+    console.log(`[Remix Hash] Updated metadata for hash ${hash}`);
+  }
 }

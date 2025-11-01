@@ -3535,7 +3535,8 @@ const IpAssistant = () => {
                               Max Revenue Share
                             </div>
                             <p className="text-sm text-slate-200 font-semibold">
-                              {Number(expandedAsset.maxRevenueShare) / 1e6 || 0}%
+                              {Number(expandedAsset.maxRevenueShare) / 1e6 || 0}
+                              %
                             </p>
                           </div>
                         )}

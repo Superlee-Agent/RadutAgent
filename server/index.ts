@@ -191,7 +191,11 @@ export function createServer() {
   app.get("/api/_admin/remix-hashes", handleGetRemixHashes);
 
   // Image similarity detection endpoint
-  app.post("/api/check-image-similarity", upload.single("image"), handleCheckImageSimilarity);
+  app.post(
+    "/api/check-image-similarity",
+    upload.single("image"),
+    handleCheckImageSimilarity,
+  );
 
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {

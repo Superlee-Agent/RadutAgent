@@ -66,12 +66,9 @@ export async function calculatePerceptualHash(blob: Blob): Promise<string> {
       }
 
       // Convert binary hash to hex
-      const hashHex = parseInt(hash.substring(0, 32), 2)
-        .toString(16)
-        .padStart(8, "0") +
-        parseInt(hash.substring(32, 64), 2)
-          .toString(16)
-          .padStart(8, "0");
+      const hashHex =
+        parseInt(hash.substring(0, 32), 2).toString(16).padStart(8, "0") +
+        parseInt(hash.substring(32, 64), 2).toString(16).padStart(8, "0");
 
       resolve(hashHex);
     };
@@ -105,8 +102,7 @@ export function hammingDistance(hash1: string, hash2: string): number {
   let distance = 0;
   // Convert hex to binary and count differing bits
   for (let i = 0; i < hash1.length; i++) {
-    const xor =
-      parseInt(hash1[i], 16) ^ parseInt(hash2[i], 16);
+    const xor = parseInt(hash1[i], 16) ^ parseInt(hash2[i], 16);
     // Count bits in xor result
     for (let j = 0; j < 4; j++) {
       distance += (xor >> j) & 1;

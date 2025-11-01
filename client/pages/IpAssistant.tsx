@@ -2792,7 +2792,12 @@ const IpAssistant = () => {
                               "Remix Image",
                           }),
                         });
-                        console.log("Hash added to whitelist:", hash, "pHash:", pHash);
+                        console.log(
+                          "Hash added to whitelist:",
+                          hash,
+                          "pHash:",
+                          pHash,
+                        );
                       } catch (hashError) {
                         console.warn(
                           "Failed to add hash to whitelist:",

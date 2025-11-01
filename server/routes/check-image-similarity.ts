@@ -71,12 +71,8 @@ async function calculateImagePerceptualHash(
 
     // Convert binary hash to hex
     const hashHex =
-      parseInt(hash.substring(0, 32), 2)
-        .toString(16)
-        .padStart(8, "0") +
-      parseInt(hash.substring(32, 64), 2)
-        .toString(16)
-        .padStart(8, "0");
+      parseInt(hash.substring(0, 32), 2).toString(16).padStart(8, "0") +
+      parseInt(hash.substring(32, 64), 2).toString(16).padStart(8, "0");
 
     return hashHex;
   } catch (error) {

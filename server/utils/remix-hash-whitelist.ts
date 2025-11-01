@@ -81,7 +81,9 @@ export async function addHashToWhitelist(
     });
 
     await saveWhitelist(whitelist);
-    console.log(`[Remix Hash] Added hash ${hash} for IP ${ipId}${pHash ? ` (pHash: ${pHash})` : ""}`);
+    console.log(
+      `[Remix Hash] Added hash ${hash} for IP ${ipId}${pHash ? ` (pHash: ${pHash})` : ""}`,
+    );
   }
 }
 

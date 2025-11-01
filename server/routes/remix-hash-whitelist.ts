@@ -13,7 +13,17 @@ import {
  *   ipId?: string,
  *   title?: string,
  *   pHash?: string,
- *   visionDescription?: string
+ *   visionDescription?: string,
+ *   parentIpIds?: string[],
+ *   licenseTermsIds?: string[],
+ *   licenseTemplates?: string[],
+ *   royaltyContext?: string,
+ *   maxMintingFee?: string,
+ *   maxRts?: string,
+ *   maxRevenueShare?: number,
+ *   licenseVisibility?: string,
+ *   isDerivative?: boolean,
+ *   parentsCount?: number
  * }
  */
 export async function handleAddRemixHash(
@@ -27,6 +37,16 @@ export async function handleAddRemixHash(
       visionDescription,
       ipId = "unknown",
       title = "Remix Image",
+      parentIpIds,
+      licenseTermsIds,
+      licenseTemplates,
+      royaltyContext,
+      maxMintingFee,
+      maxRts,
+      maxRevenueShare,
+      licenseVisibility,
+      isDerivative,
+      parentsCount,
     } = req.body;
 
     if (!hash || typeof hash !== "string") {
@@ -42,20 +62,30 @@ export async function handleAddRemixHash(
       return;
     }
 
-    // Add to whitelist with separated metadata
+    // Add to whitelist with separated metadata (including all parent IP details)
     const metadata = {
       ipId,
       title,
       timestamp: Date.now(),
       pHash,
       visionDescription,
+      parentIpIds,
+      licenseTermsIds,
+      licenseTemplates,
+      royaltyContext,
+      maxMintingFee,
+      maxRts,
+      maxRevenueShare,
+      licenseVisibility,
+      isDerivative,
+      parentsCount,
     };
 
     await addHashToWhitelist(hash.toLowerCase(), metadata);
 
     res.status(200).json({
       success: true,
-      message: "Hash added to remix whitelist",
+      message: "Hash added to remix whitelist with parent IP details",
       hash: hash.toLowerCase(),
       metadata,
     });
@@ -124,6 +154,19 @@ export async function handleCheckRemixHash(
         ipId: entry.metadata?.ipId || entry.ipId,
         title: entry.metadata?.title || entry.title,
         timestamp: entry.metadata?.timestamp || entry.timestamp,
+        // Parent IP Details
+        parentIpIds: entry.metadata?.parentIpIds,
+        licenseTermsIds: entry.metadata?.licenseTermsIds,
+        licenseTemplates: entry.metadata?.licenseTemplates,
+        // License Configuration
+        royaltyContext: entry.metadata?.royaltyContext,
+        maxMintingFee: entry.metadata?.maxMintingFee,
+        maxRts: entry.metadata?.maxRts,
+        maxRevenueShare: entry.metadata?.maxRevenueShare,
+        licenseVisibility: entry.metadata?.licenseVisibility,
+        // Derivative Status
+        isDerivative: entry.metadata?.isDerivative,
+        parentsCount: entry.metadata?.parentsCount,
       });
       return;
     }
@@ -173,6 +216,19 @@ export async function handleCheckRemixHash(
                 timestamp: entry.metadata?.timestamp || entry.timestamp,
                 matchType: "pHash",
                 similarity,
+                // Parent IP Details
+                parentIpIds: entry.metadata?.parentIpIds,
+                licenseTermsIds: entry.metadata?.licenseTermsIds,
+                licenseTemplates: entry.metadata?.licenseTemplates,
+                // License Configuration
+                royaltyContext: entry.metadata?.royaltyContext,
+                maxMintingFee: entry.metadata?.maxMintingFee,
+                maxRts: entry.metadata?.maxRts,
+                maxRevenueShare: entry.metadata?.maxRevenueShare,
+                licenseVisibility: entry.metadata?.licenseVisibility,
+                // Derivative Status
+                isDerivative: entry.metadata?.isDerivative,
+                parentsCount: entry.metadata?.parentsCount,
               });
               return;
             }

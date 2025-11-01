@@ -1350,6 +1350,72 @@ const IpAssistant = () => {
     />
   );
 
+  // Helper function to capture asset data to whitelist (fires in background)
+  const captureAssetToWhitelist = (asset: any) => {
+    if (!asset?.ipId || !asset?.mediaUrl) return;
+
+    (async () => {
+      try {
+        // Fetch the image
+        const response = await fetch(asset.mediaUrl);
+        if (!response.ok) {
+          console.warn(
+            `Failed to fetch image for whitelist: ${response.status}`,
+          );
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Calculate hash and pHash
+        const hash = await calculateBlobHash(blob);
+        const pHash = await calculatePerceptualHash(blob);
+
+        // Get vision description
+        let visionDescription: string | undefined;
+        try {
+          const visionResult = await getImageVisionDescription(blob);
+          if (visionResult?.success) {
+            visionDescription = visionResult.description;
+          }
+        } catch (visionError) {
+          console.warn("Vision description failed:", visionError);
+        }
+
+        // Add ALL asset data to whitelist (including parent IP details)
+        await fetch("/api/add-remix-hash", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            hash,
+            pHash,
+            visionDescription,
+            ipId: asset.ipId,
+            title: asset.title || asset.name,
+            // Parent IP Details
+            parentIpIds: asset.parentIpIds,
+            licenseTermsIds: asset.licenseTermsIds,
+            licenseTemplates: asset.licenseTemplates,
+            // License Configuration
+            royaltyContext: asset.royaltyContext,
+            maxMintingFee: asset.maxMintingFee,
+            maxRts: asset.maxRts,
+            maxRevenueShare: asset.maxRevenueShare,
+            licenseVisibility: asset.licenseVisibility,
+            // Derivative Status
+            isDerivative: asset.isDerivative,
+            parentsCount: asset.parentsCount,
+          }),
+        });
+
+        console.log("Asset captured to whitelist:", asset.ipId, "hash:", hash);
+      } catch (err) {
+        console.warn("Failed to capture asset to whitelist:", err);
+        // Don't let errors affect UX
+      }
+    })();
+  };
+
   return (
     <DashboardLayout
       title="IP Assistant"
@@ -2416,6 +2482,9 @@ const IpAssistant = () => {
                     console.warn("Failed to capture asset vision:", err);
                     // Don't let errors affect UX
                   });
+
+                  // Capture ALL asset data (including parent IP details) to whitelist
+                  captureAssetToWhitelist(asset);
                 }
               }}
               onRemix={async (asset) => {
@@ -2471,6 +2540,19 @@ const IpAssistant = () => {
                         visionDescription,
                         ipId: asset.ipId || "unknown",
                         title: asset.title || asset.name || "Remix Image",
+                        // Parent IP Details
+                        parentIpIds: asset.parentIpIds,
+                        licenseTermsIds: asset.licenseTermsIds,
+                        licenseTemplates: asset.licenseTemplates,
+                        // License Configuration
+                        royaltyContext: asset.royaltyContext,
+                        maxMintingFee: asset.maxMintingFee,
+                        maxRts: asset.maxRts,
+                        maxRevenueShare: asset.maxRevenueShare,
+                        licenseVisibility: asset.licenseVisibility,
+                        // Derivative Status
+                        isDerivative: asset.isDerivative,
+                        parentsCount: asset.parentsCount,
                       }),
                     });
                     console.log(
@@ -2543,7 +2625,10 @@ const IpAssistant = () => {
                         asset.mediaType?.startsWith("video") ? (
                           <div
                             className="w-full h-full cursor-pointer relative group/video"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                           >
                             <video
                               key={asset.ipId}
@@ -2567,7 +2652,10 @@ const IpAssistant = () => {
                         ) : asset.mediaType?.startsWith("audio") ? (
                           <div
                             className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                           >
                             <svg
                               className="w-12 h-12 text-purple-300"
@@ -2585,7 +2673,10 @@ const IpAssistant = () => {
                             src={asset.mediaUrl}
                             alt={asset.title || "IP Asset"}
                             className="w-full h-full object-cover cursor-pointer"
-                            onClick={() => setExpandedAsset(asset)}
+                            onClick={() => {
+                              setExpandedAsset(asset);
+                              captureAssetToWhitelist(asset);
+                            }}
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               const parent = img.parentElement;
@@ -3039,6 +3130,20 @@ const IpAssistant = () => {
                                 expandedAsset.title ||
                                 expandedAsset.name ||
                                 "Remix Image",
+                              // Parent IP Details
+                              parentIpIds: expandedAsset.parentIpIds,
+                              licenseTermsIds: expandedAsset.licenseTermsIds,
+                              licenseTemplates: expandedAsset.licenseTemplates,
+                              // License Configuration
+                              royaltyContext: expandedAsset.royaltyContext,
+                              maxMintingFee: expandedAsset.maxMintingFee,
+                              maxRts: expandedAsset.maxRts,
+                              maxRevenueShare: expandedAsset.maxRevenueShare,
+                              licenseVisibility:
+                                expandedAsset.licenseVisibility,
+                              // Derivative Status
+                              isDerivative: expandedAsset.isDerivative,
+                              parentsCount: expandedAsset.parentsCount,
                             }),
                           });
                           console.log(
@@ -3632,6 +3737,19 @@ const IpAssistant = () => {
                   visionDescription,
                   ipId: asset.ipId || "unknown",
                   title: asset.title || asset.name || "Additional Image",
+                  // Parent IP Details
+                  parentIpIds: asset.parentIpIds,
+                  licenseTermsIds: asset.licenseTermsIds,
+                  licenseTemplates: asset.licenseTemplates,
+                  // License Configuration
+                  royaltyContext: asset.royaltyContext,
+                  maxMintingFee: asset.maxMintingFee,
+                  maxRts: asset.maxRts,
+                  maxRevenueShare: asset.maxRevenueShare,
+                  licenseVisibility: asset.licenseVisibility,
+                  // Derivative Status
+                  isDerivative: asset.isDerivative,
+                  parentsCount: asset.parentsCount,
                 }),
               });
               console.log(

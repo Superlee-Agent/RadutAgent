@@ -32,8 +32,9 @@ function binaryToNumber(binary: string): number {
 }
 
 /**
- * Extract watermark from image using DCT analysis
+ * Extract watermark from image using spread spectrum analysis
  * Reconstructs the embedded watermark bits from the image
+ * Uses majority voting for robustness
  */
 async function extractWatermarkFromImage(
   imageBuffer: Buffer,
@@ -47,13 +48,37 @@ async function extractWatermarkFromImage(
     const data = raw.data;
     let extractedBits = "";
 
-    // Extract watermark bits from image data
-    // Uses same block-based approach as client-side
-    for (let blockIndex = 0; blockIndex < 256 && extractedBits.length < 2048; blockIndex++) {
-      const startIdx = blockIndex * 64 + 8;
-      if (startIdx < data.length) {
-        const bit = (data[startIdx] & 1) ^ 1; // Invert logic for reliability
+    // Extract watermark bits using spread spectrum majority voting
+    // This matches the client-side extraction algorithm
+    const redundancy = 8;
+    const seed = 42;
+    const stride = 4; // RGBA
+    let pixelPosition = 0;
+
+    for (let i = 0; i < 256 && extractedBits.length < 2048; i++) {
+      if (pixelPosition < data.length) {
+        // Extract bit using majority voting from redundant copies
+        // Same spread locations as client-side
+        const spreadLocations = [
+          pixelPosition % data.length,
+          (pixelPosition + seed * 17) % data.length,
+          (pixelPosition + seed * 37) % data.length,
+        ];
+
+        let bitSum = 0;
+        let validCount = 0;
+
+        for (const loc of spreadLocations) {
+          if (loc < data.length && loc % stride !== 3) { // Skip alpha
+            const value = data[loc];
+            bitSum += value > 127 ? 1 : 0;
+            validCount++;
+          }
+        }
+
+        const bit = validCount > 0 && bitSum >= Math.ceil(validCount / 2) ? 1 : 0;
         extractedBits += bit;
+        pixelPosition += Math.floor(data.length / (256 * redundancy)) + 1;
       }
     }
 

@@ -12,6 +12,11 @@ import { handleParseSearchIntent } from "./routes/parse-search-intent.js";
 import { handleGetSuggestions } from "./routes/get-suggestions.js";
 import { handleResolveIpName } from "./routes/resolve-ip-name.js";
 import handleVerifyWatermark from "./routes/verify-watermark.js";
+import {
+  handleAddRemixHash,
+  handleCheckRemixHash,
+  handleGetRemixHashes,
+} from "./routes/remix-hash-whitelist.js";
 
 async function fetchParentIpDetails(
   childIpId: string,

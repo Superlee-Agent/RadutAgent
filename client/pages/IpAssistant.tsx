@@ -840,11 +840,13 @@ const IpAssistant = () => {
         // Hash Detection for previously uploaded images
         try {
           const hash = await calculateBlobHash(lastUploadBlobRef.current);
-          console.log("[Hash Detection] Checking hash (from previous upload):", hash);
+          const pHash = await calculatePerceptualHash(lastUploadBlobRef.current);
+          console.log("[Hash Detection] SHA256:", hash, "pHash:", pHash, "(from previous upload)");
+
           const hashCheckResponse = await fetch("/api/check-remix-hash", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ hash }),
+            body: JSON.stringify({ hash, pHash }),
           });
 
           if (hashCheckResponse.ok) {

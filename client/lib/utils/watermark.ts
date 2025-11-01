@@ -56,7 +56,8 @@ class RobustWatermark {
     ];
 
     for (const loc of spreadLocations) {
-      if (loc < pixelData.length && loc % stride !== 3) { // Skip alpha channel
+      if (loc < pixelData.length && loc % stride !== 3) {
+        // Skip alpha channel
         const baseValue = pixelData[loc];
         const strengthFactor = 10; // How much to shift for watermark bit
 
@@ -150,7 +151,8 @@ export async function embedWatermark(
         for (let r = 0; r < redundancy; r++) {
           if (pixelPosition < data.length) {
             RobustWatermark.embedBit(data, bit, pixelPosition, seed + i);
-            pixelPosition += Math.floor(data.length / (serialized.length * redundancy)) + 1;
+            pixelPosition +=
+              Math.floor(data.length / (serialized.length * redundancy)) + 1;
           }
         }
       }

@@ -3,7 +3,11 @@
  * These tests help verify that watermarks can survive various image manipulations
  */
 
-import { embedWatermark, extractWatermark, type WatermarkData } from "./watermark";
+import {
+  embedWatermark,
+  extractWatermark,
+  type WatermarkData,
+} from "./watermark";
 
 /**
  * Test watermark embed and extract
@@ -106,10 +110,14 @@ export async function testWatermarkRobustness(): Promise<{
     ctx.fillRect(0, 0, 200, 200);
 
     const gradientBlob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((b) => {
-        if (b) resolve(b);
-        else reject(new Error("Failed to create blob"));
-      }, "image/jpeg", 0.8); // JPEG compression
+      canvas.toBlob(
+        (b) => {
+          if (b) resolve(b);
+          else reject(new Error("Failed to create blob"));
+        },
+        "image/jpeg",
+        0.8,
+      ); // JPEG compression
     });
 
     const testData: WatermarkData = {

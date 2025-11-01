@@ -2694,9 +2694,15 @@ const IpAssistant = () => {
 
                       // Apply invisible watermark to protect IP
                       try {
-                        blob = await applyWatermarkFromAsset(blob, expandedAsset);
+                        blob = await applyWatermarkFromAsset(
+                          blob,
+                          expandedAsset,
+                        );
                       } catch (watermarkError) {
-                        console.warn("Watermark application failed, using original image:", watermarkError);
+                        console.warn(
+                          "Watermark application failed, using original image:",
+                          watermarkError,
+                        );
                         // Continue with original blob if watermarking fails
                       }
 
@@ -2709,12 +2715,18 @@ const IpAssistant = () => {
                           body: JSON.stringify({
                             hash,
                             ipId: expandedAsset.ipId || "unknown",
-                            title: expandedAsset.title || expandedAsset.name || "Remix Image",
+                            title:
+                              expandedAsset.title ||
+                              expandedAsset.name ||
+                              "Remix Image",
                           }),
                         });
                         console.log("Hash added to whitelist:", hash);
                       } catch (hashError) {
-                        console.warn("Failed to add hash to whitelist:", hashError);
+                        console.warn(
+                          "Failed to add hash to whitelist:",
+                          hashError,
+                        );
                         // Continue even if hash whitelist fails
                       }
 
@@ -3158,7 +3170,10 @@ const IpAssistant = () => {
             try {
               blob = await applyWatermarkFromAsset(blob, asset);
             } catch (watermarkError) {
-              console.warn("Watermark application failed, using original image:", watermarkError);
+              console.warn(
+                "Watermark application failed, using original image:",
+                watermarkError,
+              );
               // Continue with original blob if watermarking fails
             }
 

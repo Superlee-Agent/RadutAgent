@@ -106,13 +106,18 @@ export function useIPRegistrationAgent() {
               setRegisterState({
                 status: "error",
                 progress: 0,
-                error: watermarkCheck.message || "This image is a remix and cannot be registered as a new IP.",
+                error:
+                  watermarkCheck.message ||
+                  "This image is a remix and cannot be registered as a new IP.",
               });
               return { success: false, reason: "watermark_detected" } as const;
             }
           }
         } catch (watermarkError) {
-          console.warn("Watermark verification failed, continuing:", watermarkError);
+          console.warn(
+            "Watermark verification failed, continuing:",
+            watermarkError,
+          );
           // Don't block registration if watermark check fails
         }
 
@@ -131,7 +136,9 @@ export function useIPRegistrationAgent() {
               setRegisterState({
                 status: "error",
                 progress: 0,
-                error: hashCheck.message || "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix.",
+                error:
+                  hashCheck.message ||
+                  "IP ini sudah terdaftar. Tidak dapat registrasi dengan gambar remix.",
               });
               return { success: false, reason: "hash_in_whitelist" } as const;
             }

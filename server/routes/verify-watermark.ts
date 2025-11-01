@@ -69,14 +69,16 @@ async function extractWatermarkFromImage(
         let validCount = 0;
 
         for (const loc of spreadLocations) {
-          if (loc < data.length && loc % stride !== 3) { // Skip alpha
+          if (loc < data.length && loc % stride !== 3) {
+            // Skip alpha
             const value = data[loc];
             bitSum += value > 127 ? 1 : 0;
             validCount++;
           }
         }
 
-        const bit = validCount > 0 && bitSum >= Math.ceil(validCount / 2) ? 1 : 0;
+        const bit =
+          validCount > 0 && bitSum >= Math.ceil(validCount / 2) ? 1 : 0;
         extractedBits += bit;
         pixelPosition += Math.floor(data.length / (256 * redundancy)) + 1;
       }

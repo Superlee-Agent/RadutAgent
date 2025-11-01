@@ -178,7 +178,11 @@ export function createServer() {
   app.post("/api/get-suggestions", handleGetSuggestions);
 
   // Verify watermark endpoint (POST /api/verify-watermark)
-  app.post("/api/verify-watermark", upload.single("image"), handleVerifyWatermark);
+  app.post(
+    "/api/verify-watermark",
+    upload.single("image"),
+    handleVerifyWatermark,
+  );
 
   // Remix hash whitelist endpoints
   app.post("/api/add-remix-hash", handleAddRemixHash);

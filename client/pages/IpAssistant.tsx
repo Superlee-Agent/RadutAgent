@@ -800,11 +800,16 @@ const IpAssistant = () => {
             body: JSON.stringify({ hash, pHash }),
           });
 
+          if (!hashCheckResponse.ok) {
+            console.error("[Hash Detection] Response error:", hashCheckResponse.status, hashCheckResponse.statusText);
+          }
+
           if (hashCheckResponse.ok) {
             const hashCheck = await hashCheckResponse.json();
             console.log("[Hash Detection] Response:", hashCheck);
             if (hashCheck.found) {
               // Hash found - offer remix instead of blocking
+              console.log("[Hash Detection] MATCH FOUND! Showing remix offer...");
               autoScrollNextRef.current = true;
               const warningMessage: Message = {
                 id: `msg-${Date.now()}`,
@@ -823,11 +828,13 @@ const IpAssistant = () => {
               setMessages((prev) => [...prev, warningMessage]);
               setPreviewImages({ remixImage: null, additionalImage: null });
               return;
+            } else {
+              console.log("[Hash Detection] No match found, proceeding to OpenAI...");
             }
           }
         } catch (hashError) {
-          console.warn(
-            "Hash check failed, continuing with registration:",
+          console.error(
+            "[Hash Detection] Exception caught, continuing with registration:",
             hashError,
           );
           // Continue to OpenAI analysis if hash check fails

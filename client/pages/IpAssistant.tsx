@@ -812,7 +812,10 @@ const IpAssistant = () => {
             }
           }
         } catch (hashError) {
-          console.warn("Hash check failed, continuing with registration:", hashError);
+          console.warn(
+            "Hash check failed, continuing with registration:",
+            hashError,
+          );
           // Continue to OpenAI analysis if hash check fails
         }
 
@@ -845,7 +848,10 @@ const IpAssistant = () => {
             }
           }
         } catch (hashError) {
-          console.warn("Hash check failed, continuing with registration:", hashError);
+          console.warn(
+            "Hash check failed, continuing with registration:",
+            hashError,
+          );
           // Continue to OpenAI analysis if hash check fails
         }
 

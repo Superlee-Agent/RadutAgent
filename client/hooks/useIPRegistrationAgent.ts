@@ -89,6 +89,12 @@ export function useIPRegistrationAgent() {
       ethereumProvider?: any,
     ) => {
       try {
+        // ============================================
+        // TIER 1: HASH/VISION DETECTION (BLOCKING)
+        // ============================================
+        // Check if image is a remix or similar to existing IPs
+        // If blocked here, stop immediately - do NOT proceed to Tier 2
+
         // Verify watermark to prevent re-registration of remixed images
         setRegisterState({ status: "compressing", progress: 5, error: null });
         try {

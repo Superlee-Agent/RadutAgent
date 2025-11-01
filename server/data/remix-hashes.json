@@ -305,7 +305,75 @@
         "pHash": "1c00187e7e6effff",
         "visionDescription": "Two plush toy chicks are the main subjects, sitting on a concrete ledge. Both are bright yellow with orange beaks and feet. They have expressive eyes that convey a worried or sad expression. Each chick wears a blue scarf or hat: the one on the left has a blue hat tilted to the side, and the one on the right has a blue scarf around its neck. The background is blurred, showing a body of water, greenery, and a distant bridge with lights, giving an urban park ambiance."
       }
+    },
+    {
+      "hash": "d86d099b92d81f7e9c704ec9b5358973676697a95c77dbfc9273683078622067",
+      "metadata": {
+        "ipId": "0xd2479280BD6B3D914eF16B8Ea0073B9F74152f22",
+        "title": "chilling mushy",
+        "timestamp": 1762025142581,
+        "pHash": "ffe7c7c7c3c3ffff",
+        "visionDescription": "A cartoon-style illustration of a round-headed, yellow bird wrapped in a blue blanket. The bird has droopy eyes and a small orange beak, giving it a sleepy or bored expression. The simple, bold outlines and limited color palette enhance the character's cute and humorous appearance.",
+        "ownerAddress": "0xF8780d979561aa242184436bd310f3a29861C9Fd",
+        "mediaType": "image/jpeg",
+        "score": 0.4220849275588989,
+        "parentIpIds": [
+          "0xd2479280BD6B3D914eF16B8Ea0073B9F74152f22"
+        ],
+        "licenseTermsIds": [
+          "28015"
+        ],
+        "licenseTemplates": [
+          null
+        ],
+        "royaltyContext": "",
+        "maxMintingFee": "0",
+        "maxRts": "0",
+        "maxRevenueShare": 0,
+        "licenseVisibility": "",
+        "licenses": [
+          {
+            "licenseTemplateId": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+            "licenseTermsId": "28015",
+            "templateName": "pil",
+            "templateMetadataUri": "https://github.com/storyprotocol/protocol-core/blob/main/PIL_Beta_Final_2024_02.pdf",
+            "terms": {
+              "uri": "https://ipfs.io/ipfs/QmbK76GN3F7SRJR8XKpLuiRgKn3sq9tLt6rGkdfg67uTjD",
+              "currency": "0x1514000000000000000000000000000000000000",
+              "expiration": "0",
+              "transferable": false,
+              "commercialUse": true,
+              "royaltyPolicy": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+              "defaultMintingFee": "5000000000000000000",
+              "commercialRevShare": 0,
+              "derivativesAllowed": false,
+              "derivativesApproval": false,
+              "commercialRevCeiling": "0",
+              "derivativeRevCeiling": "0",
+              "commercialAttribution": false,
+              "commercializerChecker": "0x0000000000000000000000000000000000000000",
+              "derivativesReciprocal": false,
+              "derivativesAttribution": false,
+              "commercializerCheckerData": "0x0000000000000000000000000000000000000000"
+            },
+            "licensingConfig": {
+              "isSet": false,
+              "disabled": false,
+              "hookData": "",
+              "mintingFee": 0,
+              "licensingHook": "",
+              "commercialRevShare": 0,
+              "expectGroupRewardPool": "",
+              "expectMinimumGroupRewardShare": 0
+            },
+            "createdAt": "2025-10-06T15:03:36.38452Z",
+            "updatedAt": "2025-10-06T15:03:36.38452Z"
+          }
+        ],
+        "isDerivative": false,
+        "parentsCount": 0
+      }
     }
   ],
-  "lastUpdated": 1762024877677
+  "lastUpdated": 1762025142581
 }

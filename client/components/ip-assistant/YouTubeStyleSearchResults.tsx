@@ -1,6 +1,16 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+interface License {
+  licenseTermsId?: string;
+  terms?: {
+    derivativesAllowed?: boolean;
+    [key: string]: any;
+  };
+  derivativesAllowed?: boolean;
+  [key: string]: any;
+}
+
 interface SearchResult {
   ipId?: string;
   title?: string;
@@ -12,6 +22,7 @@ interface SearchResult {
   ownerAddress?: string;
   isDerivative?: boolean;
   score?: number;
+  licenses?: License[];
   [key: string]: any;
 }
 
@@ -19,6 +30,7 @@ interface YouTubeStyleSearchResultsProps {
   searchResults: SearchResult[];
   onClose: () => void;
   onAssetClick: (asset: SearchResult) => void;
+  onRemix?: (asset: SearchResult) => void;
   query?: string;
 }
 

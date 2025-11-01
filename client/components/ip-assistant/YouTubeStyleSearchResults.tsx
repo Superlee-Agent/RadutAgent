@@ -275,7 +275,6 @@ export const YouTubeStyleSearchResults = ({
                       </p>
                     )}
                   </div>
-
                 </div>
               </div>
             ))}

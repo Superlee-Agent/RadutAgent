@@ -198,6 +198,13 @@ export function createServer() {
     handleCheckImageSimilarity,
   );
 
+  // Vision-based image detection endpoint (most powerful)
+  app.post(
+    "/api/vision-image-detection",
+    upload.single("image"),
+    handleVisionImageDetection,
+  );
+
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
     try {

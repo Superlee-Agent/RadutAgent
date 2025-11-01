@@ -19,6 +19,7 @@ import {
 } from "./routes/remix-hash-whitelist.js";
 import { handleCheckImageSimilarity } from "./routes/check-image-similarity.js";
 import { handleVisionImageDetection } from "./routes/vision-image-detection.js";
+import { handleAnalyzeImageVision } from "./routes/analyze-image-vision.js";
 
 async function fetchParentIpDetails(
   childIpId: string,

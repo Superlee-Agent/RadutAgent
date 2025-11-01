@@ -172,6 +172,9 @@ export function createServer() {
   // Get typing suggestions endpoint (POST /api/get-suggestions)
   app.post("/api/get-suggestions", handleGetSuggestions);
 
+  // Verify watermark endpoint (POST /api/verify-watermark)
+  app.post("/api/verify-watermark", upload.single("image"), handleVerifyWatermark);
+
   // Debug endpoint to fetch parent IP details for a given IP ID
   app.get("/api/_debug/parent-details/:ipId", async (req, res) => {
     try {

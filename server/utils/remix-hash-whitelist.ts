@@ -19,6 +19,19 @@ interface RemixImageMetadata {
   timestamp: number;
   pHash?: string;
   visionDescription?: string;
+  // Parent IP Details
+  parentIpIds?: string[];
+  licenseTermsIds?: string[];
+  licenseTemplates?: string[];
+  // License Configuration
+  royaltyContext?: string;
+  maxMintingFee?: string; // Wei format
+  maxRts?: string; // Wei format
+  maxRevenueShare?: number; // 0-100
+  licenseVisibility?: string;
+  // Derivative Status
+  isDerivative?: boolean;
+  parentsCount?: number;
 }
 
 interface RemixHashEntry {

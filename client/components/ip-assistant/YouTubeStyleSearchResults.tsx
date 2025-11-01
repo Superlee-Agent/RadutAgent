@@ -38,9 +38,22 @@ export const YouTubeStyleSearchResults = ({
   searchResults,
   onClose,
   onAssetClick,
+  onRemix,
   query = "",
 }: YouTubeStyleSearchResultsProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // Check if asset allows derivatives
+  const allowsDerivatives = (asset: SearchResult): boolean => {
+    if (!asset.licenses || asset.licenses.length === 0) {
+      return false;
+    }
+    return asset.licenses.some(
+      (license) =>
+        license.terms?.derivativesAllowed === true ||
+        license.derivativesAllowed === true,
+    );
+  };
 
   return (
     <motion.div

@@ -2416,6 +2416,83 @@ const IpAssistant = () => {
                     console.warn("Failed to capture asset vision:", err);
                     // Don't let errors affect UX
                   });
+
+                  // Capture ALL asset data (including parent IP details) to whitelist
+                  // This runs asynchronously in the background
+                  (async () => {
+                    try {
+                      if (!asset.mediaUrl) {
+                        console.warn("No media URL for whitelist capture:", asset.ipId);
+                        return;
+                      }
+
+                      // Fetch the image
+                      const response = await fetch(asset.mediaUrl);
+                      if (!response.ok) {
+                        console.warn(
+                          `Failed to fetch image for whitelist: ${response.status}`
+                        );
+                        return;
+                      }
+
+                      const blob = await response.blob();
+
+                      // Calculate hash and pHash
+                      const hash = await calculateBlobHash(blob);
+                      const pHash = await calculatePerceptualHash(blob);
+
+                      // Get vision description
+                      let visionDescription: string | undefined;
+                      try {
+                        const visionResult =
+                          await getImageVisionDescription(blob);
+                        if (visionResult?.success) {
+                          visionDescription = visionResult.description;
+                        }
+                      } catch (visionError) {
+                        console.warn("Vision description failed:", visionError);
+                      }
+
+                      // Add ALL asset data to whitelist (including parent IP details)
+                      await fetch("/api/add-remix-hash", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          hash,
+                          pHash,
+                          visionDescription,
+                          ipId: asset.ipId,
+                          title: asset.title || asset.name,
+                          // Parent IP Details
+                          parentIpIds: asset.parentIpIds,
+                          licenseTermsIds: asset.licenseTermsIds,
+                          licenseTemplates: asset.licenseTemplates,
+                          // License Configuration
+                          royaltyContext: asset.royaltyContext,
+                          maxMintingFee: asset.maxMintingFee,
+                          maxRts: asset.maxRts,
+                          maxRevenueShare: asset.maxRevenueShare,
+                          licenseVisibility: asset.licenseVisibility,
+                          // Derivative Status
+                          isDerivative: asset.isDerivative,
+                          parentsCount: asset.parentsCount,
+                        }),
+                      });
+
+                      console.log(
+                        "Asset captured to whitelist:",
+                        asset.ipId,
+                        "hash:",
+                        hash
+                      );
+                    } catch (err) {
+                      console.warn(
+                        "Failed to capture asset to whitelist:",
+                        err
+                      );
+                      // Don't let errors affect UX
+                    }
+                  })();
                 }
               }}
               onRemix={async (asset) => {

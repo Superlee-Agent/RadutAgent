@@ -8,14 +8,14 @@ import {
 /**
  * Add hash to remix whitelist
  * POST /api/add-remix-hash
- * Body: { hash: string, ipId?: string, title?: string }
+ * Body: { hash: string, pHash?: string, ipId?: string, title?: string }
  */
 export async function handleAddRemixHash(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const { hash, ipId = "unknown", title = "Remix Image" } = req.body;
+    const { hash, pHash, ipId = "unknown", title = "Remix Image" } = req.body;
 
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
@@ -31,7 +31,7 @@ export async function handleAddRemixHash(
     }
 
     // Add to whitelist
-    await addHashToWhitelist(hash.toLowerCase(), ipId, title);
+    await addHashToWhitelist(hash.toLowerCase(), ipId, title, pHash);
 
     res.status(200).json({
       success: true,

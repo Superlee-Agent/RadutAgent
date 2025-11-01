@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
 import { createHash } from "crypto";
 import sharp from "sharp";
-import OpenAI from "openai";
 import {
   addHashToWhitelist,
   checkHashInWhitelist,
 } from "../utils/remix-hash-whitelist.js";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 /**
  * Calculate SHA256 hash of a buffer
@@ -72,39 +69,58 @@ async function calculatePerceptualHash(imageBuffer: Buffer): Promise<string> {
  */
 async function getImageVisionDescription(
   imageBuffer: Buffer,
-  mediaType: string = "image/png",
 ): Promise<string | undefined> {
   try {
+    if (!OPENAI_API_KEY) {
+      console.warn("OPENAI_API_KEY not configured");
+      return undefined;
+    }
+
     // Convert buffer to base64
     const base64 = imageBuffer.toString("base64");
 
-    const response = await openai.vision.image.analyze({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: [
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
             {
-              type: "image_url",
-              image_url: {
-                url: `data:${mediaType};base64,${base64}`,
-              },
-            },
-            {
-              type: "text",
-              text: "Describe this image briefly and concisely (max 200 words). Focus on main elements, style, and content.",
+              role: "user",
+              content: [
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:image/jpeg;base64,${base64}`,
+                  },
+                },
+                {
+                  type: "text",
+                  text: "Describe this image in detail. Focus on: main subjects, objects, characters, colors, style, distinctive features. Be concise but specific. Output only the description without any preamble.",
+                },
+              ],
             },
           ],
-        },
-      ],
-    } as any);
+          max_tokens: 300,
+        }),
+      },
+    );
 
-    const content = response.choices[0]?.message?.content;
-    if (typeof content === "string") {
-      return content;
+    if (!response.ok) {
+      const error = await response.text();
+      console.warn("OpenAI API error:", error);
+      return undefined;
     }
 
-    return undefined;
+    const data = (await response.json()) as any;
+    const description = data.choices?.[0]?.message?.content;
+
+    return description || undefined;
   } catch (error) {
     console.warn("Failed to get vision description:", error);
     return undefined;

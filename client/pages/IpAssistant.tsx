@@ -213,6 +213,18 @@ const IpAssistant = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
+  // Check if asset allows derivatives based on license
+  const allowsDerivatives = (asset: any): boolean => {
+    if (!asset?.licenses || !Array.isArray(asset.licenses)) {
+      return false;
+    }
+    return asset.licenses.some(
+      (license: any) =>
+        license.terms?.derivativesAllowed === true ||
+        license.derivativesAllowed === true,
+    );
+  };
+
   useEffect(() => {
     if (activeDetail === null) return;
     function onKeyDown(event: KeyboardEvent) {

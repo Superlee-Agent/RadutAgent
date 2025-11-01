@@ -2377,6 +2377,103 @@ const IpAssistant = () => {
               searchResults={searchResults}
               onClose={() => setShowSearchModal(false)}
               onAssetClick={setExpandedAsset}
+              onRemix={async (asset) => {
+                try {
+                  if (!asset.mediaUrl) {
+                    throw new Error("No media URL available for this asset");
+                  }
+
+                  setWaiting(true);
+                  const response = await fetch(asset.mediaUrl);
+                  if (!response.ok) {
+                    throw new Error(
+                      `HTTP ${response.status}: Failed to fetch image`,
+                    );
+                  }
+                  let blob = await response.blob();
+
+                  // Apply invisible watermark to protect IP
+                  try {
+                    blob = await applyWatermarkFromAsset(blob, asset);
+                  } catch (watermarkError) {
+                    console.warn(
+                      "Watermark application failed, using original image:",
+                      watermarkError,
+                    );
+                  }
+
+                  // Calculate hash, pHash, and vision description, then add to whitelist
+                  try {
+                    const hash = await calculateBlobHash(blob);
+                    const pHash = await calculatePerceptualHash(blob);
+
+                    let visionDescription: string | undefined;
+                    try {
+                      const visionResult =
+                        await getImageVisionDescription(blob);
+                      if (visionResult?.success) {
+                        visionDescription = visionResult.description;
+                      }
+                    } catch (visionError) {
+                      console.warn(
+                        "Vision description failed, continuing:",
+                        visionError,
+                      );
+                    }
+
+                    await fetch("/api/add-remix-hash", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        hash,
+                        pHash,
+                        visionDescription,
+                        ipId: asset.ipId || "unknown",
+                        title: asset.title || asset.name || "Remix Image",
+                      }),
+                    });
+                    console.log(
+                      "Hash added to whitelist:",
+                      hash,
+                      "pHash:",
+                      pHash,
+                    );
+                  } catch (hashError) {
+                    console.warn(
+                      "Failed to add hash to whitelist:",
+                      hashError,
+                    );
+                  }
+
+                  const fileName =
+                    asset.title || asset.name || "IP Asset";
+                  setPreviewImages({
+                    remixImage: {
+                      blob: blob,
+                      name: fileName,
+                      url: asset.mediaUrl,
+                    },
+                    additionalImage: null,
+                  });
+                  setInput("");
+                  setShowSearchModal(false);
+                  setWaiting(false);
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 100);
+                } catch (error) {
+                  setWaiting(false);
+                  console.error("Failed to load remix image:", error);
+                  autoScrollNextRef.current = true;
+                  const errorMessage: Message = {
+                    id: `msg-${Date.now()}`,
+                    from: "bot",
+                    text: `❌ Failed to load remix image. ${error instanceof Error ? error.message : "Unknown error"}`,
+                    ts: getCurrentTimestamp(),
+                  };
+                  setMessages((prev) => [...prev, errorMessage]);
+                }
+              }}
             />
             <motion.div className="hidden">
               <div className="flex items-start justify-between gap-4 mb-6 sticky top-0 bg-slate-900/80 -mx-6 px-6 py-4 border-b border-[#FF4DA6]/10">

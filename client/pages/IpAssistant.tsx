@@ -2471,6 +2471,19 @@ const IpAssistant = () => {
                         visionDescription,
                         ipId: asset.ipId || "unknown",
                         title: asset.title || asset.name || "Remix Image",
+                        // Parent IP Details
+                        parentIpIds: asset.parentIpIds,
+                        licenseTermsIds: asset.licenseTermsIds,
+                        licenseTemplates: asset.licenseTemplates,
+                        // License Configuration
+                        royaltyContext: asset.royaltyContext,
+                        maxMintingFee: asset.maxMintingFee,
+                        maxRts: asset.maxRts,
+                        maxRevenueShare: asset.maxRevenueShare,
+                        licenseVisibility: asset.licenseVisibility,
+                        // Derivative Status
+                        isDerivative: asset.isDerivative,
+                        parentsCount: asset.parentsCount,
                       }),
                     });
                     console.log(
@@ -3039,6 +3052,19 @@ const IpAssistant = () => {
                                 expandedAsset.title ||
                                 expandedAsset.name ||
                                 "Remix Image",
+                              // Parent IP Details
+                              parentIpIds: expandedAsset.parentIpIds,
+                              licenseTermsIds: expandedAsset.licenseTermsIds,
+                              licenseTemplates: expandedAsset.licenseTemplates,
+                              // License Configuration
+                              royaltyContext: expandedAsset.royaltyContext,
+                              maxMintingFee: expandedAsset.maxMintingFee,
+                              maxRts: expandedAsset.maxRts,
+                              maxRevenueShare: expandedAsset.maxRevenueShare,
+                              licenseVisibility: expandedAsset.licenseVisibility,
+                              // Derivative Status
+                              isDerivative: expandedAsset.isDerivative,
+                              parentsCount: expandedAsset.parentsCount,
                             }),
                           });
                           console.log(
@@ -3632,6 +3658,19 @@ const IpAssistant = () => {
                   visionDescription,
                   ipId: asset.ipId || "unknown",
                   title: asset.title || asset.name || "Additional Image",
+                  // Parent IP Details
+                  parentIpIds: asset.parentIpIds,
+                  licenseTermsIds: asset.licenseTermsIds,
+                  licenseTemplates: asset.licenseTemplates,
+                  // License Configuration
+                  royaltyContext: asset.royaltyContext,
+                  maxMintingFee: asset.maxMintingFee,
+                  maxRts: asset.maxRts,
+                  maxRevenueShare: asset.maxRevenueShare,
+                  licenseVisibility: asset.licenseVisibility,
+                  // Derivative Status
+                  isDerivative: asset.isDerivative,
+                  parentsCount: asset.parentsCount,
                 }),
               });
               console.log(

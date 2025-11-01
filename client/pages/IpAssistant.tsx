@@ -1383,6 +1383,7 @@ const IpAssistant = () => {
         }
 
         // Add ALL asset data to whitelist (including parent IP details)
+        // Always send all fields, even if undefined (will be stored as null/undefined)
         const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1392,19 +1393,19 @@ const IpAssistant = () => {
             visionDescription,
             ipId: asset.ipId,
             title: asset.title || asset.name,
-            // Parent IP Details
-            parentIpIds: asset.parentIpIds,
-            licenseTermsIds: asset.licenseTermsIds,
-            licenseTemplates: asset.licenseTemplates,
-            // License Configuration
-            royaltyContext: asset.royaltyContext,
-            maxMintingFee: asset.maxMintingFee,
-            maxRts: asset.maxRts,
-            maxRevenueShare: asset.maxRevenueShare,
-            licenseVisibility: asset.licenseVisibility,
+            // Parent IP Details (may be empty for original IPs)
+            parentIpIds: asset.parentIpIds || [],
+            licenseTermsIds: asset.licenseTermsIds || [],
+            licenseTemplates: asset.licenseTemplates || [],
+            // License Configuration (may be empty for non-commercial)
+            royaltyContext: asset.royaltyContext || "",
+            maxMintingFee: asset.maxMintingFee || "0",
+            maxRts: asset.maxRts || "0",
+            maxRevenueShare: asset.maxRevenueShare ?? 0,
+            licenseVisibility: asset.licenseVisibility || "",
             // Derivative Status
-            isDerivative: asset.isDerivative,
-            parentsCount: asset.parentsCount,
+            isDerivative: asset.isDerivative || false,
+            parentsCount: asset.parentsCount || 0,
           }),
         });
 

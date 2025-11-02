@@ -23,10 +23,12 @@ interface RemixImageMetadata {
   ownerAddress?: string;
   mediaType?: string;
   score?: number | null;
+  description?: string;
   // Parent IP Details
   parentIpIds?: string[];
   licenseTermsIds?: string[];
   licenseTemplates?: string[];
+  parentIpDetails?: any; // Full parent IP details from Details modal
   // License Configuration
   royaltyContext?: string;
   maxMintingFee?: string; // Wei format
@@ -41,6 +43,8 @@ interface RemixImageMetadata {
   // Match tracking
   matchType?: string;
   similarity?: number;
+  // Allow any additional fields
+  [key: string]: any;
 }
 
 interface RemixHashEntry {

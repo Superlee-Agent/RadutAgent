@@ -663,6 +663,42 @@ export const WhitelistMonitor: React.FC = () => {
                     </div>
                   )}
                 </div>
+
+                {/* All Raw Fields from Modal */}
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    All Raw Fields from Modal:
+                  </span>
+                  <div className="bg-slate-900/50 p-4 rounded space-y-2 max-h-96 overflow-y-auto">
+                    {entries
+                      .find((e) => e.hash === expandedHash)
+                      ?.metadata ? (
+                      <div className="space-y-2 text-xs font-mono">
+                        {Object.entries(
+                          entries.find((e) => e.hash === expandedHash)?.metadata || {}
+                        )
+                          .filter(
+                            ([_, value]) =>
+                              value !== undefined && value !== null && value !== ""
+                          )
+                          .map(([key, value]) => (
+                            <div key={key} className="break-words">
+                              <span className="text-[#FF4DA6]">{key}:</span>
+                              <span className="text-slate-300 ml-2">
+                                {typeof value === "object"
+                                  ? JSON.stringify(value, null, 2)
+                                  : String(value)}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div className="text-slate-400 text-xs">
+                        No raw data available
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>

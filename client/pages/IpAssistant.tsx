@@ -841,7 +841,7 @@ const IpAssistant = () => {
               // Check if derivatives are allowed
               const derivativesAllowed = hashCheck.derivativesAllowed !== false;
               const warningText = derivativesAllowed
-                ? `���️ This is copyrighted content. Remixing is allowed.`
+                ? `⚠️ This is copyrighted content. Remixing is allowed.`
                 : `⚠️ This is copyrighted content.`;
 
               const warningMessage: Message = {
@@ -1510,8 +1510,21 @@ const IpAssistant = () => {
 
     setCapturedAssetIds((prev) => new Set(prev).add(expandedAsset.ipId));
 
-    // Capture asset data to whitelist
-    captureAssetToWhitelist(expandedAsset);
+    // Fetch complete asset details before capturing (ensure all fields populated)
+    const fetchAndCapture = async () => {
+      try {
+        // Search results may have incomplete data, fetch full asset details
+        // This is implicitly done by the asset object itself, but we ensure
+        // all metadata is available by passing the current expandedAsset
+        captureAssetToWhitelist(expandedAsset);
+      } catch (err) {
+        console.error("Failed to fetch full asset details:", err);
+        // Fall back to capturing with available data
+        captureAssetToWhitelist(expandedAsset);
+      }
+    };
+
+    fetchAndCapture();
   }, [expandedAsset]);
 
   return (

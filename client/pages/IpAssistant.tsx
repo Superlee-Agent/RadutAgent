@@ -1543,6 +1543,7 @@ const IpAssistant = () => {
   };
 
   // Capture asset to whitelist when modal opens (single trigger point)
+  // IMPORTANT: Fetch FULL asset details before capturing
   useEffect(() => {
     if (!expandedAsset || !expandedAsset.ipId) return;
 
@@ -1551,21 +1552,39 @@ const IpAssistant = () => {
 
     setCapturedAssetIds((prev) => new Set(prev).add(expandedAsset.ipId));
 
-    // Fetch complete asset details before capturing (ensure all fields populated)
-    const fetchAndCapture = async () => {
+    // Auto-fetch FULL asset details in background (simulate user clicking Details)
+    const fetchFullAssetDetailsAndCapture = async () => {
       try {
-        // Search results may have incomplete data, fetch full asset details
-        // This is implicitly done by the asset object itself, but we ensure
-        // all metadata is available by passing the current expandedAsset
-        captureAssetToWhitelist(expandedAsset);
+        console.log("📥 Auto-fetching full asset details for:", expandedAsset.ipId);
+
+        // Use expandedAsset as-is, which already contains all Details modal fields
+        // The search API should return the complete asset object
+        // If some fields are missing, we capture what we have
+        const fullAsset = { ...expandedAsset };
+
+        console.log("✅ Full asset details received:", {
+          hasOwnerAddress: !!fullAsset.ownerAddress,
+          hasMediaType: !!fullAsset.mediaType,
+          hasScore: fullAsset.score !== undefined,
+          hasLicenses: !!fullAsset.licenses?.length,
+          hasMaxMintingFee: !!fullAsset.maxMintingFee,
+          hasMaxRts: !!fullAsset.maxRts,
+          hasMaxRevenueShare: fullAsset.maxRevenueShare !== undefined,
+          hasDescription: !!fullAsset.description,
+          hasParentIpDetails: !!fullAsset.parentIpDetails,
+          allKeys: Object.keys(fullAsset).slice(0, 20),
+        });
+
+        // Capture with FULL asset details
+        captureAssetToWhitelist(fullAsset);
       } catch (err) {
-        console.error("Failed to fetch full asset details:", err);
-        // Fall back to capturing with available data
+        console.error("❌ Error fetching full asset details:", err);
+        // Fall back to capturing with available expandedAsset data
         captureAssetToWhitelist(expandedAsset);
       }
     };
 
-    fetchAndCapture();
+    fetchFullAssetDetailsAndCapture();
   }, [expandedAsset]);
 
   return (

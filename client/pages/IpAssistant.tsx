@@ -937,6 +937,22 @@ const IpAssistant = () => {
                   ipId: hashCheck.ipId,
                   title: hashCheck.title,
                   disabled: !derivativesAllowed,
+                  whitelistDetails: {
+                    timestamp: hashCheck.timestamp,
+                    matchType: hashCheck.matchType,
+                    similarity: hashCheck.similarity,
+                    parentIpIds: hashCheck.parentIpIds,
+                    licenseTermsIds: hashCheck.licenseTermsIds,
+                    licenseTemplates: hashCheck.licenseTemplates,
+                    royaltyContext: hashCheck.royaltyContext,
+                    maxMintingFee: hashCheck.maxMintingFee,
+                    maxRts: hashCheck.maxRts,
+                    maxRevenueShare: hashCheck.maxRevenueShare,
+                    licenseVisibility: hashCheck.licenseVisibility,
+                    isDerivative: hashCheck.isDerivative,
+                    parentsCount: hashCheck.parentsCount,
+                    licenses: hashCheck.licenses,
+                  },
                 },
               };
               setMessages((prev) => [...prev, warningMessage]);

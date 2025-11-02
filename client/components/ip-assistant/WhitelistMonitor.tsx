@@ -618,12 +618,12 @@ export const WhitelistMonitor: React.FC = () => {
                 </div>
 
                 {/* Parent IPs */}
-                {entries.find((e) => e.hash === expandedHash)?.metadata
-                  ?.parentIpIds && entries.find((e) => e.hash === expandedHash)?.metadata?.parentIpIds.length > 0 && (
-                  <div className="border-t border-slate-700/30 pt-4">
-                    <span className="text-slate-400 font-semibold block mb-3">
-                      Parent IPs:
-                    </span>
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    Parent IPs:
+                  </span>
+                  {entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.parentIpIds && entries.find((e) => e.hash === expandedHash)?.metadata?.parentIpIds.length > 0 ? (
                     <div className="space-y-1 text-xs">
                       {entries
                         .find((e) => e.hash === expandedHash)
@@ -634,8 +634,10 @@ export const WhitelistMonitor: React.FC = () => {
                           </div>
                         ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="text-slate-400 text-xs">No parent IPs</div>
+                  )}
+                </div>
 
                 {/* Vision Description */}
                 {entries.find((e) => e.hash === expandedHash)?.metadata

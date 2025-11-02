@@ -94,6 +94,12 @@ export async function handleAddRemixHash(
   try {
     const { hash, ipId, ...clientData } = req.body;
 
+    console.log("[Whitelist] 📥 Received add-remix-hash request:", {
+      hash: hash?.substring(0, 16),
+      ipId,
+      clientDataKeys: Object.keys(clientData),
+    });
+
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
       return;
@@ -116,9 +122,14 @@ export async function handleAddRemixHash(
 
     // In background, fetch complete asset details (simulate Details button click)
     // This gets: full licenses, owner info, media type, description, parent IPs, etc.
+    console.log("[Whitelist] 🔄 Fetching full Details modal data from Story API...");
     let fullAssetDetails = null;
     if (ipId) {
+      console.log("[Whitelist] 🔍 About to fetch full asset details for ipId:", ipId);
       fullAssetDetails = await fetchFullAssetDetailsFromApi(ipId);
+      console.log("[Whitelist] ✅ Fetch complete. Got details:", !!fullAssetDetails);
+    } else {
+      console.log("[Whitelist] ⚠️ No ipId provided, skipping API fetch");
     }
 
     // Merge full details with client data

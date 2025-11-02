@@ -2589,9 +2589,6 @@ const IpAssistant = () => {
                     console.warn("Failed to capture asset vision:", err);
                     // Don't let errors affect UX
                   });
-
-                  // Capture ALL asset data (including parent IP details) to whitelist
-                  captureAssetToWhitelist(asset);
                 }
               }}
               onRemix={async (asset) => {

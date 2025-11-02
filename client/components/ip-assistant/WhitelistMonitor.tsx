@@ -413,27 +413,256 @@ export const WhitelistMonitor: React.FC = () => {
           </div>
         )}
 
-        {/* Expanded Details */}
+        {/* Expanded Details - All Fields */}
         {expandedHash && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-slate-700/50 bg-slate-900/50 p-4"
+            className="border-t border-slate-700/50 bg-slate-900/50 p-6"
           >
             {entries.find((e) => e.hash === expandedHash) && (
-              <div className="space-y-3 text-sm">
-                <div>
-                  <span className="text-slate-400">Full Hash:</span>
-                  <div className="text-slate-200 font-mono break-all text-xs mt-1">
-                    {expandedHash}
+              <div className="space-y-4 text-sm">
+                {/* Hash Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-slate-400 font-semibold block mb-2">
+                      SHA256 Hash:
+                    </span>
+                    <div className="text-slate-200 font-mono break-all text-xs bg-slate-900/50 p-2 rounded">
+                      {expandedHash}
+                    </div>
+                  </div>
+                  {entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.pHash && (
+                    <div>
+                      <span className="text-slate-400 font-semibold block mb-2">
+                        Perceptual Hash:
+                      </span>
+                      <div className="text-slate-200 font-mono break-all text-xs bg-slate-900/50 p-2 rounded">
+                        {
+                          entries.find((e) => e.hash === expandedHash)?.metadata
+                            ?.pHash
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Asset Details */}
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    Asset Details:
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    {entries.find((e) => e.hash === expandedHash)?.metadata
+                      ?.ownerAddress && (
+                      <div>
+                        <span className="text-slate-500">Owner:</span>
+                        <div className="text-slate-200 font-mono truncate">
+                          {
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.ownerAddress
+                          }
+                        </div>
+                      </div>
+                    )}
+                    {entries.find((e) => e.hash === expandedHash)?.metadata
+                      ?.mediaType && (
+                      <div>
+                        <span className="text-slate-500">Media Type:</span>
+                        <div className="text-slate-200">
+                          {
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.mediaType
+                          }
+                        </div>
+                      </div>
+                    )}
+                    {entries.find((e) => e.hash === expandedHash)?.metadata
+                      ?.score !== undefined && (
+                      <div>
+                        <span className="text-slate-500">Score:</span>
+                        <div className="text-slate-200">
+                          {(
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.score ?? 0
+                          ).toFixed(3)}
+                        </div>
+                      </div>
+                    )}
+                    {entries.find((e) => e.hash === expandedHash)?.metadata
+                      ?.parentsCount !== undefined && (
+                      <div>
+                        <span className="text-slate-500">Parents Count:</span>
+                        <div className="text-slate-200">
+                          {
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.parentsCount
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {/* License Royalty Configuration */}
+                {(entries.find((e) => e.hash === expandedHash)?.metadata
+                  ?.maxMintingFee ||
+                  entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.maxRts ||
+                  entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.maxRevenueShare) && (
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-3">
+                      Royalty Configuration:
+                    </span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-slate-500">Max Minting Fee:</span>
+                        <div className="text-slate-200">
+                          {entries.find((e) => e.hash === expandedHash)
+                            ?.metadata?.maxMintingFee === "0"
+                            ? "Unlimited"
+                            : entries
+                                .find((e) => e.hash === expandedHash)
+                                ?.metadata?.maxMintingFee || "N/A"}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Max RTS:</span>
+                        <div className="text-slate-200">
+                          {entries.find((e) => e.hash === expandedHash)
+                            ?.metadata?.maxRts === "0"
+                            ? "Unlimited"
+                            : entries
+                                .find((e) => e.hash === expandedHash)
+                                ?.metadata?.maxRts || "N/A"}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Max Rev Share:</span>
+                        <div className="text-slate-200">
+                          {entries.find((e) => e.hash === expandedHash)
+                            ?.metadata?.maxRevenueShare || 0}
+                          %
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* License Terms */}
+                {entries.find((e) => e.hash === expandedHash)?.metadata
+                  ?.licenses && entries.find((e) => e.hash === expandedHash)?.metadata?.licenses.length > 0 && (
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-3">
+                      License Terms:
+                    </span>
+                    <div className="space-y-2">
+                      {entries
+                        .find((e) => e.hash === expandedHash)
+                        ?.metadata?.licenses?.map((license: any, idx: number) => (
+                          <div key={idx} className="bg-slate-900/50 p-3 rounded text-xs border border-slate-700/30">
+                            <div className="grid grid-cols-2 gap-2 text-slate-200">
+                              {license.terms?.derivativesAllowed && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Derivatives:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Allowed
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.commercialUse && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Commercial:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Allowed
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.transferable && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Transferable:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Yes
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.defaultMintingFee && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Minting Fee:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.terms.defaultMintingFee}
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.commercialRevShare && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Rev Share:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.terms.commercialRevShare}%
+                                  </span>
+                                </div>
+                              )}
+                              {license.templateName && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Template:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.templateName}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Parent IPs */}
+                {entries.find((e) => e.hash === expandedHash)?.metadata
+                  ?.parentIpIds && entries.find((e) => e.hash === expandedHash)?.metadata?.parentIpIds.length > 0 && (
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-3">
+                      Parent IPs:
+                    </span>
+                    <div className="space-y-1 text-xs">
+                      {entries
+                        .find((e) => e.hash === expandedHash)
+                        ?.metadata?.parentIpIds?.map((parentId: string, idx: number) => (
+                          <div key={idx} className="text-slate-200 font-mono break-all text-slate-300">
+                            {parentId.substring(0, 6)}...
+                            {parentId.substring(parentId.length - 4)}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Vision Description */}
                 {entries.find((e) => e.hash === expandedHash)?.metadata
                   ?.visionDescription && (
-                  <div>
-                    <span className="text-slate-400">Vision Description:</span>
-                    <div className="text-slate-200 mt-1 line-clamp-3">
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-2">
+                      Vision Analysis:
+                    </span>
+                    <div className="text-slate-200 text-xs leading-relaxed bg-slate-900/50 p-3 rounded">
                       {
                         entries.find((e) => e.hash === expandedHash)?.metadata
                           ?.visionDescription

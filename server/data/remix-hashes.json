@@ -1,55 +1,176 @@
 {
   "entries": [
     {
+      "hash": "2039a9bf138c465cdd8cb44e42d69289d9661f7df89fdcc9b5de702262e1e52b",
+      "metadata": {
+        "ipId": "0x8902efdf14be946d01222A26092C16fef16924e4",
+        "title": "hornet ",
+        "description": "",
+        "similarity": 0.32718126015774907,
+        "score": 0.22902688211042432,
+        "mediaType": "image",
+        "thumbnailUrl": null,
+        "ipaMetadataUri": "ipfs://QmfKZ9SJff3LozZkMY2FzLU4AbmAVbtVqyQAHBBqe23E1K",
+        "ownerAddress": "0x485b02dc1Cfd6Cdc3FBb8d3C8fcD0042455d375a",
+        "lastUpdatedAt": "2025-09-25T00:38:51.063921Z",
+        "isDerivative": false,
+        "parentsCount": 0,
+        "licenses": [
+          {
+            "licenseTemplateId": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+            "licenseTermsId": "1",
+            "templateName": "pil",
+            "templateMetadataUri": "https://github.com/storyprotocol/protocol-core/blob/main/PIL_Beta_Final_2024_02.pdf",
+            "terms": {
+              "uri": "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json",
+              "currency": "0x0000000000000000000000000000000000000000",
+              "expiration": "0",
+              "transferable": true,
+              "commercialUse": false,
+              "royaltyPolicy": "0x0000000000000000000000000000000000000000",
+              "defaultMintingFee": "0",
+              "commercialRevShare": 0,
+              "derivativesAllowed": true,
+              "derivativesApproval": false,
+              "commercialRevCeiling": "0",
+              "derivativeRevCeiling": "0",
+              "commercialAttribution": false,
+              "commercializerChecker": "0x0000000000000000000000000000000000000000",
+              "derivativesReciprocal": true,
+              "derivativesAttribution": true,
+              "commercializerCheckerData": "0x"
+            },
+            "licensingConfig": {
+              "isSet": false,
+              "disabled": false,
+              "hookData": "",
+              "mintingFee": 0,
+              "licensingHook": "",
+              "commercialRevShare": 0,
+              "expectGroupRewardPool": "",
+              "expectMinimumGroupRewardShare": 0
+            },
+            "createdAt": "2025-09-25T00:38:51.633065Z",
+            "updatedAt": "2025-09-25T00:38:51.633066Z"
+          }
+        ],
+        "licenseTermsIds": [
+          "1"
+        ],
+        "licenseTemplates": [
+          null
+        ],
+        "timestamp": 1762064192206,
+        "hash": "2039a9bf138c465cdd8cb44e42d69289d9661f7df89fdcc9b5de702262e1e52b",
+        "pHash": "3c3f06c89cdc7000",
+        "visionDescription": "The image features a stylized character standing in a green landscape. The character wears a red cloak and white mask with two black eyes, reminiscent of a stylized helmet. They hold a needle-like weapon. The background consists of abstract green foliage with varying shades, giving a pixel art style. The overall color palette is dominated by greens and the red cloak, creating a contrast. The image is simplified with blocky shapes and lacks intricate detail."
+      }
+    },
+    {
       "hash": "78c1f2d37c2b29c496456f2112e079ec64c7c07fbcc47a15f98819255ca3a123",
       "metadata": {
         "ipId": "0x1c75d3De21e86788F2D2266B45bEc3Da724D3443",
         "title": "Story hoodie",
-        "timestamp": 1762063312467,
+        "description": "Razor hoodi3 by razornero",
+        "similarity": 0.464672180135717,
+        "score": 0.32527052609500184,
+        "mediaType": "image",
+        "thumbnailUrl": null,
+        "ipaMetadataUri": "https://ipfs.io/ipfs/QmPz2312JRvsX9Uc9mLconTeDiWDyBwRCBBEcQ48T4xFg8",
+        "ownerAddress": "0xa8Ec8cD44ab42B573505e68bc668Af05ED983E69",
+        "lastUpdatedAt": "2025-05-23T23:09:39.302426Z",
+        "isDerivative": false,
+        "parentsCount": 0,
+        "licenses": [
+          {
+            "licenseTemplateId": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+            "licenseTermsId": "3139",
+            "templateName": "pil",
+            "templateMetadataUri": "https://github.com/storyprotocol/protocol-core/blob/main/PIL_Beta_Final_2024_02.pdf",
+            "terms": {
+              "uri": "",
+              "currency": "0x1514000000000000000000000000000000000000",
+              "expiration": "0",
+              "transferable": true,
+              "commercialUse": true,
+              "royaltyPolicy": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+              "defaultMintingFee": "2789259969786076672",
+              "commercialRevShare": 15000000,
+              "derivativesAllowed": true,
+              "derivativesApproval": false,
+              "commercialRevCeiling": "0",
+              "derivativeRevCeiling": "0",
+              "commercialAttribution": true,
+              "commercializerChecker": "0x0000000000000000000000000000000000000000",
+              "derivativesReciprocal": true,
+              "derivativesAttribution": true,
+              "commercializerCheckerData": "0x0000000000000000000000000000000000000000"
+            },
+            "licensingConfig": {
+              "isSet": true,
+              "disabled": false,
+              "hookData": "0x0000000000000000000000000000000000000000",
+              "mintingFee": 2789259969786076700,
+              "licensingHook": "0x0000000000000000000000000000000000000000",
+              "commercialRevShare": 15000000,
+              "expectGroupRewardPool": "0x0000000000000000000000000000000000000000",
+              "expectMinimumGroupRewardShare": 0
+            },
+            "createdAt": "2025-07-17T23:26:03.970307Z",
+            "updatedAt": "2025-08-25T20:24:55.742643Z"
+          },
+          {
+            "licenseTemplateId": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+            "licenseTermsId": "10",
+            "templateName": "pil",
+            "templateMetadataUri": "https://github.com/storyprotocol/protocol-core/blob/main/PIL_Beta_Final_2024_02.pdf",
+            "terms": {
+              "uri": "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+              "currency": "0x1514000000000000000000000000000000000000",
+              "expiration": "0",
+              "transferable": true,
+              "commercialUse": true,
+              "royaltyPolicy": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+              "defaultMintingFee": "0",
+              "commercialRevShare": 0,
+              "derivativesAllowed": false,
+              "derivativesApproval": false,
+              "commercialRevCeiling": "0",
+              "derivativeRevCeiling": "0",
+              "commercialAttribution": true,
+              "commercializerChecker": "0x0000000000000000000000000000000000000000",
+              "derivativesReciprocal": false,
+              "derivativesAttribution": false,
+              "commercializerCheckerData": "0x"
+            },
+            "licensingConfig": {
+              "isSet": true,
+              "disabled": true,
+              "hookData": "0x",
+              "mintingFee": 0,
+              "licensingHook": "0x0000000000000000000000000000000000000000",
+              "commercialRevShare": 0,
+              "expectGroupRewardPool": "0x0000000000000000000000000000000000000000",
+              "expectMinimumGroupRewardShare": 0
+            },
+            "createdAt": "2025-07-17T23:26:03.975424Z",
+            "updatedAt": "2025-08-25T20:24:55.742643Z"
+          }
+        ],
+        "licenseTermsIds": [
+          "3139",
+          "10"
+        ],
+        "licenseTemplates": [
+          null,
+          null
+        ],
+        "timestamp": 1762064256213,
+        "hash": "78c1f2d37c2b29c496456f2112e079ec64c7c07fbcc47a15f98819255ca3a123",
         "pHash": "40604cffff700000",
-        "visionDescription": "The image features a black background with bold text. In the center, \"RAZOR\" is written in large, red, stylized letters using uppercase. The distinct feature is the letter \"O,\" which is larger and emphasizes the word. Above \"RAZOR,\" there is a white letter \"S\" partially encased in a black circle, set against the black background. The image has a simple, bold design with a minimalistic style, using contrasting red and white colors."
-      }
-    },
-    {
-      "hash": "150b9dc4dba66143ab1989c7fedddda31dcb2681e5057cf45bfc912cab112642",
-      "metadata": {
-        "ipId": "0xEb273843E0A6d39Fc5bDDa9F8861d7A8D7026Ed4",
-        "title": "stingray",
-        "timestamp": 1762063330772,
-        "pHash": "ffe7c3c3c3c7efff",
-        "visionDescription": "The image depicts a digital artwork featuring the back view of a person with brown hair, wearing a blue outfit. Surrounding them are three abstract shapes resembling stylized manta rays, all in dark blue. The background is a soft blue circle with subtle highlights. The style is simplistic and cartoonish, with bold outlines and a focus on minimalistic design elements."
-      }
-    },
-    {
-      "hash": "a05f5da3c0ca92138a41bd6830313e633f6ff955334f8ef0e1bdcdb1d227f29a",
-      "metadata": {
-        "ipId": "0x6592edcc96F3B3C1d12e79dDBc1A719EE66ACd94",
-        "title": "sharky1",
-        "timestamp": 1762063571872,
-        "pHash": "087c3e3c7c3c3c3c",
-        "visionDescription": "The image features a cartoon-style yellow shark with a white belly and large, expressive eyes. It has a cute, cheerful expression with an open mouth and a wide smile. The shark is mid-jump, surrounded by small, blue bubbles and splash effects. The overall appearance is playful and friendly, with a simple and colorful design."
-      }
-    },
-    {
-      "hash": "1ed9c913cb81e17531b6d547825b26726b97134c0db8e5b8fb726c92f83ea729",
-      "metadata": {
-        "ipId": "0x89D0934dc889B2E4Fcf2496db37E0fb638C1b05f",
-        "title": "rort",
-        "timestamp": 1762063690059,
-        "pHash": "0c7e7e7e8e8eff80",
-        "visionDescription": "The image features a chibi-style anime character and a cartoon panda standing side by side in a space setting. The anime character has blue hair, large blue eyes, and is wearing a colorful, rainbow-hued spacesuit with pink gloves and boots, as well as a transparent helmet. The panda has a large head with a friendly expression and black and white fur, wearing a similarly colorful spacesuit. Both spacesuits have a logo featuring red, blue, and white colors. The background shows a starry space and a distant planet."
-      }
-    },
-    {
-      "hash": "e35dfc8b8c66cb79febd7d20cb35cafb6f14a2b8798a7ab80498c8413c8d1c95",
-      "metadata": {
-        "ipId": "0x2A4ac154dA716c23dD8afb1AB85c3111a6B9FA6C",
-        "title": "sharky4",
-        "timestamp": 1762063722818,
-        "pHash": "001e1e5e7e7e3c00",
-        "visionDescription": "The image features an animated, yellow shark character with a cheerful and friendly expression. It has large, round eyes with white highlights, a small nose, and an open mouth displaying a wide smile. The shark has a white underside, and its body is outlined in dark blue. It has a triangular dorsal fin and two side fins, all in yellow. Nearby, there are two small blue bubbles, suggesting an underwater setting. The overall style is cartoonish and vibrant, suitable for a playful theme."
+        "visionDescription": "The image features the word \"RAZOR\" in bold, red capital letters against a black background. The letter \"O\" is uniquely shaped, appearing larger and slightly irregular. Above the word, there is a white letter \"S\" symbol within a black circle. The overall style is minimalistic and striking, emphasizing contrast between the red text and black background."
       }
     }
   ],
-  "lastUpdated": 1762063722819
+  "lastUpdated": 1762064256215
 }

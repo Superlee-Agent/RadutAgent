@@ -2704,7 +2704,6 @@ const IpAssistant = () => {
                             className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
                             onClick={() => {
                               setExpandedAsset(asset);
-                              captureAssetToWhitelist(asset);
                             }}
                           >
                             <svg

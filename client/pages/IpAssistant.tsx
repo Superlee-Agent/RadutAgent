@@ -2678,7 +2678,6 @@ const IpAssistant = () => {
                             className="w-full h-full cursor-pointer relative group/video"
                             onClick={() => {
                               setExpandedAsset(asset);
-                              captureAssetToWhitelist(asset);
                             }}
                           >
                             <video

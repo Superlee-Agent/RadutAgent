@@ -533,12 +533,12 @@ export const WhitelistMonitor: React.FC = () => {
                 </div>
 
                 {/* License Terms */}
-                {entries.find((e) => e.hash === expandedHash)?.metadata
-                  ?.licenses && entries.find((e) => e.hash === expandedHash)?.metadata?.licenses.length > 0 && (
-                  <div className="border-t border-slate-700/30 pt-4">
-                    <span className="text-slate-400 font-semibold block mb-3">
-                      License Terms:
-                    </span>
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    License Terms:
+                  </span>
+                  {entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.licenses && entries.find((e) => e.hash === expandedHash)?.metadata?.licenses.length > 0 ? (
                     <div className="space-y-2">
                       {entries
                         .find((e) => e.hash === expandedHash)
@@ -612,8 +612,10 @@ export const WhitelistMonitor: React.FC = () => {
                           </div>
                         ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="text-slate-400 text-xs">No license data available</div>
+                  )}
+                </div>
 
                 {/* Parent IPs */}
                 {entries.find((e) => e.hash === expandedHash)?.metadata

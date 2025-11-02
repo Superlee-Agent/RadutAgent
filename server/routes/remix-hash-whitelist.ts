@@ -17,7 +17,7 @@ async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
     const apiKey = process.env.STORY_API_KEY;
     if (!apiKey) {
       console.warn(
-        "[Whitelist] STORY_API_KEY not configured, skipping full asset fetch"
+        "[Whitelist] STORY_API_KEY not configured, skipping full asset fetch",
       );
       return null;
     }
@@ -45,7 +45,7 @@ async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
 
     if (!response.ok) {
       console.warn(
-        `[Whitelist] Failed to fetch asset details: ${response.status}`
+        `[Whitelist] Failed to fetch asset details: ${response.status}`,
       );
       return null;
     }
@@ -129,11 +129,8 @@ export async function handleAddRemixHash(
         // Basic info
         title: fullAssetDetails.title || fullAssetDetails.name,
         owner: fullAssetDetails.owner,
-        ownerAddress:
-          fullAssetDetails.owner ||
-          clientMetadata.ownerAddress,
-        mediaType:
-          fullAssetDetails.mediaType || clientMetadata.mediaType,
+        ownerAddress: fullAssetDetails.owner || clientMetadata.ownerAddress,
+        mediaType: fullAssetDetails.mediaType || clientMetadata.mediaType,
         parentsCount: fullAssetDetails.parentsCount,
         isDerivative:
           (fullAssetDetails.parentsCount || 0) > 0 ||
@@ -144,8 +141,7 @@ export async function handleAddRemixHash(
         licenseTermsIds:
           fullAssetDetails.licenseTermsIds || clientMetadata.licenseTermsIds,
         licenseTemplates:
-          fullAssetDetails.licenseTemplates ||
-          clientMetadata.licenseTemplates,
+          fullAssetDetails.licenseTemplates || clientMetadata.licenseTemplates,
         licenseVisibility:
           fullAssetDetails.licenseVisibility ||
           clientMetadata.licenseVisibility,
@@ -160,14 +156,12 @@ export async function handleAddRemixHash(
           fullAssetDetails.maxRevenueShare || clientMetadata.maxRevenueShare,
 
         // Parent/derivative info
-        parentIpIds:
-          fullAssetDetails.parentIpIds || clientMetadata.parentIpIds,
+        parentIpIds: fullAssetDetails.parentIpIds || clientMetadata.parentIpIds,
         parentIpDetails:
           fullAssetDetails.parentIpDetails || clientMetadata.parentIpDetails,
 
         // Description and other details
-        description:
-          fullAssetDetails.description || clientMetadata.description,
+        description: fullAssetDetails.description || clientMetadata.description,
         ipaMetadataUri:
           fullAssetDetails.ipaMetadataUri || clientMetadata.ipaMetadataUri,
 
@@ -221,7 +215,7 @@ export async function handleAddRemixHash(
           isDerivative: metadata.isDerivative,
           parentsCount: metadata.parentsCount,
         },
-      }
+      },
     );
 
     await addHashToWhitelist(hash.toLowerCase(), metadata);

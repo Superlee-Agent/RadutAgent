@@ -1519,7 +1519,10 @@ const IpAssistant = () => {
     // Capture pure raw asset data to whitelist (without modification)
     const captureRawAssetData = async () => {
       try {
-        console.log("✅ Capturing pure raw asset data from modal for:", expandedAsset.ipId);
+        console.log(
+          "✅ Capturing pure raw asset data from modal for:",
+          expandedAsset.ipId,
+        );
         console.log("📊 Asset fields in modal:", {
           totalFields: Object.keys(expandedAsset).length,
           fields: Object.keys(expandedAsset).sort(),

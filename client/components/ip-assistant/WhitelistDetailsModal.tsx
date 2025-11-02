@@ -31,6 +31,8 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
   onClose,
   details,
 }) => {
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
   if (!details) return null;
 
   const formatDate = (timestamp?: number) => {
@@ -58,6 +60,20 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
     if (!addr) return "";
     if (addr.length <= 10) return addr;
     return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const getStoryExplorerUrl = (ipId: string) => {
+    return `https://aeneid.explorer.story.foundation/ipa/${ipId}`;
   };
 
   return (

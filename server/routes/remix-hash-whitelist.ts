@@ -3,6 +3,7 @@ import {
   addHashToWhitelist,
   checkHashInWhitelist,
   getAllWhitelistHashes,
+  clearWhitelist,
 } from "../utils/remix-hash-whitelist.js";
 
 /**
@@ -311,6 +312,30 @@ export async function handleGetRemixHashes(
     console.error("Error getting remix hashes:", error);
     res.status(500).json({
       error: "Failed to get remix hashes",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+/**
+ * Admin endpoint: Clear all hashes from whitelist
+ * POST /api/_admin/clear-remix-hashes
+ */
+export async function handleClearRemixHashes(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    await clearWhitelist();
+
+    res.status(200).json({
+      success: true,
+      message: "All hashes cleared from whitelist",
+    });
+  } catch (error) {
+    console.error("Error clearing remix hashes:", error);
+    res.status(500).json({
+      error: "Failed to clear remix hashes",
       details: error instanceof Error ? error.message : "Unknown error",
     });
   }

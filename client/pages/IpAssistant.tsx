@@ -1452,6 +1452,7 @@ const IpAssistant = () => {
             hash,
             pHash,
             visionDescription,
+            timestamp: Date.now(),
             ipId: asset.ipId,
             title: asset.title || asset.name,
             // Asset Information from Details modal

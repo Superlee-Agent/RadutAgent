@@ -38,27 +38,7 @@ export async function handleAddRemixHash(
   res: Response,
 ): Promise<void> {
   try {
-    const {
-      hash,
-      pHash,
-      visionDescription,
-      ipId = "unknown",
-      title = "Remix Image",
-      ownerAddress,
-      mediaType,
-      score,
-      parentIpIds,
-      licenseTermsIds,
-      licenseTemplates,
-      royaltyContext,
-      maxMintingFee,
-      maxRts,
-      maxRevenueShare,
-      licenseVisibility,
-      licenses,
-      isDerivative,
-      parentsCount,
-    } = req.body;
+    const { hash, ...allOtherFields } = req.body;
 
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
@@ -73,43 +53,28 @@ export async function handleAddRemixHash(
       return;
     }
 
-    // Add to whitelist with separated metadata (including all parent IP details)
+    // Add timestamp if not present
     const metadata = {
-      ipId,
-      title,
       timestamp: Date.now(),
-      pHash,
-      visionDescription,
-      ownerAddress,
-      mediaType,
-      score,
-      parentIpIds,
-      licenseTermsIds,
-      licenseTemplates,
-      royaltyContext,
-      maxMintingFee,
-      maxRts,
-      maxRevenueShare,
-      licenseVisibility,
-      licenses,
-      isDerivative,
-      parentsCount,
+      ...allOtherFields,
     };
 
-    // Debug log
-    console.log("📥 [Whitelist] Adding hash with metadata:", {
+    // Debug log showing all captured fields
+    const nonEmptyFields = Object.entries(metadata).filter(
+      ([_, value]) => value !== undefined && value !== null && value !== "",
+    );
+
+    console.log("📥 [Whitelist] Storing pure raw asset data with metadata:", {
       hash: hash.substring(0, 16) + "...",
-      ipId,
-      title,
-      hasOwnerAddress: !!ownerAddress,
-      hasMediaType: !!mediaType,
-      hasLicenses: !!licenses?.length,
-      hasParentIpIds: !!parentIpIds?.length,
-      metadataKeys: Object.keys(metadata).filter(
-        (k) =>
-          metadata[k as keyof typeof metadata] !== undefined &&
-          metadata[k as keyof typeof metadata] !== null,
-      ),
+      totalFields: Object.keys(metadata).length,
+      capturedFields: nonEmptyFields.map(([k]) => k),
+      sample: {
+        ipId: metadata.ipId,
+        title: metadata.title,
+        ownerAddress: metadata.ownerAddress,
+        mediaType: metadata.mediaType,
+        licenseCount: metadata.licenses?.length || 0,
+      },
     });
 
     await addHashToWhitelist(hash.toLowerCase(), metadata);

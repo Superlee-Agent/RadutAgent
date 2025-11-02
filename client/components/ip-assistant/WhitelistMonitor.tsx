@@ -29,9 +29,9 @@ export const WhitelistMonitor: React.FC = () => {
   const [stats, setStats] = useState<WhitelistStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState<"all" | "original" | "derivative">(
-    "all"
-  );
+  const [filterType, setFilterType] = useState<
+    "all" | "original" | "derivative"
+  >("all");
   const [expandedHash, setExpandedHash] = useState<string | null>(null);
 
   // Fetch whitelist data
@@ -86,9 +86,7 @@ export const WhitelistMonitor: React.FC = () => {
         totalEntries: data.entries?.length || 0,
         derivatives,
         originals: (data.entries?.length || 0) - derivatives,
-        lastUpdated: new Date(
-          data.lastUpdated || Date.now()
-        ).toLocaleString(),
+        lastUpdated: new Date(data.lastUpdated || Date.now()).toLocaleString(),
       });
     } catch (err) {
       console.error("Failed to fetch full whitelist:", err);
@@ -108,7 +106,7 @@ export const WhitelistMonitor: React.FC = () => {
   const clearWhitelist = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to clear the entire whitelist? This action cannot be undone."
+        "Are you sure you want to clear the entire whitelist? This action cannot be undone.",
       )
     ) {
       return;
@@ -123,7 +121,12 @@ export const WhitelistMonitor: React.FC = () => {
       if (!response.ok) throw new Error("Failed to clear whitelist");
 
       setEntries([]);
-      setStats({ totalEntries: 0, derivatives: 0, originals: 0, lastUpdated: new Date().toLocaleString() });
+      setStats({
+        totalEntries: 0,
+        derivatives: 0,
+        originals: 0,
+        lastUpdated: new Date().toLocaleString(),
+      });
     } catch (err) {
       console.error("Failed to clear whitelist:", err);
       alert("Failed to clear whitelist");
@@ -150,7 +153,7 @@ export const WhitelistMonitor: React.FC = () => {
           prev && {
             ...prev,
             totalEntries: prev.totalEntries - 1,
-          }
+          },
       );
     } catch (err) {
       console.error("Failed to delete entry:", err);
@@ -277,7 +280,7 @@ export const WhitelistMonitor: React.FC = () => {
               value={filterType}
               onChange={(e) =>
                 setFilterType(
-                  e.target.value as "all" | "original" | "derivative"
+                  e.target.value as "all" | "original" | "derivative",
                 )
               }
               className="w-full rounded-lg bg-slate-900/50 border border-slate-600/50 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/30"
@@ -359,7 +362,7 @@ export const WhitelistMonitor: React.FC = () => {
                         title={entry.metadata?.title}
                         onClick={() =>
                           setExpandedHash(
-                            expandedHash === entry.hash ? null : entry.hash
+                            expandedHash === entry.hash ? null : entry.hash,
                           )
                         }
                       >
@@ -383,7 +386,9 @@ export const WhitelistMonitor: React.FC = () => {
                             : "bg-blue-400/10 text-blue-400"
                         }`}
                       >
-                        {entry.metadata?.isDerivative ? "Derivative" : "Original"}
+                        {entry.metadata?.isDerivative
+                          ? "Derivative"
+                          : "Original"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">

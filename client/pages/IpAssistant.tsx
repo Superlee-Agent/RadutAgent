@@ -1490,6 +1490,19 @@ const IpAssistant = () => {
     })();
   };
 
+  // Capture asset to whitelist when modal opens (single trigger point)
+  useEffect(() => {
+    if (!expandedAsset || !expandedAsset.ipId) return;
+
+    // Only capture if not already captured
+    if (capturedAssetIds.has(expandedAsset.ipId)) return;
+
+    setCapturedAssetIds((prev) => new Set(prev).add(expandedAsset.ipId));
+
+    // Capture asset data to whitelist
+    captureAssetToWhitelist(expandedAsset);
+  }, [expandedAsset]);
+
   return (
     <DashboardLayout
       title="IP Assistant"

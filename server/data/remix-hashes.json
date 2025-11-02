@@ -5,11 +5,21 @@
       "metadata": {
         "ipId": "0x1c75d3De21e86788F2D2266B45bEc3Da724D3443",
         "title": "Story hoodie",
-        "timestamp": 1762062752035,
+        "timestamp": 1762063312467,
         "pHash": "40604cffff700000",
-        "visionDescription": "The image features the word \"RAZOR\" in bold, red, uppercase letters against a black background. The design is simple and striking, with an uneven hand-drawn style. The \"S\" at the beginning is white and stands out due to its position slightly above the rest of the text. The style of the text is bold and casual, conveying a dynamic and edgy aesthetic."
+        "visionDescription": "The image features a black background with bold text. In the center, \"RAZOR\" is written in large, red, stylized letters using uppercase. The distinct feature is the letter \"O,\" which is larger and emphasizes the word. Above \"RAZOR,\" there is a white letter \"S\" partially encased in a black circle, set against the black background. The image has a simple, bold design with a minimalistic style, using contrasting red and white colors."
+      }
+    },
+    {
+      "hash": "150b9dc4dba66143ab1989c7fedddda31dcb2681e5057cf45bfc912cab112642",
+      "metadata": {
+        "ipId": "0xEb273843E0A6d39Fc5bDDa9F8861d7A8D7026Ed4",
+        "title": "stingray",
+        "timestamp": 1762063330772,
+        "pHash": "ffe7c3c3c3c7efff",
+        "visionDescription": "The image depicts a digital artwork featuring the back view of a person with brown hair, wearing a blue outfit. Surrounding them are three abstract shapes resembling stylized manta rays, all in dark blue. The background is a soft blue circle with subtle highlights. The style is simplistic and cartoonish, with bold outlines and a focus on minimalistic design elements."
       }
     }
   ],
-  "lastUpdated": 1762062752036
+  "lastUpdated": 1762063330773
 }

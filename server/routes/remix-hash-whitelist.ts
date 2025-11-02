@@ -8,23 +8,88 @@ import {
 } from "../utils/remix-hash-whitelist.js";
 
 /**
+ * Fetch full asset details from Story API (simulate clicking Details button)
+ * This gets all the information shown in the IP Asset Details modal popup
+ */
+async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
+  try {
+    const apiKey = process.env.STORY_API_KEY;
+    if (!apiKey) {
+      console.warn(
+        "[Whitelist] STORY_API_KEY not configured, cannot fetch full details",
+      );
+      return null;
+    }
+
+    console.log("[Whitelist] 🔍 Fetching complete asset details for:", ipId);
+
+    const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+      method: "POST",
+      headers: {
+        "X-Api-Key": apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        includeLicenses: true,
+        where: {
+          ipIds: [ipId],
+        },
+        pagination: {
+          limit: 1,
+          offset: 0,
+        },
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `[Whitelist] Failed to fetch asset details: ${response.status}`,
+      );
+      return null;
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      console.warn("[Whitelist] No asset data returned from API");
+      return null;
+    }
+
+    const fullAsset = data.data[0];
+    console.log("[Whitelist] ✅ Full asset details fetched (simulating Details click):", {
+      ipId: fullAsset.ipId,
+      hasLicenses: !!fullAsset.licenses?.length,
+      hasOwnerAddress: !!fullAsset.owner,
+      hasMediaType: !!fullAsset.mediaType,
+      totalFields: Object.keys(fullAsset).length,
+    });
+
+    return fullAsset;
+  } catch (error) {
+    console.warn("[Whitelist] Error fetching full asset details:", error);
+    return null;
+  }
+}
+
+/**
  * Add hash to remix whitelist
  * POST /api/add-remix-hash
  * Body: {
  *   hash: string (SHA256 of pure image),
- *   [all fields from IP Asset Details modal - already fetched during search]
+ *   ipId?: string,
+ *   [all fields from client - from expanded view]
  * }
  *
- * Note: The data is already fetched during the IP search phase.
- * This endpoint receives the complete asset data from the frontend modal
- * and stores it without making additional API calls.
+ * The backend automatically fetches the complete Details information
+ * (simulating a click on the Details button) to capture everything
+ * shown in the IP Asset Details modal without user interaction.
  */
 export async function handleAddRemixHash(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const { hash, ...allMetadata } = req.body;
+    const { hash, ipId, ...clientData } = req.body;
 
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
@@ -39,11 +104,107 @@ export async function handleAddRemixHash(
       return;
     }
 
-    // Prepare metadata with timestamp
-    const metadata = {
+    // Start with client-provided data
+    let metadata = {
       timestamp: Date.now(),
-      ...allMetadata,
+      ipId,
+      ...clientData,
     };
+
+    // In background, fetch complete asset details (simulate Details button click)
+    // This gets: full licenses, owner info, media type, description, parent IPs, etc.
+    let fullAssetDetails = null;
+    if (ipId) {
+      fullAssetDetails = await fetchFullAssetDetailsFromApi(ipId);
+    }
+
+    // Merge full details with client data
+    // Full details fill gaps, client data takes precedence for what's already there
+    if (fullAssetDetails) {
+      console.log(
+        "[Whitelist] 🔀 Merging complete asset details into metadata",
+      );
+
+      const detailsMetadata = {
+        // Asset info
+        title: fullAssetDetails.title || metadata.title,
+        owner: fullAssetDetails.owner,
+        ownerAddress:
+          fullAssetDetails.owner ||
+          metadata.ownerAddress,
+        mediaType: fullAssetDetails.mediaType || metadata.mediaType,
+
+        // Derivative info
+        parentsCount: fullAssetDetails.parentsCount,
+        isDerivative:
+          (fullAssetDetails.parentsCount || 0) > 0 ||
+          metadata.isDerivative,
+
+        // Licenses (complete from Details modal)
+        licenses: fullAssetDetails.licenses || metadata.licenses,
+        licenseTermsIds:
+          fullAssetDetails.licenseTermsIds || metadata.licenseTermsIds,
+        licenseTemplates:
+          fullAssetDetails.licenseTemplates || metadata.licenseTemplates,
+        licenseVisibility:
+          fullAssetDetails.licenseVisibility || metadata.licenseVisibility,
+
+        // Royalty configuration
+        royaltyContext:
+          fullAssetDetails.royaltyContext || metadata.royaltyContext,
+        maxMintingFee:
+          fullAssetDetails.maxMintingFee || metadata.maxMintingFee,
+        maxRts: fullAssetDetails.maxRts || metadata.maxRts,
+        maxRevenueShare:
+          fullAssetDetails.maxRevenueShare || metadata.maxRevenueShare,
+
+        // Parent/derivative details
+        parentIpIds:
+          fullAssetDetails.parentIpIds || metadata.parentIpIds,
+        parentIpDetails:
+          fullAssetDetails.parentIpDetails || metadata.parentIpDetails,
+
+        // Additional details
+        description: fullAssetDetails.description || metadata.description,
+        ipaMetadataUri:
+          fullAssetDetails.ipaMetadataUri || metadata.ipaMetadataUri,
+
+        // Spread all other fields from full asset
+        ...Object.fromEntries(
+          Object.entries(fullAssetDetails).filter(
+            ([key]) =>
+              ![
+                "ipId",
+                "title",
+                "owner",
+                "ownerAddress",
+                "mediaType",
+                "parentsCount",
+                "isDerivative",
+                "licenses",
+                "licenseTermsIds",
+                "licenseTemplates",
+                "licenseVisibility",
+                "royaltyContext",
+                "maxMintingFee",
+                "maxRts",
+                "maxRevenueShare",
+                "parentIpIds",
+                "parentIpDetails",
+                "description",
+                "ipaMetadataUri",
+              ].includes(key),
+          ),
+        ),
+      };
+
+      // Merge: full details + client data (client takes precedence)
+      metadata = {
+        ...detailsMetadata,
+        ...metadata,
+        timestamp: metadata.timestamp,
+      };
+    }
 
     // Clean metadata: remove undefined/null values
     Object.keys(metadata).forEach((key) => {
@@ -56,18 +217,19 @@ export async function handleAddRemixHash(
       }
     });
 
-    // Debug log showing all captured fields from IP Asset Details modal
+    // Debug log showing all captured fields (both from client and fetched Details)
     const nonEmptyFields = Object.entries(metadata).filter(
       ([_, value]) => value !== undefined && value !== null && value !== "",
     );
 
     console.log(
-      "📥 [Whitelist] Storing all raw data from IP Asset Details modal:",
+      "📥 [Whitelist] Storing complete Details modal data (auto-fetched):",
       {
         hash: hash.substring(0, 16) + "...",
-        ipId: metadata.ipId,
+        ipId,
         totalFields: Object.keys(metadata).length,
         capturedFields: nonEmptyFields.map(([k]) => k).sort(),
+        detailsFetched: fullAssetDetails ? "✅ yes" : "❌ no",
         summary: {
           hasTitle: !!metadata.title,
           hasOwnerAddress: !!metadata.ownerAddress,
@@ -86,10 +248,13 @@ export async function handleAddRemixHash(
 
     res.status(200).json({
       success: true,
-      message: "Hash added to whitelist with all modal data",
+      message: fullAssetDetails
+        ? "Hash added with complete Details modal data (auto-fetched)"
+        : "Hash added with available data",
       hash: hash.toLowerCase(),
       metadata,
       capturedFieldCount: Object.keys(metadata).length,
+      detailsFetched: !!fullAssetDetails,
     });
   } catch (error) {
     console.error("Error adding hash to whitelist:", error);

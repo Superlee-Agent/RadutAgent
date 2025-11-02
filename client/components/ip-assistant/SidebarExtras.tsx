@@ -9,6 +9,7 @@ type SidebarExtrasProps = {
   onLoadSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
   closeSidebar: () => void;
+  onOpenWhitelistMonitor: () => void;
 };
 
 const SidebarExtras: FC<SidebarExtrasProps> = ({

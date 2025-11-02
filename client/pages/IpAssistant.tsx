@@ -3777,6 +3777,11 @@ const IpAssistant = () => {
           }
         }}
       />
+      <WhitelistDetailsModal
+        isOpen={whitelistDetailsOpen}
+        onClose={() => setWhitelistDetailsOpen(false)}
+        details={whitelistDetailsData}
+      />
     </DashboardLayout>
   );
 };

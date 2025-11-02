@@ -1387,6 +1387,7 @@ const IpAssistant = () => {
         onLoadSession={loadSession}
         onDeleteSession={deleteSession}
         closeSidebar={closeSidebar}
+        onOpenWhitelistMonitor={() => setShowWhitelistMonitor(true)}
       />
     ),
     [deleteSession, handleNewChat, loadSession, messages, sessions],

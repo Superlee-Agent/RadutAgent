@@ -365,17 +365,31 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
                         <span className="text-slate-400 text-sm">
                           Max Minting Fee:
                         </span>
-                        <span className="text-slate-100 font-medium">
-                          {formatWei(details.maxMintingFee)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-100 font-medium">
+                            {formatWei(details.maxMintingFee)}
+                          </span>
+                          {!details.maxMintingFee || details.maxMintingFee === "0" ? (
+                            <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                              Unlimited
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                         <span className="text-slate-400 text-sm">
                           Max RTS:
                         </span>
-                        <span className="text-slate-100 font-medium">
-                          {formatWei(details.maxRts)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-100 font-medium">
+                            {formatWei(details.maxRts)}
+                          </span>
+                          {!details.maxRts || details.maxRts === "0" ? (
+                            <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                              Unlimited
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                       {details.maxRevenueShare !== undefined && (
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">

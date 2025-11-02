@@ -14,9 +14,15 @@ import {
 async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
   try {
     const apiKey = process.env.STORY_API_KEY;
+    console.log("[Whitelist] Checking STORY_API_KEY:", {
+      hasKey: !!apiKey,
+      keyLength: apiKey?.length || 0,
+      firstChars: apiKey?.substring(0, 10) || "N/A",
+    });
+
     if (!apiKey) {
       console.warn(
-        "[Whitelist] STORY_API_KEY not configured, cannot fetch full details",
+        "[Whitelist] ❌ STORY_API_KEY not configured, cannot fetch full details",
       );
       return null;
     }

@@ -198,3 +198,17 @@ export async function updateHashMetadata(
     console.log(`[Remix Hash] Updated metadata for hash ${hash}`);
   }
 }
+
+/**
+ * Delete hash from whitelist
+ */
+export async function deleteHashFromWhitelist(hash: string): Promise<void> {
+  const whitelist = await loadWhitelist();
+  const initialLength = whitelist.entries.length;
+  whitelist.entries = whitelist.entries.filter((entry) => entry.hash !== hash);
+
+  if (whitelist.entries.length < initialLength) {
+    await saveWhitelist(whitelist);
+    console.log(`[Remix Hash] Deleted hash ${hash} from whitelist`);
+  }
+}

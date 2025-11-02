@@ -1458,36 +1458,47 @@ const IpAssistant = () => {
               ? [asset.ipId]
               : [];
 
+        const payload = {
+          hash,
+          pHash,
+          visionDescription,
+          timestamp: Date.now(),
+          ipId: asset.ipId,
+          title: asset.title || asset.name,
+          // Asset Information from Details modal
+          ownerAddress: asset.ownerAddress || "",
+          mediaType: asset.mediaType || "",
+          score: asset.score ?? null,
+          // Parent IP Details (original IP as self-reference, or actual parents if derivative)
+          parentIpIds: parentIpIds,
+          licenseTermsIds: asset.licenseTermsIds || [],
+          licenseTemplates: asset.licenseTemplates || [],
+          // License Configuration (may be empty for non-commercial)
+          royaltyContext: asset.royaltyContext || "",
+          maxMintingFee: asset.maxMintingFee || "0",
+          maxRts: asset.maxRts || "0",
+          maxRevenueShare: asset.maxRevenueShare ?? 0,
+          licenseVisibility: asset.licenseVisibility || "",
+          // Detailed Licenses information from Details modal
+          licenses: asset.licenses || [],
+          // Derivative Status
+          isDerivative: asset.isDerivative || false,
+          parentsCount: asset.parentsCount || 0,
+        };
+
+        console.log("📤 Payload being sent:", {
+          hasOwnerAddress: !!payload.ownerAddress,
+          hasMediaType: !!payload.mediaType,
+          hasScore: payload.score !== null,
+          hasLicenses: !!payload.licenses?.length,
+          hasParentIpIds: payload.parentIpIds.length,
+          payload,
+        });
+
         const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            hash,
-            pHash,
-            visionDescription,
-            timestamp: Date.now(),
-            ipId: asset.ipId,
-            title: asset.title || asset.name,
-            // Asset Information from Details modal
-            ownerAddress: asset.ownerAddress || "",
-            mediaType: asset.mediaType || "",
-            score: asset.score ?? null,
-            // Parent IP Details (original IP as self-reference, or actual parents if derivative)
-            parentIpIds: parentIpIds,
-            licenseTermsIds: asset.licenseTermsIds || [],
-            licenseTemplates: asset.licenseTemplates || [],
-            // License Configuration (may be empty for non-commercial)
-            royaltyContext: asset.royaltyContext || "",
-            maxMintingFee: asset.maxMintingFee || "0",
-            maxRts: asset.maxRts || "0",
-            maxRevenueShare: asset.maxRevenueShare ?? 0,
-            licenseVisibility: asset.licenseVisibility || "",
-            // Detailed Licenses information from Details modal
-            licenses: asset.licenses || [],
-            // Derivative Status
-            isDerivative: asset.isDerivative || false,
-            parentsCount: asset.parentsCount || 0,
-          }),
+          body: JSON.stringify(payload),
         });
 
         if (!whitelistResponse.ok) {

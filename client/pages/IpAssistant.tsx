@@ -45,6 +45,8 @@ const IpAssistant = () => {
   const [waiting, setWaiting] = useState(false);
   const [activeDetail, setActiveDetail] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [whitelistDetailsOpen, setWhitelistDetailsOpen] = useState(false);
+  const [whitelistDetailsData, setWhitelistDetailsData] = useState<any>(null);
 
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);

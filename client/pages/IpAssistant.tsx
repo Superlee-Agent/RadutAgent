@@ -1468,12 +1468,11 @@ const IpAssistant = () => {
           }
         });
 
-        console.log("📤 Payload being sent:", {
-          hasOwnerAddress: !!payload.ownerAddress,
-          hasMediaType: !!payload.mediaType,
-          hasScore: payload.score !== null,
-          hasLicenses: !!payload.licenses?.length,
-          hasParentIpIds: payload.parentIpIds.length,
+        console.log("📤 Pure raw asset data captured to whitelist:", {
+          ipId: payload.ipId,
+          title: payload.title,
+          totalFields: Object.keys(payload).length,
+          fields: Object.keys(payload).sort(),
           payload,
         });
 

@@ -1408,6 +1408,19 @@ const IpAssistant = () => {
   const captureAssetToWhitelist = (asset: any) => {
     if (!asset?.ipId || !asset?.mediaUrl) return;
 
+    // Debug log: check what fields asset has
+    console.log("🔍 Asset to capture:", {
+      ipId: asset.ipId,
+      title: asset.title,
+      hasOwnerAddress: !!asset.ownerAddress,
+      hasMediaType: !!asset.mediaType,
+      hasScore: asset.score !== undefined,
+      hasLicenses: !!asset.licenses?.length,
+      hasParentIpIds: !!asset.parentIpIds?.length,
+      hasMaxMintingFee: !!asset.maxMintingFee,
+      allKeys: Object.keys(asset),
+    });
+
     (async () => {
       try {
         // Fetch the image

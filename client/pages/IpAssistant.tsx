@@ -841,7 +841,7 @@ const IpAssistant = () => {
               // Check if derivatives are allowed
               const derivativesAllowed = hashCheck.derivativesAllowed !== false;
               const warningText = derivativesAllowed
-                ? `⚠️ This is copyrighted content. Remixing is allowed.`
+                ? `���️ This is copyrighted content. Remixing is allowed.`
                 : `⚠️ This is copyrighted content.`;
 
               const warningMessage: Message = {
@@ -1486,7 +1486,14 @@ const IpAssistant = () => {
           return;
         }
 
-        console.log("Asset captured to whitelist:", asset.ipId, "hash:", hash);
+        console.log("✅ Asset captured to whitelist:", {
+          ipId: asset.ipId,
+          title: asset.title,
+          hash: hash.substring(0, 16) + "...",
+          timestamp: new Date().toLocaleString(),
+          hasLicenses: !!asset.licenses?.length,
+          isDerivative: asset.isDerivative,
+        });
       } catch (err) {
         console.warn("Failed to capture asset to whitelist:", err);
         // Don't let errors affect UX

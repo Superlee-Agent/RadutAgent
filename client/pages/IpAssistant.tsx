@@ -1458,33 +1458,50 @@ const IpAssistant = () => {
               ? [asset.ipId]
               : [];
 
-        const payload = {
+        // Capture ALL fields from expandedAsset (including those from Details modal)
+        const payload: any = {
           hash,
           pHash,
           visionDescription,
           timestamp: Date.now(),
-          ipId: asset.ipId,
-          title: asset.title || asset.name,
+          ipId: asset.ipId || "unknown",
+          title: asset.title || asset.name || "Untitled",
           // Asset Information from Details modal
-          ownerAddress: asset.ownerAddress || "",
-          mediaType: asset.mediaType || "",
-          score: asset.score ?? null,
+          ownerAddress: asset.ownerAddress,
+          mediaType: asset.mediaType,
+          score: asset.score,
           // Parent IP Details (original IP as self-reference, or actual parents if derivative)
           parentIpIds: parentIpIds,
-          licenseTermsIds: asset.licenseTermsIds || [],
-          licenseTemplates: asset.licenseTemplates || [],
-          // License Configuration (may be empty for non-commercial)
-          royaltyContext: asset.royaltyContext || "",
-          maxMintingFee: asset.maxMintingFee || "0",
-          maxRts: asset.maxRts || "0",
-          maxRevenueShare: asset.maxRevenueShare ?? 0,
-          licenseVisibility: asset.licenseVisibility || "",
+          licenseTermsIds: asset.licenseTermsIds,
+          licenseTemplates: asset.licenseTemplates,
+          // License Configuration
+          royaltyContext: asset.royaltyContext,
+          maxMintingFee: asset.maxMintingFee,
+          maxRts: asset.maxRts,
+          maxRevenueShare: asset.maxRevenueShare,
+          licenseVisibility: asset.licenseVisibility,
           // Detailed Licenses information from Details modal
-          licenses: asset.licenses || [],
+          licenses: asset.licenses,
           // Derivative Status
-          isDerivative: asset.isDerivative || false,
-          parentsCount: asset.parentsCount || 0,
+          isDerivative: asset.isDerivative,
+          parentsCount: asset.parentsCount,
+          // Additional fields from Details modal that might not be captured
+          parentIpDetails: asset.parentIpDetails,
+          description: asset.description,
+          // Spread any other fields from asset
+          ...Object.fromEntries(
+            Object.entries(asset).filter(
+              ([key]) => !Object.keys(payload).includes(key),
+            ),
+          ),
         };
+
+        // Clean payload: remove undefined values to avoid sending null
+        Object.keys(payload).forEach((key) => {
+          if (payload[key] === undefined) {
+            delete payload[key];
+          }
+        });
 
         console.log("📤 Payload being sent:", {
           hasOwnerAddress: !!payload.ownerAddress,

@@ -640,20 +640,22 @@ export const WhitelistMonitor: React.FC = () => {
                 </div>
 
                 {/* Vision Description */}
-                {entries.find((e) => e.hash === expandedHash)?.metadata
-                  ?.visionDescription && (
-                  <div className="border-t border-slate-700/30 pt-4">
-                    <span className="text-slate-400 font-semibold block mb-2">
-                      Vision Analysis:
-                    </span>
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-2">
+                    Vision Analysis:
+                  </span>
+                  {entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.visionDescription ? (
                     <div className="text-slate-200 text-xs leading-relaxed bg-slate-900/50 p-3 rounded">
                       {
                         entries.find((e) => e.hash === expandedHash)?.metadata
                           ?.visionDescription
                       }
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="text-slate-400 text-xs">No vision data available</div>
+                  )}
+                </div>
               </div>
             )}
           </motion.div>

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 
 interface WhitelistDetails {
   ipId: string;

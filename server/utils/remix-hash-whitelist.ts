@@ -19,6 +19,10 @@ interface RemixImageMetadata {
   timestamp: number;
   pHash?: string;
   visionDescription?: string;
+  // Asset Details
+  ownerAddress?: string;
+  mediaType?: string;
+  score?: number | null;
   // Parent IP Details
   parentIpIds?: string[];
   licenseTermsIds?: string[];
@@ -29,9 +33,14 @@ interface RemixImageMetadata {
   maxRts?: string; // Wei format
   maxRevenueShare?: number; // 0-100
   licenseVisibility?: string;
+  // Detailed Licenses
+  licenses?: any[]; // Full license terms array
   // Derivative Status
   isDerivative?: boolean;
   parentsCount?: number;
+  // Match tracking
+  matchType?: string;
+  similarity?: number;
 }
 
 interface RemixHashEntry {

@@ -1449,56 +1449,21 @@ const IpAssistant = () => {
           console.warn("Vision description failed:", visionError);
         }
 
-        // Add ALL asset data to whitelist (including parent IP details)
-        // For original IPs (not derivatives), include ipId as self-reference for future remix tracking
-        const parentIpIds =
-          asset.parentIpIds && asset.parentIpIds.length > 0
-            ? asset.parentIpIds
-            : asset.isDerivative === false
-              ? [asset.ipId]
-              : [];
-
-        // Capture ALL fields from expandedAsset (including those from Details modal)
+        // Capture PURE RAW data from expandedAsset
+        // Start with all asset fields as the base
         const payload: any = {
+          // Spread ALL fields from expandedAsset (pure raw data from modal)
+          ...asset,
+          // Add computed fields (hash, vision, timestamp)
           hash,
           pHash,
           visionDescription,
           timestamp: Date.now(),
-          ipId: asset.ipId || "unknown",
-          title: asset.title || asset.name || "Untitled",
-          // Asset Information from Details modal
-          ownerAddress: asset.ownerAddress,
-          mediaType: asset.mediaType,
-          score: asset.score,
-          // Parent IP Details (original IP as self-reference, or actual parents if derivative)
-          parentIpIds: parentIpIds,
-          licenseTermsIds: asset.licenseTermsIds,
-          licenseTemplates: asset.licenseTemplates,
-          // License Configuration
-          royaltyContext: asset.royaltyContext,
-          maxMintingFee: asset.maxMintingFee,
-          maxRts: asset.maxRts,
-          maxRevenueShare: asset.maxRevenueShare,
-          licenseVisibility: asset.licenseVisibility,
-          // Detailed Licenses information from Details modal
-          licenses: asset.licenses,
-          // Derivative Status
-          isDerivative: asset.isDerivative,
-          parentsCount: asset.parentsCount,
-          // Additional fields from Details modal that might not be captured
-          parentIpDetails: asset.parentIpDetails,
-          description: asset.description,
-          // Spread any other fields from asset
-          ...Object.fromEntries(
-            Object.entries(asset).filter(
-              ([key]) => !Object.keys(payload).includes(key),
-            ),
-          ),
         };
 
-        // Clean payload: remove undefined values to avoid sending null
+        // Clean payload: remove undefined/null values
         Object.keys(payload).forEach((key) => {
-          if (payload[key] === undefined) {
+          if (payload[key] === undefined || payload[key] === null) {
             delete payload[key];
           }
         });

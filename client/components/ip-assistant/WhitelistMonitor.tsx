@@ -458,24 +458,24 @@ export const WhitelistMonitor: React.FC = () => {
                     <div>
                       <span className="text-slate-500">Owner:</span>
                       <div className="text-slate-200 font-mono truncate">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.ownerAddress || "N/A"}
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.ownerAddress || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Media Type:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.mediaType || "N/A"}
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.mediaType || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Score:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.score !== null &&
-                        entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.score !== undefined
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.score !== null &&
+                        entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.score !== undefined
                           ? (
                               entries.find((e) => e.hash === expandedHash)
                                 ?.metadata?.score ?? 0
@@ -486,8 +486,8 @@ export const WhitelistMonitor: React.FC = () => {
                     <div>
                       <span className="text-slate-500">Parents Count:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.parentsCount ?? "0"}
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.parentsCount ?? "0"}
                       </div>
                     </div>
                   </div>
@@ -502,30 +502,28 @@ export const WhitelistMonitor: React.FC = () => {
                     <div>
                       <span className="text-slate-500">Max Minting Fee:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.maxMintingFee === "0"
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.maxMintingFee === "0"
                           ? "Unlimited"
-                          : entries
-                              .find((e) => e.hash === expandedHash)
+                          : entries.find((e) => e.hash === expandedHash)
                               ?.metadata?.maxMintingFee || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Max RTS:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.maxRts === "0"
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.maxRts === "0"
                           ? "Unlimited"
-                          : entries
-                              .find((e) => e.hash === expandedHash)
+                          : entries.find((e) => e.hash === expandedHash)
                               ?.metadata?.maxRts || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Max Rev Share:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)
-                          ?.metadata?.maxRevenueShare || 0}
+                        {entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.maxRevenueShare || 0}
                         %
                       </div>
                     </div>
@@ -538,82 +536,91 @@ export const WhitelistMonitor: React.FC = () => {
                     License Terms:
                   </span>
                   {entries.find((e) => e.hash === expandedHash)?.metadata
-                    ?.licenses && entries.find((e) => e.hash === expandedHash)?.metadata?.licenses.length > 0 ? (
+                    ?.licenses &&
+                  entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.licenses.length > 0 ? (
                     <div className="space-y-2">
                       {entries
                         .find((e) => e.hash === expandedHash)
-                        ?.metadata?.licenses?.map((license: any, idx: number) => (
-                          <div key={idx} className="bg-slate-900/50 p-3 rounded text-xs border border-slate-700/30">
-                            <div className="grid grid-cols-2 gap-2 text-slate-200">
-                              {license.terms?.derivativesAllowed && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Derivatives:
-                                  </span>
-                                  <span className="text-green-400">
-                                    {" "}
-                                    ✓ Allowed
-                                  </span>
-                                </div>
-                              )}
-                              {license.terms?.commercialUse && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Commercial:
-                                  </span>
-                                  <span className="text-green-400">
-                                    {" "}
-                                    ✓ Allowed
-                                  </span>
-                                </div>
-                              )}
-                              {license.terms?.transferable && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Transferable:
-                                  </span>
-                                  <span className="text-green-400">
-                                    {" "}
-                                    ✓ Yes
-                                  </span>
-                                </div>
-                              )}
-                              {license.terms?.defaultMintingFee && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Minting Fee:
-                                  </span>
-                                  <span className="text-slate-200">
-                                    {license.terms.defaultMintingFee}
-                                  </span>
-                                </div>
-                              )}
-                              {license.terms?.commercialRevShare && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Rev Share:
-                                  </span>
-                                  <span className="text-slate-200">
-                                    {license.terms.commercialRevShare}%
-                                  </span>
-                                </div>
-                              )}
-                              {license.templateName && (
-                                <div>
-                                  <span className="text-slate-500">
-                                    Template:
-                                  </span>
-                                  <span className="text-slate-200">
-                                    {license.templateName}
-                                  </span>
-                                </div>
-                              )}
+                        ?.metadata?.licenses?.map(
+                          (license: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="bg-slate-900/50 p-3 rounded text-xs border border-slate-700/30"
+                            >
+                              <div className="grid grid-cols-2 gap-2 text-slate-200">
+                                {license.terms?.derivativesAllowed && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Derivatives:
+                                    </span>
+                                    <span className="text-green-400">
+                                      {" "}
+                                      ✓ Allowed
+                                    </span>
+                                  </div>
+                                )}
+                                {license.terms?.commercialUse && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Commercial:
+                                    </span>
+                                    <span className="text-green-400">
+                                      {" "}
+                                      ✓ Allowed
+                                    </span>
+                                  </div>
+                                )}
+                                {license.terms?.transferable && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Transferable:
+                                    </span>
+                                    <span className="text-green-400">
+                                      {" "}
+                                      ✓ Yes
+                                    </span>
+                                  </div>
+                                )}
+                                {license.terms?.defaultMintingFee && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Minting Fee:
+                                    </span>
+                                    <span className="text-slate-200">
+                                      {license.terms.defaultMintingFee}
+                                    </span>
+                                  </div>
+                                )}
+                                {license.terms?.commercialRevShare && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Rev Share:
+                                    </span>
+                                    <span className="text-slate-200">
+                                      {license.terms.commercialRevShare}%
+                                    </span>
+                                  </div>
+                                )}
+                                {license.templateName && (
+                                  <div>
+                                    <span className="text-slate-500">
+                                      Template:
+                                    </span>
+                                    <span className="text-slate-200">
+                                      {license.templateName}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ),
+                        )}
                     </div>
                   ) : (
-                    <div className="text-slate-400 text-xs">No license data available</div>
+                    <div className="text-slate-400 text-xs">
+                      No license data available
+                    </div>
                   )}
                 </div>
 
@@ -623,16 +630,23 @@ export const WhitelistMonitor: React.FC = () => {
                     Parent IPs:
                   </span>
                   {entries.find((e) => e.hash === expandedHash)?.metadata
-                    ?.parentIpIds && entries.find((e) => e.hash === expandedHash)?.metadata?.parentIpIds.length > 0 ? (
+                    ?.parentIpIds &&
+                  entries.find((e) => e.hash === expandedHash)?.metadata
+                    ?.parentIpIds.length > 0 ? (
                     <div className="space-y-1 text-xs">
                       {entries
                         .find((e) => e.hash === expandedHash)
-                        ?.metadata?.parentIpIds?.map((parentId: string, idx: number) => (
-                          <div key={idx} className="text-slate-200 font-mono break-all text-slate-300">
-                            {parentId.substring(0, 6)}...
-                            {parentId.substring(parentId.length - 4)}
-                          </div>
-                        ))}
+                        ?.metadata?.parentIpIds?.map(
+                          (parentId: string, idx: number) => (
+                            <div
+                              key={idx}
+                              className="text-slate-200 font-mono break-all text-slate-300"
+                            >
+                              {parentId.substring(0, 6)}...
+                              {parentId.substring(parentId.length - 4)}
+                            </div>
+                          ),
+                        )}
                     </div>
                   ) : (
                     <div className="text-slate-400 text-xs">No parent IPs</div>
@@ -653,7 +667,9 @@ export const WhitelistMonitor: React.FC = () => {
                       }
                     </div>
                   ) : (
-                    <div className="text-slate-400 text-xs">No vision data available</div>
+                    <div className="text-slate-400 text-xs">
+                      No vision data available
+                    </div>
                   )}
                 </div>
               </div>

@@ -105,7 +105,11 @@ export async function handleAddRemixHash(
       hasMediaType: !!mediaType,
       hasLicenses: !!licenses?.length,
       hasParentIpIds: !!parentIpIds?.length,
-      metadataKeys: Object.keys(metadata).filter(k => metadata[k as keyof typeof metadata] !== undefined && metadata[k as keyof typeof metadata] !== null),
+      metadataKeys: Object.keys(metadata).filter(
+        (k) =>
+          metadata[k as keyof typeof metadata] !== undefined &&
+          metadata[k as keyof typeof metadata] !== null,
+      ),
     });
 
     await addHashToWhitelist(hash.toLowerCase(), metadata);

@@ -19,6 +19,7 @@ const SidebarExtras: FC<SidebarExtrasProps> = ({
   onLoadSession,
   onDeleteSession,
   closeSidebar,
+  onOpenWhitelistMonitor,
 }) => (
   <div className="mt-2 flex-1 w-full text-slate-300">
     <button

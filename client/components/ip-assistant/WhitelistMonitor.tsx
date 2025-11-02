@@ -494,50 +494,43 @@ export const WhitelistMonitor: React.FC = () => {
                 </div>
 
                 {/* License Royalty Configuration */}
-                {(entries.find((e) => e.hash === expandedHash)?.metadata
-                  ?.maxMintingFee ||
-                  entries.find((e) => e.hash === expandedHash)?.metadata
-                    ?.maxRts ||
-                  entries.find((e) => e.hash === expandedHash)?.metadata
-                    ?.maxRevenueShare) && (
-                  <div className="border-t border-slate-700/30 pt-4">
-                    <span className="text-slate-400 font-semibold block mb-3">
-                      Royalty Configuration:
-                    </span>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div>
-                        <span className="text-slate-500">Max Minting Fee:</span>
-                        <div className="text-slate-200">
-                          {entries.find((e) => e.hash === expandedHash)
-                            ?.metadata?.maxMintingFee === "0"
-                            ? "Unlimited"
-                            : entries
-                                .find((e) => e.hash === expandedHash)
-                                ?.metadata?.maxMintingFee || "N/A"}
-                        </div>
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    Royalty Configuration:
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <span className="text-slate-500">Max Minting Fee:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxMintingFee === "0"
+                          ? "Unlimited"
+                          : entries
+                              .find((e) => e.hash === expandedHash)
+                              ?.metadata?.maxMintingFee || "N/A"}
                       </div>
-                      <div>
-                        <span className="text-slate-500">Max RTS:</span>
-                        <div className="text-slate-200">
-                          {entries.find((e) => e.hash === expandedHash)
-                            ?.metadata?.maxRts === "0"
-                            ? "Unlimited"
-                            : entries
-                                .find((e) => e.hash === expandedHash)
-                                ?.metadata?.maxRts || "N/A"}
-                        </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Max RTS:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxRts === "0"
+                          ? "Unlimited"
+                          : entries
+                              .find((e) => e.hash === expandedHash)
+                              ?.metadata?.maxRts || "N/A"}
                       </div>
-                      <div>
-                        <span className="text-slate-500">Max Rev Share:</span>
-                        <div className="text-slate-200">
-                          {entries.find((e) => e.hash === expandedHash)
-                            ?.metadata?.maxRevenueShare || 0}
-                          %
-                        </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Max Rev Share:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxRevenueShare || 0}
+                        %
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* License Terms */}
                 {entries.find((e) => e.hash === expandedHash)?.metadata

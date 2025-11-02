@@ -3792,6 +3792,48 @@ const IpAssistant = () => {
         onClose={() => setWhitelistDetailsOpen(false)}
         details={whitelistDetailsData}
       />
+      {showWhitelistMonitor && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="bg-slate-900/95 border border-[#FF4DA6]/30 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-slate-900/95 border-b border-[#FF4DA6]/20 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-[#FF4DA6]">
+                Whitelist Monitor
+              </h2>
+              <button
+                onClick={() => setShowWhitelistMonitor(false)}
+                className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                aria-label="Close whitelist monitor"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <WhitelistMonitor />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

@@ -2465,7 +2465,7 @@ const IpAssistant = () => {
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
             from: "bot",
-            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            text: "⚠�� Remix images cannot be registered. Please clear the image to register this IP asset.",
             ts: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);
@@ -2621,11 +2621,14 @@ const IpAssistant = () => {
                   setCapturedAssetIds((prev) => new Set(prev).add(asset.ipId));
 
                   // Fire and forget - don't await or show loading
+                  // Send FULL asset object so backend gets all Details modal data
                   fetch("/api/capture-asset-vision", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      mediaUrl: asset.mediaUrl,
+                      // Spread ENTIRE asset object to include all Details modal fields
+                      ...asset,
+                      mediaUrl: asset.mediaUrl, // Ensure mediaUrl is present
                       ipId: asset.ipId,
                       title: asset.title || asset.name,
                       mediaType: asset.mediaType,

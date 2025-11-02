@@ -135,11 +135,69 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
                         {details.title}
                       </span>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <span className="text-slate-400 text-sm">IP ID:</span>
-                      <span className="text-slate-100 font-mono text-sm break-all">
-                        {truncateAddress(details.ipId)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-100 font-mono text-sm break-all">
+                          {truncateAddress(details.ipId)}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(details.ipId)}
+                          title="Copy full address"
+                          className="p-1.5 rounded bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-slate-100 transition-colors"
+                          aria-label="Copy IP ID"
+                        >
+                          {copiedAddress ? (
+                            <svg
+                              className="w-4 h-4 text-green-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              />
+                            </svg>
+                          )}
+                        </button>
+                        <a
+                          href={getStoryExplorerUrl(details.ipId)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="View on Story Explorer"
+                          className="p-1.5 rounded bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-[#FF4DA6] transition-colors"
+                          aria-label="View on Story Explorer"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                       <span className="text-slate-400 text-sm">

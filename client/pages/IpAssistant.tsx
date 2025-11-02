@@ -9,6 +9,7 @@ import ChatInput from "@/components/ip-assistant/ChatInput";
 import { YouTubeStyleSearchResults } from "@/components/ip-assistant/YouTubeStyleSearchResults";
 import { AddRemixImageModal } from "@/components/ip-assistant/AddRemixImageModal";
 import { WhitelistDetailsModal } from "@/components/ip-assistant/WhitelistDetailsModal";
+import { WhitelistMonitor } from "@/components/ip-assistant/WhitelistMonitor";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   getLicenseSettingsByGroup,

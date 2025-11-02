@@ -96,6 +96,18 @@ export async function handleAddRemixHash(
       parentsCount,
     };
 
+    // Debug log
+    console.log("📥 [Whitelist] Adding hash with metadata:", {
+      hash: hash.substring(0, 16) + "...",
+      ipId,
+      title,
+      hasOwnerAddress: !!ownerAddress,
+      hasMediaType: !!mediaType,
+      hasLicenses: !!licenses?.length,
+      hasParentIpIds: !!parentIpIds?.length,
+      metadataKeys: Object.keys(metadata).filter(k => metadata[k as keyof typeof metadata] !== undefined && metadata[k as keyof typeof metadata] !== null),
+    });
+
     await addHashToWhitelist(hash.toLowerCase(), metadata);
 
     res.status(200).json({

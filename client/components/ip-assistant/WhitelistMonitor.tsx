@@ -11,9 +11,26 @@ interface WhitelistEntry {
     visionDescription?: string;
     matchType?: string;
     similarity?: number;
+    // Asset details
+    ownerAddress?: string;
+    mediaType?: string;
+    score?: number;
+    description?: string;
+    // License info
     licenses?: any[];
+    licenseTermsIds?: string[];
+    licenseVisibility?: string;
+    // Royalty config
+    maxMintingFee?: string;
+    maxRts?: string;
+    maxRevenueShare?: number;
+    // Derivative info
     isDerivative?: boolean;
     parentsCount?: number;
+    parentIpIds?: string[];
+    parentIpDetails?: any;
+    // All other fields
+    [key: string]: any;
   };
 }
 
@@ -29,32 +46,34 @@ export const WhitelistMonitor: React.FC = () => {
   const [stats, setStats] = useState<WhitelistStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState<
-    "all" | "original" | "derivative"
-  >("all");
+  const [filterType, setFilterType] = useState<"all" | "original" | "derivative">(
+    "all"
+  );
   const [expandedHash, setExpandedHash] = useState<string | null>(null);
 
-  // Fetch whitelist data
   const fetchWhitelist = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/_admin/remix-hashes");
+      const response = await fetch("/api/_admin/remix-hashes-full");
       if (!response.ok) throw new Error("Failed to fetch whitelist");
 
       const data = await response.json();
-      const hashes = data.hashes || [];
+      const entries = data.entries || [];
 
-      // Calculate stats
-      const stats: WhitelistStats = {
-        totalEntries: hashes.length,
-        derivatives: 0,
-        originals: 0,
-        lastUpdated: new Date().toLocaleString(),
-      };
+      let derivatives = 0;
+      entries.forEach((entry: WhitelistEntry) => {
+        if (entry.metadata?.isDerivative) derivatives++;
+      });
 
-      // Since we only have hashes from the endpoint, we need to fetch full data
-      // For now, we'll show the hash count
-      setStats(stats);
+      setEntries(entries);
+      setStats({
+        totalEntries: entries.length,
+        derivatives,
+        originals: entries.length - derivatives,
+        lastUpdated: new Date(
+          data.lastUpdated || Date.now()
+        ).toLocaleString(),
+      });
     } catch (err) {
       console.error("Failed to fetch whitelist:", err);
     } finally {
@@ -62,51 +81,16 @@ export const WhitelistMonitor: React.FC = () => {
     }
   };
 
-  // Fetch full whitelist with metadata (requires new endpoint)
-  const fetchFullWhitelist = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/_admin/remix-hashes-full");
-      if (!response.ok) {
-        // Fallback to basic endpoint if full endpoint doesn't exist
-        fetchWhitelist();
-        return;
-      }
-
-      const data = await response.json();
-      setEntries(data.entries || []);
-
-      // Calculate stats from entries
-      let derivatives = 0;
-      data.entries?.forEach((entry: WhitelistEntry) => {
-        if (entry.metadata?.isDerivative) derivatives++;
-      });
-
-      setStats({
-        totalEntries: data.entries?.length || 0,
-        derivatives,
-        originals: (data.entries?.length || 0) - derivatives,
-        lastUpdated: new Date(data.lastUpdated || Date.now()).toLocaleString(),
-      });
-    } catch (err) {
-      console.error("Failed to fetch full whitelist:", err);
-      fetchWhitelist();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchFullWhitelist();
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchFullWhitelist, 30000);
+    fetchWhitelist();
+    const interval = setInterval(fetchWhitelist, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const clearWhitelist = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to clear the entire whitelist? This action cannot be undone.",
+        "Are you sure you want to clear the entire whitelist? This action cannot be undone."
       )
     ) {
       return;
@@ -153,7 +137,7 @@ export const WhitelistMonitor: React.FC = () => {
           prev && {
             ...prev,
             totalEntries: prev.totalEntries - 1,
-          },
+          }
       );
     } catch (err) {
       console.error("Failed to delete entry:", err);
@@ -161,7 +145,6 @@ export const WhitelistMonitor: React.FC = () => {
     }
   };
 
-  // Filter entries
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
       entry.metadata?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -261,7 +244,6 @@ export const WhitelistMonitor: React.FC = () => {
       {/* Controls */}
       <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Search */}
           <div>
             <label className="block text-slate-400 text-sm mb-2">Search</label>
             <input
@@ -273,14 +255,13 @@ export const WhitelistMonitor: React.FC = () => {
             />
           </div>
 
-          {/* Filter */}
           <div>
             <label className="block text-slate-400 text-sm mb-2">Type</label>
             <select
               value={filterType}
               onChange={(e) =>
                 setFilterType(
-                  e.target.value as "all" | "original" | "derivative",
+                  e.target.value as "all" | "original" | "derivative"
                 )
               }
               className="w-full rounded-lg bg-slate-900/50 border border-slate-600/50 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#FF4DA6]/30"
@@ -291,10 +272,9 @@ export const WhitelistMonitor: React.FC = () => {
             </select>
           </div>
 
-          {/* Actions */}
           <div className="flex items-end gap-2">
             <button
-              onClick={fetchFullWhitelist}
+              onClick={fetchWhitelist}
               disabled={loading}
               className="flex-1 rounded-lg bg-[#FF4DA6]/20 hover:bg-[#FF4DA6]/30 text-[#FF4DA6] font-medium px-3 py-2 transition-colors disabled:opacity-50"
             >
@@ -310,7 +290,6 @@ export const WhitelistMonitor: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Info */}
         <div className="mt-4 text-xs text-slate-400">
           Showing {filteredEntries.length} of {entries.length} entries
         </div>
@@ -362,7 +341,7 @@ export const WhitelistMonitor: React.FC = () => {
                         title={entry.metadata?.title}
                         onClick={() =>
                           setExpandedHash(
-                            expandedHash === entry.hash ? null : entry.hash,
+                            expandedHash === entry.hash ? null : entry.hash
                           )
                         }
                       >
@@ -386,9 +365,7 @@ export const WhitelistMonitor: React.FC = () => {
                             : "bg-blue-400/10 text-blue-400"
                         }`}
                       >
-                        {entry.metadata?.isDerivative
-                          ? "Derivative"
-                          : "Original"}
+                        {entry.metadata?.isDerivative ? "Derivative" : "Original"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -413,7 +390,7 @@ export const WhitelistMonitor: React.FC = () => {
           </div>
         )}
 
-        {/* Expanded Details - All Fields */}
+        {/* Expanded Details - ALL Fields */}
         {expandedHash && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -449,7 +426,7 @@ export const WhitelistMonitor: React.FC = () => {
                   )}
                 </div>
 
-                {/* Asset Details */}
+                {/* Asset Details from Details Modal */}
                 <div className="border-t border-slate-700/30 pt-4">
                   <span className="text-slate-400 font-semibold block mb-3">
                     Asset Details:
@@ -458,42 +435,58 @@ export const WhitelistMonitor: React.FC = () => {
                     <div>
                       <span className="text-slate-500">Owner:</span>
                       <div className="text-slate-200 font-mono truncate">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.ownerAddress || "N/A"}
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.ownerAddress || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Media Type:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.mediaType || "N/A"}
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.mediaType || "N/A"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-500">Score:</span>
+                      <span className="text-slate-500">Match Score:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.score !== null &&
-                        entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.score !== undefined
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.score !== null &&
+                        entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.score !== undefined
                           ? (
-                              entries.find((e) => e.hash === expandedHash)
-                                ?.metadata?.score ?? 0
-                            ).toFixed(3)
+                              (entries.find((e) => e.hash === expandedHash)
+                                ?.metadata?.score ?? 0) * 100
+                            ).toFixed(1) + "%"
                           : "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Parents Count:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.parentsCount ?? "0"}
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.parentsCount ?? "0"}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* License Royalty Configuration */}
+                {/* Description */}
+                {entries.find((e) => e.hash === expandedHash)?.metadata
+                  ?.description && (
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-2">
+                      Description:
+                    </span>
+                    <div className="text-slate-200 text-xs leading-relaxed bg-slate-900/50 p-3 rounded">
+                      {
+                        entries.find((e) => e.hash === expandedHash)?.metadata
+                          ?.description
+                      }
+                    </div>
+                  </div>
+                )}
+
+                {/* Royalty Configuration */}
                 <div className="border-t border-slate-700/30 pt-4">
                   <span className="text-slate-400 font-semibold block mb-3">
                     Royalty Configuration:
@@ -502,28 +495,30 @@ export const WhitelistMonitor: React.FC = () => {
                     <div>
                       <span className="text-slate-500">Max Minting Fee:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.maxMintingFee === "0"
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxMintingFee === "0"
                           ? "Unlimited"
-                          : entries.find((e) => e.hash === expandedHash)
+                          : entries
+                              .find((e) => e.hash === expandedHash)
                               ?.metadata?.maxMintingFee || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Max RTS:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.maxRts === "0"
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxRts === "0"
                           ? "Unlimited"
-                          : entries.find((e) => e.hash === expandedHash)
+                          : entries
+                              .find((e) => e.hash === expandedHash)
                               ?.metadata?.maxRts || "N/A"}
                       </div>
                     </div>
                     <div>
                       <span className="text-slate-500">Max Rev Share:</span>
                       <div className="text-slate-200">
-                        {entries.find((e) => e.hash === expandedHash)?.metadata
-                          ?.maxRevenueShare || 0}
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.maxRevenueShare || 0}
                         %
                       </div>
                     </div>
@@ -542,80 +537,78 @@ export const WhitelistMonitor: React.FC = () => {
                     <div className="space-y-2">
                       {entries
                         .find((e) => e.hash === expandedHash)
-                        ?.metadata?.licenses?.map(
-                          (license: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="bg-slate-900/50 p-3 rounded text-xs border border-slate-700/30"
-                            >
-                              <div className="grid grid-cols-2 gap-2 text-slate-200">
-                                {license.terms?.derivativesAllowed && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Derivatives:
-                                    </span>
-                                    <span className="text-green-400">
-                                      {" "}
-                                      ✓ Allowed
-                                    </span>
-                                  </div>
-                                )}
-                                {license.terms?.commercialUse && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Commercial:
-                                    </span>
-                                    <span className="text-green-400">
-                                      {" "}
-                                      ✓ Allowed
-                                    </span>
-                                  </div>
-                                )}
-                                {license.terms?.transferable && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Transferable:
-                                    </span>
-                                    <span className="text-green-400">
-                                      {" "}
-                                      ✓ Yes
-                                    </span>
-                                  </div>
-                                )}
-                                {license.terms?.defaultMintingFee && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Minting Fee:
-                                    </span>
-                                    <span className="text-slate-200">
-                                      {license.terms.defaultMintingFee}
-                                    </span>
-                                  </div>
-                                )}
-                                {license.terms?.commercialRevShare && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Rev Share:
-                                    </span>
-                                    <span className="text-slate-200">
-                                      {license.terms.commercialRevShare}%
-                                    </span>
-                                  </div>
-                                )}
-                                {license.templateName && (
-                                  <div>
-                                    <span className="text-slate-500">
-                                      Template:
-                                    </span>
-                                    <span className="text-slate-200">
-                                      {license.templateName}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
+                        ?.metadata?.licenses?.map((license: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="bg-slate-900/50 p-3 rounded text-xs border border-slate-700/30"
+                          >
+                            <div className="grid grid-cols-2 gap-2 text-slate-200">
+                              {license.terms?.derivativesAllowed && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Derivatives:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Allowed
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.commercialUse && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Commercial:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Allowed
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.transferable && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Transferable:
+                                  </span>
+                                  <span className="text-green-400">
+                                    {" "}
+                                    ✓ Yes
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.defaultMintingFee && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Minting Fee:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.terms.defaultMintingFee}
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms?.commercialRevShare && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Rev Share:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.terms.commercialRevShare}%
+                                  </span>
+                                </div>
+                              )}
+                              {license.templateName && (
+                                <div>
+                                  <span className="text-slate-500">
+                                    Template:
+                                  </span>
+                                  <span className="text-slate-200">
+                                    {license.templateName}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                          ),
-                        )}
+                          </div>
+                        ))}
                     </div>
                   ) : (
                     <div className="text-slate-400 text-xs">
@@ -636,17 +629,15 @@ export const WhitelistMonitor: React.FC = () => {
                     <div className="space-y-1 text-xs">
                       {entries
                         .find((e) => e.hash === expandedHash)
-                        ?.metadata?.parentIpIds?.map(
-                          (parentId: string, idx: number) => (
-                            <div
-                              key={idx}
-                              className="text-slate-200 font-mono break-all text-slate-300"
-                            >
-                              {parentId.substring(0, 6)}...
-                              {parentId.substring(parentId.length - 4)}
-                            </div>
-                          ),
-                        )}
+                        ?.metadata?.parentIpIds?.map((parentId: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className="text-slate-200 font-mono break-all text-slate-300"
+                          >
+                            {parentId.substring(0, 6)}...
+                            {parentId.substring(parentId.length - 4)}
+                          </div>
+                        ))}
                     </div>
                   ) : (
                     <div className="text-slate-400 text-xs">No parent IPs</div>

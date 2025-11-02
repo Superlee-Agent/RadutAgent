@@ -242,16 +242,21 @@ export async function handleCaptureAssetVision(
         visionDescription,
       };
 
-      console.log("[Capture Vision] 📥 Storing whitelist entry with metadata:", {
-        ipId: metadata.ipId,
-        totalFields: Object.keys(metadata).length,
-        fields: Object.keys(metadata)
-          .filter((k) => k !== "hash")
-          .sort(),
-      });
+      console.log(
+        "[Capture Vision] 📥 Storing whitelist entry with metadata:",
+        {
+          ipId: metadata.ipId,
+          totalFields: Object.keys(metadata).length,
+          fields: Object.keys(metadata)
+            .filter((k) => k !== "hash")
+            .sort(),
+        },
+      );
 
       await addHashToWhitelist(hash, metadata);
-      console.log(`[Capture Vision] ✅ Successfully added ${ipId} to whitelist with all Details data`);
+      console.log(
+        `[Capture Vision] ✅ Successfully added ${ipId} to whitelist with all Details data`,
+      );
 
       res.status(200).json({
         success: true,

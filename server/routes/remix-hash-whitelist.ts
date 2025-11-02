@@ -128,12 +128,20 @@ export async function handleAddRemixHash(
 
     // In background, fetch complete asset details (simulate Details button click)
     // This gets: full licenses, owner info, media type, description, parent IPs, etc.
-    console.log("[Whitelist] 🔄 Fetching full Details modal data from Story API...");
+    console.log(
+      "[Whitelist] 🔄 Fetching full Details modal data from Story API...",
+    );
     let fullAssetDetails = null;
     if (ipId) {
-      console.log("[Whitelist] 🔍 About to fetch full asset details for ipId:", ipId);
+      console.log(
+        "[Whitelist] 🔍 About to fetch full asset details for ipId:",
+        ipId,
+      );
       fullAssetDetails = await fetchFullAssetDetailsFromApi(ipId);
-      console.log("[Whitelist] ✅ Fetch complete. Got details:", !!fullAssetDetails);
+      console.log(
+        "[Whitelist] ✅ Fetch complete. Got details:",
+        !!fullAssetDetails,
+      );
     } else {
       console.log("[Whitelist] ⚠️ No ipId provided, skipping API fetch");
     }

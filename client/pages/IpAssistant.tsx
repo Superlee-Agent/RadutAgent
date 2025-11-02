@@ -1506,8 +1506,8 @@ const IpAssistant = () => {
     })();
   };
 
-  // Capture asset to whitelist when modal opens (single trigger point)
-  // IMPORTANT: Fetch FULL asset details before capturing
+  // Capture asset to whitelist when modal opens
+  // Uses pure raw data from expandedAsset (which contains all Details modal fields)
   useEffect(() => {
     if (!expandedAsset || !expandedAsset.ipId) return;
 
@@ -1516,39 +1516,33 @@ const IpAssistant = () => {
 
     setCapturedAssetIds((prev) => new Set(prev).add(expandedAsset.ipId));
 
-    // Auto-fetch FULL asset details in background (simulate user clicking Details)
-    const fetchFullAssetDetailsAndCapture = async () => {
+    // Capture pure raw asset data to whitelist (without modification)
+    const captureRawAssetData = async () => {
       try {
-        console.log("📥 Auto-fetching full asset details for:", expandedAsset.ipId);
-
-        // Use expandedAsset as-is, which already contains all Details modal fields
-        // The search API should return the complete asset object
-        // If some fields are missing, we capture what we have
-        const fullAsset = { ...expandedAsset };
-
-        console.log("✅ Full asset details received:", {
-          hasOwnerAddress: !!fullAsset.ownerAddress,
-          hasMediaType: !!fullAsset.mediaType,
-          hasScore: fullAsset.score !== undefined,
-          hasLicenses: !!fullAsset.licenses?.length,
-          hasMaxMintingFee: !!fullAsset.maxMintingFee,
-          hasMaxRts: !!fullAsset.maxRts,
-          hasMaxRevenueShare: fullAsset.maxRevenueShare !== undefined,
-          hasDescription: !!fullAsset.description,
-          hasParentIpDetails: !!fullAsset.parentIpDetails,
-          allKeys: Object.keys(fullAsset).slice(0, 20),
+        console.log("✅ Capturing pure raw asset data from modal for:", expandedAsset.ipId);
+        console.log("📊 Asset fields in modal:", {
+          totalFields: Object.keys(expandedAsset).length,
+          fields: Object.keys(expandedAsset).sort(),
+          sample: {
+            ipId: expandedAsset.ipId,
+            title: expandedAsset.title,
+            ownerAddress: expandedAsset.ownerAddress,
+            mediaType: expandedAsset.mediaType,
+            score: expandedAsset.score,
+            licenseCount: expandedAsset.licenses?.length || 0,
+            hasDescription: !!expandedAsset.description,
+            hasParentIpDetails: !!expandedAsset.parentIpDetails,
+          },
         });
 
-        // Capture with FULL asset details
-        captureAssetToWhitelist(fullAsset);
-      } catch (err) {
-        console.error("❌ Error fetching full asset details:", err);
-        // Fall back to capturing with available expandedAsset data
+        // Capture as-is without modification
         captureAssetToWhitelist(expandedAsset);
+      } catch (err) {
+        console.error("❌ Error capturing asset data:", err);
       }
     };
 
-    fetchFullAssetDetailsAndCapture();
+    captureRawAssetData();
   }, [expandedAsset]);
 
   return (

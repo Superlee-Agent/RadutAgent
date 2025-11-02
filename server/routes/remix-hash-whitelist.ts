@@ -56,13 +56,16 @@ async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
     }
 
     const fullAsset = data.data[0];
-    console.log("[Whitelist] ✅ Full asset details fetched (simulating Details click):", {
-      ipId: fullAsset.ipId,
-      hasLicenses: !!fullAsset.licenses?.length,
-      hasOwnerAddress: !!fullAsset.owner,
-      hasMediaType: !!fullAsset.mediaType,
-      totalFields: Object.keys(fullAsset).length,
-    });
+    console.log(
+      "[Whitelist] ✅ Full asset details fetched (simulating Details click):",
+      {
+        ipId: fullAsset.ipId,
+        hasLicenses: !!fullAsset.licenses?.length,
+        hasOwnerAddress: !!fullAsset.owner,
+        hasMediaType: !!fullAsset.mediaType,
+        totalFields: Object.keys(fullAsset).length,
+      },
+    );
 
     return fullAsset;
   } catch (error) {
@@ -129,16 +132,13 @@ export async function handleAddRemixHash(
         // Asset info
         title: fullAssetDetails.title || metadata.title,
         owner: fullAssetDetails.owner,
-        ownerAddress:
-          fullAssetDetails.owner ||
-          metadata.ownerAddress,
+        ownerAddress: fullAssetDetails.owner || metadata.ownerAddress,
         mediaType: fullAssetDetails.mediaType || metadata.mediaType,
 
         // Derivative info
         parentsCount: fullAssetDetails.parentsCount,
         isDerivative:
-          (fullAssetDetails.parentsCount || 0) > 0 ||
-          metadata.isDerivative,
+          (fullAssetDetails.parentsCount || 0) > 0 || metadata.isDerivative,
 
         // Licenses (complete from Details modal)
         licenses: fullAssetDetails.licenses || metadata.licenses,
@@ -152,15 +152,13 @@ export async function handleAddRemixHash(
         // Royalty configuration
         royaltyContext:
           fullAssetDetails.royaltyContext || metadata.royaltyContext,
-        maxMintingFee:
-          fullAssetDetails.maxMintingFee || metadata.maxMintingFee,
+        maxMintingFee: fullAssetDetails.maxMintingFee || metadata.maxMintingFee,
         maxRts: fullAssetDetails.maxRts || metadata.maxRts,
         maxRevenueShare:
           fullAssetDetails.maxRevenueShare || metadata.maxRevenueShare,
 
         // Parent/derivative details
-        parentIpIds:
-          fullAssetDetails.parentIpIds || metadata.parentIpIds,
+        parentIpIds: fullAssetDetails.parentIpIds || metadata.parentIpIds,
         parentIpDetails:
           fullAssetDetails.parentIpDetails || metadata.parentIpDetails,
 

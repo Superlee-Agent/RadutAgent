@@ -706,13 +706,15 @@ export const WhitelistMonitor: React.FC = () => {
                       <div>
                         <span className="text-slate-500">Total Fields:</span>
                         <span className="text-[#FF4DA6] ml-2 font-semibold">
-                          {Object.entries(
-                            entries.find((e) => e.hash === expandedHash)
-                              ?.metadata || {},
-                          ).filter(
-                            ([_, v]) =>
-                              v !== undefined && v !== null && v !== "",
-                          ).length}
+                          {
+                            Object.entries(
+                              entries.find((e) => e.hash === expandedHash)
+                                ?.metadata || {},
+                            ).filter(
+                              ([_, v]) =>
+                                v !== undefined && v !== null && v !== "",
+                            ).length
+                          }
                         </span>
                       </div>
                       <div>
@@ -763,7 +765,9 @@ export const WhitelistMonitor: React.FC = () => {
                                   <pre className="text-[0.65rem] overflow-auto max-h-32 leading-tight">
                                     {JSON.stringify(value, null, 2)}
                                   </pre>
-                                ) : value && typeof value === "string" && value.length > 80 ? (
+                                ) : value &&
+                                  typeof value === "string" &&
+                                  value.length > 80 ? (
                                   <div className="break-words whitespace-pre-wrap text-[0.75rem]">
                                     {value}
                                   </div>

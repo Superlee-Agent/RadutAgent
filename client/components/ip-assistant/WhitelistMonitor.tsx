@@ -666,10 +666,75 @@ export const WhitelistMonitor: React.FC = () => {
                   )}
                 </div>
 
+                {/* Parent IP Details (if available) */}
+                {entries.find((e) => e.hash === expandedHash)?.metadata
+                  ?.parentIpDetails && (
+                  <div className="border-t border-slate-700/30 pt-4">
+                    <span className="text-slate-400 font-semibold block mb-3">
+                      Parent IP Details:
+                    </span>
+                    <div className="bg-slate-900/50 p-3 rounded text-xs space-y-1">
+                      {typeof entries.find((e) => e.hash === expandedHash)
+                        ?.metadata?.parentIpDetails === "object" ? (
+                        <pre className="text-slate-200 overflow-auto max-h-48 text-[0.7rem] leading-tight">
+                          {JSON.stringify(
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.parentIpDetails,
+                            null,
+                            2,
+                          )}
+                        </pre>
+                      ) : (
+                        <div className="text-slate-300">
+                          {String(
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.parentIpDetails,
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Data Capture Summary */}
+                <div className="border-t border-slate-700/30 pt-4">
+                  <span className="text-slate-400 font-semibold block mb-3">
+                    Capture Summary:
+                  </span>
+                  <div className="bg-slate-900/50 p-3 rounded text-xs space-y-2">
+                    <div className="grid grid-cols-2 gap-2 text-slate-300">
+                      <div>
+                        <span className="text-slate-500">Total Fields:</span>
+                        <span className="text-[#FF4DA6] ml-2 font-semibold">
+                          {Object.entries(
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata || {},
+                          ).filter(
+                            ([_, v]) =>
+                              v !== undefined && v !== null && v !== "",
+                          ).length}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Captured At:</span>
+                        <span className="text-slate-200 ml-2">
+                          {formatDate(
+                            entries.find((e) => e.hash === expandedHash)
+                              ?.metadata?.timestamp,
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t border-slate-700/30 text-slate-400 text-[0.75rem]">
+                      ✅ Details modal data auto-captured from Story API
+                    </div>
+                  </div>
+                </div>
+
                 {/* All Raw Fields from Modal */}
                 <div className="border-t border-slate-700/30 pt-4">
                   <span className="text-slate-400 font-semibold block mb-3">
-                    All Raw Fields from Modal:
+                    All Fields (Raw Data):
                   </span>
                   <div className="bg-slate-900/50 p-4 rounded space-y-2 max-h-96 overflow-y-auto">
                     {entries.find((e) => e.hash === expandedHash)?.metadata ? (
@@ -684,13 +749,27 @@ export const WhitelistMonitor: React.FC = () => {
                               value !== null &&
                               value !== "",
                           )
+                          .sort(([a], [b]) => a.localeCompare(b))
                           .map(([key, value]) => (
-                            <div key={key} className="break-words">
-                              <span className="text-[#FF4DA6]">{key}:</span>
-                              <span className="text-slate-300 ml-2">
-                                {typeof value === "object"
-                                  ? JSON.stringify(value, null, 2)
-                                  : String(value)}
+                            <div
+                              key={key}
+                              className="break-words bg-slate-800/30 p-2 rounded hover:bg-slate-800/50 transition-colors"
+                            >
+                              <span className="text-[#FF4DA6] font-semibold">
+                                {key}:
+                              </span>
+                              <span className="text-slate-300 ml-2 block mt-1">
+                                {typeof value === "object" ? (
+                                  <pre className="text-[0.65rem] overflow-auto max-h-32 leading-tight">
+                                    {JSON.stringify(value, null, 2)}
+                                  </pre>
+                                ) : value && typeof value === "string" && value.length > 80 ? (
+                                  <div className="break-words whitespace-pre-wrap text-[0.75rem]">
+                                    {value}
+                                  </div>
+                                ) : (
+                                  String(value)
+                                )}
                               </span>
                             </div>
                           ))}

@@ -3,7 +3,9 @@ import {
   addHashToWhitelist,
   checkHashInWhitelist,
   getAllWhitelistHashes,
+  getAllWhitelistEntries,
   clearWhitelist,
+  deleteHashFromWhitelist,
 } from "../utils/remix-hash-whitelist.js";
 
 /**

@@ -1,9 +1,84 @@
-import type { Request, Response } from "express";
 import {
   addHashToWhitelist,
   checkHashInWhitelist,
   getAllWhitelistHashes,
+  getAllWhitelistEntries,
+  clearWhitelist,
+  deleteHashFromWhitelist,
 } from "../utils/remix-hash-whitelist.js";
+
+/**
+ * Fetch full asset details from Story API (simulate clicking Details button)
+ * This gets all the information shown in the IP Asset Details modal popup
+ */
+async function fetchFullAssetDetailsFromApi(ipId: string): Promise<any> {
+  try {
+    const apiKey = process.env.STORY_API_KEY;
+    console.log("[Whitelist] Checking STORY_API_KEY:", {
+      hasKey: !!apiKey,
+      keyLength: apiKey?.length || 0,
+      firstChars: apiKey?.substring(0, 10) || "N/A",
+    });
+
+    if (!apiKey) {
+      console.warn(
+        "[Whitelist] ❌ STORY_API_KEY not configured, cannot fetch full details",
+      );
+      return null;
+    }
+
+    console.log("[Whitelist] 🔍 Fetching complete asset details for:", ipId);
+
+    const response = await fetch("https://api.storyapis.com/api/v4/assets", {
+      method: "POST",
+      headers: {
+        "X-Api-Key": apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        includeLicenses: true,
+        where: {
+          ipIds: [ipId],
+        },
+        pagination: {
+          limit: 1,
+          offset: 0,
+        },
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `[Whitelist] Failed to fetch asset details: ${response.status}`,
+      );
+      return null;
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      console.warn("[Whitelist] No asset data returned from API");
+      return null;
+    }
+
+    const fullAsset = data.data[0];
+    console.log(
+      "[Whitelist] ✅ Full asset details fetched (simulating Details click):",
+      {
+        ipId: fullAsset.ipId,
+        hasLicenses: !!fullAsset.licenses?.length,
+        hasOwnerAddress: !!fullAsset.owner,
+        hasMediaType: !!fullAsset.mediaType,
+        totalFields: Object.keys(fullAsset).length,
+      },
+    );
+
+    return fullAsset;
+  } catch (error) {
+    console.warn("[Whitelist] Error fetching full asset details:", error);
+    return null;
+  }
+}
 
 /**
  * Add hash to remix whitelist
@@ -11,51 +86,25 @@ import {
  * Body: {
  *   hash: string (SHA256 of pure image),
  *   ipId?: string,
- *   title?: string,
- *   pHash?: string,
- *   visionDescription?: string,
- *   ownerAddress?: string,
- *   mediaType?: string,
- *   score?: number,
- *   parentIpIds?: string[],
- *   licenseTermsIds?: string[],
- *   licenseTemplates?: string[],
- *   royaltyContext?: string,
- *   maxMintingFee?: string,
- *   maxRts?: string,
- *   maxRevenueShare?: number,
- *   licenseVisibility?: string,
- *   licenses?: any[],
- *   isDerivative?: boolean,
- *   parentsCount?: number
+ *   [all fields from client - from expanded view]
  * }
+ *
+ * The backend automatically fetches the complete Details information
+ * (simulating a click on the Details button) to capture everything
+ * shown in the IP Asset Details modal without user interaction.
  */
 export async function handleAddRemixHash(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const {
-      hash,
-      pHash,
-      visionDescription,
-      ipId = "unknown",
-      title = "Remix Image",
-      ownerAddress,
-      mediaType,
-      score,
-      parentIpIds,
-      licenseTermsIds,
-      licenseTemplates,
-      royaltyContext,
-      maxMintingFee,
-      maxRts,
-      maxRevenueShare,
-      licenseVisibility,
-      licenses,
-      isDerivative,
-      parentsCount,
-    } = req.body;
+    const { hash, ipId, ...clientData } = req.body;
+
+    console.log("[Whitelist] 📥 Received add-remix-hash request:", {
+      hash: hash?.substring(0, 16),
+      ipId,
+      clientDataKeys: Object.keys(clientData),
+    });
 
     if (!hash || typeof hash !== "string") {
       res.status(400).json({ error: "Hash is required" });
@@ -70,36 +119,165 @@ export async function handleAddRemixHash(
       return;
     }
 
-    // Add to whitelist with separated metadata (including all parent IP details)
-    const metadata = {
-      ipId,
-      title,
+    // Start with client-provided data
+    let metadata = {
       timestamp: Date.now(),
-      pHash,
-      visionDescription,
-      ownerAddress,
-      mediaType,
-      score,
-      parentIpIds,
-      licenseTermsIds,
-      licenseTemplates,
-      royaltyContext,
-      maxMintingFee,
-      maxRts,
-      maxRevenueShare,
-      licenseVisibility,
-      licenses,
-      isDerivative,
-      parentsCount,
+      ipId,
+      ...clientData,
     };
+
+    // In background, fetch complete asset details (simulate Details button click)
+    // This gets: full licenses, owner info, media type, description, parent IPs, etc.
+    console.log(
+      "[Whitelist] 🔄 Fetching full Details modal data from Story API...",
+    );
+    let fullAssetDetails = null;
+    if (ipId) {
+      console.log(
+        "[Whitelist] 🔍 About to fetch full asset details for ipId:",
+        ipId,
+      );
+      fullAssetDetails = await fetchFullAssetDetailsFromApi(ipId);
+      console.log(
+        "[Whitelist] ✅ Fetch complete. Got details:",
+        !!fullAssetDetails,
+      );
+    } else {
+      console.log("[Whitelist] ⚠️ No ipId provided, skipping API fetch");
+    }
+
+    // Merge full details with client data
+    // Full details fill gaps, client data takes precedence for what's already there
+    if (fullAssetDetails) {
+      console.log(
+        "[Whitelist] 🔀 Merging complete asset details into metadata",
+      );
+
+      const detailsMetadata = {
+        // Asset info
+        title: fullAssetDetails.title || metadata.title,
+        owner: fullAssetDetails.owner,
+        ownerAddress: fullAssetDetails.owner || metadata.ownerAddress,
+        mediaType: fullAssetDetails.mediaType || metadata.mediaType,
+
+        // Derivative info
+        parentsCount: fullAssetDetails.parentsCount,
+        isDerivative:
+          (fullAssetDetails.parentsCount || 0) > 0 || metadata.isDerivative,
+
+        // Licenses (complete from Details modal)
+        licenses: fullAssetDetails.licenses || metadata.licenses,
+        licenseTermsIds:
+          fullAssetDetails.licenseTermsIds || metadata.licenseTermsIds,
+        licenseTemplates:
+          fullAssetDetails.licenseTemplates || metadata.licenseTemplates,
+        licenseVisibility:
+          fullAssetDetails.licenseVisibility || metadata.licenseVisibility,
+
+        // Royalty configuration
+        royaltyContext:
+          fullAssetDetails.royaltyContext || metadata.royaltyContext,
+        maxMintingFee: fullAssetDetails.maxMintingFee || metadata.maxMintingFee,
+        maxRts: fullAssetDetails.maxRts || metadata.maxRts,
+        maxRevenueShare:
+          fullAssetDetails.maxRevenueShare || metadata.maxRevenueShare,
+
+        // Parent/derivative details
+        parentIpIds: fullAssetDetails.parentIpIds || metadata.parentIpIds,
+        parentIpDetails:
+          fullAssetDetails.parentIpDetails || metadata.parentIpDetails,
+
+        // Additional details
+        description: fullAssetDetails.description || metadata.description,
+        ipaMetadataUri:
+          fullAssetDetails.ipaMetadataUri || metadata.ipaMetadataUri,
+
+        // Spread all other fields from full asset
+        ...Object.fromEntries(
+          Object.entries(fullAssetDetails).filter(
+            ([key]) =>
+              ![
+                "ipId",
+                "title",
+                "owner",
+                "ownerAddress",
+                "mediaType",
+                "parentsCount",
+                "isDerivative",
+                "licenses",
+                "licenseTermsIds",
+                "licenseTemplates",
+                "licenseVisibility",
+                "royaltyContext",
+                "maxMintingFee",
+                "maxRts",
+                "maxRevenueShare",
+                "parentIpIds",
+                "parentIpDetails",
+                "description",
+                "ipaMetadataUri",
+              ].includes(key),
+          ),
+        ),
+      };
+
+      // Merge: full details + client data (client takes precedence)
+      metadata = {
+        ...detailsMetadata,
+        ...metadata,
+        timestamp: metadata.timestamp,
+      };
+    }
+
+    // Clean metadata: remove undefined/null values
+    Object.keys(metadata).forEach((key) => {
+      if (
+        metadata[key] === undefined ||
+        metadata[key] === null ||
+        metadata[key] === ""
+      ) {
+        delete metadata[key];
+      }
+    });
+
+    // Debug log showing all captured fields (both from client and fetched Details)
+    const nonEmptyFields = Object.entries(metadata).filter(
+      ([_, value]) => value !== undefined && value !== null && value !== "",
+    );
+
+    console.log(
+      "📥 [Whitelist] Storing complete Details modal data (auto-fetched):",
+      {
+        hash: hash.substring(0, 16) + "...",
+        ipId,
+        totalFields: Object.keys(metadata).length,
+        capturedFields: nonEmptyFields.map(([k]) => k).sort(),
+        detailsFetched: fullAssetDetails ? "✅ yes" : "❌ no",
+        summary: {
+          hasTitle: !!metadata.title,
+          hasOwnerAddress: !!metadata.ownerAddress,
+          hasMediaType: !!metadata.mediaType,
+          hasScore: metadata.score !== undefined,
+          licenseCount: metadata.licenses?.length || 0,
+          hasDescription: !!metadata.description,
+          hasParentIpDetails: !!metadata.parentIpDetails,
+          isDerivative: metadata.isDerivative,
+          parentsCount: metadata.parentsCount,
+        },
+      },
+    );
 
     await addHashToWhitelist(hash.toLowerCase(), metadata);
 
     res.status(200).json({
       success: true,
-      message: "Hash added to remix whitelist with parent IP details",
+      message: fullAssetDetails
+        ? "Hash added with complete Details modal data (auto-fetched)"
+        : "Hash added with available data",
       hash: hash.toLowerCase(),
       metadata,
+      capturedFieldCount: Object.keys(metadata).length,
+      detailsFetched: !!fullAssetDetails,
     });
   } catch (error) {
     console.error("Error adding hash to whitelist:", error);
@@ -169,131 +347,65 @@ export async function handleCheckRemixHash(
           ? licenses[0].terms?.derivativesAllowed === true
           : true; // Legacy entries without license info assume remix allowed
 
-      res.status(200).json({
+      return res.json({
         found: true,
-        message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
-        ipId: entry.metadata?.ipId || entry.ipId,
-        title: entry.metadata?.title || entry.title,
-        timestamp: entry.metadata?.timestamp || entry.timestamp,
-        // Parent IP Details
-        parentIpIds: entry.metadata?.parentIpIds,
-        licenseTermsIds: entry.metadata?.licenseTermsIds,
-        licenseTemplates: entry.metadata?.licenseTemplates,
-        // License Configuration
-        royaltyContext: entry.metadata?.royaltyContext,
-        maxMintingFee: entry.metadata?.maxMintingFee,
-        maxRts: entry.metadata?.maxRts,
-        maxRevenueShare: entry.metadata?.maxRevenueShare,
-        licenseVisibility: entry.metadata?.licenseVisibility,
-        // Derivative Status
-        isDerivative: entry.metadata?.isDerivative,
-        parentsCount: entry.metadata?.parentsCount,
-        // License terms
-        licenses: entry.metadata?.licenses,
-        derivativesAllowed: derivativesAllowed,
+        type: "exact",
+        metadata: entry.metadata,
+        derivativesAllowed,
       });
-      return;
     }
 
-    // If no exact match and pHash provided, check pHash similarity
+    // Check perceptual hash similarity if pHash provided
     if (pHash) {
       console.log(
-        `[Remix Hash] Exact hash not found, checking pHash: ${pHash}`,
+        `[Remix Hash] No exact match, checking perceptual similarity...`,
       );
+      const allEntries = await getAllWhitelistEntries();
 
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const whitelistPath = path.join(
-        process.cwd(),
-        "server",
-        "data",
-        "remix-hashes.json",
-      );
+      // Find most similar entry
+      let mostSimilar = null;
+      let maxSimilarity = 0;
 
-      try {
-        const content = await fs.readFile(whitelistPath, "utf-8");
-        const whitelist = JSON.parse(content);
+      for (const whitelistEntry of allEntries) {
+        const whitelistPHash = whitelistEntry.metadata?.pHash;
+        if (!whitelistPHash) continue;
 
-        // Check pHash similarity using hamming distance
-        console.log(
-          `[Remix Hash] Checking ${whitelist.entries?.length || 0} entries for pHash similarity...`,
-        );
-        for (const entry of whitelist.entries || []) {
-          const storedPHash = entry.metadata?.pHash || entry.pHash;
-          if (storedPHash) {
-            const distance = hammingDistance(pHash, storedPHash);
-            const similarity = Math.round(((64 - distance) / 64) * 100);
-            console.log(
-              `[Remix Hash]   Comparing: ${pHash} vs ${storedPHash} - distance: ${distance}, similarity: ${similarity}%`,
-            );
+        const distance = hammingDistance(pHash, whitelistPHash);
+        // Calculate similarity as percentage (64 is max distance for 64-bit hash)
+        const similarity = ((64 - distance) / 64) * 100;
 
-            // If similarity >= 75%, consider it a match
-            if (similarity >= 75) {
-              console.log(
-                `[Remix Hash] pHash MATCH found! (${similarity}% similar) IP: ${entry.metadata?.ipId || entry.ipId}`,
-              );
-              // Get derivatives allowed status from licenses
-              const licenses = entry.metadata?.licenses || [];
-              // If licenses exist, check derivativesAllowed
-              // If no licenses (legacy data), assume allow remix
-              const derivativesAllowed =
-                licenses.length > 0
-                  ? licenses[0].terms?.derivativesAllowed === true
-                  : true; // Legacy entries without license info assume remix allowed
-
-              res.status(200).json({
-                found: true,
-                message: `IP ${entry.metadata?.ipId || entry.ipId} sudah terdaftar (${entry.metadata?.title || entry.title})`,
-                ipId: entry.metadata?.ipId || entry.ipId,
-                title: entry.metadata?.title || entry.title,
-                timestamp: entry.metadata?.timestamp || entry.timestamp,
-                matchType: "pHash",
-                similarity,
-                // Parent IP Details
-                parentIpIds: entry.metadata?.parentIpIds,
-                licenseTermsIds: entry.metadata?.licenseTermsIds,
-                licenseTemplates: entry.metadata?.licenseTemplates,
-                // License Configuration
-                royaltyContext: entry.metadata?.royaltyContext,
-                maxMintingFee: entry.metadata?.maxMintingFee,
-                maxRts: entry.metadata?.maxRts,
-                maxRevenueShare: entry.metadata?.maxRevenueShare,
-                licenseVisibility: entry.metadata?.licenseVisibility,
-                // Derivative Status
-                isDerivative: entry.metadata?.isDerivative,
-                parentsCount: entry.metadata?.parentsCount,
-                // License terms
-                licenses: entry.metadata?.licenses,
-                derivativesAllowed: derivativesAllowed,
-              });
-              return;
-            }
-          }
+        if (similarity >= 70 && similarity > maxSimilarity) {
+          maxSimilarity = similarity;
+          mostSimilar = whitelistEntry;
         }
-      } catch (err) {
-        console.warn(
-          "[Remix Hash] Error reading whitelist for pHash check:",
-          err,
+      }
+
+      if (mostSimilar) {
+        console.log(
+          `[Remix Hash] PHASH MATCH (${maxSimilarity.toFixed(1)}%): ${mostSimilar.metadata?.title || mostSimilar.metadata?.ipId}`,
         );
+        return res.json({
+          found: true,
+          type: "phash",
+          similarity: maxSimilarity,
+          metadata: mostSimilar.metadata,
+        });
       }
     }
 
-    // No match found
-    res.status(200).json({
-      found: false,
-      message: "Hash not found in whitelist",
-    });
+    console.log("[Remix Hash] No match found");
+    res.json({ found: false });
   } catch (error) {
-    console.error("Error checking remix hash:", error);
+    console.error("[Remix Hash] Error checking hash:", error);
     res.status(500).json({
-      error: "Failed to check remix hash",
+      error: "Failed to check hash",
       details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
 
 /**
- * Admin endpoint: Get all hashes in whitelist
+ * Get all remix hashes (admin only)
  * GET /api/_admin/remix-hashes
  */
 export async function handleGetRemixHashes(
@@ -302,16 +414,67 @@ export async function handleGetRemixHashes(
 ): Promise<void> {
   try {
     const hashes = await getAllWhitelistHashes();
-
-    res.status(200).json({
-      count: hashes.length,
-      hashes,
-    });
+    res.json({ hashes, total: hashes.length });
   } catch (error) {
     console.error("Error getting remix hashes:", error);
-    res.status(500).json({
-      error: "Failed to get remix hashes",
-      details: error instanceof Error ? error.message : "Unknown error",
-    });
+    res.status(500).json({ error: "Failed to get remix hashes" });
+  }
+}
+
+/**
+ * Get all remix hashes with full metadata (admin only)
+ * GET /api/_admin/remix-hashes-full
+ */
+export async function handleGetRemixHashesFull(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const entries = await getAllWhitelistEntries();
+    res.status(200).json({ entries, lastUpdated: Date.now() });
+  } catch (error) {
+    console.error("Error getting whitelist entries:", error);
+    res.status(500).json({ error: "Failed to get whitelist entries" });
+  }
+}
+
+/**
+ * Delete hash from whitelist (admin only)
+ * POST /api/_admin/delete-remix-hash
+ * Body: { hash: string }
+ */
+export async function handleDeleteRemixHash(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { hash } = req.body;
+    if (!hash) {
+      res.status(400).json({ error: "Hash required" });
+      return;
+    }
+
+    await deleteHashFromWhitelist(hash);
+    res.status(200).json({ success: true, message: "Hash deleted" });
+  } catch (error) {
+    console.error("Error deleting hash:", error);
+    res.status(500).json({ error: "Failed to delete hash" });
+  }
+}
+
+/**
+ * Clear all hashes from whitelist (admin only)
+ * POST /api/_admin/clear-remix-hashes
+ */
+export async function handleClearRemixHashes(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    await clearWhitelist();
+    res.status(200).json({ success: true, message: "Whitelist cleared" });
+  } catch (error) {
+    console.error("Error clearing whitelist:", error);
+    res.status(500).json({ error: "Failed to clear whitelist" });
   }
 }

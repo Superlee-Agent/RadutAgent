@@ -19,19 +19,32 @@ interface RemixImageMetadata {
   timestamp: number;
   pHash?: string;
   visionDescription?: string;
+  // Asset Details
+  ownerAddress?: string;
+  mediaType?: string;
+  score?: number | null;
+  description?: string;
   // Parent IP Details
   parentIpIds?: string[];
   licenseTermsIds?: string[];
   licenseTemplates?: string[];
+  parentIpDetails?: any; // Full parent IP details from Details modal
   // License Configuration
   royaltyContext?: string;
   maxMintingFee?: string; // Wei format
   maxRts?: string; // Wei format
   maxRevenueShare?: number; // 0-100
   licenseVisibility?: string;
+  // Detailed Licenses
+  licenses?: any[]; // Full license terms array
   // Derivative Status
   isDerivative?: boolean;
   parentsCount?: number;
+  // Match tracking
+  matchType?: string;
+  similarity?: number;
+  // Allow any additional fields
+  [key: string]: any;
 }
 
 interface RemixHashEntry {
@@ -196,5 +209,19 @@ export async function updateHashMetadata(
     entry.metadata = { ...entry.metadata, ...partialMetadata };
     await saveWhitelist(whitelist);
     console.log(`[Remix Hash] Updated metadata for hash ${hash}`);
+  }
+}
+
+/**
+ * Delete hash from whitelist
+ */
+export async function deleteHashFromWhitelist(hash: string): Promise<void> {
+  const whitelist = await loadWhitelist();
+  const initialLength = whitelist.entries.length;
+  whitelist.entries = whitelist.entries.filter((entry) => entry.hash !== hash);
+
+  if (whitelist.entries.length < initialLength) {
+    await saveWhitelist(whitelist);
+    console.log(`[Remix Hash] Deleted hash ${hash} from whitelist`);
   }
 }

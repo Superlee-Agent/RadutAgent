@@ -8,6 +8,8 @@ import SidebarExtras from "@/components/ip-assistant/SidebarExtras";
 import ChatInput from "@/components/ip-assistant/ChatInput";
 import { YouTubeStyleSearchResults } from "@/components/ip-assistant/YouTubeStyleSearchResults";
 import { AddRemixImageModal } from "@/components/ip-assistant/AddRemixImageModal";
+import { WhitelistDetailsModal } from "@/components/ip-assistant/WhitelistDetailsModal";
+import { WhitelistMonitor } from "@/components/ip-assistant/WhitelistMonitor";
 import { useIPRegistrationAgent } from "@/hooks/useIPRegistrationAgent";
 import {
   getLicenseSettingsByGroup,
@@ -45,6 +47,8 @@ const IpAssistant = () => {
   const [waiting, setWaiting] = useState(false);
   const [activeDetail, setActiveDetail] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [whitelistDetailsOpen, setWhitelistDetailsOpen] = useState(false);
+  const [whitelistDetailsData, setWhitelistDetailsData] = useState<any>(null);
 
   const uploadRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -192,6 +196,7 @@ const IpAssistant = () => {
   const [showAddRemixImageModal, setShowAddRemixImageModal] =
     useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWhitelistMonitor, setShowWhitelistMonitor] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,
@@ -852,6 +857,22 @@ const IpAssistant = () => {
                   ipId: hashCheck.ipId,
                   title: hashCheck.title,
                   disabled: !derivativesAllowed,
+                  whitelistDetails: {
+                    timestamp: hashCheck.timestamp,
+                    matchType: hashCheck.matchType,
+                    similarity: hashCheck.similarity,
+                    parentIpIds: hashCheck.parentIpIds,
+                    licenseTermsIds: hashCheck.licenseTermsIds,
+                    licenseTemplates: hashCheck.licenseTemplates,
+                    royaltyContext: hashCheck.royaltyContext,
+                    maxMintingFee: hashCheck.maxMintingFee,
+                    maxRts: hashCheck.maxRts,
+                    maxRevenueShare: hashCheck.maxRevenueShare,
+                    licenseVisibility: hashCheck.licenseVisibility,
+                    isDerivative: hashCheck.isDerivative,
+                    parentsCount: hashCheck.parentsCount,
+                    licenses: hashCheck.licenses,
+                  },
                 },
               };
               setMessages((prev) => [...prev, warningMessage]);
@@ -921,6 +942,22 @@ const IpAssistant = () => {
                   ipId: hashCheck.ipId,
                   title: hashCheck.title,
                   disabled: !derivativesAllowed,
+                  whitelistDetails: {
+                    timestamp: hashCheck.timestamp,
+                    matchType: hashCheck.matchType,
+                    similarity: hashCheck.similarity,
+                    parentIpIds: hashCheck.parentIpIds,
+                    licenseTermsIds: hashCheck.licenseTermsIds,
+                    licenseTemplates: hashCheck.licenseTemplates,
+                    royaltyContext: hashCheck.royaltyContext,
+                    maxMintingFee: hashCheck.maxMintingFee,
+                    maxRts: hashCheck.maxRts,
+                    maxRevenueShare: hashCheck.maxRevenueShare,
+                    licenseVisibility: hashCheck.licenseVisibility,
+                    isDerivative: hashCheck.isDerivative,
+                    parentsCount: hashCheck.parentsCount,
+                    licenses: hashCheck.licenses,
+                  },
                 },
               };
               setMessages((prev) => [...prev, warningMessage]);
@@ -1350,6 +1387,7 @@ const IpAssistant = () => {
         onLoadSession={loadSession}
         onDeleteSession={deleteSession}
         closeSidebar={closeSidebar}
+        onOpenWhitelistMonitor={() => setShowWhitelistMonitor(true)}
       />
     ),
     [deleteSession, handleNewChat, loadSession, messages, sessions],
@@ -1369,6 +1407,19 @@ const IpAssistant = () => {
   // Helper function to capture asset data to whitelist (fires in background)
   const captureAssetToWhitelist = (asset: any) => {
     if (!asset?.ipId || !asset?.mediaUrl) return;
+
+    // Debug log: check what fields asset has
+    console.log("🔍 Asset to capture:", {
+      ipId: asset.ipId,
+      title: asset.title,
+      hasOwnerAddress: !!asset.ownerAddress,
+      hasMediaType: !!asset.mediaType,
+      hasScore: asset.score !== undefined,
+      hasLicenses: !!asset.licenses?.length,
+      hasParentIpIds: !!asset.parentIpIds?.length,
+      hasMaxMintingFee: !!asset.maxMintingFee,
+      allKeys: Object.keys(asset),
+    });
 
     (async () => {
       try {
@@ -1398,44 +1449,37 @@ const IpAssistant = () => {
           console.warn("Vision description failed:", visionError);
         }
 
-        // Add ALL asset data to whitelist (including parent IP details)
-        // For original IPs (not derivatives), include ipId as self-reference for future remix tracking
-        const parentIpIds =
-          asset.parentIpIds && asset.parentIpIds.length > 0
-            ? asset.parentIpIds
-            : asset.isDerivative === false
-              ? [asset.ipId]
-              : [];
+        // Capture PURE RAW data from expandedAsset
+        // Start with all asset fields as the base
+        const payload: any = {
+          // Spread ALL fields from expandedAsset (pure raw data from modal)
+          ...asset,
+          // Add computed fields (hash, vision, timestamp)
+          hash,
+          pHash,
+          visionDescription,
+          timestamp: Date.now(),
+        };
+
+        // Clean payload: remove undefined/null values
+        Object.keys(payload).forEach((key) => {
+          if (payload[key] === undefined || payload[key] === null) {
+            delete payload[key];
+          }
+        });
+
+        console.log("📤 Pure raw asset data captured to whitelist:", {
+          ipId: payload.ipId,
+          title: payload.title,
+          totalFields: Object.keys(payload).length,
+          fields: Object.keys(payload).sort(),
+          payload,
+        });
 
         const whitelistResponse = await fetch("/api/add-remix-hash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            hash,
-            pHash,
-            visionDescription,
-            ipId: asset.ipId,
-            title: asset.title || asset.name,
-            // Asset Information from Details modal
-            ownerAddress: asset.ownerAddress || "",
-            mediaType: asset.mediaType || "",
-            score: asset.score ?? null,
-            // Parent IP Details (original IP as self-reference, or actual parents if derivative)
-            parentIpIds: parentIpIds,
-            licenseTermsIds: asset.licenseTermsIds || [],
-            licenseTemplates: asset.licenseTemplates || [],
-            // License Configuration (may be empty for non-commercial)
-            royaltyContext: asset.royaltyContext || "",
-            maxMintingFee: asset.maxMintingFee || "0",
-            maxRts: asset.maxRts || "0",
-            maxRevenueShare: asset.maxRevenueShare ?? 0,
-            licenseVisibility: asset.licenseVisibility || "",
-            // Detailed Licenses information from Details modal
-            licenses: asset.licenses || [],
-            // Derivative Status
-            isDerivative: asset.isDerivative || false,
-            parentsCount: asset.parentsCount || 0,
-          }),
+          body: JSON.stringify(payload),
         });
 
         if (!whitelistResponse.ok) {
@@ -1447,13 +1491,62 @@ const IpAssistant = () => {
           return;
         }
 
-        console.log("Asset captured to whitelist:", asset.ipId, "hash:", hash);
+        console.log("✅ Asset captured to whitelist:", {
+          ipId: asset.ipId,
+          title: asset.title,
+          hash: hash.substring(0, 16) + "...",
+          timestamp: new Date().toLocaleString(),
+          hasLicenses: !!asset.licenses?.length,
+          isDerivative: asset.isDerivative,
+        });
       } catch (err) {
         console.warn("Failed to capture asset to whitelist:", err);
         // Don't let errors affect UX
       }
     })();
   };
+
+  // Capture asset to whitelist when modal opens
+  // Uses pure raw data from expandedAsset (which contains all Details modal fields)
+  useEffect(() => {
+    if (!expandedAsset || !expandedAsset.ipId) return;
+
+    // Only capture if not already captured
+    if (capturedAssetIds.has(expandedAsset.ipId)) return;
+
+    setCapturedAssetIds((prev) => new Set(prev).add(expandedAsset.ipId));
+
+    // Capture pure raw asset data to whitelist (without modification)
+    const captureRawAssetData = async () => {
+      try {
+        console.log(
+          "✅ Capturing pure raw asset data from modal for:",
+          expandedAsset.ipId,
+        );
+        console.log("📊 Asset fields in modal:", {
+          totalFields: Object.keys(expandedAsset).length,
+          fields: Object.keys(expandedAsset).sort(),
+          sample: {
+            ipId: expandedAsset.ipId,
+            title: expandedAsset.title,
+            ownerAddress: expandedAsset.ownerAddress,
+            mediaType: expandedAsset.mediaType,
+            score: expandedAsset.score,
+            licenseCount: expandedAsset.licenses?.length || 0,
+            hasDescription: !!expandedAsset.description,
+            hasParentIpDetails: !!expandedAsset.parentIpDetails,
+          },
+        });
+
+        // Capture as-is without modification
+        captureAssetToWhitelist(expandedAsset);
+      } catch (err) {
+        console.error("❌ Error capturing asset data:", err);
+      }
+    };
+
+    captureRawAssetData();
+  }, [expandedAsset]);
 
   return (
     <DashboardLayout
@@ -1525,7 +1618,7 @@ const IpAssistant = () => {
                       <div>{msg.text}</div>
                     </div>
                     {msg.action?.type === "remix" ? (
-                      <div className="mt-3 flex gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <button
                           disabled={msg.action?.disabled}
                           onClick={async () => {
@@ -1573,6 +1666,20 @@ const IpAssistant = () => {
                           }`}
                         >
                           Remix this
+                        </button>
+                        <button
+                          onClick={() => {
+                            setWhitelistDetailsData({
+                              ipId: msg.action?.ipId,
+                              title: msg.action?.title,
+                              ...msg.action?.whitelistDetails,
+                            });
+                            setWhitelistDetailsOpen(true);
+                          }}
+                          className="px-4 py-2 rounded-lg transition-colors text-sm font-semibold bg-slate-700/50 text-slate-100 hover:bg-slate-600/50"
+                          title="View detailed information about this IP asset"
+                        >
+                          Details
                         </button>
                       </div>
                     ) : null}
@@ -2358,7 +2465,7 @@ const IpAssistant = () => {
           const warningMessage: Message = {
             id: `msg-${Date.now()}`,
             from: "bot",
-            text: "⚠️ Remix images cannot be registered. Please clear the image to register this IP asset.",
+            text: "⚠�� Remix images cannot be registered. Please clear the image to register this IP asset.",
             ts: getCurrentTimestamp(),
           };
           setMessages((prev) => [...prev, warningMessage]);
@@ -2514,11 +2621,14 @@ const IpAssistant = () => {
                   setCapturedAssetIds((prev) => new Set(prev).add(asset.ipId));
 
                   // Fire and forget - don't await or show loading
+                  // Send FULL asset object so backend gets all Details modal data
                   fetch("/api/capture-asset-vision", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      mediaUrl: asset.mediaUrl,
+                      // Spread ENTIRE asset object to include all Details modal fields
+                      ...asset,
+                      mediaUrl: asset.mediaUrl, // Ensure mediaUrl is present
                       ipId: asset.ipId,
                       title: asset.title || asset.name,
                       mediaType: asset.mediaType,
@@ -2527,9 +2637,6 @@ const IpAssistant = () => {
                     console.warn("Failed to capture asset vision:", err);
                     // Don't let errors affect UX
                   });
-
-                  // Capture ALL asset data (including parent IP details) to whitelist
-                  captureAssetToWhitelist(asset);
                 }
               }}
               onRemix={async (asset) => {
@@ -2619,7 +2726,6 @@ const IpAssistant = () => {
                             className="w-full h-full cursor-pointer relative group/video"
                             onClick={() => {
                               setExpandedAsset(asset);
-                              captureAssetToWhitelist(asset);
                             }}
                           >
                             <video
@@ -2646,7 +2752,6 @@ const IpAssistant = () => {
                             className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-purple-900 to-slate-900 cursor-pointer"
                             onClick={() => {
                               setExpandedAsset(asset);
-                              captureAssetToWhitelist(asset);
                             }}
                           >
                             <svg
@@ -2667,7 +2772,6 @@ const IpAssistant = () => {
                             className="w-full h-full object-cover cursor-pointer"
                             onClick={() => {
                               setExpandedAsset(asset);
-                              captureAssetToWhitelist(asset);
                             }}
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
@@ -3728,6 +3832,53 @@ const IpAssistant = () => {
           }
         }}
       />
+      <WhitelistDetailsModal
+        isOpen={whitelistDetailsOpen}
+        onClose={() => setWhitelistDetailsOpen(false)}
+        details={whitelistDetailsData}
+      />
+      {showWhitelistMonitor && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="bg-slate-900/95 border border-[#FF4DA6]/30 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-slate-900/95 border-b border-[#FF4DA6]/20 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-[#FF4DA6]">
+                Whitelist Monitor
+              </h2>
+              <button
+                onClick={() => setShowWhitelistMonitor(false)}
+                className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                aria-label="Close whitelist monitor"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <WhitelistMonitor />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

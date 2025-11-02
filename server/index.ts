@@ -16,6 +16,9 @@ import {
   handleAddRemixHash,
   handleCheckRemixHash,
   handleGetRemixHashes,
+  handleClearRemixHashes,
+  handleGetRemixHashesFull,
+  handleDeleteRemixHash,
 } from "./routes/remix-hash-whitelist.js";
 import { handleCheckImageSimilarity } from "./routes/check-image-similarity.js";
 import { handleVisionImageDetection } from "./routes/vision-image-detection.js";
@@ -192,6 +195,9 @@ export function createServer() {
   app.post("/api/add-remix-hash", handleAddRemixHash);
   app.post("/api/check-remix-hash", handleCheckRemixHash);
   app.get("/api/_admin/remix-hashes", handleGetRemixHashes);
+  app.get("/api/_admin/remix-hashes-full", handleGetRemixHashesFull);
+  app.post("/api/_admin/clear-remix-hashes", handleClearRemixHashes);
+  app.post("/api/_admin/delete-remix-hash", handleDeleteRemixHash);
 
   // Capture asset vision endpoint (silently on asset click)
   app.post("/api/capture-asset-vision", handleCaptureAssetVision);

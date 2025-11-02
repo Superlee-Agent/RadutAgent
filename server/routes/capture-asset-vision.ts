@@ -227,18 +227,36 @@ export async function handleCaptureAssetVision(
       );
     }
 
-    // Add to whitelist
+    // Add to whitelist with ALL asset details from request
     try {
+      // Extract all fields from request body (includes all Details modal data)
+      const { mediaUrl, ...allMetadata } = req.body;
+
       const metadata = {
-        ipId,
-        title,
+        ...allMetadata, // Spread all asset fields (ownerAddress, licenses, score, etc.)
+        ipId: ipId || allMetadata.ipId,
+        title: title || allMetadata.title,
         timestamp: Date.now(),
+        hash,
         pHash,
         visionDescription,
       };
 
+      console.log(
+        "[Capture Vision] 📥 Storing whitelist entry with metadata:",
+        {
+          ipId: metadata.ipId,
+          totalFields: Object.keys(metadata).length,
+          fields: Object.keys(metadata)
+            .filter((k) => k !== "hash")
+            .sort(),
+        },
+      );
+
       await addHashToWhitelist(hash, metadata);
-      console.log(`[Capture Vision] Successfully added ${ipId} to whitelist`);
+      console.log(
+        `[Capture Vision] ✅ Successfully added ${ipId} to whitelist with all Details data`,
+      );
 
       res.status(200).json({
         success: true,

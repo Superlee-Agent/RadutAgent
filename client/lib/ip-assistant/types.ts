@@ -14,6 +14,22 @@ export type BotMessage = {
     ipId: string;
     title: string;
     disabled?: boolean;
+    whitelistDetails?: {
+      timestamp?: number;
+      matchType?: string;
+      similarity?: number;
+      parentIpIds?: string[];
+      licenseTermsIds?: string[];
+      licenseTemplates?: string[];
+      royaltyContext?: string;
+      maxMintingFee?: string;
+      maxRts?: string;
+      maxRevenueShare?: number;
+      licenseVisibility?: string;
+      isDerivative?: boolean;
+      parentsCount?: number;
+      licenses?: any[];
+    };
   };
 };
 

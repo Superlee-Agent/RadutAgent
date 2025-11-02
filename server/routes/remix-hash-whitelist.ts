@@ -342,3 +342,60 @@ export async function handleClearRemixHashes(
     });
   }
 }
+
+/**
+ * Admin endpoint: Get all whitelist entries with full metadata
+ * GET /api/_admin/remix-hashes-full
+ */
+export async function handleGetRemixHashesFull(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const entries = await getAllWhitelistEntries();
+
+    res.status(200).json({
+      entries,
+      lastUpdated: Date.now(),
+    });
+  } catch (error) {
+    console.error("Error getting whitelist entries:", error);
+    res.status(500).json({
+      error: "Failed to get whitelist entries",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+/**
+ * Admin endpoint: Delete single hash from whitelist
+ * POST /api/_admin/delete-remix-hash
+ * Body: { hash: string }
+ */
+export async function handleDeleteRemixHash(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { hash } = req.body;
+
+    if (!hash || typeof hash !== "string") {
+      res.status(400).json({ error: "Hash is required" });
+      return;
+    }
+
+    await deleteHashFromWhitelist(hash);
+
+    res.status(200).json({
+      success: true,
+      message: "Hash deleted from whitelist",
+      hash,
+    });
+  } catch (error) {
+    console.error("Error deleting remix hash:", error);
+    res.status(500).json({
+      error: "Failed to delete remix hash",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}

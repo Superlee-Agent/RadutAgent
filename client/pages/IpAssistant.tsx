@@ -195,6 +195,7 @@ const IpAssistant = () => {
   const [showAddRemixImageModal, setShowAddRemixImageModal] =
     useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWhitelistMonitor, setShowWhitelistMonitor] = useState(false);
   const [registerEdits, setRegisterEdits] = useState<
     Record<
       string,

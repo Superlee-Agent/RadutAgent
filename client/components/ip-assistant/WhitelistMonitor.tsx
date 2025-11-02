@@ -455,54 +455,41 @@ export const WhitelistMonitor: React.FC = () => {
                     Asset Details:
                   </span>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                    {entries.find((e) => e.hash === expandedHash)?.metadata
-                      ?.ownerAddress && (
-                      <div>
-                        <span className="text-slate-500">Owner:</span>
-                        <div className="text-slate-200 font-mono truncate">
-                          {
-                            entries.find((e) => e.hash === expandedHash)
-                              ?.metadata?.ownerAddress
-                          }
-                        </div>
+                    <div>
+                      <span className="text-slate-500">Owner:</span>
+                      <div className="text-slate-200 font-mono truncate">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.ownerAddress || "N/A"}
                       </div>
-                    )}
-                    {entries.find((e) => e.hash === expandedHash)?.metadata
-                      ?.mediaType && (
-                      <div>
-                        <span className="text-slate-500">Media Type:</span>
-                        <div className="text-slate-200">
-                          {
-                            entries.find((e) => e.hash === expandedHash)
-                              ?.metadata?.mediaType
-                          }
-                        </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Media Type:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.mediaType || "N/A"}
                       </div>
-                    )}
-                    {entries.find((e) => e.hash === expandedHash)?.metadata
-                      ?.score !== undefined && (
-                      <div>
-                        <span className="text-slate-500">Score:</span>
-                        <div className="text-slate-200">
-                          {(
-                            entries.find((e) => e.hash === expandedHash)
-                              ?.metadata?.score ?? 0
-                          ).toFixed(3)}
-                        </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Score:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.score !== null &&
+                        entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.score !== undefined
+                          ? (
+                              entries.find((e) => e.hash === expandedHash)
+                                ?.metadata?.score ?? 0
+                            ).toFixed(3)
+                          : "N/A"}
                       </div>
-                    )}
-                    {entries.find((e) => e.hash === expandedHash)?.metadata
-                      ?.parentsCount !== undefined && (
-                      <div>
-                        <span className="text-slate-500">Parents Count:</span>
-                        <div className="text-slate-200">
-                          {
-                            entries.find((e) => e.hash === expandedHash)
-                              ?.metadata?.parentsCount
-                          }
-                        </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Parents Count:</span>
+                      <div className="text-slate-200">
+                        {entries.find((e) => e.hash === expandedHash)
+                          ?.metadata?.parentsCount ?? "0"}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
 

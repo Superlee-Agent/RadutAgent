@@ -245,7 +245,7 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
                     </h3>
                     <div className="space-y-3">
                       {details.licenses.map((license, idx) => (
-                        <div key={idx} className="border-t border-slate-700/30 pt-3">
+                        <div key={idx} className={idx > 0 ? "border-t border-slate-700/30 pt-3" : ""}>
                           {license.terms && (
                             <div className="space-y-2 text-sm">
                               <div className="flex items-center justify-between">
@@ -282,7 +282,43 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="text-slate-400">
-                                  Minting Fee:
+                                  Transferable:
+                                </span>
+                                <span
+                                  className={`font-medium ${
+                                    license.terms.transferable
+                                      ? "text-green-400"
+                                      : "text-red-400"
+                                  }`}
+                                >
+                                  {license.terms.transferable
+                                    ? "✓ Yes"
+                                    : "✗ No"}
+                                </span>
+                              </div>
+                              {license.terms.commercialAttribution && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-slate-400">
+                                    Attribution:
+                                  </span>
+                                  <span className="font-medium text-blue-400">
+                                    ⓘ Required
+                                  </span>
+                                </div>
+                              )}
+                              {license.terms.derivativesAttribution && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-slate-400">
+                                    Derivative Attribution:
+                                  </span>
+                                  <span className="font-medium text-blue-400">
+                                    ⓘ Required
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">
+                                  Default Minting Fee:
                                 </span>
                                 <span className="text-slate-100 font-medium">
                                   {formatWei(
@@ -292,12 +328,22 @@ export const WhitelistDetailsModal: React.FC<WhitelistDetailsModalProps> = ({
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="text-slate-400">
-                                  Revenue Share:
+                                  Commercial Rev Share:
                                 </span>
                                 <span className="text-slate-100 font-medium">
                                   {license.terms.commercialRevShare}%
                                 </span>
                               </div>
+                              {license.terms.derivativesReciprocal && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-slate-400">
+                                    Reciprocal Sharing:
+                                  </span>
+                                  <span className="font-medium text-blue-400">
+                                    ✓ Enabled
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

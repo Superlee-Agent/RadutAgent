@@ -47,6 +47,7 @@ RadutVerse is a comprehensive platform for IP (Intellectual Property) asset mana
 ## Tech Stack
 
 ### Frontend
+
 - **React 18** - UI framework
 - **TypeScript** - Type-safe development
 - **React Router 6** - Client-side routing (SPA mode)
@@ -60,23 +61,27 @@ RadutVerse is a comprehensive platform for IP (Intellectual Property) asset mana
 - **Zod** - Runtime type validation
 
 ### Backend
+
 - **Express.js 5.x** - HTTP server framework
 - **Node.js** - JavaScript runtime
 - **Multer** - File upload middleware
 - **CORS** - Cross-origin resource sharing
 
 ### Blockchain & Web3
+
 - **@story-protocol/core-sdk** - Story Protocol integration
 - **@privy-io/react-auth** - Wallet authentication
 - **Viem** - Ethereum library
 
 ### Development Tools
+
 - **Vitest** - Unit testing framework
 - **TypeScript** - Static type checking
 - **Prettier** - Code formatter
 - **SWC** - Fast JavaScript compiler
 
 ### External APIs
+
 - **OpenAI API** - AI-powered image analysis and IP verification
 - **Pinata IPFS** - Decentralized file storage
 - **Story Protocol API** - IP asset information and management
@@ -234,6 +239,7 @@ pnpm dev
 ```
 
 This command:
+
 - Starts the Vite dev server on `http://localhost:5173`
 - Launches the Express backend on the same port
 - Enables hot module replacement (HMR) for instant updates
@@ -273,6 +279,7 @@ pnpm build
 ```
 
 This generates:
+
 - `dist/spa/` - Optimized React frontend
 - `dist/server/` - Compiled Node.js backend
 
@@ -290,6 +297,7 @@ This generates:
    - Select appropriate environments (Production, Preview, Development)
 
 3. **Deploy**:
+
    ```bash
    vercel
    # Or push to main branch for automatic deployment
@@ -330,29 +338,30 @@ docker run -p 8080:8080 \
 
 These are exposed to the browser:
 
-| Variable | Purpose | Example |
-|----------|---------|---------|
-| `VITE_PUBLIC_STORY_RPC` | Story Protocol RPC endpoint | `https://aeneid.storyrpc.io` |
-| `VITE_PUBLIC_SPG_COLLECTION` | Story Protocol contract address | `0xc32A8a0FF...` |
-| `VITE_GUEST_PRIVATE_KEY` | Guest authentication key | `bb628c194f...` |
+| Variable                     | Purpose                         | Example                      |
+| ---------------------------- | ------------------------------- | ---------------------------- |
+| `VITE_PUBLIC_STORY_RPC`      | Story Protocol RPC endpoint     | `https://aeneid.storyrpc.io` |
+| `VITE_PUBLIC_SPG_COLLECTION` | Story Protocol contract address | `0xc32A8a0FF...`             |
+| `VITE_GUEST_PRIVATE_KEY`     | Guest authentication key        | `bb628c194f...`              |
 
 ### Server Variables (Private)
 
 Only available on the server:
 
-| Variable | Purpose | Required |
-|----------|---------|----------|
-| `STORY_API_KEY` | Story Protocol API authentication | ✅ Yes |
-| `OPENAI_API_KEY` | OpenAI API for image analysis | ✅ Yes |
-| `OPENAI_VERIFIER_MODEL` | Model for verification | ✅ Yes |
-| `PINATA_JWT` | Pinata IPFS authentication | ✅ Yes |
-| `PINATA_GATEWAY` | Pinata gateway domain | ✅ Yes |
+| Variable                | Purpose                           | Required |
+| ----------------------- | --------------------------------- | -------- |
+| `STORY_API_KEY`         | Story Protocol API authentication | ✅ Yes   |
+| `OPENAI_API_KEY`        | OpenAI API for image analysis     | ✅ Yes   |
+| `OPENAI_VERIFIER_MODEL` | Model for verification            | ✅ Yes   |
+| `PINATA_JWT`            | Pinata IPFS authentication        | ✅ Yes   |
+| `PINATA_GATEWAY`        | Pinata gateway domain             | ✅ Yes   |
 
 ## API Endpoints
 
 ### IP Assets
 
 **Check IP Assets**
+
 ```
 POST /api/check-ip-assets
 Content-Type: application/json
@@ -373,6 +382,7 @@ Response:
 ### Image Analysis
 
 **Analyze Image with Vision**
+
 ```
 POST /api/analyze-image-vision
 Content-Type: multipart/form-data
@@ -389,6 +399,7 @@ Response:
 ```
 
 **Capture Asset Vision**
+
 ```
 POST /api/capture-asset-vision
 Content-Type: application/json
@@ -410,12 +421,14 @@ Response:
 ### IP Assistant
 
 The main feature allowing users to:
+
 - Upload and analyze IP-related images
 - Get AI-powered insights about IP assets
 - Query IP information by wallet address
 - Track IP registration and ownership
 
 **Key Components**:
+
 - `ChatInput.tsx` - Text and image input
 - `ChatHeaderActions.tsx` - Header controls
 - `AddRemixImageModal.tsx` - Remix image management
@@ -424,6 +437,7 @@ The main feature allowing users to:
 ### Portfolio Management
 
 Track and visualize your IP asset portfolio:
+
 - View owned IP tokens
 - Monitor value and ownership changes
 - Transaction history
@@ -432,6 +446,7 @@ Track and visualize your IP asset portfolio:
 ### Marketplace
 
 Browse and discover IP-based NFTs:
+
 - Search filters
 - Asset details
 - Price comparison
@@ -440,6 +455,7 @@ Browse and discover IP-based NFTs:
 ### Settings
 
 Manage account preferences:
+
 - Wallet connection settings
 - Account preferences
 - Privacy settings
@@ -456,6 +472,7 @@ Error: Cannot find module 'viem'
 ```
 
 **Solution**: Ensure all dependencies are installed
+
 ```bash
 pnpm install
 ```
@@ -467,6 +484,7 @@ Error: STORY_API_KEY not set
 ```
 
 **Solution**: Verify environment variables are set correctly
+
 ```bash
 # Check if file exists
 cat .env.local
@@ -482,6 +500,7 @@ Error: Invalid Ethereum address format
 ```
 
 **Solution**: Ensure wallet address format is correct
+
 - Must start with `0x`
 - Followed by exactly 40 hexadecimal characters
 - Example: `0x1234567890123456789012345678901234567890`
@@ -511,10 +530,10 @@ Enable detailed logging:
 
 ```typescript
 // In your component
-console.log('Debug:', { 
-  address, 
-  assets, 
-  error 
+console.log("Debug:", {
+  address,
+  assets,
+  error,
 });
 ```
 
@@ -550,6 +569,7 @@ Check browser DevTools Console for detailed error messages.
 ### Security Headers
 
 The server includes security headers:
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
@@ -574,6 +594,7 @@ The server includes security headers:
 ### Reporting Issues
 
 When reporting issues, include:
+
 - Error message (full text)
 - Steps to reproduce
 - Environment details (Node version, OS)
@@ -607,6 +628,7 @@ Contributions are welcome! Please follow these guidelines:
 ### Commit Messages
 
 Use clear, descriptive commit messages:
+
 ```
 feat: add IP asset search filter
 fix: resolve wallet connection issue

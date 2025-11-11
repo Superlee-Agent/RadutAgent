@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { createPublicClient, http, getContract, erc20Abi, erc721Abi } from "viem";
-import { StoryClient } from "@story-protocol/core-sdk";
+import { WIP_TOKEN_ADDRESS } from "@story-protocol/core-sdk";
 
 const STORY_MAINNET_RPC = import.meta.env.VITE_PUBLIC_STORY_RPC || "https://aeneid.storyrpc.io";
 const STORY_CHAIN_ID = 1516; // Story mainnet
@@ -9,21 +9,27 @@ const STORY_CHAIN_ID = 1516; // Story mainnet
 // Common token addresses on Story mainnet
 const COMMON_TOKENS = [
   {
-    address: "0x0000000000000000000000000000000000000000", // Native IP token (placeholder)
-    symbol: "STORY",
+    address: WIP_TOKEN_ADDRESS,
+    symbol: "WIP",
     decimals: 18,
-    name: "Story",
+    name: "Wrapped IP",
   },
 ];
 
 // Common NFT collection addresses on Story mainnet
-const COMMON_NFTS = [
-  {
-    address: import.meta.env.VITE_PUBLIC_SPG_COLLECTION,
-    name: "Story Protocol Genesis Collection",
-    type: "ERC721",
-  },
-];
+const COMMON_NFTS: Array<{
+  address: string;
+  name: string;
+  type: "ERC721" | "ERC1155";
+}> = import.meta.env.VITE_PUBLIC_SPG_COLLECTION
+  ? [
+      {
+        address: import.meta.env.VITE_PUBLIC_SPG_COLLECTION,
+        name: "Story Protocol Genesis Collection",
+        type: "ERC721",
+      },
+    ]
+  : [];
 
 export type TokenBalance = {
   address: string;

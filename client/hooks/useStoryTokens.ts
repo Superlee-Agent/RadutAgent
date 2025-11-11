@@ -171,7 +171,7 @@ export function useStoryTokens(): StoryPortfolioData {
       console.error("Error fetching portfolio data:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch portfolio data");
       setTokens([]);
-      setNFTs([]);
+      setNfts([]);
     } finally {
       setLoading(false);
     }

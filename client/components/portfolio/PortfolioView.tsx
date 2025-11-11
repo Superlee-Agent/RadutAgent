@@ -84,7 +84,9 @@ export const PortfolioView = () => {
             <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
               Connected Wallet
             </p>
-            <p className="text-sm font-mono text-slate-200 break-all">{address}</p>
+            <p className="text-sm font-mono text-slate-200 break-all">
+              {address}
+            </p>
           </div>
         )}
 
@@ -118,7 +120,9 @@ export const PortfolioView = () => {
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <CardTitle className="text-base">{token.symbol}</CardTitle>
+                        <CardTitle className="text-base">
+                          {token.symbol}
+                        </CardTitle>
                         <CardDescription className="text-xs">
                           {token.name}
                         </CardDescription>
@@ -134,12 +138,14 @@ export const PortfolioView = () => {
                   <CardContent className="space-y-2">
                     <div className="text-xs space-y-1">
                       <p className="text-slate-400">
-                        Raw Balance: <span className="text-slate-300 font-mono">
+                        Raw Balance:{" "}
+                        <span className="text-slate-300 font-mono">
                           {token.balance}
                         </span>
                       </p>
                       <p className="text-slate-400">
-                        Contract: <span className="text-slate-300 font-mono text-[10px] break-all">
+                        Contract:{" "}
+                        <span className="text-slate-300 font-mono text-[10px] break-all">
                           {token.address}
                         </span>
                       </p>
@@ -198,7 +204,8 @@ export const PortfolioView = () => {
                         Type: <span className="text-slate-300">{nft.type}</span>
                       </p>
                       <p className="text-slate-400">
-                        Contract: <span className="text-slate-300 font-mono text-[10px] break-all">
+                        Contract:{" "}
+                        <span className="text-slate-300 font-mono text-[10px] break-all">
                           {nft.address}
                         </span>
                       </p>

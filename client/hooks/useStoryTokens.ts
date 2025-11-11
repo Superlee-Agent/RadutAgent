@@ -1,9 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
-import { createPublicClient, http, getContract, erc20Abi, erc721Abi } from "viem";
+import {
+  createPublicClient,
+  http,
+  getContract,
+  erc20Abi,
+  erc721Abi,
+} from "viem";
 import { WIP_TOKEN_ADDRESS } from "@story-protocol/core-sdk";
 
-const STORY_MAINNET_RPC = import.meta.env.VITE_PUBLIC_STORY_RPC || "https://aeneid.storyrpc.io";
+const STORY_MAINNET_RPC =
+  import.meta.env.VITE_PUBLIC_STORY_RPC || "https://aeneid.storyrpc.io";
 const STORY_CHAIN_ID = 1516; // Story mainnet
 
 // Common token addresses on Story mainnet
@@ -162,7 +169,9 @@ export function useStoryTokens(): StoryPortfolioData {
       setNfts(fetchedNFTs);
     } catch (err) {
       console.error("Error fetching portfolio data:", err);
-      setError(err instanceof Error ? err.message : "Failed to fetch portfolio data");
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch portfolio data",
+      );
       setTokens([]);
       setNfts([]);
     } finally {

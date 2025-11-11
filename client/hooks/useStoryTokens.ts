@@ -143,18 +143,18 @@ export function useStoryTokens(): StoryPortfolioData {
             client: publicClient,
           });
 
-          const balance = await contract.read.balanceOf([address as `0x${string}`]);
+          const balance = await contract.read.balanceOf([userAddress]);
 
           if (balance > 0n) {
             fetchedNFTs.push({
               address: nft.address,
               name: nft.name,
-              type: "ERC721",
+              type: nft.type,
               balance: balance.toString(),
             });
           }
         } catch (err) {
-          console.error(`Error fetching NFT ${nft.name}:`, err);
+          console.warn(`Warning fetching NFT ${nft.name}:`, err);
         }
       }
 

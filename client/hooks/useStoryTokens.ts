@@ -100,44 +100,37 @@ export function useStoryTokens(): StoryPortfolioData {
       const fetchedNFTs: NFTData[] = [];
 
       // Fetch token balances
+      const userAddress = address as `0x${string}`;
       for (const token of COMMON_TOKENS) {
         try {
-          if (token.address === "0x0000000000000000000000000000000000000000") {
-            // Fetch native balance
-            const balance = await publicClient.getBalance({ address: address as `0x${string}` });
+          const contract = getContract({
+            address: token.address as `0x${string}`,
+            abi: erc20Abi,
+            client: publicClient,
+          });
+
+          const [balance, decimals, symbol] = await Promise.all([
+            contract.read.balanceOf([userAddress]),
+            contract.read.decimals(),
+            contract.read.symbol(),
+          ]);
+
+          if (balance > 0n) {
+            const decimalCount = Number(decimals);
+            const divisor = BigInt(10 ** decimalCount);
+            const formattedBalance = (balance / divisor).toString();
+
             fetchedTokens.push({
               address: token.address,
-              symbol: token.symbol,
+              symbol: symbol || token.symbol,
               name: token.name,
-              decimals: token.decimals,
+              decimals: decimalCount,
               balance: balance.toString(),
-              balanceFormatted: (balance / BigInt(10 ** token.decimals)).toString(),
+              balanceFormatted: formattedBalance,
             });
-          } else {
-            // Fetch ERC20 balance
-            const contract = getContract({
-              address: token.address as `0x${string}`,
-              abi: erc20Abi,
-              client: publicClient,
-            });
-
-            const balance = await contract.read.balanceOf([address as `0x${string}`]);
-            const decimals = await contract.read.decimals();
-            const symbol = await contract.read.symbol();
-
-            if (balance > 0n) {
-              fetchedTokens.push({
-                address: token.address,
-                symbol: symbol,
-                name: token.name,
-                decimals: Number(decimals),
-                balance: balance.toString(),
-                balanceFormatted: (balance / BigInt(10 ** Number(decimals))).toString(),
-              });
-            }
           }
         } catch (err) {
-          console.error(`Error fetching token ${token.symbol}:`, err);
+          console.warn(`Warning fetching token ${token.symbol}:`, err);
         }
       }
 
